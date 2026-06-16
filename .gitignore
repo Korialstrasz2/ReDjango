@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+.env
+
+# Django/runtime
+media/user_media/
+staticfiles/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local verification logs
+server*.log

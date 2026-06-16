@@ -1,0 +1,113 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ReDjango</title>
+    <link rel="stylesheet" href="{% static 'frontend/css/app.css' %}">
+</head>
+<body>
+    <div id="app" class="app-shell" data-component-type="app-shell" data-theme="default">
+        <aside class="side-nav" aria-label="Main menu" data-component-type="nav" data-theme="dark">
+            <div class="brand-block" data-component-type="card" data-theme="dark">
+                <span class="brand-mark">ED</span>
+                <div>
+                    <h1>ReDjango</h1>
+                    <p>The Elder Django seed</p>
+                </div>
+            </div>
+            <nav class="menu-list" data-component-type="list" data-theme="dark">
+                <button class="menu-item active" data-action="nav.openDashboard" data-component-type="button" data-route="dashboard" data-state="active" data-theme="dark" type="button">Main Menu</button>
+                <button class="menu-item" data-action="nav.openCharacters" data-component-type="button" data-route="characters" data-state="idle" data-theme="dark" type="button">Characters</button>
+                <button class="menu-item" data-action="nav.openMedia" data-component-type="button" data-route="media" data-state="idle" data-theme="dark" type="button">Media Vault</button>
+            </nav>
+            <div class="user-chip" data-component-type="card" data-theme="muted" id="user-chip">Loading...</div>
+        </aside>
+
+        <main class="workspace" data-component-type="view" data-theme="default">
+            <header class="topbar" data-component-type="toolbar" data-theme="default">
+                <div>
+                    <p class="eyebrow">Minimum usable project</p>
+                    <h2 id="view-title">Main Menu</h2>
+                </div>
+                <div class="status-pill" data-component-type="toast" data-theme="muted" id="status-pill">Booting</div>
+            </header>
+
+            <section class="view active" data-component-type="view" data-state="active" data-theme="default" id="view-dashboard" aria-labelledby="view-title">
+                <div class="dashboard-grid" data-component-type="grid" data-theme="default">
+                    <article class="summary-panel" data-component-type="panel" data-theme="default">
+                        <h3>Project State</h3>
+                        <dl class="metrics" data-component-type="grid" data-theme="default">
+                            <div><dt>Characters</dt><dd id="metric-characters">0</dd></div>
+                            <div><dt>Media files</dt><dd id="metric-media">0</dd></div>
+                            <div><dt>Database</dt><dd>SQLite</dd></div>
+                        </dl>
+                    </article>
+                    <article class="summary-panel flow-panel" data-component-type="panel" data-theme="default">
+                        <h3>Main Menu</h3>
+                        <button class="primary-action" data-action="nav.openCharacters" data-component-type="button" data-route-target="characters" data-theme="default" type="button">Open Character Menu</button>
+                        <button class="secondary-action" data-action="nav.openMedia" data-component-type="button" data-route-target="media" data-theme="muted" type="button">Open Media Vault</button>
+                    </article>
+                </div>
+            </section>
+
+            <section class="view" data-component-type="view" data-state="idle" data-theme="default" id="view-characters" aria-labelledby="view-title">
+                <div class="split-view" data-component-type="grid" data-theme="default">
+                    <aside class="collection-panel" data-component-type="panel" data-theme="default">
+                        <div class="panel-head" data-component-type="toolbar" data-theme="default">
+                            <h3>Characters</h3>
+                            <button class="icon-action" data-action="characters.new" data-component-type="button" data-theme="gold" id="new-character" type="button" title="Create character">+</button>
+                        </div>
+                        <div class="list-stack" data-component-type="list" data-theme="default" id="character-list"></div>
+                    </aside>
+                    <form class="detail-panel" data-component-type="form" data-theme="default" id="character-form">
+                        <input type="hidden" id="character-id">
+                        <div class="form-grid" data-component-type="grid" data-theme="default">
+                            <label>Name<input id="character-name" name="name" maxlength="120" required></label>
+                            <label>Ancestry<input id="character-ancestry" name="ancestry" maxlength="80"></label>
+                            <label>Archetype<input id="character-archetype" name="archetype" maxlength="80"></label>
+                            <label>Level<input id="character-level" name="level" type="number" min="1" value="1"></label>
+                        </div>
+                        <div class="stat-grid" data-component-type="grid" data-theme="default">
+                            <label>Might<input id="stat-might" type="number" min="0"></label>
+                            <label>Agility<input id="stat-agility" type="number" min="0"></label>
+                            <label>Mind<input id="stat-mind" type="number" min="0"></label>
+                            <label>Spirit<input id="stat-spirit" type="number" min="0"></label>
+                            <label>Health<input id="resource-health" type="number" min="0"></label>
+                            <label>Stamina<input id="resource-stamina" type="number" min="0"></label>
+                            <label>Mana<input id="resource-mana" type="number" min="0"></label>
+                        </div>
+                        <label class="wide-label">Notes<textarea id="character-notes" rows="7"></textarea></label>
+                        <div class="form-actions" data-component-type="toolbar" data-theme="default">
+                            <button class="primary-action" data-action="characters.save" data-component-type="button" data-theme="default" type="submit">Save Character</button>
+                            <button class="danger-action" data-action="characters.delete" data-component-type="button" data-theme="danger" id="delete-character" type="button">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="view" data-component-type="view" data-state="idle" data-theme="media" id="view-media" aria-labelledby="view-title">
+                <div class="split-view media-view" data-component-type="grid" data-theme="media">
+                    <form class="collection-panel upload-panel" data-component-type="form" data-theme="media" id="media-form">
+                        <h3>Add Media Copy</h3>
+                        <label>Title<input id="media-title" name="title" maxlength="160"></label>
+                        <label>File<input id="media-file" name="file" type="file" required></label>
+                        <label>Notes<textarea id="media-notes" name="notes" rows="4"></textarea></label>
+                        <button class="primary-action" data-action="media.upload" data-component-type="button" data-theme="media" type="submit">Copy Into User Media</button>
+                    </form>
+                    <div class="detail-panel" data-component-type="panel" data-theme="media">
+                        <div class="panel-head" data-component-type="toolbar" data-theme="media">
+                            <h3>User Media</h3>
+                            <span class="muted" id="media-count">0 files</span>
+                        </div>
+                        <div class="media-grid" data-component-type="grid" data-theme="media" id="media-grid"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="{% static 'frontend/js/app.js' %}"></script>
+</body>
+</html>
