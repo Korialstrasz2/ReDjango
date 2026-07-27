@@ -1,0 +1,18 @@
+# Normalize line endings so contributors on Windows/macOS/Linux see clean diffs.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+
+# Binary assets: never diff/merge as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.sqlite3 binary
+*.xlsx binary
