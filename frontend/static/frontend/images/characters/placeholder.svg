@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 800" role="img" aria-labelledby="title description">
+  <title id="title">Sagoma del personaggio</title>
+  <desc id="description">Segnaposto fantasy per un ritratto del personaggio non ancora disponibile.</desc>
+  <defs>
+    <radialGradient id="mist" cx="50%" cy="42%" r="62%">
+      <stop offset="0" stop-color="#2c4038" stop-opacity=".72"/>
+      <stop offset=".58" stop-color="#101915" stop-opacity=".44"/>
+      <stop offset="1" stop-color="#060a08" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="figure" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a9b4aa" stop-opacity=".78"/>
+      <stop offset=".48" stop-color="#64746b" stop-opacity=".68"/>
+      <stop offset="1" stop-color="#28332e" stop-opacity=".36"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8dcc0" stop-opacity=".76"/>
+      <stop offset="1" stop-color="#8e784b" stop-opacity=".28"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <ellipse cx="250" cy="392" rx="220" ry="330" fill="url(#mist)"/>
+  <g fill="none" stroke="#aa8e52" stroke-opacity=".34">
+    <circle cx="250" cy="370" r="205" stroke-width="2"/>
+    <circle cx="250" cy="370" r="184" stroke-width="1" stroke-dasharray="5 12"/>
+    <path d="M250 138l19 33-19 34-19-34 19-33zm0 465l19 33-19 34-19-34 19-33zM62 370l33-19 34 19-34 19-33-19zm309 0l34-19 33 19-33 19-34-19z" filter="url(#glow)"/>
+    <path d="M112 222l38 5 5 38m190 0l5-38 38-5M112 518l38-5 5-38m190 0l5 38 38 5"/>
+  </g>
+
+  <g stroke="#070c09" stroke-width="7" stroke-linejoin="round">
+    <path fill="url(#figure)" d="M214 187l16-29h40l16 29-10 66 45 30 34 95-40 22-28-71 7 157 51 184-57 8-38-139-38 139-57-8 51-184 7-157-28 71-40-22 34-95 45-30-10-66z"/>
+    <path fill="#18231e" fill-opacity=".78" d="M204 249l46 35 46-35 24 55-39 42h-62l-39-42 24-55z"/>
+    <path fill="url(#steel)" d="M226 151l7-41 17-19 17 19 7 41-12 36h-24l-12-36z"/>
+    <path fill="#141d19" fill-opacity=".72" d="M198 291l52 39 52-39-15 118-37 26-37-26-15-118z"/>
+    <path fill="#4d5f55" fill-opacity=".64" d="M176 282l38-35-20 122-39 23-20-16 41-94zm148 0l-38-35 20 122 39 23 20-16-41-94z"/>
+  </g>
+
+  <g fill="none" stroke="#c1a464" stroke-opacity=".52" stroke-width="3">
+    <path d="M219 346l31 24 31-24-9 59-22 16-22-16-9-59z"/>
+    <path d="M192 479h116M180 517h140"/>
+  </g>
+  <ellipse cx="250" cy="688" rx="122" ry="22" fill="#020403" fill-opacity=".55"/>
+</svg>

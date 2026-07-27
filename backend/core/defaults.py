@@ -1,5 +1,700 @@
+import json
+
+from backend.combat.damage_rules import (
+    DAMAGE_RULES_CONFIG_KEY,
+    DEFAULT_DAMAGE_RULES,
+)
+
+
 LOCAL_PLAYER_NAME = "local_master"
 DEFAULT_CAMPAIGN_NAME = "Campagna principale"
+V2_SETTINGS_SEED_VERSION = "9"
+V2_THEME_SEED_VERSION = "3"
+
+
+SAFE_ALT_SHORTCUT_CHOICES = [
+    {"value": f"Alt+{letter}", "label": f"Alt + {letter}"}
+    for letter in "ABCGHIJKLMNOPQRSTUVWXYZ"
+]
+
+
+V2_DICE_SET_DEFAULTS = [
+    {"slug": "crimson", "name": "Sangue di Drago", "description": "Cremisi profondo e finiture d'oro, ispirato ai tesori dei tumuli nordici.", "dice": [4, 6, 8, 10, 12, 20, 100], "surface_color": "#7f2434", "accent_color": "#d0a95b", "text_color": "#fff4d6", "is_default": True, "order": 10},
+    {"slug": "emerald", "name": "Bosco di Valen", "description": "Verde antico, corteccia e luce elfica.", "dice": [4, 6, 8, 10, 12, 20, 100], "surface_color": "#315f47", "accent_color": "#9dbb72", "text_color": "#f0ffe4", "is_default": False, "order": 20},
+    {"slug": "sapphire", "name": "Occhio di Magnus", "description": "Blu arcano e bagliori di cristallo per i tiri di magia.", "dice": [4, 6, 8, 10, 12, 20, 100], "surface_color": "#294f7d", "accent_color": "#79b6e8", "text_color": "#eef8ff", "is_default": False, "order": 30},
+    {"slug": "obsidian", "name": "Ossidiana Daedrica", "description": "Pietra nera, incisioni rosse e un'atmosfera da Oblivion.", "dice": [4, 6, 8, 10, 12, 20, 100], "surface_color": "#211c25", "accent_color": "#b54848", "text_color": "#ffd9d4", "is_default": False, "order": 40},
+]
+
+
+V2_SETTING_DEFAULTS = [
+    {
+        "key": "appearance.theme",
+        "label": "Tema dell'interfaccia",
+        "category": "aspetto",
+        "description": "Scegli l'atmosfera visiva, i colori e gli sfondi delle diverse schermate.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "parchment",
+        "choices": [
+            {"value": "parchment", "label": "Pergamena"},
+            {"value": "midnight", "label": "Notte"},
+            {"value": "arcane", "label": "Arcano"},
+            {"value": "skyrim", "label": "Skyrim"},
+            {"value": "morrowind", "label": "Morrowind"},
+            {"value": "oblivion", "label": "Oblivion"},
+        ],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "theme",
+        "order": 10,
+    },
+    {
+        "key": "appearance.font_family",
+        "label": "Carattere dell'interfaccia",
+        "category": "aspetto",
+        "description": "Scegli tra caratteri di sistema, fantasy, da libro, umanisti o ad alta leggibilità.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "system",
+        "choices": [
+            {"value": "system", "label": "Sistema"},
+            {"value": "serif", "label": "Fantasy classico"},
+            {"value": "book", "label": "Libro antico"},
+            {"value": "humanist", "label": "Umanista"},
+            {"value": "accessible", "label": "Alta leggibilità"},
+        ],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "font-family",
+        "order": 20,
+    },
+    {
+        "key": "appearance.font_scale",
+        "label": "Dimensione del testo",
+        "category": "aspetto",
+        "description": "Ridimensiona tutti i testi tra il 75% e il 175%, compresi modali e strumenti rapidi.",
+        "minimum_role": "user",
+        "value_type": "int",
+        "default_value": 100,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "font-scale",
+        "order": 30,
+        "validation": {"minimum": 75, "maximum": 175, "step": 5},
+    },
+    {
+        "key": "appearance.density",
+        "label": "Spaziatura dell'interfaccia",
+        "category": "aspetto",
+        "description": "Scegli una spaziatura comoda oppure compatta per le sessioni ricche di informazioni.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "comfortable",
+        "choices": [
+            {"value": "comfortable", "label": "Comoda"},
+            {"value": "compact", "label": "Compatta"},
+        ],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "density",
+        "order": 40,
+    },
+    {
+        "key": "accessibility.reduced_motion",
+        "label": "Movimenti ridotti",
+        "category": "accessibilità",
+        "description": "Disattiva le transizioni non essenziali e le animazioni dei dadi.",
+        "minimum_role": "user",
+        "value_type": "bool",
+        "default_value": False,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "reduced-motion",
+        "order": 10,
+    },
+    {
+        "key": "accessibility.contrast_outline",
+        "label": "Bordo di contrasto del testo",
+        "category": "accessibilità",
+        "description": "Aggiunge a tutti i testi un bordo sottile bianco o nero, calcolato automaticamente dal colore principale del tema.",
+        "minimum_role": "user",
+        "value_type": "bool",
+        "default_value": False,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "contrast-outline",
+        "order": 20,
+    },
+    {
+        "key": "dice.default_set",
+        "label": "Set di dadi predefinito",
+        "category": "dadi",
+        "description": "Scegli il set visivo proposto all'apertura dello strumento Dadi.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "crimson",
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "dice-set",
+        "order": 5,
+    },
+    {
+        "key": "dice.color",
+        "label": "Colore dei dadi",
+        "category": "dadi",
+        "description": "Scegli il colore predefinito dei comandi e dei risultati dei tiri.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "crimson",
+        "choices": [
+            {"value": "crimson", "label": "Cremisi"},
+            {"value": "emerald", "label": "Smeraldo"},
+            {"value": "sapphire", "label": "Zaffiro"},
+            {"value": "obsidian", "label": "Ossidiana"},
+        ],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "dice-color",
+        "order": 10,
+        "active": False,
+    },
+    {
+        "key": "dice.animation",
+        "label": "Animazione dei dadi",
+        "category": "dadi",
+        "description": "Anima i tiri visivi quando i movimenti sono abilitati.",
+        "minimum_role": "user",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "dice-animation",
+        "order": 20,
+    },
+    {
+        "key": "dice.sound",
+        "label": "Suoni dei dadi",
+        "category": "dadi",
+        "description": "Riproduci un suono locale quando vengono usati i comandi di tiro.",
+        "minimum_role": "user",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "dice-sound",
+        "order": 30,
+    },
+    {
+        "key": "shortcuts.dashboard",
+        "label": "Sala principale",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre la Sala principale da qualsiasi schermata.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+S",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-dashboard",
+        "order": 10,
+    },
+    {
+        "key": "shortcuts.characters",
+        "label": "Elenco personaggi",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre la scelta del personaggio.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+P",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-characters",
+        "order": 20,
+    },
+    {
+        "key": "shortcuts.character",
+        "label": "Scheda personaggio",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre la scheda del personaggio attivo, oppure la scelta se non ce n'è uno.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+C",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-character",
+        "order": 30,
+    },
+    {
+        "key": "shortcuts.combat",
+        "label": "Combattimento",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre la pagina Combattimento.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+B",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-combat",
+        "order": 40,
+    },
+    {
+        "key": "shortcuts.media",
+        "label": "Archivio immagini",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre l'Archivio immagini.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+M",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-media",
+        "order": 50,
+    },
+    {
+        "key": "shortcuts.guides",
+        "label": "Guide",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre le Guide.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+G",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-guides",
+        "order": 60,
+    },
+    {
+        "key": "shortcuts.settings",
+        "label": "Impostazioni",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre le Impostazioni.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+I",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-settings",
+        "order": 70,
+    },
+    {
+        "key": "shortcuts.journal",
+        "label": "Diario rapido",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre il Diario del personaggio attivo.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+J",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-journal",
+        "order": 80,
+    },
+    {
+        "key": "shortcuts.dice",
+        "label": "Dadi rapidi",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre lo strumento Dadi.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+R",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-dice",
+        "order": 90,
+    },
+    {
+        "key": "master.confirm_dangerous_actions",
+        "label": "Conferma le azioni pericolose",
+        "category": "sessione",
+        "description": "Richiedi una conferma prima di operazioni distruttive su campagna, inventario, mappe o combattimento.",
+        "minimum_role": "master",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": True,
+        "ui_token": "",
+        "order": 10,
+    },
+    {
+        "key": "master.show_hidden_rolls",
+        "label": "Mostra i tiri nascosti",
+        "category": "sessione",
+        "description": "Consenti agli strumenti di sessione di mostrare i risultati nascosti o riservati.",
+        "minimum_role": "master",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": True,
+        "ui_token": "",
+        "order": 20,
+    },
+    {
+        "key": "master.show_master_tools",
+        "label": "Mostra gli strumenti di gestione",
+        "category": "sessione",
+        "description": "Mostra nel menu gli strumenti avanzati di gestione della sessione quando disponibili.",
+        "minimum_role": "master",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": True,
+        "ui_token": "",
+        "order": 30,
+    },
+    {
+        "key": "branding.app_name",
+        "label": "Nome dell'applicazione",
+        "category": "identità",
+        "description": "Nome globale dell'applicazione mostrato nel menu laterale.",
+        "minimum_role": "admin",
+        "value_type": "string",
+        "default_value": "ReDjango",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "brand-name",
+        "order": 10,
+    },
+    {
+        "key": "branding.subtitle",
+        "label": "Sottotitolo dell'applicazione",
+        "category": "identità",
+        "description": "Sottotitolo globale mostrato nel menu laterale.",
+        "minimum_role": "admin",
+        "value_type": "string",
+        "default_value": "La rinascita di The Elder Django",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "brand-subtitle",
+        "order": 20,
+    },
+    {
+        "key": "appearance.accent_color",
+        "label": "Colore principale di riserva",
+        "category": "aspetto globale",
+        "description": "Colore globale usato quando il tema selezionato non definisce un colore principale.",
+        "minimum_role": "admin",
+        "value_type": "color",
+        "default_value": "#2f6f62",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "accent-color",
+        "order": 10,
+    },
+    {
+        "key": "appearance.gold_color",
+        "label": "Colore dorato di riserva",
+        "category": "aspetto globale",
+        "description": "Colore globale usato per le evidenziazioni dorate in assenza di un valore nel tema.",
+        "minimum_role": "admin",
+        "value_type": "color",
+        "default_value": "#af7d2f",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "gold-color",
+        "order": 20,
+    },
+    {
+        "key": "appearance.sidebar_color",
+        "label": "Colore del menu di riserva",
+        "category": "aspetto globale",
+        "description": "Colore globale usato dal menu laterale in assenza di un valore nel tema.",
+        "minimum_role": "admin",
+        "value_type": "color",
+        "default_value": "#1f2a27",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "sidebar-color",
+        "order": 30,
+    },
+    {
+        "key": "navigation.admin_link_enabled",
+        "label": "Collegamento all'amministrazione Django",
+        "category": "navigazione",
+        "description": "Consenti globalmente il collegamento all'amministrazione per i profili autorizzati.",
+        "minimum_role": "admin",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "",
+        "order": 10,
+    },
+    {
+        "key": "security.require_login_for_remote",
+        "label": "Richiedi l'accesso per le connessioni remote",
+        "category": "sicurezza",
+        "description": "Criterio di sicurezza per il futuro accesso LAN o multiutente. È attivo per impostazione predefinita.",
+        "minimum_role": "admin",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "",
+        "order": 10,
+    },
+    {
+        "key": "security.game_master_access_code",
+        "label": "Codice di accesso Master",
+        "category": "sicurezza",
+        "description": "Codice globale che consente a un giocatore di diventare Game Master. Configurabile soltanto dall'Amministrazione Django.",
+        "minimum_role": "admin",
+        "value_type": "string",
+        "default_value": "",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "",
+        "order": 20,
+        "validation": {"admin_managed": True, "secret": True},
+    },
+    {
+        "key": "security.game_admin_access_code",
+        "label": "Codice di accesso Game Admin",
+        "category": "sicurezza",
+        "description": "Codice globale che consente a un giocatore di diventare Game Admin. Configurabile soltanto dall'Amministrazione Django.",
+        "minimum_role": "admin",
+        "value_type": "string",
+        "default_value": "",
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "",
+        "order": 30,
+        "validation": {"admin_managed": True, "secret": True},
+    },
+    {
+        "key": "features.experimental_tools",
+        "label": "Strumenti sperimentali",
+        "category": "funzioni",
+        "description": "Abilita globalmente strumenti futuri, incompleti o potenzialmente onerosi.",
+        "minimum_role": "admin",
+        "value_type": "bool",
+        "default_value": False,
+        "choices": [],
+        "user_customizable": False,
+        "master_customizable": False,
+        "ui_token": "",
+        "order": 10,
+    },
+]
+
+
+V2_THEME_DEFAULTS = [
+    {
+        "slug": "parchment",
+        "name": "Pergamena",
+        "description": "Pergamena chiara, inchiostro profondo, legno scuro e luce calda da tavolo di gioco.",
+        "is_active": True,
+        "is_default": True,
+        "order": 10,
+        "background_color": "#d8c49a",
+        "panel_color": "#f2e5c4",
+        "panel_strong_color": "#fff4d8",
+        "text_color": "#2b2117",
+        "muted_text_color": "#62513d",
+        "line_color": "#8e7250",
+        "accent_color": "#2f6256",
+        "accent_strong_color": "#173f37",
+        "gold_color": "#8a5a18",
+        "sidebar_color": "#241b15",
+        "health_color": "#9f3035",
+        "mana_color": "#315f93",
+        "energy_color": "#3f7448",
+        "power_color": "#6a4690",
+        "valid_slot_color": "#3f7448",
+        "invalid_slot_color": "#9f3035",
+        "overlay_opacity": 0.78,
+        "panel_opacity": 0.92,
+        "background_position": "center center",
+        "background_blur": 0,
+    },
+    {
+        "slug": "midnight",
+        "name": "Notte",
+        "description": "Blu notte, verde abete e luce lunare per sessioni serali riposanti e nitide.",
+        "is_active": True,
+        "is_default": False,
+        "order": 20,
+        "background_color": "#0b1217",
+        "panel_color": "#162128",
+        "panel_strong_color": "#1d2b34",
+        "text_color": "#f3f1e8",
+        "muted_text_color": "#b9c4c8",
+        "line_color": "#46606d",
+        "accent_color": "#5d99a6",
+        "accent_strong_color": "#a5d9dc",
+        "gold_color": "#d4ab5f",
+        "sidebar_color": "#070d11",
+        "health_color": "#e06468",
+        "mana_color": "#69a6dc",
+        "energy_color": "#73b17c",
+        "power_color": "#a98bd8",
+        "valid_slot_color": "#73b17c",
+        "invalid_slot_color": "#e06468",
+        "overlay_opacity": 0.74,
+        "panel_opacity": 0.9,
+        "background_position": "center center",
+        "background_blur": 0,
+    },
+    {
+        "slug": "arcane",
+        "name": "Arcano",
+        "description": "Indaco profondo, ametista e ottone per un archivio magico luminoso ma controllato.",
+        "is_active": True,
+        "is_default": False,
+        "order": 30,
+        "background_color": "#100d1c",
+        "panel_color": "#211a34",
+        "panel_strong_color": "#2d2442",
+        "text_color": "#f5efff",
+        "muted_text_color": "#c5b8d7",
+        "line_color": "#5b4c74",
+        "accent_color": "#7c5bc4",
+        "accent_strong_color": "#c1a9ff",
+        "gold_color": "#e0b568",
+        "sidebar_color": "#0c0815",
+        "health_color": "#dd5d6b",
+        "mana_color": "#658ee0",
+        "energy_color": "#6fb183",
+        "power_color": "#b278dc",
+        "valid_slot_color": "#6fb183",
+        "invalid_slot_color": "#dd5d6b",
+        "overlay_opacity": 0.72,
+        "panel_opacity": 0.89,
+        "background_position": "center center",
+        "background_blur": 0,
+    },
+    {
+        "slug": "skyrim",
+        "name": "Skyrim",
+        "description": "Blu ghiaccio, ardesia e acciaio per un'atmosfera nordica fredda e monumentale.",
+        "is_active": True,
+        "is_default": False,
+        "order": 40,
+        "background_color": "#0c1824",
+        "panel_color": "#152b3d",
+        "panel_strong_color": "#1d394f",
+        "text_color": "#f2f7fb",
+        "muted_text_color": "#b5c8d4",
+        "line_color": "#466b82",
+        "accent_color": "#4f91bd",
+        "accent_strong_color": "#a7d8f3",
+        "gold_color": "#c5d8e5",
+        "sidebar_color": "#08121c",
+        "health_color": "#d65b62",
+        "mana_color": "#5f9fd6",
+        "energy_color": "#6da886",
+        "power_color": "#8f83cf",
+        "valid_slot_color": "#6da886",
+        "invalid_slot_color": "#d65b62",
+        "overlay_opacity": 0.7,
+        "panel_opacity": 0.9,
+        "background_position": "center center",
+        "background_blur": 0,
+    },
+    {
+        "slug": "morrowind",
+        "name": "Morrowind",
+        "description": "Beige, pergamena, cuoio e bruno vulcanico per un tavolo antico delle terre di cenere.",
+        "is_active": True,
+        "is_default": False,
+        "order": 50,
+        "background_color": "#b9a17e",
+        "panel_color": "#d8c19a",
+        "panel_strong_color": "#ead8b2",
+        "text_color": "#291d15",
+        "muted_text_color": "#5e4938",
+        "line_color": "#866a4a",
+        "accent_color": "#7c4b2d",
+        "accent_strong_color": "#4d2d1b",
+        "gold_color": "#8f651f",
+        "sidebar_color": "#2b2118",
+        "health_color": "#9f3330",
+        "mana_color": "#385f82",
+        "energy_color": "#526e3f",
+        "power_color": "#704b78",
+        "valid_slot_color": "#526e3f",
+        "invalid_slot_color": "#9f3330",
+        "overlay_opacity": 0.8,
+        "panel_opacity": 0.91,
+        "background_position": "center center",
+        "background_blur": 0,
+    },
+    {
+        "slug": "oblivion",
+        "name": "Oblivion",
+        "description": "Acciaio brunito, grigio severo e rosso daedrico per un'interfaccia netta e minacciosa.",
+        "is_active": True,
+        "is_default": False,
+        "order": 60,
+        "background_color": "#111419",
+        "panel_color": "#22272e",
+        "panel_strong_color": "#2d333b",
+        "text_color": "#f4f1ed",
+        "muted_text_color": "#c2c1c2",
+        "line_color": "#5d626a",
+        "accent_color": "#a63232",
+        "accent_strong_color": "#f06a5b",
+        "gold_color": "#c5a568",
+        "sidebar_color": "#090b0f",
+        "health_color": "#e0524d",
+        "mana_color": "#6389bd",
+        "energy_color": "#6e9d72",
+        "power_color": "#a071bd",
+        "valid_slot_color": "#6e9d72",
+        "invalid_slot_color": "#e0524d",
+        "overlay_opacity": 0.72,
+        "panel_opacity": 0.92,
+        "background_position": "center center",
+        "background_blur": 0,
+    },
+]
+
+
+V2_THEME_PLACEHOLDER_ASSETS = {
+    "dashboard_background": "pergamena-menu.webp",
+    "characters_background": "pergamena-personaggi.webp",
+    "personaggio_background": "pergamena-personaggi.webp",
+    "media_background": "pergamena-media.webp",
+    "guide_background": "pergamena-guide.webp",
+    "settings_background": "pergamena-guide.webp",
+    "dice_background": "pergamena-media.webp",
+    "journal_background": "pergamena-guide.webp",
+}
+
+
+V2_THEME_ASSET_MAPS = {
+    "parchment": V2_THEME_PLACEHOLDER_ASSETS,
+    "midnight": {field_name: "notte.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
+    "arcane": {field_name: "arcano.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
+    "skyrim": {field_name: "skyrim.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
+    "morrowind": {field_name: "morrowind.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
+    "oblivion": {field_name: "oblivion.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
+}
 
 
 PERSONAGGIO_FLOAT_TOTAL_KEYS = [
@@ -21,8 +716,15 @@ PERSONAGGIO_FLOAT_TOTAL_KEYS = [
     "pa",
     "attacco",
     "difesa",
-    "attacco_npc",
-    "difesa_npc",
+    "mod_forza",
+    "mod_resistenza",
+    "mod_velocita",
+    "mod_agilita",
+    "mod_intelligenza",
+    "mod_concentrazione",
+    "mod_personalita",
+    "mod_saggezza",
+    "mod_fortuna",
     "rd_fis",
     "res_contundente",
     "res_taglio",
@@ -40,57 +742,206 @@ PERSONAGGIO_FLOAT_TOTAL_KEYS = [
     "monete_per_slot",
     "tier",
     "sifone_di_mana",
-    "en_per_mana_ordine",
-    "pa_per_mana_ordine",
-    "en_per_mana_caos",
-    "pa_per_mana_caos",
-    "ogni_en_x_mana_ordine",
-    "ogni_pa_x_mana_ordine",
-    "ogni_en_x_mana_caos",
-    "ogni_pa_x_mana_caos",
+    "en_per_mana",
+    "pa_per_mana",
+    "ogni_en_x_mana",
+    "ogni_pa_x_mana",
     "sconto_mana_per_potere",
     "sconto_pa_per_potere",
+    "malus_carico",
     "mod_carico",
     "mod_peso_equip",
     "orecchini_max",
     "anelli_max",
     "sacchi_max",
+    "moltiplicatore_reagenti_rossi",
+    "moltiplicatore_reagenti_verdi",
+    "moltiplicatore_reagenti_blu",
+    "moltiplicatore_reagenti_livello_1",
+    "moltiplicatore_reagenti_livello_2",
+    "moltiplicatore_reagenti_livello_3",
+    "moltiplicatore_reagenti_livello_4",
     "atk_skill_taglio",
     "atk_skill_contundente",
     "atk_skill_perforante",
+    "atk_skill_corte",
+    "atk_skill_medie1",
+    "atk_skill_lunghe",
+    "atk_skill_precise",
+    "atk_skill_medie2",
+    "atk_skill_potenti",
+    "atk_skill_maninude",
+    "tier_skill_maninude",
+    "def_skill_leggera",
+    "def_skill_pesante",
+    "def_skill_noarmatura",
+    "def_skill_scudo",
 ]
+
+
+FORMULE_BASE_VALUE_FLOAT = {key: 0 for key in PERSONAGGIO_FLOAT_TOTAL_KEYS}
+FORMULE_BASE_VALUE_FLOAT.update(
+    {
+        "fortuna": 10,
+        "forza": 10,
+        "resistenza": 10,
+        "velocita": 10,
+        "agilita": 10,
+        "intelligenza": 10,
+        "concentrazione": 10,
+        "personalita": 10,
+        "saggezza": 10,
+        "pf": 15,
+        "mana": 10,
+        "energia": 6,
+        "potere": 2,
+        "pa": 8,
+        "attacco": 5,
+        "difesa": 15,
+        "slot_magici": 4,
+        "slot_non_magici": 12,
+        "monete_per_slot": 300,
+        "en_per_mana": 2,
+        "pa_per_mana": 2,
+        "ogni_en_x_mana": 1,
+        "ogni_pa_x_mana": 1,
+        "sconto_mana_per_potere": 1,
+        "sconto_pa_per_potere": 0.5,
+        "mod_carico": 7,
+        "mod_peso_equip": 20,
+        "orecchini_max": 2,
+        "anelli_max": 4,
+        "sacchi_max": 1,
+        "moltiplicatore_reagenti_rossi": 0,
+        "moltiplicatore_reagenti_verdi": 0,
+        "moltiplicatore_reagenti_blu": 0,
+        "moltiplicatore_reagenti_livello_1": 1.2,
+        "moltiplicatore_reagenti_livello_2": 1.7,
+        "moltiplicatore_reagenti_livello_3": 2.2,
+        "moltiplicatore_reagenti_livello_4": 2.7,
+    }
+)
+
+
+FORMULE_BASE_FORMULAS = {
+    "pf": "max(10, floor(base.pf + (final.forza - 10) * 3 + (final.resistenza - 10) * 3))",
+    "mana": "floor(base.mana + (final.intelligenza - 10) * 3 + (final.concentrazione - 10) * 3)",
+    "energia": "floor(base.energia + final.resistenza - 10 + final.velocita - 10)",
+    "potere": "floor(base.potere + final.intelligenza - 10 + final.saggezza - 10)",
+    "attacco": "floor(base.attacco + final.forza - 10 + final.agilita - 10)",
+    "difesa": "floor(base.difesa + final.agilita - 10 + final.concentrazione - 10)",
+    "pa": "floor(base.pa + (final.velocita - 10) * 0.75 + (final.saggezza - 10) * 0.75)",
+}
+
+CHARACTERISTIC_ADJUSTMENT_DEFAULTS = {
+    "livello": "personaggio.livello / 5",
+    "fortuna": "((final.fortuna - 10) * 0.15) - 0.15",
+}
+
+
+QUICK_STAT_ADJUSTMENT_CONFIG_KEY = "quick_stat_adjustments"
+QUICK_STAT_ADJUSTMENT_TARGET_CHOICES = (
+    ("pf", "Punti ferita massimi"),
+    ("mana", "Mana massimo"),
+    ("energia", "Energia massima"),
+    ("potere", "Potere massimo"),
+    ("pa", "Punti azione"),
+    ("attacco", "Attacco"),
+    ("difesa", "Difesa"),
+)
+QUICK_STAT_ADJUSTMENT_DEFAULTS = {
+    "fatigue_percent_per_point": 3,
+    "fatigue_fixed_per_point": 1,
+    "general_modifier_percent_per_point": 4,
+    "general_modifier_fixed_per_point": 1.5,
+    "targets": [key for key, _label in QUICK_STAT_ADJUSTMENT_TARGET_CHOICES],
+}
+
+SKILL_PRICING_CONFIG_KEY = "skill_pricing"
+SKILL_PRICING_DEFAULTS = {
+    "modifier_base": 3,
+    "modifier_max": 9,
+    "scaling_factor": 0.7,
+    "scaling_divisor": 1.5,
+    "spent_xp_discount_cap": 100,
+}
 
 
 V2_GLOBAL_MODIFIERS_DEFAULTS = [
     {
         "name": "Formule_base",
-        "value_float": {key: 0 for key in PERSONAGGIO_FLOAT_TOTAL_KEYS},
+        "value_float": FORMULE_BASE_VALUE_FLOAT,
         "value_string": {
             "crit_min": "",
             "crit_nor": "",
             "crit_mag": "",
             "formula_profile": "base",
+            "formulas": FORMULE_BASE_FORMULAS,
+            "adjustment.livello": CHARACTERISTIC_ADJUSTMENT_DEFAULTS["livello"],
+            "adjustment.fortuna": CHARACTERISTIC_ADJUSTMENT_DEFAULTS["fortuna"],
+            "adjustment.stanchezza": "final.stanchezza * 3",
+            "adjustment.modificatore_generale": "final.modificatore_generale * 4",
+            "adjustment.stanchezza_fixed": "1",
+            "adjustment.modificatore_generale_fixed": "1.5",
+            QUICK_STAT_ADJUSTMENT_CONFIG_KEY: QUICK_STAT_ADJUSTMENT_DEFAULTS,
+            SKILL_PRICING_CONFIG_KEY: SKILL_PRICING_DEFAULTS,
+            DAMAGE_RULES_CONFIG_KEY: DEFAULT_DAMAGE_RULES,
         },
         "rule_notes": (
-            "Default v2 formula/modifier profile. This is the canonical seed record for "
-            "base values moved out of Personaggio; import exact old Formule values here "
-            "before wiring calculation services."
+            "Default v2 formula/modifier profile. Base values are seeded from the old "
+            "Formule defaults and hardcoded refresh_npc.py formula constants, not from "
+            "Personaggio report/default fields."
         ),
     }
 ]
 
 
+V2_SKILL_FAMILY_NAMES = {
+    "Generali": (
+        "Alchimia", "Attacchi Generali", "Attacchi Melee", "Attacchi a distanza", "Combat",
+        "Cuoco", "Fortuna", "Generali", "Gestione PA", "Maestria del corpo", "Mago",
+        "Mani Nude", "Medico", "Potere", "Viaggio e Inventario",
+    ),
+    "Religioni": (
+        "Daedra – Azura", "Daedra – Boethiah", "Daedra – Clavicus Vile", "Daedra – Hermaeus Mora",
+        "Daedra – Hircine", "Daedra – Jyggalag", "Daedra – Malacath", "Daedra – Mehrunes Dagon",
+        "Daedra – Mephala", "Daedra – Meridia", "Daedra – Molag Bal", "Daedra – Namira",
+        "Daedra – Nocturnal", "Daedra – Peryite", "Daedra – Sanguine", "Daedra – Sheogorath",
+        "Daedra – Vaermina", "Divini – Akatosh", "Divini – Arkay", "Divini – Dibella",
+        "Divini – Julianos", "Divini – Kynareth", "Divini – Mara", "Divini – Stendarr",
+        "Divini – Talos", "Divini – Zenithar", "Religione – Generali",
+    ),
+    "Scuole di Magia": (
+        "Alterazione", "Distruzione", "Evocazione", "Illusione", "Maledizioni", "Misticismo",
+        "Negromanzia", "Recupero",
+    ),
+    "Classi": (
+        "Adoratore del Sangue", "Agente", "Alchimista", "Assassino", "Barbaro", "Bardo",
+        "Cavaliere", "Chanter", "Chierico", "Druido Della Foresta", "Druido Mutaforma",
+        "Empatia Animale", "Erudito", "Evocatore", "Fabbro", "Incantatore", "Ingegnere",
+        "Ladro", "Mago Nero", "Mercante", "Monaco", "Paladino", "Ranger", "Samurai",
+        "Torre Umana", "Warlock", "Witchunter",
+    ),
+    "Perk": ("Perk Maggiori", "Perk Minori"),
+}
+
+V2_SKILL_FAMILY_ART_OVERRIDES = {
+    "Chierico": "chierico.png",
+    "Paladino": "paladino.png",
+}
+
 V2_SKILL_FAMILY_DEFAULTS = [
-    {"nome": "Generale", "gruppo": "generale", "ordine": 10},
-    {"nome": "Combattimento", "gruppo": "combattimento", "ordine": 20},
-    {"nome": "Magia", "gruppo": "magia", "ordine": 30},
-    {"nome": "Crafting", "gruppo": "crafting", "ordine": 40},
-    {"nome": "Alchimia", "gruppo": "alchimia", "ordine": 50},
-    {"nome": "Sociale", "gruppo": "sociale", "ordine": 60},
-    {"nome": "Esplorazione", "gruppo": "esplorazione", "ordine": 70},
-    {"nome": "Classe", "gruppo": "classe", "ordine": 80, "is_classe": True},
-    {"nome": "Religione", "gruppo": "religione", "ordine": 90, "is_religione": True},
-    {"nome": "Perk", "gruppo": "perk", "ordine": 100, "is_perk": True},
+    {
+        "nome": family_name,
+        "gruppo": group_name,
+        "ordine": group_index * 1000 + family_index * 10,
+        "is_classe": group_name == "Classi",
+        "is_religione": group_name == "Religioni",
+        "is_perk": group_name == "Perk",
+        "art_filename": V2_SKILL_FAMILY_ART_OVERRIDES.get(family_name, f"{family_name}.png"),
+    }
+    for group_index, (group_name, family_names) in enumerate(V2_SKILL_FAMILY_NAMES.items(), start=1)
+    for family_index, family_name in enumerate(family_names, start=1)
 ]
 
 
@@ -116,9 +967,1430 @@ V2_PLACEHOLDER_ITEMS = [
 V2_EMPTY_OBJECT_NAMES = {
     "zaino": "Template - Zaino vuoto",
     "faretra": "Template - Faretra vuota",
+    "effetti": "Template - Effetti vuoti",
     "equip": "Template - Equip vuoto",
     "note": "Template - Note vuote",
-    "borsa_reagenti": "Template - Borsa reagenti vuota",
     "personaggio": "Template - Personaggio vuoto",
     "personaggio_internal": "template_personaggio_vuoto",
 }
+
+
+V2_POC_SEED_VERSION = "2026-07-22-creation-alchemy-v1"
+
+
+V2_POC_ABILITA_DEFAULTS = [
+    {
+        "key": "tiro_mirato",
+        "nome": "Tiro mirato",
+        "categoria": "combattimento",
+        "grado": 1,
+        "descrizione": "Dopo un turno di mira, il prossimo attacco a distanza ottiene +1 Attacco.",
+    },
+    {
+        "key": "guardia_alta",
+        "nome": "Guardia alta",
+        "categoria": "difesa",
+        "grado": 1,
+        "descrizione": "Finche impugni uno scudo, puoi spendere 1 PA per ottenere +2 Difesa fino al tuo prossimo turno.",
+    },
+    {
+        "key": "lettura_tracce",
+        "nome": "Lettura tracce",
+        "categoria": "esplorazione",
+        "grado": 1,
+        "descrizione": "Riconosci tracce recenti e puoi stimare numero, peso e direzione di un gruppo.",
+    },
+    {
+        "key": "alchimia_pratica",
+        "nome": "Alchimia pratica",
+        "categoria": "alchimia",
+        "grado": 1,
+        "descrizione": "Puoi creare tonici minori usando ingredienti comuni durante un riposo breve.",
+    },
+    {
+        "key": "pronto_soccorso",
+        "nome": "Pronto soccorso",
+        "categoria": "supporto",
+        "grado": 1,
+        "descrizione": "Una volta per scena stabilizzi un alleato e rimuovi un punto danno se hai bende o reagenti.",
+    },
+    {
+        "key": "scatto_breve",
+        "nome": "Scatto breve",
+        "categoria": "movimento",
+        "grado": 1,
+        "descrizione": "Spendendo 1 Energia puoi muoverti di una casella extra senza consumare PA.",
+    },
+    {
+        "key": "focus_arcano",
+        "nome": "Focus arcano",
+        "categoria": "magia",
+        "grado": 1,
+        "descrizione": "Quando lanci un effetto magico, puoi convertire 1 Potere in 2 Mana temporanei.",
+    },
+    {
+        "key": "mano_lesta",
+        "nome": "Mano lesta",
+        "categoria": "tecnica",
+        "grado": 1,
+        "descrizione": "Puoi estrarre o riporre un oggetto leggero una volta per turno senza costo aggiuntivo.",
+    },
+    {
+        "key": "parola_ferma",
+        "nome": "Parola ferma",
+        "categoria": "sociale",
+        "grado": 1,
+        "descrizione": "Ottieni vantaggio narrativo quando calmi una folla o interrompi un conflitto minore.",
+    },
+    {
+        "key": "memoria_di_campo",
+        "nome": "Memoria di campo",
+        "categoria": "sapienza",
+        "grado": 1,
+        "descrizione": "Dopo aver osservato un nemico, puoi ricordare una debolezza o resistenza nota.",
+    },
+]
+
+
+V2_POC_ITEM_DEFAULTS = [
+    {
+        "nome": "POC - Lama corta da prova",
+        "numero_ordine": 1001,
+        "icona": "sword",
+        "tipo_1": "spadalunga",
+        "tipo_2": "ferro",
+        "tipo_3": "taglio",
+        "descrizione": "Arma agile usata per provare i bonus base da equipaggiamento.",
+        "valore": 80,
+        "peso": 8,
+        "rarita": 1,
+        "lv_loot": "1-3",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "pa_per_attacco": 2,
+        "effects": [{"target": "attacco", "operation": "add", "value": 2}],
+    },
+    {
+        "nome": "POC - Martello della Guardia",
+        "numero_ordine": 1002,
+        "icona": "hammer",
+        "tipo_1": "martello",
+        "tipo_2": "ferro",
+        "tipo_3": "contundente",
+        "descrizione": "Martello robusto con colpi lenti ma affidabili.",
+        "valore": 70,
+        "peso": 4,
+        "rarita": 2,
+        "lv_loot": "2-4",
+        "regione_loot": "Skyrim",
+        "peso_regione": 1.1,
+        "pa_per_attacco": 3,
+        "effects": [
+            {"target": "attacco", "operation": "add", "value": 1},
+            {"target": "pa", "operation": "add", "value": 1},
+        ],
+    },
+    {
+        "nome": "POC - Arco di betulla",
+        "numero_ordine": 1003,
+        "icona": "bow-arrow",
+        "tipo_1": "arco",
+        "tipo_2": "betulla",
+        "tipo_3": "perforante",
+        "descrizione": "Arco leggero adatto a ricognitori e cacciatori.",
+        "valore": 140,
+        "peso": 1.6,
+        "rarita": 1,
+        "lv_loot": "1-4",
+        "regione_loot": "Valenwood",
+        "peso_regione": 1.4,
+        "pa_per_attacco": 2,
+        "effects": [
+            {"target": "attacco", "operation": "add", "value": 1},
+            {"target": "atk_skill_perforante", "operation": "add", "value": 1},
+        ],
+    },
+    {
+        "nome": "POC - Bacchetta scintilla",
+        "numero_ordine": 1004,
+        "icona": "wand",
+        "tipo_1": "bacchetta",
+        "tipo_2": "focus",
+        "tipo_3": "magia",
+        "descrizione": "Focus fragile che sostiene incantesimi semplici.",
+        "valore": 260,
+        "peso": 0.4,
+        "rarita": 2,
+        "lv_loot": "2-5",
+        "regione_loot": "High Rock",
+        "peso_regione": 1.0,
+        "effects": [
+            {"target": "mana", "operation": "add", "value": 2},
+            {"target": "potere", "operation": "add", "value": 1},
+        ],
+    },
+    {
+        "nome": "POC - Armatura di cuoio rinforzato",
+        "numero_ordine": 1005,
+        "icona": "shield",
+        "tipo_1": "armatura",
+        "tipo_2": "cuoio",
+        "tipo_3": "leggera",
+        "descrizione": "Protezione leggera con piastre cucite nei punti vitali.",
+        "valore": 220,
+        "peso": 5.0,
+        "rarita": 1,
+        "lv_loot": "1-4",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.1,
+        "effects": [{"target": "difesa", "operation": "add", "value": 2}],
+    },
+    {
+        "nome": "POC - Scudo tondo del confine",
+        "numero_ordine": 1006,
+        "icona": "shield",
+        "tipo_1": "scudo",
+        "tipo_2": "legno",
+        "tipo_3": "difesa",
+        "descrizione": "Scudo semplice che sacrifica mobilita per copertura.",
+        "valore": 90,
+        "peso": 2.2,
+        "rarita": 1,
+        "lv_loot": "1-3",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "effects": [
+            {"target": "difesa", "operation": "add", "value": 2},
+            {"target": "pa", "operation": "subtract", "value": 1},
+        ],
+    },
+    {
+        "nome": "POC - Mantello dell'esploratore",
+        "numero_ordine": 1007,
+        "icona": "cloak",
+        "tipo_1": "mantello",
+        "tipo_2": "esplorazione",
+        "descrizione": "Mantello cerato con tasche nascoste.",
+        "valore": 180,
+        "peso": 0.8,
+        "rarita": 2,
+        "lv_loot": "2-5",
+        "regione_loot": "Skyrim",
+        "peso_regione": 0.8,
+        "effects": [{"target": "velocita", "operation": "add", "value": 1}],
+    },
+    {
+        "nome": "POC - Anello del sangue calmo",
+        "numero_ordine": 1008,
+        "icona": "gem",
+        "tipo_1": "anello",
+        "tipo_2": "salute",
+        "descrizione": "+4 PF quando equipaggiato.",
+        "valore": 360,
+        "peso": 0.1,
+        "rarita": 3,
+        "lv_loot": "3-6",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 0.5,
+        "effects": [{"target": "pf", "operation": "add", "value": 4}],
+    },
+    {
+        "nome": "POC - Amuleto del focus chiaro",
+        "numero_ordine": 1009,
+        "icona": "sparkles",
+        "tipo_1": "amuleto",
+        "tipo_2": "focus",
+        "tipo_3": "magia",
+        "descrizione": "Cristallo pulito che aiuta la concentrazione magica.",
+        "valore": 420,
+        "peso": 0.2,
+        "rarita": 3,
+        "lv_loot": "3-7",
+        "regione_loot": "High Rock",
+        "peso_regione": 0.7,
+        "effects": [
+            {"target": "mana", "operation": "add", "value": 3},
+            {"target": "concentrazione", "operation": "add", "value": 1},
+        ],
+    },
+    {
+        "nome": "POC - Cintura robusta",
+        "numero_ordine": 1010,
+        "icona": "belt",
+        "tipo_1": "cintura",
+        "tipo_2": "viaggio",
+        "descrizione": "Cintura da viaggio che distribuisce meglio il peso.",
+        "valore": 130,
+        "peso": 0.5,
+        "rarita": 1,
+        "lv_loot": "1-5",
+        "regione_loot": "Skyrim",
+        "peso_regione": 1.0,
+        "effects": [{"target": "mod_carico", "operation": "add", "value": 5}],
+    },
+    {
+        "nome": "POC - Stivali leggeri",
+        "numero_ordine": 1011,
+        "icona": "boot",
+        "tipo_1": "vestiti",
+        "tipo_2": "stivali",
+        "descrizione": "Stivali da strada per passi rapidi e silenziosi.",
+        "valore": 95,
+        "peso": 0.9,
+        "rarita": 1,
+        "lv_loot": "1-4",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "effects": [{"target": "agilita", "operation": "add", "value": 1}],
+    },
+    {
+        "nome": "POC - Guanti del tiro fine",
+        "numero_ordine": 1012,
+        "icona": "hand",
+        "tipo_1": "vestiti",
+        "tipo_2": "guanti",
+        "tipo_3": "precisione",
+        "descrizione": "Guanti sottili che migliorano presa e rilascio.",
+        "valore": 150,
+        "peso": 0.2,
+        "rarita": 2,
+        "lv_loot": "2-5",
+        "regione_loot": "Valenwood",
+        "peso_regione": 1.0,
+        "effects": [{"target": "attacco", "operation": "add", "value": 1}],
+    },
+    {
+        "nome": "POC - Faretra capiente",
+        "numero_ordine": 1013,
+        "icona": "archive",
+        "tipo_1": "faretra",
+        "tipo_2": "faretra",
+        "descrizione": "Faretra media in cuoio: contiene fino a 15 frecce o dardi.",
+        "valore": 250,
+        "peso": 6,
+        "rarita": 1,
+        "lv_loot": "1-3",
+        "regione_loot": "Valenwood",
+        "peso_regione": 1.3,
+        "effects": [],
+        "metadata": {"container": {"kind": "quiver", "capacity": 15}},
+    },
+    {
+        "nome": "POC - Pozione di cura minore",
+        "numero_ordine": 1014,
+        "icona": "flask",
+        "tipo_1": "consumabile",
+        "tipo_2": "pozione",
+        "tipo_3": "cura",
+        "descrizione": "Recupera una piccola quantita di PF fuori dal combattimento.",
+        "valore": 55,
+        "peso": 0.2,
+        "rarita": 1,
+        "lv_loot": "1-4",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.2,
+        "alchemy_profile": {"result": "cura_minore", "healing": 6},
+    },
+    {
+        "nome": "POC - Sali di luna",
+        "numero_ordine": 1015,
+        "icona": "flask-round",
+        "tipo_1": "reagente",
+        "tipo_2": "alchimia",
+        "tipo_3": "mana",
+        "descrizione": "Reagente cristallino usato in tonici di concentrazione.",
+        "valore": 30,
+        "peso": 0.1,
+        "rarita": 2,
+        "lv_loot": "1-5",
+        "regione_loot": "High Rock",
+        "peso_regione": 0.9,
+        "alchemy_profile": {"traits": ["mana", "concentrazione"]},
+    },
+    {
+        "nome": "POC - Kit da scasso",
+        "numero_ordine": 1016,
+        "icona": "key",
+        "tipo_1": "strumento",
+        "tipo_2": "tecnica",
+        "descrizione": "Grimaldelli, piccole lime e cunei sottili.",
+        "valore": 85,
+        "peso": 0.4,
+        "rarita": 1,
+        "lv_loot": "1-5",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "effects": [{"target": "mod_agilita", "operation": "add", "value": 1}],
+    },
+    {
+        "nome": "POC - Libro degli appunti",
+        "numero_ordine": 1017,
+        "icona": "book-open",
+        "tipo_1": "strumento",
+        "tipo_2": "sapienza",
+        "descrizione": "Taccuino impermeabile per mappe, rune e promemoria.",
+        "valore": 25,
+        "peso": 0.3,
+        "rarita": 1,
+        "lv_loot": "1-3",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "effects": [],
+    },
+    {
+        "nome": "POC - Tonico di energia",
+        "numero_ordine": 1018,
+        "icona": "flask-conical",
+        "tipo_1": "consumabile",
+        "tipo_2": "tonico",
+        "tipo_3": "energia",
+        "descrizione": "Restituisce lucidita e fiato durante una pausa breve.",
+        "valore": 65,
+        "peso": 0.2,
+        "rarita": 1,
+        "lv_loot": "1-4",
+        "regione_loot": "Skyrim",
+        "peso_regione": 1.0,
+        "alchemy_profile": {"result": "energia_minore", "energy": 4},
+        "effects": [{"target": "energia", "operation": "add", "value": 2}],
+    },
+    {
+        "nome": "POC - Pergamena di gelo",
+        "numero_ordine": 1019,
+        "icona": "scroll",
+        "tipo_1": "consumabile",
+        "tipo_2": "pergamena",
+        "tipo_3": "gelo",
+        "descrizione": "Una formula monouso che irrigidisce un bersaglio.",
+        "valore": 210,
+        "peso": 0.1,
+        "rarita": 3,
+        "lv_loot": "3-7",
+        "regione_loot": "Skyrim",
+        "peso_regione": 0.6,
+        "effects": [{"target": "res_gelo", "operation": "add", "value": 5}],
+    },
+    {
+        "nome": "POC - Moneta antica",
+        "numero_ordine": 1020,
+        "icona": "coins",
+        "tipo_1": "tesoro",
+        "tipo_2": "curiosita",
+        "descrizione": "Piccolo oggetto di valore utile per testare inventario e negozi.",
+        "valore": 100,
+        "peso": 0.05,
+        "rarita": 2,
+        "lv_loot": "1-8",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 0.4,
+        "effects": [],
+    },
+    {
+        "nome": "POC - Freccia normale",
+        "numero_ordine": 1021,
+        "icona": "arrow-up-right",
+        "tipo_1": "freccia",
+        "tipo_2": "freccia",
+        "descrizione": "Freccia comune con asta di frassino e punta di ferro.",
+        "valore": 2,
+        "peso": 1,
+        "rarita": 1,
+        "lv_loot": "1",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "effects": [],
+    },
+    {
+        "nome": "POC - Sacca media",
+        "numero_ordine": 1022,
+        "icona": "briefcase",
+        "tipo_1": "sacca",
+        "tipo_2": "sacca",
+        "descrizione": "Sacca da viaggio con quattro spazi normali aggiuntivi.",
+        "valore": 30,
+        "peso": 1,
+        "rarita": 1,
+        "lv_loot": "3-4",
+        "regione_loot": "Cyrodiil",
+        "peso_regione": 1.0,
+        "effects": [{"target": "slot_non_magici", "operation": "add", "value": 4}],
+    },
+]
+
+
+V2_POC_SKILL_DEFAULTS = [
+    {
+        "nome": "POC - Svelto",
+        "slug": "poc-svelto",
+        "numero": 910001,
+        "famiglia": "Gestione PA",
+        "ordine_famiglia": 10,
+        "magia": False,
+        "costo_pe": 5,
+        "tipo_pe": "all",
+        "descrizione": "+1 Punto Azione come talento passivo.",
+        "requisiti": "Livello 1",
+        "profile_tags": {"role": ["action-economy"], "poc": True},
+        "effetti_passivi": [
+            {
+                "id": "passivo-svelto",
+                "name": "Passo fulmineo",
+                "description": "Ottieni permanentemente +1 Punto Azione.",
+                "icon": "pa",
+                "operations": [{"target": "pa", "operation": "add", "value": "1", "condition": ""}],
+            }
+        ],
+        "azioni_attive": [],
+    },
+    {
+        "nome": "POC - Difensore",
+        "slug": "poc-difensore",
+        "numero": 910002,
+        "famiglia": "Combat",
+        "ordine_famiglia": 20,
+        "magia": False,
+        "costo_pe": 5,
+        "tipo_pe": "red",
+        "descrizione": "+1 Difesa quando indossi armatura o scudo.",
+        "requisiti": "Guardia alta",
+        "profile_tags": {"role": ["tank"], "poc": True},
+        "effetti_passivi": [
+            {
+                "id": "passivo-difensore",
+                "name": "Guardia addestrata",
+                "description": "Ottieni permanentemente +1 Difesa.",
+                "icon": "difesa",
+                "operations": [{"target": "difesa", "operation": "add", "value": "1", "condition": ""}],
+            }
+        ],
+        "azioni_attive": [
+            {
+                "id": "azione-dimezza-colpo",
+                "name": "Dimezza il colpo",
+                "description": "Quando un nemico ti attacca, puoi spendere 4 Energia per dimezzare il danno ricevuto.",
+                "trigger": "Quando un nemico ti attacca",
+                "duration": "Risoluzione dell'attacco",
+                "usageNotes": "È un promemoria narrativo: il danno non viene modificato automaticamente.",
+                "costs": {"energia": 4},
+                "icon": "difesa",
+            }
+        ],
+    },
+    {
+        "nome": "POC - Lama precisa",
+        "slug": "poc-lama-precisa",
+        "numero": 910003,
+        "famiglia": "Attacchi Melee",
+        "ordine_famiglia": 30,
+        "magia": False,
+        "costo_pe": 6,
+        "tipo_pe": "green",
+        "descrizione": "Migliora il primo attacco con armi da taglio.",
+        "requisiti": "Tiro mirato o Mano lesta",
+        "profile_tags": {"role": ["damage"], "weapon": ["taglio"], "poc": True},
+        "effetti_passivi": [],
+        "azioni_attive": [
+            {
+                "id": "azione-lama-precisa",
+                "name": "Lama precisa",
+                "description": "Dichiara l'azione prima del tiro: il primo attacco con un'arma da taglio beneficia della preparazione descritta dalla skill.",
+                "trigger": "Prima del primo attacco del turno",
+                "duration": "Un attacco",
+                "usageNotes": "Consulta la descrizione della skill per i dettagli del tavolo.",
+                "costs": {"pa": 1},
+                "icon": "attacco",
+            }
+        ],
+    },
+    {
+        "nome": "POC - Alchimia rapida",
+        "slug": "poc-alchimia-rapida",
+        "numero": 910004,
+        "famiglia": "Alchimia",
+        "ordine_famiglia": 10,
+        "magia": False,
+        "costo_pe": 4,
+        "tipo_pe": "blue",
+        "descrizione": "Crea un tonico minore durante una pausa breve.",
+        "requisiti": "Alchimia pratica",
+        "profile_tags": {"role": ["support"], "craft": ["alchimia"], "poc": True},
+        "effetti_passivi": [],
+        "azioni_attive": [
+            {
+                "id": "azione-alchimia-rapida",
+                "name": "Prepara tonico minore",
+                "description": "Durante una pausa breve puoi creare un tonico minore usando ingredienti comuni.",
+                "trigger": "Durante una pausa breve",
+                "duration": "Preparazione",
+                "usageNotes": "Il pulsante ricorda la regola; ingredienti e risultato restano gestiti al tavolo.",
+                "costs": {},
+                "icon": "runa",
+            }
+        ],
+    },
+    {
+        "nome": "POC - Intuito arcano",
+        "slug": "poc-intuito-arcano",
+        "numero": 910005,
+        "famiglia": "Misticismo",
+        "ordine_famiglia": 10,
+        "magia": True,
+        "costo_pe": 7,
+        "tipo_pe": "blue",
+        "costo_testuale": "1 Mana",
+        "descrizione": "Leggi un residuo magico e ne determini scuola, intensita e origine probabile.",
+        "requisiti": "Focus arcano",
+        "livello_magia": "Novizio",
+        "raggio": "Vicino",
+        "formula_effetto": "personaggio.livello + final.mod_intelligenza",
+        "profile_tags": {"role": ["utility"], "school": ["divinazione"], "poc": True},
+        "effetti_passivi": [],
+        "azioni_attive": [
+            {
+                "id": "azione-intuito-arcano",
+                "name": "Leggi residuo magico",
+                "description": "Esamina un residuo magico per determinarne scuola, intensità e origine probabile.",
+                "trigger": "Quando puoi esaminare una traccia magica",
+                "duration": "Analisi",
+                "usageNotes": "Il risultato è informativo e viene descritto dal master.",
+                "costs": {"mana": 1},
+                "icon": "mana",
+            }
+        ],
+    },
+]
+
+
+V2_POC_EFFECT_DEFAULTS = [
+    {
+        "nome": "POC - Benedizione del Focolare",
+        "tipo": "benedizione",
+        "descrizione": "+2 PF e +5 resistenza al fuoco.",
+        "effect_payload": {
+            "effects": [
+                {"target": "pf", "operation": "add", "value": 2},
+                {"target": "res_fuoco", "operation": "add", "value": 5},
+            ]
+        },
+        "durata_turni": None,
+        "stacking_rule": "unique",
+        "icona": "sun",
+        "origine_tipo": "manuale",
+        "origine_nome": "POC",
+    },
+    {
+        "nome": "POC - Ispirazione tattica",
+        "tipo": "buff",
+        "descrizione": "+1 PA mentre resta attiva.",
+        "effect_payload": {"target": "pa", "operation": "add", "value": 1},
+        "durata_turni": 3,
+        "stacking_rule": "refresh_duration",
+        "icona": "flag",
+        "origine_tipo": "manuale",
+        "origine_nome": "POC",
+    },
+    {
+        "nome": "POC - Fatica lieve",
+        "tipo": "debuff",
+        "descrizione": "+1 Stanchezza e -1 Energia.",
+        "effect_payload": {
+            "effects": [
+                {"target": "stanchezza", "operation": "add", "value": 1},
+                {"target": "energia", "operation": "subtract", "value": 1},
+            ]
+        },
+        "durata_turni": 2,
+        "stacking_rule": "refresh_duration",
+        "icona": "moon",
+        "origine_tipo": "manuale",
+        "origine_nome": "POC",
+    },
+]
+
+
+V2_POC_PERSONAGGIO_DEFAULTS = [
+    {
+        "nome": "Livia Occhiodoro",
+        "nome_interno": "poc_livia_occhiodoro",
+        "tipologia": "giocabile",
+        "razza_1": "Imperiale",
+        "razza_2": "Arena",
+        "livello": 3,
+        "eta": 28,
+        "sesso": "F",
+        "monete": 145,
+        "dettagli_personaggio": "Duellante diplomatica scelta come volto della compagnia POC.",
+        "equip": {
+            "arma": "POC - Lama corta da prova",
+            "armatura": "POC - Armatura di cuoio rinforzato",
+            "anello_1": "POC - Anello del sangue calmo",
+            "mantello": "POC - Mantello dell'esploratore",
+        },
+        "zaino": [
+            "POC - Pozione di cura minore",
+            "POC - Kit da scasso",
+            "POC - Libro degli appunti",
+            "POC - Moneta antica",
+        ],
+        "faretra": [],
+        "effetti": ["POC - Benedizione del Focolare"],
+        "alchemy_container": {
+            "slot_max_reagenti": 8,
+            "ingredienti": {"r1": 1, "v1": 1},
+            "moltiplicatori": {},
+        },
+        "note": {
+            "background": "Cresciuta vicino all'Arena, conosce mercanti, guardie e debiti d'onore.",
+            "zaino": "Ricordare il libro degli appunti e la moneta antica.",
+            "combat": "Aggredisce bersagli isolati e difende il retro.",
+            "crafting": "Conservare i sali di luna per un tonico.",
+            "viaggio": "Chiedere una scorta prima di lasciare la città.",
+            "appunti": "Trovare un patrono affidabile.",
+            "missioni": "Seguire la pista dei debiti d'onore dell'Arena.",
+        },
+        "skill_names": [
+            "POC - Svelto",
+            "POC - Difensore",
+            "POC - Lama precisa",
+            "POC - Alchimia rapida",
+            "POC - Intuito arcano",
+        ],
+    },
+    {
+        "nome": "Darion Frondaluna",
+        "nome_interno": "poc_darion_frondaluna",
+        "tipologia": "giocabile",
+        "razza_1": "Bosmer",
+        "razza_2": "Valenwood",
+        "livello": 4,
+        "eta": 35,
+        "sesso": "M",
+        "monete": 92,
+        "dettagli_personaggio": "Ricognitore arcere con talento per tracce, reagenti e imboscate.",
+        "equip": {
+            "arma": "POC - Arco di betulla",
+            "vestiti": "POC - Stivali leggeri",
+            "amuleto": "POC - Amuleto del focus chiaro",
+            "faretra_1": "POC - Faretra capiente",
+        },
+        "zaino": [
+            "POC - Tonico di energia",
+            "POC - Sali di luna",
+            "POC - Pergamena di gelo",
+            "POC - Libro degli appunti",
+        ],
+        "faretra": ["POC - Freccia normale", "POC - Freccia normale"],
+        "effetti": ["POC - Ispirazione tattica"],
+        "alchemy_container": {
+            "slot_max_reagenti": 10,
+            "ingredienti": {"b1": 2, "v2": 1, "r1": 1},
+            "moltiplicatori": {},
+        },
+        "note": {
+            "background": "Ha guidato spedizioni tra boschi ostili e rovine sommerse.",
+            "zaino": "Tenere a portata la pergamena di gelo e il tonico di energia.",
+            "combat": "Apre il combattimento da distanza e si sposta spesso.",
+            "crafting": "La speziale bosmer può lavorare i sali di luna.",
+            "viaggio": "Controllare le tracce a nord delle rovine sommerse.",
+            "appunti": "Una speziale bosmer gli deve un favore.",
+            "missioni": "Ritrovare l'accesso alla rovina sommersa.",
+        },
+        "skill_names": [
+            "POC - Svelto",
+            "POC - Difensore",
+            "POC - Lama precisa",
+            "POC - Alchimia rapida",
+            "POC - Intuito arcano",
+        ],
+    },
+    {
+        "nome": "Bruna Pietrabruna",
+        "nome_interno": "poc_bruna_pietrabruna",
+        "tipologia": "giocabile",
+        "razza_1": "Nord",
+        "razza_2": "Skyrim",
+        "livello": 2,
+        "eta": 41,
+        "sesso": "F",
+        "monete": 210,
+        "dettagli_personaggio": "Carovaniera corazzata, pratica, testarda e molto difficile da spostare.",
+        "equip": {
+            "arma": "POC - Martello della Guardia",
+            "scudo": "POC - Scudo tondo del confine",
+            "cintura": "POC - Cintura robusta",
+            "anello_1": "POC - Anello del sangue calmo",
+            "sacco_1": "POC - Sacca media",
+        },
+        "zaino": [
+            "POC - Pozione di cura minore",
+            "POC - Tonico di energia",
+            "POC - Moneta antica",
+            "POC - Sali di luna",
+        ],
+        "faretra": [],
+        "effetti": ["POC - Fatica lieve"],
+        "alchemy_container": {
+            "slot_max_reagenti": 6,
+            "ingredienti": {"r1": 1},
+            "moltiplicatori": {},
+        },
+        "note": {
+            "background": "Ha protetto carovane tra passi innevati e vecchie strade imperiali.",
+            "zaino": "La moneta antica apparteneva alla cassa persa.",
+            "combat": "Tiene la linea e assorbe pressione per il gruppo.",
+            "crafting": "Riparare le cinghie dello scudo al prossimo campo.",
+            "viaggio": "Il valico resta pericoloso dopo il tramonto.",
+            "appunti": "Vuole recuperare una cassa persa al valico.",
+            "missioni": "Recuperare la cassa della carovana.",
+        },
+        "skill_names": [
+            "POC - Svelto",
+            "POC - Difensore",
+            "POC - Lama precisa",
+            "POC - Alchimia rapida",
+            "POC - Intuito arcano",
+        ],
+    },
+]
+
+
+V2_GUIDE_DEFAULT_VERSION = "2026-06-17-guide-content-v2"
+
+
+def _guide_content(*blocks: dict) -> str:
+    return json.dumps(list(blocks), ensure_ascii=False, indent=2)
+
+
+V2_GUIDE_DEFAULTS = [
+    {
+        "nome": "How to create proper Oggettos",
+        "categoria": "content",
+        "ordine": 10,
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Use Oggetto for reusable item models: weapons, armor, bags, ingredients, "
+                    "accessories, tools, loot entries, and generated item templates. The item "
+                    "record should describe the object; character math belongs in the effects JSON."
+                ),
+            },
+            {
+                "type": "list",
+                "items": [
+                    "Keep nome unique and human-readable, such as Martello (elfico) or Anello del Sangue Calmo.",
+                    "Use tipo_1 through tipo_4 as ordered classifications configured in Django Admin.",
+                    "Use modello=True for reusable catalogue entries; temporaneo=True for one-off generated copies.",
+                    "Use archiviato=True only for placeholders, deprecated content, or records hidden from normal authoring.",
+                    "Use valore, peso, rarita (Unico or 1-5), lv_loot, regione_loot, and peso_regione so shops and loot generation can filter the item.",
+                    "Keep imported Elder effect text in effetto_1 through effetto_8 until each expression is deliberately converted to structured effects.",
+                    "Keep descrizione for player-facing rules/flavor; do not hide mechanical modifiers only in prose.",
+                ],
+            },
+            {
+                "type": "heading",
+                "text": "Oggetto.effects",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "Oggetto.effects is a list. Each entry can change zero or more Personaggio total values "
+                    "when the item is equipped through Equip. A blank list means the item has no automatic "
+                    "math. Prefer JSON operations over old text strings like Personaggio.attacco_extra +1."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """[
+  {
+    "target": "attacco",
+    "operation": "add",
+    "value": 3,
+    "source": "Martello (elfico)"
+  },
+  {
+    "target": "pa",
+    "operation": "add",
+    "value": 2
+  },
+  {
+    "target": "pf",
+    "operation": "add",
+    "value": "personaggio.livello * 2"
+  }
+]""",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "The value may be a number or a safe expression. Expressions can read base.*, pre.*, "
+                    "final.*, and personaggio.*. For example personaggio.livello * 2 adds two points per level, "
+                    "while final.mod_forza * 2 reacts to the already calculated strength modifier."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """[
+  {
+    "target": "mana",
+    "operation": "percent",
+    "value": 25,
+    "condition": "personaggio.livello >= 5"
+  },
+  {
+    "formula_overrides": {
+      "attacco": "base.attacco + final.mod_forza * 2 + personaggio.livello"
+    },
+    "source": "Arma leggendaria"
+  }
+]""",
+            },
+            {
+                "type": "heading",
+                "text": "Valid targets and operations",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "Target names are normalized, so attacco_extra, Personaggio.attacco_extra, "
+                    "attacco_tot, and attacco all resolve to attacco. Still, write the clean target name "
+                    "in new content."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "text",
+                "text": ", ".join(PERSONAGGIO_FLOAT_TOTAL_KEYS),
+            },
+            {
+                "type": "code",
+                "language": "text",
+                "text": (
+                    "Operations: add, subtract, multiply, percent, min, max, cap, set. "
+                    "Accepted aliases include +, -, *, %, plus, minus, multiplier, override."
+                ),
+            },
+            {
+                "type": "heading",
+                "text": "Complete item example",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "nome": "Anello del Sangue Calmo",
+  "modello": true,
+  "temporaneo": false,
+  "archiviato": false,
+  "icona": "gem",
+  "tipo_1": "accessorio",
+  "tipo_2": "anello",
+  "tipo_3": "sangue",
+  "descrizione": "+4 PF e +1 PF per livello quando equipaggiato.",
+  "valore": 900,
+  "peso": 0.1,
+  "rarita": 3,
+  "lv_loot": "4-7",
+  "regione_loot": "Skyrim",
+  "peso_regione": 1.2,
+  "effects": [
+    {"target": "pf", "operation": "add", "value": 4},
+    {"target": "pf", "operation": "add", "value": "personaggio.livello"}
+  ]
+}""",
+            },
+        ),
+    },
+    {
+        "nome": "How to create proper Skills",
+        "categoria": "content",
+        "ordine": 20,
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Use Skill for learnable content: progression nodes, spells, perks, class features, "
+                    "religion features, crafting abilities, and combat techniques. A Skill explains what "
+                    "is learned; active or passive mechanical outcomes should be linked through effect records "
+                    "instead of buried only in descrizione."
+                ),
+            },
+            {
+                "type": "list",
+                "items": [
+                    "numero must stay unique and stable; use it as an import/order identity, not as visible prose.",
+                    "famiglia groups the skill tree. Use FamigliaSkill names such as Generale, Combattimento, Magia, Crafting, Alchimia, Sociale, Esplorazione, Classe, Religione, or Perk.",
+                    "ordine_famiglia controls display order inside the family.",
+                    "magia=True only when the skill behaves like a spell/magical ability.",
+                    "Use costo_pe and tipo_pe for structured progression cost; use costo_testuale for costs like 2+ Energia or 1 Mana per target.",
+                    "Use requisiti for required previous skills, level gates, class gates, race gates, or item requirements.",
+                    "Use livello_magia, raggio, and formula_effetto only when they are actually relevant.",
+                ],
+            },
+            {
+                "type": "heading",
+                "text": "Good Skill shape",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "nome": "Svelto 2",
+  "numero": 100000002,
+  "famiglia": "Combattimento",
+  "ordine_famiglia": 20,
+  "magia": false,
+  "costo_pe": 5,
+  "tipo_pe": "Tutti",
+  "costo_testuale": "",
+  "descrizione": "+1 Punto Azione oltre ai bonus di Svelto 1.",
+  "requisiti": "Svelto 1",
+  "profile_tags": {
+    "role": ["action-economy"],
+    "scales_with": []
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Skill effects",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "Do not make a later rank repeat the whole cumulative bonus. Model only the new delta. "
+                    "For example Svelto 1 gives +1 PA, Svelto 2 gives one additional +1 PA, not +2 PA."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "nome": "+ pa",
+  "fonte_tipo": "skill",
+  "fonte_nome": "Svelto 2",
+  "tipo": "passivo",
+  "descrizione": "+1 Punto Azione oltre ai bonus di Svelto 1.",
+  "effect_payload": {
+    "effects": [
+      {"target": "pa", "operation": "add", "value": 1}
+    ]
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Magic example",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "nome": "Scudo di Brina",
+  "numero": 230010,
+  "famiglia": "Magia",
+  "ordine_famiglia": 10,
+  "magia": true,
+  "costo_pe": 8,
+  "tipo_pe": "Blu",
+  "costo_testuale": "3 Mana",
+  "descrizione": "Crea una difesa gelida temporanea.",
+  "requisiti": "Concentrazione 12; livello 3",
+  "livello_magia": "Novizio",
+  "raggio": "Self",
+  "formula_effetto": "base.difesa + personaggio.livello",
+  "profile_tags": {
+    "element": ["gelo"],
+    "action": ["buff"],
+    "duration": ["temporary"]
+  }
+}""",
+            },
+            {
+                "type": "list",
+                "items": [
+                    "Good descrizione: states the player-visible rule in one clear sentence.",
+                    "Good requisiti: names concrete gates the importer or future UI can parse later.",
+                    "Bad descrizione: a private note like TODO, too strong, maybe use later.",
+                    "Bad effect modeling: writing +3 PF in descrizione but leaving every effect payload empty.",
+                ],
+            },
+        ),
+    },
+    {
+        "nome": "How to create proper Effetti",
+        "categoria": "content",
+        "ordine": 30,
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Use Effetto for active character effects that can be placed in EffettiPersonaggio slots. "
+                    "These records are consumed by refresh_personaggio today: each slotted Effetto.effect_payload "
+                    "is collected, applied, and reported into Personaggio.tot and Personaggio.effetti_finali."
+                ),
+            },
+            {
+                "type": "list",
+                "items": [
+                    "tipo should describe behavior: effetto, buff, debuff, ferita, maledizione, benedizione, ambientale, item, skill.",
+                    "nome must be unique and precise enough to identify the source/rank.",
+                    "descrizione is the human rule text; effect_payload is the machine rule.",
+                    "durata_turni is null for permanent/passive effects and a number for timed effects.",
+                    "stacking_rule should say how duplicates behave: unique, stack, refresh_duration, highest_only, replace_same_source.",
+                    "origine_tipo and origine_nome should point back to skill, oggetto, malattia, ambiente, manuale, or unit content.",
+                ],
+            },
+            {
+                "type": "heading",
+                "text": "Single-operation effect",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "tipo": "buff",
+  "nome": "Forza del Gigante",
+  "descrizione": "+4 Forza per 3 turni.",
+  "durata_turni": 3,
+  "stacking_rule": "highest_only",
+  "origine_tipo": "skill",
+  "origine_nome": "Forza del Gigante",
+  "effect_payload": {
+    "target": "forza",
+    "operation": "add",
+    "value": 4
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Multi-operation effect",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "tipo": "debuff",
+  "nome": "Sanguinante - MIN",
+  "descrizione": "-1 PF per turno e -2 Resistenza finché dura.",
+  "durata_turni": 5,
+  "stacking_rule": "refresh_duration",
+  "effect_payload": {
+    "effects": [
+      {"target": "pf", "operation": "subtract", "value": 1},
+      {"target": "resistenza", "operation": "subtract", "value": 2}
+    ]
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Formula values",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "Formula values can read personaggio.livello, personaggio.danno, base.*, pre.*, and final.*. "
+                    "Use this for level scaling or for effects based on already calculated modifiers."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "tipo": "buff",
+  "nome": "Vitalità da Campione",
+  "descrizione": "+2 PF per livello.",
+  "effect_payload": {
+    "target": "pf",
+    "operation": "add",
+    "value": "personaggio.livello * 2"
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Formula overrides",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "Use formula_overrides sparingly. It replaces the normal formula for a target, so the newest "
+                    "processed override wins. This is for unusual rules, not normal +1 or -1 bonuses."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "tipo": "buff",
+  "nome": "Guardia Totale",
+  "descrizione": "Difesa calcolata con Saggezza invece di Agilità.",
+  "effect_payload": {
+    "formula_overrides": {
+      "difesa": "base.difesa + final.mod_saggezza * 3 + personaggio.livello"
+    }
+  }
+}""",
+            },
+            {
+                "type": "list",
+                "items": [
+                    "Safe functions in formulas: floor, ceil, min, max, abs, round.",
+                    "Use condition for gated effects, such as personaggio.livello >= 5.",
+                    "effetti_finali is output/report data; never write authoring effects there.",
+                    "Legacy strings like Personaggio.attacco_extra +1 still parse, but new content should use JSON.",
+                ],
+            },
+        ),
+    },
+    {
+        "nome": "How to create proper EffettiEMalattie",
+        "categoria": "content",
+        "ordine": 40,
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Use EffettiEMalattie for the condition catalogue: diseases, injuries, curses, blessings, "
+                    "environmental statuses, and standard status effects. It is a reusable definition library. "
+                    "When one of these is applied to a character, its effect_payload should follow the same grammar "
+                    "as Effetto.effect_payload."
+                ),
+            },
+            {
+                "type": "list",
+                "items": [
+                    "tipo should be one of effetto, malattia, ferita, maledizione, benedizione, ambientale, or another deliberate category.",
+                    "nome should include severity/rank when that matters, such as Sanguinante - MIN - 3.",
+                    "descrizione should describe both the visible symptom and the mechanical rule.",
+                    "default_duration_turns should be null for open-ended conditions and a number for timed combat effects.",
+                    "stacking_rule should be explicit: unique, stack, refresh_duration, worsen_severity, highest_only, replace_same_source.",
+                    "icon should use a stable icon token, not a file path, unless the UI later defines another convention.",
+                ],
+            },
+            {
+                "type": "heading",
+                "text": "Disease example",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "tipo": "malattia",
+  "nome": "Febbre Pesante - 7",
+  "descrizione": "Riduce l'Energia massima del 50% finché la malattia resta attiva.",
+  "default_duration_turns": null,
+  "stacking_rule": "unique",
+  "icon": "thermometer",
+  "effect_payload": {
+    "effects": [
+      {
+        "target": "energia",
+        "operation": "percent",
+        "value": -50,
+        "source": "Febbre Pesante"
+      }
+    ]
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Status effect example",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "tipo": "effetto",
+  "nome": "Scosso - MIN - 1",
+  "descrizione": "-3 Attacco e maggiore rischio di fallire cast.",
+  "default_duration_turns": 2,
+  "stacking_rule": "refresh_duration",
+  "icon": "sparkles",
+  "effect_payload": {
+    "effects": [
+      {"target": "attacco", "operation": "subtract", "value": 3},
+      {"target": "modificatore_generale", "operation": "subtract", "value": 1}
+    ]
+  }
+}""",
+            },
+            {
+                "type": "heading",
+                "text": "Severity chains",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "For MIN, MED, and MAG variants, make separate records with separate payloads. Do not rely on "
+                    "the UI guessing severity from text. The stacking_rule should explain whether a new application "
+                    "refreshes duration, worsens severity, or replaces the previous condition."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """[
+  {
+    "nome": "Rallentato - MIN",
+    "stacking_rule": "worsen_severity",
+    "effect_payload": {"target": "pa", "operation": "percent", "value": -25}
+  },
+  {
+    "nome": "Rallentato - MED",
+    "stacking_rule": "worsen_severity",
+    "effect_payload": {"target": "pa", "operation": "percent", "value": -50}
+  }
+]""",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "The current refresh service reads slotted Effetto records from EffettiPersonaggio. "
+                    "EffettiEMalattie should therefore be authored with the same payload grammar so an apply service "
+                    "can copy or link the catalogue definition into active character effects without translation."
+                ),
+            },
+        ),
+    },
+    {
+        "nome": "How to create proper Negozios",
+        "categoria": "content",
+        "ordine": 50,
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Use Negozio for shop catalogues tied to a place, owner, category, and level band. "
+                    "A shop should be searchable by region/city/category and should contain structured stock "
+                    "entries in lista_oggetti, not only prose in descrizione."
+                ),
+            },
+            {
+                "type": "list",
+                "items": [
+                    "nome should be the sign/name players see, such as Armi dell'Arena.",
+                    "proprietario should be the NPC or owner display name when known.",
+                    "categoria should be stable and filterable: armaiolo, alchimista, taverna, generale, magia, sartoria, gioielliere.",
+                    "livello should represent shop power/quality, not character level.",
+                    "Use regione_nome and citta_nome as separate fields; do not pack both only into descrizione.",
+                    "Use regione_descrizione and citta_descrizione for local flavor and travel context.",
+                    "Use immagini only when a real UploadedImage exists; do not invent broken media references.",
+                ],
+            },
+            {
+                "type": "heading",
+                "text": "lista_oggetti",
+            },
+            {
+                "type": "paragraph",
+                "text": (
+                    "lista_oggetti is a list of stock entries. Prefer references that can survive imports: "
+                    "oggetto_id when known, oggetto_nome when importing from external sheets, plus quantity and price rules."
+                ),
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """[
+  {
+    "oggetto_nome": "Martello (elfico)",
+    "quantita": 2,
+    "prezzo": 350,
+    "prezzo_mod": 1.1,
+    "rarita_min": 2,
+    "rarita_max": 4,
+    "restock": "weekly"
+  },
+  {
+    "oggetto_nome": "Pozione di Cura Minore",
+    "quantita": "1d4",
+    "prezzo_mod": 0.95,
+    "tags": ["consumabile", "cura"]
+  }
+]""",
+            },
+            {
+                "type": "heading",
+                "text": "Complete shop example",
+            },
+            {
+                "type": "code",
+                "language": "json",
+                "text": """{
+  "nome": "Armi dell'Arena",
+  "proprietario": "Valerio Decimo",
+  "categoria": "armaiolo",
+  "livello": 7,
+  "regione_nome": "Città Imperiale",
+  "regione_descrizione": "Mercato centrale con rifornimenti imperiali e da arena.",
+  "citta_nome": "Arena",
+  "citta_descrizione": "Quartiere di gladiatori, addestratori e fabbri.",
+  "lista_oggetti": [
+    {
+      "oggetto_nome": "Martello (elfico)",
+      "quantita": 1,
+      "prezzo_mod": 1.15,
+      "restock": "monthly"
+    },
+    {
+      "tipo_1": "arma",
+      "tipo_2": "contundente",
+      "rarita_min": 2,
+      "rarita_max": 4,
+      "quantita": "2d3",
+      "generato": true
+    }
+  ],
+  "generation_seed": "armi-arena-lv7",
+  "descrizione": "Forgia rumorosa specializzata in equipaggiamento da combattimento spettacolare."
+}""",
+            },
+            {
+                "type": "list",
+                "items": [
+                    "Good stock entries can point directly to an item or describe a generator filter.",
+                    "Do not store one giant comma-separated stock string.",
+                    "Do not duplicate the same shop for every restock; update lista_oggetti or generation_seed instead.",
+                    "When importing old luogo values like Città Imperiale-Arena, split the value into regione_nome=Città Imperiale and citta_nome=Arena.",
+                ],
+            },
+        ),
+    },
+]
+
+# Global Mercato vocabulary. It is deliberately kept in the settings table so
+# worlds can rename, disable, and grow locations without creating location rows.
+V2_SETTING_DEFAULTS.extend([
+    {
+        "key": "mercato.locations", "label": "Località del Mercato", "category": "mercato",
+        "description": "Regioni e località disponibili per i negozi.", "minimum_role": "master", "value_type": "json",
+        "default_value": {"version": 1, "regions": [
+            {"key": "skyrim", "label": "Skyrim", "enabled": True, "places": [{"key": "whiterun", "label": "Whiterun", "enabled": True}, {"key": "solitude", "label": "Solitude", "enabled": True}, {"key": "riften", "label": "Riften", "enabled": True}]},
+            {"key": "cyrodiil", "label": "Cyrodiil", "enabled": True, "places": [{"key": "imperial-city", "label": "Città Imperiale", "enabled": True}, {"key": "bruma", "label": "Bruma", "enabled": True}]},
+        ]}, "choices": [], "user_customizable": False, "master_customizable": False, "order": 10,
+    },
+    {
+        "key": "mercato.shop_types", "label": "Tipi di negozio", "category": "mercato",
+        "description": "Categorie e preferenze di generazione dello stock.", "minimum_role": "master", "value_type": "json",
+        "default_value": {"version": 1, "types": [
+            {"key": "armaiolo", "label": "Armaiolo", "icon": "shield", "enabled": True, "defaultBackground": "forge", "inventoryMultiplier": 1.2, "itemTypeRanks": {"armatura": 0, "scudo": 0, "chainmail": 1, "veste": 3, "lingotto": 3}},
+            {"key": "alchimista", "label": "Alchimista", "icon": "flask", "enabled": True, "defaultBackground": "alchemy", "inventoryMultiplier": 1.0, "itemTypeRanks": {"pozione": 0, "reagente": 0, "setalchemico": 1, "borsareagenti": 2, "portapozioni": 2, "gemma": 4}},
+            {"key": "magia", "label": "Emporio arcano", "icon": "sparkles", "enabled": True, "defaultBackground": "arcane", "inventoryMultiplier": .9, "itemTypeRanks": {"anello": 0, "amuleto": 0, "orecchino": 0, "cintura": 1, "fascia": 1, "spilla": 1, "pergamena": 1, "bastonemagico": 2, "libromagie": 2, "gemmaanima": 3}},
+            {"key": "generale", "label": "Emporio generale", "icon": "store", "enabled": True, "defaultBackground": "market", "inventoryMultiplier": 1.3, "itemTypeRanks": {"oggettivari": 0, "usabile": 0, "sacca": 1, "cibo": 1, "pozione": 1, "freccia": 2, "vestiti": 2, "lingotto": 3, "pergamena": 3, "gemma": 4}},
+            {"key": "taverna", "label": "Taverna", "icon": "beer", "enabled": True, "defaultBackground": "tavern", "inventoryMultiplier": .7, "itemTypeRanks": {"cibo": 0, "pozione": 1, "stanza": 1, "bagno": 2, "usabile": 3, "oggettivari": 4}},
+            {"key": "gioielliere", "label": "Gioielliere", "icon": "sparkles", "enabled": True, "defaultBackground": "jewelry", "inventoryMultiplier": .6, "itemTypeRanks": {"anello": 0, "amuleto": 0, "orecchino": 0, "gemma": 1, "pietrapreziosa": 1, "cintura": 2, "fascia": 2, "spilla": 2}},
+        ]}, "choices": [], "user_customizable": False, "master_customizable": False, "order": 20,
+    },
+    {
+        "key": "mercato.generator_rules", "label": "Regole generatore Mercato", "category": "mercato",
+        "description": "Regole avanzate per quantità, rarità e prezzi del Mercato.", "minimum_role": "admin", "value_type": "json",
+        "default_value": {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "rarityProbabilities": {"1": .7, "2": .15, "3": .1, "4": .05}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25},
+        "choices": [], "user_customizable": False, "master_customizable": False, "order": 30,
+    },
+])

@@ -61,9 +61,9 @@ def _decode_json(raw: str) -> dict:
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
-        raise ApiError("request.invalid_json", "Request body must be valid JSON.") from exc
+        raise ApiError("request.invalid_json", "Il corpo della richiesta deve contenere JSON valido.") from exc
     if not isinstance(data, dict):
-        raise ApiError("request.invalid_json", "Request body must be a JSON object.")
+        raise ApiError("request.invalid_json", "Il corpo della richiesta deve essere un oggetto JSON.")
     return data
 
 
@@ -78,7 +78,7 @@ def request_payload(request) -> dict:
     if ENVELOPE_KEYS.intersection(body):
         payload = body.get("payload", {})
         if not isinstance(payload, dict):
-            raise ApiError("request.invalid_payload", "Envelope payload must be an object.", "payload")
+            raise ApiError("request.invalid_payload", "Il contenuto della richiesta deve essere un oggetto.", "payload")
         return payload
 
     return body
@@ -95,5 +95,5 @@ def multipart_payload(request) -> dict:
 
     payload = envelope.get("payload", {})
     if not isinstance(payload, dict):
-        raise ApiError("request.invalid_payload", "Envelope payload must be an object.", "payload")
+        raise ApiError("request.invalid_payload", "Il contenuto della richiesta deve essere un oggetto.", "payload")
     return payload

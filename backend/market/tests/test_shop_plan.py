@@ -36,10 +36,10 @@ class ShopPlanTests(TestCase):
         self.assertEqual(validate_plan([record]).payload()["skipped"], 1)
         self.assertTrue(validate_plan([self.record(description="Una descrizione diversa con abbastanza parole per superare deliberatamente il controllo obbligatorio richiesto dal piano approvato qui.")]).errors)
 
-    def test_plan_must_contain_approved_records(self):
+    def test_needs_review_records_are_not_import_candidates(self):
         report = validate_plan([self.record(status="needs_review")])
-        self.assertTrue(report.errors)
-        self.assertEqual(report.payload()["invalid"][0]["planId"], 1)
+        self.assertFalse(report.errors)
+        self.assertEqual(report.payload()["created"], 0)
 
     def test_load_plan_accepts_records_envelope(self):
         with TemporaryDirectory() as directory:

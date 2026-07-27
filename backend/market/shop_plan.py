@@ -87,6 +87,8 @@ def validate_plan(records: list[dict[str, Any]]) -> PlanReport:
     for record in records:
         if not isinstance(record, dict):
             report.invalid.append(_record_error(record, "Il record deve essere un oggetto.")); continue
+        if record.get("status") == "needs_review":
+            continue
         required = ("planId", "locationKey", "categoryKey", "level", "name", "owner", "description", "seed", "status")
         missing = [key for key in required if record.get(key) in (None, "")]
         if missing:

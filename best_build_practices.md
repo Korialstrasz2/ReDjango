@@ -15,6 +15,34 @@ The goal is not only working code. The goal is a project that remains understand
 7. Prefer clear naming over clever abstraction.
 8. Keep content creation structured enough that future tools and agents can safely edit it.
 
+## Hierarchical Security And Settings
+
+The application has three permanent hierarchical levels:
+
+```text
+user < master < admin
+```
+
+- `user` owns personal appearance, accessibility, dice, and simple UI preferences.
+- `master` inherits user capabilities and adds campaign-facing tools, hidden information, and dangerous-action safeguards.
+- `admin` inherits everything and owns global branding, security policy, feature gates, setting definitions, and UI tokens.
+
+Rules for every future feature:
+
+- Declare the minimum role required to see and to mutate the feature.
+- Enforce permissions on the backend. Hiding a button is never authorization.
+- Use the shared role helpers in `backend/core/security.py`; do not add one-off `isMaster` localStorage flags.
+- Put configurable behavior in `SettingDefinition` and personal values in `SettingOverride` instead of inventing new JSON keys or browser-only storage.
+- Give every new setting a stable dotted key, category, value type, default, minimum role, and explicit user/master customization flags.
+- Global baselines and setting definitions remain editable in Django Admin. Reseeding must never overwrite an administrator's current `value`.
+- Player identity changes use `Giocatore.display_name`; character access requests use `CharacterAssignmentRequest` and become assignments only after an explicit Django Admin approval.
+- Role-promotion codes are global admin-managed setting definitions. Never serialize their values to the SPA, store them as personal overrides, or accept them through the ordinary settings-save path.
+- Frontend code may apply only known, validated UI settings. Do not treat arbitrary stored CSS or JavaScript as configuration.
+- Add permission tests for user, master, and admin whenever a feature has privileged behavior.
+- Keep Settings reachable from the application shell at all times.
+- Treat role identifiers as backend security data. User and master interfaces show available controls without role tags, hierarchy diagrams, or role badges; only admin may receive and render the full hierarchy.
+- Before LAN or remote deployment becomes a supported mode, implement real authentication and enforce `security.require_login_for_remote` in middleware.
+
 ## Project Origin And Direction
 
 ReDjango originates from:
@@ -145,6 +173,7 @@ characters.save
 characters.delete
 media.list
 media.upload
+media.move
 media.delete
 inventory.moveItem
 equipment.equipItem
@@ -361,6 +390,17 @@ Themes should be data-driven and centralized.
 - Use `[data-theme="..."]` selectors for theme-specific styling.
 - Avoid hard-coded colors scattered across feature CSS.
 - Theme names should express intent, not exact colors.
+- Store selectable application themes in `core.Theme`; do not add another hard-coded JavaScript theme list.
+- Keep stable theme slugs, but let administrators add, archive, reorder, recolor, and rename themes through Django Admin.
+- Use explicit `UploadedImage` relations for each screen background. New SPA routes must either reuse an existing background field deliberately or add an additive, documented field to `Theme`.
+- Apply only validated colors, numeric opacity/blur values, safe same-origin media URLs, and known CSS tokens. Never store or execute administrator-provided CSS or JavaScript.
+- Use the shared theme surfaces for every layered UI: `--theme-panel-surface`/`--theme-panel-strong-surface` for normal page panels and `--theme-overlay-surface`/`--theme-overlay-strong-surface` for sticky headers, toolbars, modals, drawers, tooltips, and drag previews. Do not add opaque white, black, sidebar-colored, or fixed-percentage backgrounds to those components.
+- `Theme.panel_opacity` controls normal panel surfaces; `Theme.overlay_opacity` controls both the background veil and overlay surfaces. New overlays must therefore use the shared tokens so the administrator's opacity setting works on every page.
+- Keep primary and secondary text at WCAG-readable contrast against both panel surfaces. Sidebar text must use the derived `--sidebar-text` and `--sidebar-muted` tokens because a light content theme may still use a dark navigation rail.
+- Every font choice must flow through `--font-body` and `--font-display`, including feature workspaces. Font scaling must remain usable across the full configured range in navigation, forms, modals, quick tools, and dense workspaces.
+- The optional global contrast outline is inherited from the document root and uses the active theme's primary text luminance to choose black or white. Keep it independent from `text-shadow`, glow, and feature-specific text effects so new pages receive the accessibility treatment without losing their visual identity.
+- Active `Theme` rows are the source of truth for the theme selector. Backend validation must reject inactive or missing theme slugs.
+- Bundled placeholder art belongs under `frontend/static/frontend/images/themes/`; the seed may copy it into managed media without overwriting administrator replacements.
 
 Good:
 
@@ -377,6 +417,16 @@ Avoid:
   border-color: #a13f3f;
 }
 ```
+
+## Italian User Interface
+
+Italian is the canonical user-facing language for ReDjango.
+
+- Write every visible heading, label, button, empty state, status, validation message, API error message, default guide, and launcher message in clear Italian.
+- Keep stable technical identifiers, action names, JSON keys, model field names, and stored enum values unchanged when translation would break compatibility.
+- Select choices may use stable English/internal values only when their visible labels are Italian objects such as `{ "value": "compact", "label": "Compatta" }`.
+- Do not expose raw internal role names as a shortcut for explaining permissions.
+- When importing legacy content, preserve source text as data where required, but translate new application chrome and explanatory copy.
 
 ## UI Coherence Rules
 
@@ -488,11 +538,142 @@ Recommended source format:
 - Prefer normalized tables for new systems, but do not prematurely normalize tiny prototypes.
 - For slot-based systems, expose arrays to the frontend even if legacy data uses numbered fields.
 
+## Item Catalog And Elder Import Contract
+
+- `Oggetto.tipo_1` through `tipo_4` are ordered classifications. Their active values and labels come from `OpzioneTipoOggetto` and are managed in Django Admin; item authoring must not accept arbitrary new values.
+- Preserve the exact four positions in API payloads even when an earlier position is blank. A compact `types` list may still be exposed for search and display.
+- `Oggetto.rarita` is nullable; configured values are `Unico` (`0`) and numeric tiers `1...5`. Never infer that an Elder zero means `Unico` without an approved import rule.
+- `Oggetto.effetto_1` through `effetto_8` preserve source text for review. They are compatibility data and never feed character calculations directly.
+- `Oggetto.effects` remains the only item-owned structured calculation input. Conversion from Elder effect text must preserve the raw source and report ambiguous expressions instead of guessing.
+- Import tooling must create or map type options before item rows, validate rarity explicitly, and remain dry-run-first.
+
+## Character Inventory UX Contract
+
+- The backend owns compatibility, capacity and weight rules; the frontend may preview but never replace validation.
+- A swap succeeds only when each item is valid in the other item's source slot.
+- Failed movement is atomic and returns a friendly, actionable Italian error.
+- Direct catalog assignment validates compatibility before mutation. Replacing an occupied slot moves the previous item to the first free unlocked backpack slot, then to the first free locked slot; only a completely full 50-slot backpack may discard it, and that loss must be returned as an explicit warning.
+- Every named equipment slot holds at most one item. Extra equipment slots accept any item and still contribute equipped weight/effects.
+- Backpack capacity is `slot_magici + slot_non_magici`; items in the leading magical slots do not contribute weight.
+- Backpack and quiver mutations compact their contents and order them from heaviest to lightest; equal-weight items keep their relative order. The leading magical backpack slots therefore always receive the heaviest carried items.
+- Magical backpack slots are rendered before normal slots and keep a mana-blue border highlight except while movement-validity feedback is active.
+- Quiver capacity comes from equipped quiver containers and quiver contents are restricted to projectiles.
+- Never reduce a container's capacity while occupied slots would become inaccessible.
+- Inventory mutations save immediately. Resource controls keep local draft values until the user explicitly saves, then return the refreshed character projection.
+- Theme-specific character visuals use shared tokens (`health`, `mana`, `energy`, `power`, `validSlot`, `invalidSlot`) and the character background relation.
+- Dragging must have a click-based alternative and invalid targets must be communicated by text as well as color.
+
+## Character Effects UX And Persistence Contract
+
+- New user-authored active effects belong directly to one `Personaggio`; they are not catalog templates and are never copied from a preset during ordinary authoring.
+- Persist the effect header in `EffettoPersonalizzato` and every ordered calculation change in `OperazioneEffettoPersonalizzato`. Do not store the custom effect as a JSON blob.
+- Custom effects have no stacking state, turn counter, start/end timestamp, or model timestamps. `temporaneo` is only the visible `(t)` marker; it never implies remaining time.
+- Preserve `Effetto`, `EffettiPersonaggio`, and its 50 slots for imported and existing data. Legacy entries remain calculation inputs. Editing one active legacy entry promotes only that slot to a character-owned custom effect.
+- Keep the user-facing fields name, description, origin, icon, and temporary marker; custom effects deliberately have no type/category field. An effect contains one or more ordered operations with target, operation, value/formula, and optional condition.
+- The calculation service is the only authority for applying operations and safe formula overrides. Normal `set` is last inside the effect phase and remains subject to fatigue/general adjustments. `strong_set` is a terminal field-only override after those adjustments; when several terminal overrides target the same field, the last effect in application order wins. Both phases must appear explicitly in calculation breakdowns.
+- The authoring UI receives allowed targets, operations, searchable icon metadata, examples, operation timing, and exhaustive formula guidance from the backend contract. Target authoring must be a text autocomplete with exact allowed-value validation, not an unrestricted string or a long select.
+- The character sheet always exposes a compact icon rail. Hover/focus identifies an effect; activating it collapses the object workspace to a vertical `OGGETTI` return strip and opens the searchable effect manager.
+- Creation, editing, removal, and ordering save immediately through the standard action envelope and return the refreshed character projection.
+- Effect icons first resolve convention-based square WebP assets from `frontend/static/frontend/images/effects/icons/`, named exactly like the catalog label, and retain the shared code-native SVG glyphs as automatic fallbacks. Keep at least one catalog entry per configurable target plus narrative alternatives. Their meaning must also be available as searchable text, title, and accessible name; color or icon shape alone is never the only identifier. Temporary effect buttons keep a slow red attention glow while preserving the textual `(t)` marker.
+
+## Dice UX And Texture Contract
+
+- The backend generates and validates every result. Animation presents the outcome but never decides it.
+- The quick tool rolls one die at a time and shows modifiers as an explicit equation: die result, signed bonus, and final total.
+- Prefer lightweight CSS/SVG silhouettes and transforms over a 3D engine until physically simulated dice become a demonstrated requirement.
+- Each supported die must keep a recognizable physical silhouette; d100 uses a near-spherical Zocchihedron-style projection rather than reusing d10 geometry.
+- Store texture artwork as `UploadedImage` files and reference it through `DiceTexture`; never place image data or base64 content inside `DiceSet` JSON.
+- Enforce at most one texture for each die in a set at the database and service layers.
+- Texture positioning data is limited to validated offset, scale, and rotation values. The editor must preview the exact shared die renderer used during a roll.
+- Keep face numbers above artwork and use the set's validated number color so textured dice remain readable.
+- Dice animation and ambient motion must honor both the dice animation preference and reduced-motion accessibility settings.
+
+## Image Library Taxonomy And Picker Contract
+
+- `ImageCategory` is the source of truth for image categories. Categories are created, renamed, ordered, activated, and mapped to upload contexts only through Django Admin; the SPA may read them but must never create or mutate them.
+- Every new `UploadedImage` receives one active category and a free-form `group`. Category is the stable top-level navigation; group is the user-authored subcategory inside it.
+- Contextual uploads send a stable `usageType`; the backend resolves its category from the administrator-configured `ImageCategory.usage_types`. Context tools may prefill a useful group and title, such as `Oggetti` plus the item name, without hard-coding the available category list.
+- The general image archive exposes a category picklist from the backend and a manual group field, then browses images by category and group with search and filters.
+- Item and other media-aware editors use the shared thumbnail picker. It must support category, group, and text filters, show visual thumbnails, and allow contextual upload without leaving the current workflow.
+- Existing theme, dice, map, character, and imported images should be classified during safe reseeding when their category or group is missing. Reseeding must never overwrite an administrator's existing classification.
+- Moving and deleting archive images are Admin-only capabilities, enforced by the backend as well as hidden from every other role. Before either action, the archive fetches live reverse references and asks for explicit confirmation; used-image confirmations name the referencing records instead of showing the generic warning.
+- Deletion previews distinguish links that will be cleared from dependent records that will be cascade-deleted. File storage is removed only after the database deletion succeeds, so a protected relation cannot leave a broken image record.
+
+## Character Competence UX And Persistence Contract
+
+- `core.Competenze` is the canonical ordered catalogue. The initial seed contains the 21 legacy competences, stable metadata keys, attribute associations, structured narrative descriptions, and source mapping tags; reseeding may refresh only seed-owned catalogue rows.
+- Character-owned state remains in `Personaggio.competenze` under each stable key with exactly `barra1`, `barra2`, and `extra`. Both bars are integers from 0 through 7. `extra` is a freely editable permanent player value and does not spend experience.
+- `barra1` is the flat roll rank; `barra2` is mastery. Increasing either bar spends `pe_abilita` using cumulative triangular cost; decreasing either bar atomically refunds the corresponding triangular difference. Both directions are server-validated. The player sees an advisory warning that points may be removed at most three times, but this limit is intentionally not counted or enforced. Never accept an unchanged or out-of-range rank, insufficient XP, or a client-calculated balance.
+- Source-linked competence bonuses never mutate the manual `extra`. Evaluate equipped item effects, active effects, and accepted skill-passive snapshots when reading or rolling, then return manual, linked, effective, and source-breakdown values separately. Unequipping or removing a source must remove only its linked contribution.
+- The shared structured effect vocabulary exposes targets as `competenza.<stable_key>`. Items, personal effects, legacy effects, and skill passives use that same target; competence formula overrides are not supported because the competence calculation has its own explicit pipeline.
+- The backend generates every competence die result and stores a `TiroCompetenza` snapshot. The equation is die + base rank + effective extra, with optional mastery technique changes. Mastery 1 unlocks Impulso (+1 for 3 Energia), rank 2 uses d8, rank 3 unlocks Impulso maggiore (+2 for 6 Energia), rank 4 uses d10, rank 5 discounts each technique by 1 Energia, rank 6 uses d12, and rank 7 grants two free rerolls on one roll per campaign day.
+- The `/competencies` route is a dedicated React workspace inside the existing shell, never a popup or Django template. Keep all 21 compact cards and both bars glanceable, then use an in-page focus stage for upgrades, extra sources, dice, descriptions, mastery, and history.
+- Numeric description examples are narrative nuances, not hard rules. Parse them for readable presentation but never automatically highlight, select, or enforce the entry matching a rolled total.
+- Reuse curated original competence artwork as local static assets, but keep the composition, interaction, and responsive treatment native to ReDjango. Ambient motion and dice animation must honor reduced-motion and dice-animation preferences.
+
+## Character Notes UX Contract
+
+- Character notes are stable free-text sections, not titled records, cards, tasks, or dated journal entries.
+- `Note` is the source of truth for `zaino`, `combat`, `competenze`, `crafting`, `viaggio`, `appunti`, `missioni`, and `background`.
+- A contextual view and the global Diario must edit the same section through the shared note editor.
+- Contextual notes live in the bottom sidebar bookmark for their page: hover or keyboard focus opens a transient preview, click pins it, and clicking again releases it. Opening and closing must animate both opacity and the book-page transform while respecting reduced motion.
+- Appunti, Missioni, and Background remain general Diario sections. Zaino belongs to the character page, Combat belongs to Combattimento, and Competenze belongs to the dedicated competence workspace. Future Crafting and Viaggio pages follow the same mapping.
+- Saves happen automatically after a short debounce and on blur; the interface always shows quiet saving, saved, or error feedback.
+- Contextual pages must mount the existing editor inside the sidebar flyout instead of creating new note persistence.
+- Fantasy atmosphere comes from theme, typography, and the writing surface, not from extra form fields or content-management ceremony.
+
+## Keyboard Shortcut UX Contract
+
+- Persist personal shortcuts through `SettingDefinition` and `SettingOverride` keys under `shortcuts.*`; do not keep them only in browser storage.
+- Default shortcuts use unique `Alt + lettera` combinations that avoid common browser and operating-system commands. The selectable list excludes known browser conflicts such as `Alt+D`, `Alt+E`, and `Alt+F`.
+- Reject duplicate effective assignments on the backend so one keystroke always has one application action.
+- Page shortcuts navigate through the SPA router. Quick-tool shortcuts open the same Diario and Dadi state used by their toolbar buttons.
+- Expose configured combinations through `aria-keyshortcuts` and a visible hover title on the corresponding navigation or toolbar control.
+
+## Unified Skill UX And Persistence Contract
+
+- `Skill` is the aggregate root for player-facing content and authoring. Identity, progression, prerequisites, descriptive details, structured passive effects, reminder-only active actions, and profile metadata stay on that object.
+- `SkillPersonaggio` records ownership, XP spent, the passive IDs explicitly accepted during purchase, and character-only action presentation settings (`enabled`, `order`, personal note). It must not become a second content-definition model or override the canonical action rules.
+- Passive features use the same validated operation vocabulary as character custom effects. Unlocking creates character-owned effect snapshots inside the same transaction as prerequisite checks, XP deduction, and ownership creation.
+- Active features are deliberate reminders. Their buttons reveal the rule text and fixed costs but never execute combat rules, spend resources, or add a passive character effect.
+- Every passive shown by the preview must be explicitly accepted. Missing acceptance, invalid XP allocation, insufficient XP, or unmet prerequisites rolls back the entire unlock.
+- `Skill.costo_pe` is always the editable base price. Character-specific catalog prices are calculated at read/unlock time from the admin-configurable curve plus live owned-skill modifiers, and the API must expose both values. Deleting a granting `SkillPersonaggio` automatically removes its discount; no cached price is stored.
+- System-managed unlock requirements live with the canonical Skill rule and are enforced for players; master/admin operations may bypass them. The card must explain automatic price modifiers and their reversal without requiring the user to calculate them.
+- Equipment specializations remain distinct effect targets. Character refresh projects only the targets matching current weapon length/power, unarmed state, armor weight, or shield into Attacco, Difesa, and Tier, so unequipping or changing gear automatically removes the previous contribution.
+- Ranked passives store only their own increment (for example `+0.2` at every rank); totals emerge from stacking the owned effect snapshots, never from writing a cumulative value into the last rank.
+- Alchemy colour multipliers and level-effect values are normal calculated `Personaggio.tot` variables. Their base values live in the administrator-controlled `Formule_base` profile, while equipment, skills, and custom effects use the shared operation engine. `BorsaReagenti` stores capacity and ingredient quantities only; its historical `moltiplicatori` JSON is compatibility data and is not a calculation source.
+- New authoring must not write `EffettiSkill`; that table remains only as an additive compatibility surface for earlier V2 work. Do not recreate the legacy nested `Attivabile.effetto_attivabile` executor.
+- The catalog hierarchy is always `GruppoFamiglieSkill → FamigliaSkill → Skill`. Groups are normalized, ordered database records managed from `/tools/skills`; never render a group as if it were a family. The seeded groups Generali, Religioni, Scuole di Magia, Classi, and Perk remain editable defaults rather than a hard-coded enum.
+- The `/skills` SPA has three top-level areas: Skills, Azioni, and Analisi Skill PG. Skills navigates group then family then cards; Azioni configures only visibility/order/personal notes for actions granted to that character; Analisi summarizes normalized ownership.
+- Player details and master/admin authoring stay in tabs of the same Skill card and use server-owned validation and permission checks.
+- `/tools/skills` is the master/admin all-at-a-glance authoring workspace. It owns group/family lifecycle, complete catalog filtering, and the persistent Elder review queue. A blocked legacy candidate may enter the live catalog only through the same structured Skill validation used by ordinary authoring; syncing the queue never imports character ownership.
+- `/tools/units` is the master/admin authoring workspace for quick-combat archetypes. Its preview must call the same generator as Combat inside a rolled-back transaction; do not maintain a second preview-only simulation.
+- Every `Unit` declares exactly one generation kind. Animals and creatures have no humanoid Skill, equipment, or competence pools; both may add authored innate actions and per-variable level-1/level-20 curves. Humanoids use Core/archetype Skill budgets, real prices and prerequisites, level-scheduled perks, weighted competences, and explicit equipment pools.
+- Humanoid progression must come from Skill/perk/equipment rules. Direct per-level modifiers, milestones, and legacy level bands are ignored unless `allowHumanoidStatGrowth` is explicitly enabled. Equipment generation never falls back to the global item catalog when an authored pool has no eligible entry.
+- Humanoid Unit imports use a fresh automatic variant by default; a named variant remains deterministic. Perk progression is a single non-configurable system: each level independently has a 50% chance to follow the Elder AI milestone resolved by current Skill names and a 50% chance to use the Unit-compatible weighted choice; both grants at an even level share that choice. Characteristic improvements remain repeatable character-owned effects and legacy IDs are never persisted. Core and archetype Skill lists are always curated explicitly per Unit, with only real prerequisites expanded. Final XP spending passes may consume either curated list from the shared general-XP carry, while every purchase still uses the canonical Skill price, prerequisite, unlock, and passive pipeline.
+- Equipment entries may be optional through `chance`; accessory groups use `minCount`, `maxCount`, and `emptyChance`. Author overlapping level bands and multiple explicit alternatives, but never select outside the Unit pool. Follow `Builder_docs/UNIT_AUTHORING_GUIDE_FOR_LLM.md` for new Unit content.
+- Treat light and heavy equipment as separate material paths, declare a Unit tier cap, and validate every boundary level. Use `accessoryCountByLevel` for an Elder-style level-scaled total and group minima to guarantee identity-defining categories such as rings.
+- Keep Core and archetype Skill expansion independent. A production humanoid Core should primarily contain explicit general/passive growth; weapon attacks belong to the archetype pool. Never rely on a broad physical-tag expansion for a specialized ranged Unit.
+- Family artwork may be curated from the original project's assets, while skill mechanics are migrated deliberately from useful prose, costs, formulas, and proposed effects instead of bulk-copying empty execution payloads.
+- The skills route intentionally reuses the character-workspace theme background until a dedicated theme slot is approved.
+
 ## Resource Efficiency
 
 ReDjango should stay light.
 
-- Avoid heavy frontend frameworks until the user chooses one.
+### Combat Damage Rule Configuration
+
+- `GlobalModifiers` profile `Formule_base`, key `combat_damage_rules`, is the source of truth for the resistance percentages, Tier dice formulas, and complete d20 × attack-difference damage grid.
+- `/tools/variables/damage` is the only SPA editor for that large rule object. It remains Admin-only and requires server validation plus an expiring confirmation token before persistence.
+- Combat must read the saved rule object through `backend.combat.damage_rules`; do not duplicate the grid or editable percentages in frontend code.
+- Preserve the Elder lookup bounds: attack difference `-25...45`, d20 `1...20`, resistance levels `-4...9`, and Tier formulas `-5...30`. Resistance levels outside the authored range clamp to its endpoints; a Tier without a configured formula produces no automatic damage.
+- Reseeding may add a missing `combat_damage_rules` object but must never overwrite an administrator's saved table.
+- The combat workspace uses a compact combat-specific character projection. Do not replace it with the full character-sheet selector: owned-skill pricing and unlock analysis make that an N×M query path.
+- A successful combat mutation already returns the updated workspace. Put that response directly in the query cache; only remote SSE event IDs absent from the cache should trigger a refetch.
+- Character-sheet and character-mutation responses call `personaggio_detail(..., include_skills=False)`. Skill cards, calculated prices, prerequisites and unlock analysis belong exclusively to the dedicated Skills endpoints.
+- The character page loads item-editor configuration with `limit=0` and performs a bounded item query only after the user starts searching. Do not restore the eager full-catalog download to the sheet's critical path.
+
+- Keep the chosen React stack focused; do not add overlapping state, form or drag libraries without a demonstrated need.
 - Keep the initial payload small.
 - Lazy-load large feature modules later if needed.
 - Do not poll aggressively.
@@ -533,13 +714,15 @@ For database changes, run:
 python manage.py migrate --noinput
 ```
 
-For frontend JavaScript syntax, run:
+For the React/TypeScript frontend, run:
 
 ```bat
-node --check frontend\static\frontend\js\app.js
+cd frontend
+npm run typecheck
+npm run test
+npm run build
+npm run test:e2e
 ```
-
-When adding new JS modules, check those too.
 
 For API changes, smoke-test the affected endpoint with Django's test client or `curl`.
 

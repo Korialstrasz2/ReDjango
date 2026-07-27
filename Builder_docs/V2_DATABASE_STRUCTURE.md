@@ -1,8 +1,8 @@
 # The Elder Django V2 Database Structure
 
 Date: 2026-06-14
-Schema version: v0.1
-Status: Frozen implementation contract as of 2026-06-16
+Schema version: v1.1 working implementation
+Status: Evolving implementation contract; changes are recorded in `V2_SCHEMA_CHANGELOG.md`
 
 This document is the v2 database contract. Later schema changes should be deliberate and recorded in `V2_SCHEMA_CHANGELOG.md` before models or migrations are changed.
 
@@ -22,19 +22,68 @@ Unless a model is explicitly a pure join/slot table, these fields should exist o
 
 ### Giocatore
 
-Represents the real human player or DM account.
+Represents the real human player account and its application security level.
 
 | Field | Type | Why it exists |
 |---|---|---|
 | `nome` | string unique | Human-readable player name used around the table. |
 | `display_name` | string nullable | Allows a nicer visible name without changing login identity. |
 | `password_hash` | string nullable | Replaces the current plain-ish `psw` field with a safer account credential slot. |
-| `role` | enum: `dm`, `player`, `guest` | Drives permissions for DM-only lore, tools, and character control. |
+| `role` | enum: `user`, `master`, `admin` | Implements the permanent hierarchical security contract. |
 | `active_character_id` | FK to `Personaggio`, nullable | Lets the UI open the player on their current character by default. |
 | `character_ids` | JSON | A list of characters' `nome_interno` that the Giocatore has control over and can select. |
 | `dice_profile` | string nullable | Preserves the current player dice preference. |
-| `settings` | JSON | Stores per-player UI preferences, audio settings, permissions, and table options. |
+| `settings` | JSON | Compatibility field for rare player metadata; structured application preferences belong in `SettingOverride`. |
 | `notes` | JSON | Replaces the old `note_1...note_4` fields with flexible player notes. |
+
+### SettingDefinition
+
+Admin-editable catalog of global baselines, security requirements, feature gates, and safe UI customization tokens.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `key` | string unique | Stable dotted identifier used by backend and frontend features. |
+| `label` | string | Human-readable name shown in Settings and Django Admin. |
+| `category` | string | Groups appearance, accessibility, dice, master, branding, security, and feature settings. |
+| `description` | text | Explains intent and future-use constraints. |
+| `minimum_role` | enum: `user`, `master`, `admin` | Minimum hierarchical level allowed to see the setting. |
+| `value_type` | enum: `bool`, `int`, `string`, `color`, `select`, `json` | Drives backend validation and frontend controls. |
+| `default_value` | JSON scalar/object/list | Code-owned fallback and factory default. |
+| `value` | JSON nullable | Administrator-owned global baseline; reseeding preserves it. |
+| `choices` | JSON list | Allowed select values. |
+| `user_customizable` | boolean | Allows user-level personal overrides. |
+| `master_customizable` | boolean | Allows master-level personal overrides. |
+| `ui_token` | string nullable | Marks a known, safely applied UI customization value. |
+| `active` | boolean | Disables a setting without deleting its history. |
+| `order` | integer | Stable display order inside a category. |
+
+### SettingOverride
+
+Validated per-player value layered over a `SettingDefinition` global baseline.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `setting_id` | FK to `SettingDefinition` | Identifies the stable setting contract. |
+| `giocatore_id` | FK to `Giocatore` | Owns the personal override. |
+| `value` | JSON scalar/object/list | Stores the validated personal value. |
+
+The pair `(setting_id, giocatore_id)` is unique. Backend services enforce role and customization flags before writes.
+
+### Theme
+
+Admin-editable visual theme selected through `appearance.theme`. Active rows automatically populate the personal theme selector.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `slug` | string unique | Stable stored value used by settings and frontend state. |
+| `name`, `description` | string/text | Italian display copy maintained by administrators. |
+| `is_active`, `is_default`, `order` | boolean/boolean/integer | Controls availability, fallback, and selector ordering. |
+| color fields | hex strings | Central tokens for background, panels, text, borders, accent, gold, and sidebar. |
+| `overlay_opacity`, `panel_opacity` | decimal 0..1 | Keeps page artwork readable behind content. |
+| `background_position`, `background_blur` | string/integer | Controls safe presentation without arbitrary CSS. |
+| `*_background_id` | FK to `UploadedImage`, nullable | Distinct images for dashboard, character selection, character sheet, media, guides, settings, dice, and journal. |
+
+Only safe serialized tokens and same-origin media URLs are applied by the SPA. Theme rows never contain executable CSS or JavaScript.
 
 ### DatiCampagna
 
@@ -59,8 +108,19 @@ Stores global rule profiles, including the merged `Formule` data.
 |---|---|---|
 | `name` | string unique | Allows profiles such as `Formule_base`, `Hardcore`, or campaign variants. |
 | `value_float` | JSON | Stores global level values. |
-| `value_string` | JSON | Stores global level values. |
+| `value_string` | JSON | Stores global formulas and configurable rule profiles, including `skill_pricing` beside the existing quick-stat settings. |
 | `rule_notes` | text nullable | Documents why a modifier exists and when to use it. |
+
+### GruppoFamiglieSkill
+
+First, administrator-managed level of the skill catalog.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `nome` | string unique | Visible group name. Seeded defaults remain editable. |
+| `slug` | string unique | Stable management identity independent of the display order. |
+| `ordine` | integer | Controls group order in player and management workspaces. |
+| `note` | text nullable | Designer-facing explanation for the group. |
 
 ### FamigliaSkill
 
@@ -69,13 +129,14 @@ Groups skills into families, schools, classes, perk tracks, or religions.
 | Field | Type | Why it exists |
 |---|---|---|
 | `nome` | string unique | The visible name of the skill family. |
-| `gruppo` | enum/string | Preserves high-level grouping such as general, religion, magic school, class, or perk. |
+| `gruppo_id` | protected FK to `GruppoFamiglieSkill` | First catalog level. A group contains families; it is never itself rendered as a family. |
 | `ordine` | integer | Allows stable ordering in skill trees and management UI. |
 | `is_classe` | boolean | Keeps class-like families easy to filter. |
 | `is_religione` | boolean | Keeps divine/Daedric/religious tracks easy to filter. |
 | `is_perk` | boolean | Keeps perk tracks distinct from ordinary skill groups. |
 | `note` | text nullable | Stores designer-facing family notes. |
 | `note_addizionali` | text nullable | Preserves secondary notes from the current model. |
+| `immagine_id` | FK to `UploadedImage`, nullable | Gives every family curated artwork without embedding media in JSON. |
 
 ### Skill
 
@@ -84,25 +145,80 @@ Represents a purchasable or unlockable skill.
 | Field | Type | Why it exists |
 |---|---|---|
 | `nome` | string unique | The visible skill name. |
+| `slug` | string unique | Stable identifier for API payloads, seed updates, and future curated imports. |
 | `numero` | integer unique | Preserves existing skill numbering and import stability. |
 | `famiglia_id` | FK to `FamigliaSkill`, non nullable | Keeps skill tree grouping. |
+| `prerequisiti` | self many-to-many | Stores validated skill prerequisites without parsing prose. |
 | `ordine_famiglia` | integer | Supports ordered display inside a family. |
-| `magia` | boolean | Keeps magic skills easy to filter and validate. |
-| `costo_pe` | integer | Stores XP cost. |
-| `tipo_pe` | enum/string | Stores whether the skill consumes general/red/green/blue/ability XP. |
+| `costo_pe` | integer | Stores the author-controlled base XP cost. The catalog and unlock service calculate the character-specific price from this value. |
+| `tipo_pe` | enum: `all`, `general`, `red`, `green`, `blue` | Defines the XP pools eligible for an exact purchase allocation. |
 | `costo_testuale` | string nullable | Preserves human-readable costs such as mana, PA, fatigue, or conditions. |
 | `descrizione` | text | Main player-facing skill explanation. |
 | `requisiti` | text nullable | Stores prerequisite text until prerequisites become fully structured. |
-| `livello_magia` | string nullable | Supports magic-level sorting and validation. |
-| `raggio` | string nullable | Preserves range text for magic/actions and AI range checks. |
-| `formula_effetto` | string nullable | Keeps legacy formula text when a skill has a simple direct effect. |
 | `profile_tags` | JSON | Merged `SkillProfileTags`; expected keys include physical, magical, combat, range, area, defense, attack, social, support, exploration, crafting, and control scores. |
 | `profile_notes` | text nullable | Replaces `SkillProfileTags.notes`. |
+| `effetti_passivi` | JSON list | Contains validated named passive definitions and normalized effect operations authored as part of the skill. |
+| `azioni_attive` | JSON list | Contains validated reminder-only actions, descriptions, icons, and fixed displayed costs. |
+| `icona` | string nullable | Gives the card and its fallbacks a stable visual marker. |
 | `note` | text nullable | Designer-facing note field. |
+
+Skill purchase has no minimum-character-level gate. Relational prerequisites are enforced exactly for users and may be bypassed only by masters and admins. Dynamic pricing restores the Elder curve and reads its configurable constants from `GlobalModifiers.value_string.skill_pricing`; the editor always reads and writes `costo_pe`, never the calculated price.
+
+### SpellDefinition
+
+Defines the spell-only contract separately from ordinary Skill effects. A Skill is magical exactly when it owns one active `SpellDefinition`; no Order/Chaos alignment is stored or applied.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `skill_id` | one-to-one FK to `Skill` | Makes spell data a separate canonical definition while retaining Skill as the authoring aggregate. |
+| `tier` | enum: `base`, `apprentice`, `master` | Drives spell presentation only; it does not enforce an unlock sequence. |
+| `range_text` | string nullable | Preserves human-readable range. |
+| `effect_unit` | string | Names the magnitude being configured, such as damage, metres, or turns. |
+| `base_mana` | decimal | Fixed Mana offset in the linear formula. |
+| `effect_per_mana` | positive decimal | Defines the safe formula `effect = max(0, (mana - base_mana) × effect_per_mana)`. |
+| `minimum_mana` | decimal | Supplies the minimum projected Mana requirement. |
+| `rounding` | enum | Controls effect presentation without evaluating arbitrary code. |
+| `legacy_formula` | string nullable | Preserves the Elder expression for provenance and review only. |
+| `cost_notes` | text nullable | Preserves human-readable spell cost qualifications. |
+| `combat_configuration` | JSON | Marks the definition as prepared for combat while explicitly keeping resource mutation disabled. |
+
+Spell previews are read-only. They may project unified Mana, Energia, PA, and Potere conversions, but the combat subsystem will decide which resource option to use and when to persist a spend.
+
+### SkillMigrationReview
+
+Persistent review desk for Elder candidates that were not safe to auto-import. It stores no character or ownership data.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `source_project`, `source_id` | unique source identity | Keeps the queue repeatable and links a decision to one Elder row. |
+| `nome`, `severity`, `decision`, `status` | review state | Supports blocked/open/imported/ignored filtering without changing live Skill state. |
+| `blockers`, `warnings` | JSON lists | Preserves machine-readable analyzer findings and their UI explanations. |
+| `suggested_values` | JSON object | Immutable-style latest proposal rebuilt from the source. |
+| `working_values` | JSON object | Stores the master's editable correction before import. |
+| `source_snapshot` | JSON object | Keeps the exact Elder fields visible for side-by-side comparison. |
+| `edited`, `resolution_notes` | audit fields | Distinguishes an untouched proposal and records the review decision. |
+| `resolved_skill_id` | nullable FK to `Skill` | Links the review to the created or corrected live Skill. |
+
+Queue synchronization reads the Elder database in read-only mode. A corrected record is imported through the canonical Skill validator, retains source provenance, and never creates a `SkillPersonaggio` row.
+
+### SkillPersonaggio
+
+Records the atomic purchase of one skill by one character. It stores ownership and the purchase audit only; all current player-facing content still comes from `Skill`.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `personaggio_id` | FK to `Personaggio` | Gives the purchase one character owner. |
+| `skill_id` | FK to `Skill` | Identifies the unified skill definition that was unlocked. |
+| `spesa_pe` | JSON | Audits the exact general/red/green/blue XP allocation deducted by the service. |
+| `passivi_accettati` | JSON list | Records the stable passive IDs the player explicitly accepted at unlock time. |
+| `configurazione_azioni` | JSON object | Stores character-only visibility, order, and personal note keyed by canonical Skill action ID. It never stores or overrides action mechanics. |
+| `note` | text nullable | Allows rare purchase-specific administrative notes without duplicating skill content. |
+
+The pair `(personaggio_id, skill_id)` is unique. Unlocking also snapshots accepted passives into the character's normalized custom-effect rows; active actions remain live reminder content derived from the owned `Skill`.
 
 ### EffettiSkill
 
-New model replacing `Attivabile` and `EffettiSbloccabili`.
+Deprecated compatibility model from the earlier V2 design. It remains in the additive schema so existing development data is not destroyed, but unified skill authoring and unlocking do not read or write it. `Skill.effetti_passivi` and `Skill.azioni_attive` replace it for all new work.
 
 | Field | Type | Why it exists |
 |---|---|---|
@@ -118,6 +234,23 @@ New model replacing `Attivabile` and `EffettiSbloccabili`.
 | `messaggi` | JSON | Replaces execution/end-turn message fields. |
 | `icona` | string nullable | Supports action buttons and skill UI. |
 | `effect_payload` | JSON | Structured rules payload applied by the rules engine. |
+
+### Effetto
+
+Canonical structured effect definition used by active character-effect slots and the calculation service.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `tipo` | string nullable | Groups runtime effects for filtering and display. |
+| `nome` | string unique | Stable visible effect name. |
+| `descrizione` | text | Human-readable rules and fiction text. |
+| `effect_payload` | JSON | Structured operations and optional formula overrides consumed by the rules engine. |
+| `durata_turni` | integer nullable | Stores a default or current duration when the definition is time-bound. |
+| `stacking_rule` | string nullable | Describes stacking, refresh, replace, or blocking behavior. |
+| `icona` | string nullable | Supports condition chips and combat UI. |
+| `origine_tipo` | string nullable | Records whether the effect came from an item, skill, manual action, or other domain. |
+| `origine_nome` | string nullable | Human-readable source name for provenance and debugging. |
+| `notes` | text nullable | Designer-facing notes. |
 
 ### EffettiEMalattie
 
@@ -175,22 +308,25 @@ Item catalog. `IngredientiAlchimia` is merged here.
 | `tipo_2` | string nullable | Supports inventory and equipment UI. |
 | `tipo_3` | string nullable | Supports inventory and equipment UI. |
 | `tipo_4` | string nullable | Supports inventory and equipment UI. |
-| `tipo_5` | string nullable | Supports inventory and equipment UI. |
-| `tipo_6` | string nullable | Supports inventory and equipment UI. |
 | `descrizione` | text nullable | Player/DM-facing item description. |
 | `valore` | integer nullable | Item value for shops and loot. |
 | `peso` | float nullable | Item weight for carry capacity. |
-| `rarita` | integer nullable | Supports loot generation and shop availability. |
+| `rarita` | integer nullable, choice | `0` means Unico; `1...5` are the numbered rarity tiers. |
 | `lv_loot` | string nullable | Preserves current loot level bands. |
 | `regione_loot` | string nullable | Keeps regional weighting without needing a `Regione` table. |
 | `peso_regione` | float nullable | Controls how strongly the item is favored in its region. |
 | `tipo_arma_id` | FK to `TipoArma`, nullable | Links weapons to weapon-category rules. |
 | `pa_per_attacco` | integer nullable | Stores item-specific attack action cost. |
-| `effects` | JSON | Replaces `effetto_1...effetto_15` with structured item effects. |
+| `effetto_1...effetto_8` | string | Preserves Elder effect text losslessly for migration review; it does not run calculations. |
+| `effects` | JSON | Stores validated structured item effects used by calculations. |
 | `alchemy_profile` | JSON | Merged `IngredientiAlchimia`; stores reagent type, color, tier, category, and crafting metadata. |
 | `crafting_profile` | JSON | Stores forge/enchant/alchemy requirements, outputs, and tool interactions. |
 | `media_id` | FK to `UploadedImage`, nullable | Allows item images without hardcoding paths. |
 | `notes` | text nullable | Designer-facing item notes. |
+
+### OpzioneTipoOggetto
+
+Administrator-managed picklist entries for each of the four ordered `Oggetto.tipo_*` fields. `posizione` identifies Tipo 1-4; `valore` is the stable stored value; `etichetta`, `attiva`, and `ordine` control presentation without hard-coding choices in the SPA.
 
 ### Zaino
 
@@ -351,40 +487,89 @@ Character equipment, kept as a named object with explicit named equipment fields
 | `extra_slot_3` | FK to `Oggetto`, nullable | Flexible equipped item slot 3. |
 | `extra_slot_4` | FK to `Oggetto`, nullable | Flexible equipped item slot 4. |
 
-### BorsaReagenti
+### EffettiPersonaggio
 
-Renamed replacement for `Alchimia`.
+Legacy-compatible active-effect assignment container. The API exposes populated entries as an array and hides numbered persistence fields from the frontend.
 
 | Field | Type | Why it exists |
 |---|---|---|
-| `nome` | string | Visible reagent bag name. |
-| `personaggio_id` | FK to `Personaggio` | Connects reagents to a character. |
-| `slot_max_reagenti` | integer | Preserves the current reagent capacity concept. |
-| `ingredienti` | JSON | Replaces fixed red/green/blue numbered fields with flexible reagent counts. |
-| `moltiplicatori` | JSON | Stores level/color multipliers for alchemy calculations. |
-| `notes` | text nullable | Stores crafting notes tied to reagents. |
+| `nome` | string | Visible/debuggable name for the assignment set. |
+| `effetto_1` through `effetto_50` | FK to `Effetto`, nullable | Preserves stable effect slots while the rules service and API use array-shaped data. |
+
+### EffettoPersonalizzato
+
+Character-owned active effect authored from the SPA. It is deliberately independent from the canonical `Effetto` catalog and has no timer, stacking state, or timestamps.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `personaggio_id` | FK to `Personaggio` | Gives the effect one clear owner and removes the need for a reusable template. |
+| `nome` | string | User-facing name, unique inside the owning character. |
+| `descrizione` | text | Preserves fiction and human-readable rules; includes exactly one `(t)` suffix when temporary. |
+| `origine` | string nullable | Preserves the source/origin field without requiring another catalog record. |
+| `icona` | string | Selects one of the shared code-native effect glyphs. |
+| `temporaneo` | boolean | Means only that the `(t)` marker is shown; it does not start a countdown. |
+| `ordine` | integer | Controls display and application order among custom effects. |
+
+### OperazioneEffettoPersonalizzato
+
+One normalized, ordered calculation change belonging to an `EffettoPersonalizzato`.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `effetto_id` | FK to `EffettoPersonalizzato` | Deletes operation rows with their owning effect. |
+| `ordine` | integer | Keeps multi-operation effects deterministic. |
+| `bersaglio` | string | Names an allowed character total such as `forza`, `mana`, or `attacco`. |
+| `operazione` | enum/string | Supports add, subtract, multiply, percent, min, max/cap, set, terminal `strong_set`, and safe formula replacement. |
+| `valore` | text | Stores a number or safe formula expression without executing arbitrary code. |
+| `condizione` | text nullable | Optional safe boolean expression controlling whether the row applies. |
+
+### ReagenteAlchemico
+
+Catalogo globale dei 42 ingredienti alchemici recuperati dall'Elder. Il nome descrive l'ingrediente, mentre colore e livello sono la regola autorevole usata da Alchimia&Contenitori e dal banco di distillazione.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `nome` | string unique | Conserva il nome storico mostrato durante estrazione e consultazione. |
+| `colore` | enum `rosso/verde/blu` | Collega l'ingrediente a una delle tre famiglie di pozione. |
+| `livello` | integer 1–4 | Seleziona il moltiplicatore di livello del personaggio. |
+| `attivo` | boolean | Permette di escludere un ingrediente dalle estrazioni senza cancellarlo. |
+| `ordine` | integer | Mantiene stabile l'ordine del catalogo. |
+
+### ContenitoreInventario e VoceContenitoreInventario
+
+`Alchimia&Contenitori` è il contenitore personale autorevole per reagenti e oggetti impilabili. Non esiste una borsa alchemica parallela.
+
+| Field | Type | Why it exists |
+|---|---|---|
+| `scope` | enum `personal/campaign` | Distingue il contenitore personale dalle risorse condivise della campagna. |
+| `personaggio_id` | FK to `Personaggio`, nullable | Possiede il contenitore personale. |
+| `capacita` | integer | Numero reale di spazi disponibili. |
+| `senza_peso` | boolean | Esclude queste pile dal peso dello zaino. |
+| `Voce.reagent_stock_key` | string nullable | Identifica una delle 12 pile canoniche `r1–r4`, `v1–v4`, `b1–b4`. |
+| `Voce.oggetto_id` | FK to `Oggetto`, nullable | Memorizza pozioni, pergamene e altri oggetti impilabili. |
+| `Voce.quantita` | integer | Quantità della pila; ogni tipo occupa un solo spazio. |
+| `metadata.legacyUnclassifiedReagents` | JSON optional | Conserva senza perdita eventuali chiavi storiche non classificabili. |
 
 ### Note
 
-Character diary, background, and tracker state.
+Documento di note del personaggio. Le stesse sezioni sono modificabili dalle viste di gioco contestuali e dal Diario globale.
 
 | Field | Type | Why it exists |
 |---|---|---|
-| `personaggio_id` | FK to `Personaggio` | Links notes to a character. |
 | `nome` | string | Names the note set. |
-| `personaggio` | JSON/text | Stores general character-facing notes, diary text, personality reminders, and personal context. |
-| `appunti` | JSON/text | Stores freeform scratch notes that do not belong to a specific subsystem. |
-| `note_combat` | JSON/text | Stores combat-specific notes, tactical reminders, enemy observations, and action notes. |
-| `note_skill` | JSON/text | Stores skill-related notes, planned unlocks, build ideas, and rule reminders. |
-| `crafting` | JSON/text | Stores forging, enchanting, item-work, and generic crafting notes. |
-| `alchimia` | JSON/text | Stores alchemy-specific notes, reagent experiments, recipes, and potion reminders. |
-| `background` | text nullable | Stores character background. |
-| `tracker_config` | JSON | Stores custom note tracker definitions. |
-| `tracker_state` | JSON | Stores current tracker values. |
+| `zaino` | text | Scorte, oggetti affidati e promemoria visibili anche nella scheda Zaino. |
+| `combat` | text | Tattiche, avversari e promemoria per gli scontri. |
+| `crafting` | text | Materiali, ricette e progetti in corso. |
+| `viaggio` | text | Rotte, luoghi, incontri e pericoli sulla strada. |
+| `appunti` | text | Testo libero che non appartiene a un sottosistema. |
+| `missioni` | text | Obiettivi, indizi e prossimi passi. |
+| `background` | text | Storia personale, legami e motivazioni. |
+
+`Personaggio.note` è l'unica relazione proprietaria. Non esistono voci, titoli, tag, date, tracker o stati di completamento separati.
 
 ### Personaggio
 
-The main character object for player characters and NPCs. This stays close to the old `NPC` model, but removes direct `_base` and `_extra` numeric columns. Base/default values are records in `GlobalModifiers`, temporary/custom modifiers live in `extra`, and final calculated values are explicit `_tot` fields.
+The main character object for player characters and NPCs. This stays close to the old `NPC` model, but removes direct `_base`, `_extra`, and `_tot` numeric column groups. Base/default values are records in `GlobalModifiers`, temporary/custom modifiers live in `extra`, and final calculated totals live in the `tot` JSON field.
 
 | Field | Type | Why it exists |
 |---|---|---|
@@ -413,72 +598,18 @@ The main character object for player characters and NPCs. This stays close to th
 | `equip` | FK to `Equip`, nullable | Links the character to their equipment object. |
 | `zaino` | FK to `Zaino`, nullable | Links the character to their backpack object. |
 | `note` | FK to `Note`, nullable | Links the character to their notes object. |
-| `borsa_reagenti` | FK to `BorsaReagenti`, nullable | Links the character to their reagent bag, renamed from old `Alchimia`. |
 | `faretra` | FK to `Faretra`, nullable | Links the character to their quiver object. |
+| `effetti` | FK to `EffettiPersonaggio`, nullable | Links active structured effect assignments used as calculation input. |
 | `abilita` | JSON | Stores unlocked skills and skill-related character state. |
 | `abilita_desiderate` | JSON | Stores planned or desired skills. |
-| `act` | JSON | Stores active effects after item/effect/skill processing. |
-| `extra` | JSON | Replaces old individual `_extra` fields and the old `tot` JSON; stores custom/temporary modifiers by key before totals are recalculated. |
+| `effetti_finali` | JSON | Stores calculation breakdown, applied operations, resolved overrides, and modified-stat audit data; it is report output, not refresh input. |
+| `extra` | JSON | Replaces old individual `_extra` fields; stores custom/temporary modifiers by key before totals are recalculated. |
 | `bottoni` | JSON | Stores per-character combat/action button state. |
 | `crit_min` | string | Stores minimum critical threshold. |
 | `crit_nor` | string | Stores normal critical threshold. |
 | `crit_mag` | string | Stores magical critical threshold. |
 | `custom_overrides` | JSON | Replaces custom adjustment fields such as level, luck, fatigue, and general-modifier custom formulas. |
-| `stanchezza_tot` | number | Final calculated fatigue value. |
-| `modificatore_generale_tot` | number | Final calculated general modifier. |
-| `fortuna_tot` | number | Final calculated luck value. |
-| `forza_tot` | number | Final calculated strength value. |
-| `resistenza_tot` | number | Final calculated endurance/resistance attribute value. |
-| `velocita_tot` | number | Final calculated speed value. |
-| `agilita_tot` | number | Final calculated agility value. |
-| `intelligenza_tot` | number | Final calculated intelligence value. |
-| `concentrazione_tot` | number | Final calculated concentration value. |
-| `personalita_tot` | number | Final calculated personality value. |
-| `saggezza_tot` | number | Final calculated wisdom value. |
-| `pf_tot` | number | Final calculated hit points. |
-| `mana_tot` | number | Final calculated mana. |
-| `energia_tot` | number | Final calculated energy. |
-| `potere_tot` | number | Final calculated power. |
-| `pa_tot` | number | Final calculated action points. |
-| `attacco_tot` | number | Final calculated attack. |
-| `difesa_tot` | number | Final calculated defense. |
-| `attacco_npc` | number | Keeps the current NPC-side attack adjustment separate from general totals. |
-| `difesa_npc` | number | Keeps the current NPC-side defense adjustment separate from general totals. |
-| `rd_fis_tot` | number | Final calculated physical damage reduction. |
-| `res_contundente_tot` | number | Final calculated blunt resistance. |
-| `res_taglio_tot` | number | Final calculated slash resistance. |
-| `res_perforante_tot` | number | Final calculated piercing resistance. |
-| `res_fuoco_tot` | number | Final calculated fire resistance. |
-| `res_gelo_tot` | number | Final calculated frost resistance. |
-| `res_elettro_tot` | number | Final calculated shock resistance. |
-| `rd_fuoco_tot` | number | Final calculated fire damage reduction. |
-| `rd_gelo_tot` | number | Final calculated frost damage reduction. |
-| `rd_elettro_tot` | number | Final calculated shock damage reduction. |
-| `ap_tot` | number | Final calculated armor penetration. |
-| `ap_percento_tot` | number | Final calculated percentage armor penetration. |
-| `slot_magici_tot` | number | Final calculated magical slot count. |
-| `slot_non_magici_tot` | number | Final calculated non-magical slot count. |
-| `monete_per_slot_tot` | number | Final calculated coin-per-slot capacity. |
-| `tier_tot` | number | Final calculated damage tier. |
-| `sifone_di_mana_tot` | number | Final calculated mana siphon capacity or bonus. |
-| `en_per_mana_ordine_tot` | number | Final calculated order-magic energy-to-mana conversion. |
-| `pa_per_mana_ordine_tot` | number | Final calculated order-magic PA-to-mana conversion. |
-| `en_per_mana_caos_tot` | number | Final calculated chaos-magic energy-to-mana conversion. |
-| `pa_per_mana_caos_tot` | number | Final calculated chaos-magic PA-to-mana conversion. |
-| `ogni_en_x_mana_ordine_tot` | number | Final calculated order-magic mana gained per energy interval. |
-| `ogni_pa_x_mana_ordine_tot` | number | Final calculated order-magic mana gained per PA interval. |
-| `ogni_en_x_mana_caos_tot` | number | Final calculated chaos-magic mana gained per energy interval. |
-| `ogni_pa_x_mana_caos_tot` | number | Final calculated chaos-magic mana gained per PA interval. |
-| `sconto_mana_per_potere_tot` | number | Final calculated mana discount per power. |
-| `sconto_pa_per_potere_tot` | number | Final calculated PA discount per power. |
-| `mod_carico_tot` | number | Final calculated carry modifier. |
-| `mod_peso_equip_tot` | number | Final calculated equipped-weight modifier. |
-| `orecchini_max_tot` | number | Final calculated maximum earring slots. |
-| `anelli_max_tot` | number | Final calculated maximum ring slots. |
-| `sacchi_max_tot` | number | Final calculated maximum sack slots. |
-| `atk_skill_taglio_tot` | number | Final calculated slash-skill attack bonus. |
-| `atk_skill_contundente_tot` | number | Final calculated blunt-skill attack bonus. |
-| `atk_skill_perforante_tot` | number | Final calculated piercing-skill attack bonus. |
+| `tot` | JSON | Stores final calculated totals and derived modifiers previously held in individual `_tot` columns, keyed without the redundant suffix, such as `forza`, `mana`, `attacco`, `difesa`, `mod_forza`, `malus_carico`, and `atk_skill_taglio`. |
 
 ### Unit
 
@@ -738,8 +869,8 @@ Technical tool and maintenance toggles.
 
 | Current model | V2 decision |
 |---|---|
-| `Attivabile` | Merged into `EffettiSkill`. |
-| `EffettiSbloccabili` | Merged into `EffettiSkill`, linked to `Skill`. |
+| `Attivabile` | Useful prose and costs are curated into `Skill.azioni_attive`; nested execution payloads are intentionally not reproduced. |
+| `EffettiSbloccabili` | Proposed passives are curated into validated `Skill.effetti_passivi` definitions. |
 | `SkillProfileTags` | Merged into `Skill.profile_tags`. |
 | `Formule` | Merged into `GlobalModifiers.formulae`; create `Formule_base`. |
 | `Alchimia` | Renamed to `BorsaReagenti`. |

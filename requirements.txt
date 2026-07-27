@@ -1,1 +1,2 @@
 Django>=5.2,<5.3
+django-ninja>=1.6.2,<2

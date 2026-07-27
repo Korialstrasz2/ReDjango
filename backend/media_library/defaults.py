@@ -1,0 +1,75 @@
+IMAGE_CATEGORY_DEFAULTS = [
+    {
+        "name": "Icone",
+        "slug": "icone",
+        "description": "Icone di oggetti, effetti, dadi e strumenti dell'interfaccia.",
+        "usage_types": ["item_icon", "dice_texture", "effect_icon"],
+        "order": 10,
+    },
+    {
+        "name": "Personaggi",
+        "slug": "personaggi",
+        "description": "Ritratti, sagome e immagini dei personaggi.",
+        "usage_types": ["character_portrait"],
+        "order": 20,
+    },
+    {
+        "name": "Scene di gioco",
+        "slug": "scene-di-gioco",
+        "description": "Scene, incontri e momenti della campagna.",
+        "usage_types": ["scene"],
+        "order": 30,
+    },
+    {
+        "name": "Mappe",
+        "slug": "mappe",
+        "description": "Mappe globali, di viaggio, combattimento e dungeon.",
+        "usage_types": ["map"],
+        "order": 40,
+    },
+    {
+        "name": "Oggetti",
+        "slug": "oggetti",
+        "description": "Illustrazioni complete di oggetti e ricompense.",
+        "usage_types": ["item_art"],
+        "order": 50,
+    },
+    {
+        "name": "Ambientazioni",
+        "slug": "ambientazioni",
+        "description": "Luoghi, sfondi, temi e riferimenti di ambientazione.",
+        "usage_types": ["setting", "theme_background", "skill_family"],
+        "order": 60,
+    },
+    {
+        "name": "Documenti e materiali",
+        "slug": "documenti-e-materiali",
+        "description": "Pergamene, schemi, handout e materiali di supporto.",
+        "usage_types": ["document", "guide_image"],
+        "order": 70,
+    },
+    {
+        "name": "Altro",
+        "slug": "altro",
+        "description": "Immagini che non appartengono ancora a una categoria specifica.",
+        "usage_types": ["generic"],
+        "order": 100,
+    },
+]
+
+
+DEFAULT_IMAGE_GROUPS = {
+    "item_icon": "Oggetti",
+    "item_art": "Oggetti",
+    "dice_texture": "Dadi",
+    "effect_icon": "Effetti",
+    "character_portrait": "Personaggi",
+    "scene": "Scene",
+    "map": "Mappe",
+    "setting": "Ambientazioni",
+    "theme_background": "Temi",
+    "skill_family": "Famiglie abilità",
+    "document": "Documenti",
+    "guide_image": "Guide",
+    "generic": "Archivio",
+}

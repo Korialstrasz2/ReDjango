@@ -3,17 +3,33 @@ __pycache__/
 *.py[cod]
 *.sqlite3
 .venv/
+venv/
 .env
 
 # Django/runtime
-media/user_media/
+media/
 staticfiles/
+backups/
+db-before-*.sqlite3
+db_before_*.sqlite3
 
 # OS/editor
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+.pytest_cache/
 
 # Local verification logs
 server*.log
+character_smoke*.log
+combat-ui-server*.log
+redjango_ui*.log
+scratch.py
+frontend/node_modules/
+frontend/test-results/
+frontend/playwright-report/
+frontend/static/frontend/dist/
+redjango/e2e-results/
+shop-import-receipts/
+Builder_docs/skill_migration_output/

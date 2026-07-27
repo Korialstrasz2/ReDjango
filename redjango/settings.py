@@ -1,5 +1,9 @@
-from pathlib import Path
+import mimetypes
 import os
+from pathlib import Path
+
+
+mimetypes.add_type("image/webp", ".webp")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,6 +26,8 @@ INSTALLED_APPS = [
     "backend.core",
     "backend.media_library",
     "backend.characters",
+    "backend.dice_tools",
+    "backend.combat",
 ]
 
 MIDDLEWARE = [
@@ -63,7 +69,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = []
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "it"
 TIME_ZONE = "Europe/Rome"
 USE_I18N = True
 USE_TZ = True

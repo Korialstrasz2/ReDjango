@@ -76,13 +76,15 @@ export async function apiFetch(path, options = {}) {
     const data = await response.json().catch(() => ({}));
     if (!response.ok || data.ok === false) {
         const error = data.errors?.[0];
-        throw new Error(error?.message || data.error || `Request failed: ${response.status}`);
+        throw new Error(error?.message || data.error || `Richiesta non riuscita: ${response.status}`);
     }
     return data.data || {};
 }
 
 function stateScreenFromPath(path) {
+    if (path.includes("/personaggi/")) return "personaggi";
     if (path.includes("/characters/")) return "characters";
     if (path.includes("/media/")) return "media";
+    if (path.includes("/settings/")) return "settings";
     return "dashboard";
 }

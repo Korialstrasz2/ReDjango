@@ -1,17 +1,14 @@
-from hashlib import sha256
 from pathlib import Path
 from uuid import uuid4
 
-from django.conf import settings
 from django.db import models
 
 from backend.core.models import V2Model
 
 
 def user_media_upload_path(instance, filename: str) -> str:
-    username = getattr(instance.owner, "username", "anonymous") or "anonymous"
     safe_name = Path(filename).name.replace(" ", "_")
-    return f"user_media/{username}/{uuid4().hex}_{safe_name}"
+    return f"user_media/migration_compat/{uuid4().hex}_{safe_name}"
 
 
 def v2_image_upload_path(instance, filename: str) -> str:
@@ -26,47 +23,22 @@ def v2_audio_upload_path(instance, filename: str) -> str:
     return f"v2/audio/{tag}/{uuid4().hex}_{safe_name}"
 
 
-class UserMediaAsset(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="redjango_media_assets")
-    title = models.CharField(max_length=160)
-    original_name = models.CharField(max_length=255)
-    file = models.FileField(upload_to=user_media_upload_path)
-    mime_type = models.CharField(max_length=120, blank=True)
-    size_bytes = models.PositiveBigIntegerField(default=0)
-    sha256 = models.CharField(max_length=64, blank=True, db_index=True)
-    notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+class ImageCategory(V2Model):
+    name = models.CharField(max_length=120, unique=True)
+    slug = models.SlugField(max_length=120, unique=True)
+    description = models.TextField(blank=True)
+    usage_types = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
 
     class Meta:
-        ordering = ["-created_at"]
-        indexes = [
-            models.Index(fields=["owner", "created_at"]),
-        ]
+        ordering = ["order", "name"]
+        verbose_name = "categoria immagine"
+        verbose_name_plural = "categorie immagini"
+        indexes = [models.Index(fields=["is_active", "order", "name"])]
 
     def __str__(self) -> str:
-        return self.title
-
-    @classmethod
-    def checksum(cls, uploaded_file) -> str:
-        digest = sha256()
-        for chunk in uploaded_file.chunks():
-            digest.update(chunk)
-        uploaded_file.seek(0)
-        return digest.hexdigest()
-
-    def to_dict(self) -> dict:
-        url = self.file.url if self.file else ""
-        return {
-            "id": self.id,
-            "title": self.title,
-            "originalName": self.original_name,
-            "url": url,
-            "mimeType": self.mime_type,
-            "sizeBytes": self.size_bytes,
-            "sha256": self.sha256,
-            "notes": self.notes,
-            "createdAt": self.created_at.isoformat() if self.created_at else None,
-        }
+        return self.name
 
 
 class UploadedImage(V2Model):
@@ -76,6 +48,14 @@ class UploadedImage(V2Model):
     thumbnail = models.FileField(upload_to=v2_image_upload_path, null=True, blank=True)
     parent = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="versions")
     usage_type = models.CharField(max_length=80, default="generic")
+    category = models.ForeignKey(
+        ImageCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="images",
+    )
+    group = models.CharField(max_length=160, blank=True)
     campagna = models.ForeignKey(
         "core.DatiCampagna",
         on_delete=models.SET_NULL,
@@ -84,6 +64,11 @@ class UploadedImage(V2Model):
         related_name="uploaded_images",
     )
     is_default_for_usage = models.BooleanField(default=False)
+    visibilita_limitata = models.BooleanField(
+        default=False,
+        verbose_name="Visibilità limitata",
+        help_text="Nell'Archivio immagini è visibile soltanto a Master e Amministratori.",
+    )
     source = models.CharField(max_length=80, blank=True)
     prompt = models.TextField(blank=True)
 
@@ -92,6 +77,8 @@ class UploadedImage(V2Model):
         indexes = [
             models.Index(fields=["usage_type", "is_default_for_usage"]),
             models.Index(fields=["campagna", "folder"]),
+            models.Index(fields=["category", "group", "title"]),
+            models.Index(fields=["visibilita_limitata", "archived_at"], name="media_img_limited_idx"),
         ]
 
     def __str__(self) -> str:
@@ -105,7 +92,11 @@ class UploadedImage(V2Model):
             "url": self.file.url if self.file else "",
             "thumbnailUrl": self.thumbnail.url if self.thumbnail else "",
             "usageType": self.usage_type,
+            "categoryId": self.category_id,
+            "category": self.category.name if self.category_id and self.category else "",
+            "group": self.group,
             "source": self.source,
+            "limitedVisibility": self.visibilita_limitata,
         }
 
 

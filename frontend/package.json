@@ -1,0 +1,32 @@
+{
+  "name": "redjango-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "generate:api": "openapi-typescript ../Builder_docs/openapi-v1.json -o src/lib/generated/api.ts"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "6.3.1",
+    "@tanstack/react-query": "5.101.2",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-router-dom": "7.18.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
+    "jsdom": "26.1.0",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "vite": "8.1.4",
+    "vitest": "4.1.10"
+  }
+}
