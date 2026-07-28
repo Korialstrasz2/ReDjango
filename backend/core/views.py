@@ -17,8 +17,10 @@ from .guides_it import (
     V2_GUIDE_DEFAULTS,
     race_guide_html,
     character_variable_guide_blocks,
+    weapon_catalogue_guide_blocks,
 )
-from .models import GlobalModifiers, Guida
+from .models import GlobalModifiers, Guida, TipoArma
+from .weapon_presets import WEAPON_TYPE_PRESETS
 from .security import get_or_create_giocatore_for_user, security_payload
 
 
@@ -57,6 +59,36 @@ def _dynamic_character_variable_blocks():
     )
 
 
+def _dynamic_weapon_catalogue_blocks():
+    """Read the weapon catalogue from TipoArma, falling back to the shipped presets.
+
+    Seeded rows keep the whole profile under ``rules["profile"]``; anything saved
+    later by hand may only have the plain columns, so both are merged.
+    """
+    presets = {entry["name"]: entry["profile"] for entry in WEAPON_TYPE_PRESETS}
+    entries = []
+    for weapon_type in TipoArma.objects.filter(archived_at__isnull=True):
+        rules = weapon_type.rules if isinstance(weapon_type.rules, dict) else {}
+        profile = rules.get("profile") if isinstance(rules.get("profile"), dict) else {}
+        merged = {**presets.get(weapon_type.nome, {}), **profile}
+        notes = merged.get("bonusNotes") or [
+            note for note in (weapon_type.bonus_1, weapon_type.bonus_2) if note
+        ]
+        entries.append(
+            {
+                **merged,
+                "name": weapon_type.nome,
+                "bonusNotes": notes,
+                # Without a profile the creator cannot suggest modifiers, so the
+                # guide lists the type as incomplete instead of inventing one.
+                "incomplete": not merged.get("combatMode"),
+            }
+        )
+    if not entries:
+        entries = [{**entry["profile"], "name": entry["name"]} for entry in WEAPON_TYPE_PRESETS]
+    return weapon_catalogue_guide_blocks(entries)
+
+
 def _guide_blocks(raw_content):
     if not raw_content:
         return []
@@ -74,6 +106,8 @@ def _guide_blocks(raw_content):
             continue
         if block.get("type") == "dynamic_character_variables":
             expanded.extend(_dynamic_character_variable_blocks())
+        elif block.get("type") == "dynamic_weapon_catalogue":
+            expanded.extend(_dynamic_weapon_catalogue_blocks())
         else:
             expanded.append(block)
     return expanded

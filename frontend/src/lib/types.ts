@@ -20,13 +20,16 @@ export type AlchemyCreationData = components["schemas"]["AlchemyCreationDataSche
 export type AlchemyBrewResult = components["schemas"]["AlchemyBrewResultSchema"];
 export type AlchemyCatalogReagent = components["schemas"]["AlchemyCatalogReagentSchema"];
 
+export type GuideEntry = { title: string; meta?: string; note?: string };
+
 export type GuideBlock = {
-  type: "heading" | "paragraph" | "list" | "code" | "callout" | "warning" | "legacy_html";
+  type: "heading" | "paragraph" | "list" | "code" | "callout" | "warning" | "legacy_html" | "entries";
   text?: string;
   html?: string;
   level?: number;
-  items?: string[];
+  items?: string[] | GuideEntry[];
   title?: string;
+  language?: string;
 };
 
 export type Guide = {

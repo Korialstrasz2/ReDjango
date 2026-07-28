@@ -434,6 +434,7 @@ class Theme(V2Model):
 class DatiCampagna(V2Model):
     nome = models.CharField(max_length=160)
     attiva = models.BooleanField(default=False)
+    monete_condivise = models.PositiveIntegerField(default=0)
     meteo = models.TextField(blank=True)
     ora_corrente = models.CharField(max_length=80, blank=True)
     giorni_da_inizio = models.IntegerField(default=0)

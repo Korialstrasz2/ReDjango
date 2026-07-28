@@ -7,9 +7,10 @@ from pathlib import Path
 from typing import Any
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-07-26-guide-system-review-v3"
+V2_GUIDE_DEFAULT_VERSION = "2026-07-28-guide-system-review-v4"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
+WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
 
 RACE_GUIDE_RACES = (
     "Bosmer", "Dunmer", "Orsimer", "Altmer", "Imperiale", "Bretone",
@@ -31,7 +32,7 @@ CHARACTER_VARIABLE_GROUPS = (
             ("concentrazione", "Concentrazione", "Misura attenzione e controllo. Le formule amministrative possono usarla per Mana, Difesa o altri valori."),
             ("personalita", "Personalità", "Misura presenza e influenza sociale; alimenta anche il relativo modificatore di dado."),
             ("saggezza", "Saggezza", "Misura intuito e giudizio. Le formule amministrative possono usarla per Potere, PA o altri valori."),
-            ("fortuna", "Fortuna", "Misura la sorte del personaggio e alimenta il relativo modificatore di dado e le regole che la richiamano."),
+            ("fortuna", "Fortuna", "Misura la sorte del personaggio, alimenta il relativo modificatore di dado e interviene due volte in combattimento: nella differenza d'attacco (per l'attaccante conta come minimo 12) e nella potenza dei critici."),
         ),
     ),
     (
@@ -42,9 +43,9 @@ CHARACTER_VARIABLE_GROUPS = (
             ("energia", "Energia", "È l'Energia massima usata dalle azioni che richiedono sforzo."),
             ("potere", "Potere", "È il Potere massimo, usato anche dagli sconti delle magie quando la relativa regola è attiva."),
             ("pa", "Punti azione", "Sono i PA disponibili nelle azioni di combattimento. Il carico li riduce, senza scendere sotto 4."),
-            ("attacco", "Attacco", "È il valore generale usato per risolvere gli attacchi, prima di eventuali specializzazioni e modificatori situazionali."),
-            ("difesa", "Difesa", "È il valore generale opposto agli attacchi e alle prove che richiedono una difesa."),
-            ("tier", "Tier", "Indica la fascia di potenza del personaggio. Nel regolamento originario seleziona la progressione dei dadi di danno; l'automazione di combattimento v2 non è ancora completa."),
+            ("attacco", "Attacco", "È il valore sommato al d20 nella risoluzione d'attacco, prima delle specializzazioni d'arma e dei modificatori situazionali."),
+            ("difesa", "Difesa", "È il valore sottratto al totale d'attacco per ottenere la differenza d'attacco, e il riferimento delle prove che richiedono una difesa."),
+            ("tier", "Tier", "Indica la fascia di potenza del personaggio e sceglie la formula dei dadi di danno usata dalla risoluzione d'attacco (tabella configurabile da −5 a 30). È il bersaglio su cui il creator armi salva i bonus chiamati DMG."),
         ),
     ),
     (
@@ -74,8 +75,8 @@ CHARACTER_VARIABLE_GROUPS = (
             ("rd_fuoco", "Riduzione danni da fuoco", "Sottrae una quantità fissa ai danni da fuoco secondo le regole di combattimento."),
             ("rd_gelo", "Riduzione danni da gelo", "Sottrae una quantità fissa ai danni da gelo secondo le regole di combattimento."),
             ("rd_elettro", "Riduzione danni elettrici", "Sottrae una quantità fissa ai danni elettrici secondo le regole di combattimento."),
-            ("ap", "Perforazione armatura", "Ignora una quantità fissa della protezione fisica. Nel calcolo originario restituisce danno solo fino a quanto era stato assorbito."),
-            ("ap_percento", "Perforazione armatura percentuale", "Ignora una percentuale della protezione fisica. Nel calcolo originario si combina con AP senza superare il danno assorbito."),
+            ("ap", "Perforazione armatura", "Ignora una quantità fissa della protezione fisica e restituisce danno solo fino a quanto era stato assorbito. Vale sui danni Contundente, Perforante e Taglio."),
+            ("ap_percento", "Perforazione armatura percentuale", "Ignora una percentuale della protezione assorbita e si somma ad AP senza mai superarla. Vale sui danni Contundente, Perforante e Taglio."),
         ),
     ),
     (
@@ -86,7 +87,7 @@ CHARACTER_VARIABLE_GROUPS = (
             ("mod_peso_equip", "Riduzione peso equipaggiato", "Percentuale di peso ignorata per gli oggetti indossati prima di calcolare il carico."),
             ("slot_magici", "Spazi magici", "Numero di spazi iniziali dello zaino che ignorano il peso degli oggetti contenuti."),
             ("slot_non_magici", "Spazi non magici", "Numero di normali spazi aggiunti alla capacità dello zaino."),
-            ("monete_per_slot", "Monete per spazio", "Numero di monete che occuperebbe uno spazio d'inventario. Il valore è conservato per il regolamento, ma la conversione automatica monete/spazi non è ancora implementata."),
+            ("monete_per_slot", "Monete per spazio", "Numero di monete trasportate che occupa uno spazio dello zaino. Gli spazi Monete sono creati e rimossi automaticamente quando cambia il saldo personale."),
             ("orecchini_max", "Orecchini massimi", "Numero di slot Orecchino utilizzabili; gli slot successivi sono bloccati e non accettano oggetti."),
             ("anelli_max", "Anelli massimi", "Numero di slot Anello utilizzabili; gli slot successivi sono bloccati e non accettano oggetti."),
             ("sacchi_max", "Sacchi massimi", "Numero di slot Sacco utilizzabili; gli slot successivi sono bloccati e non accettano oggetti."),
@@ -238,11 +239,13 @@ def character_variable_guide_blocks(
             blocks.append(
                 {
                     "type": "callout",
-                    "title": "Scala delle resistenze originaria",
+                    "title": "Scala delle resistenze",
                     "text": (
                         "Conversione livello → percentuale: -4 → -45%, -3 → -35%, -2 → -25%, -1 → -15%, "
                         "0 → 0%, 1 → 15%, 2 → 23%, 3 → 30%, 4 → 35%, 5 → 40%, 6 → 45%, "
-                        "7 → 50%, 8 → 55%, 9 → 60%. L'automazione di combattimento v2 è ancora in completamento."
+                        "7 → 50%, 8 → 55%, 9 → 60%. La scala è modificabile dall'amministratore e i livelli "
+                        "sono comunque limitati fra -4 e 9. L'attacco applica prima questa percentuale, "
+                        "poi la RD fissa, infine il recupero da perforazione."
                     ),
                 }
             )
@@ -286,6 +289,180 @@ def character_variable_guide_blocks(
     return blocks
 
 
+WEAPON_TYPE_LABELS = {
+    "accetta": "Accetta", "accettadalancio": "Accetta da lancio", "arcocomposito": "Arco composito",
+    "arcocorto": "Arco corto", "arcolungo": "Arco lungo", "armblade": "Armblade", "ascia": "Ascia",
+    "asciaaduemani": "Ascia a due mani", "balestra": "Balestra",
+    "balestraaripetizione": "Balestra a ripetizione", "bastone": "Bastone",
+    "bastoneconpesi": "Bastone con pesi", "bastonemagico": "Bastone magico",
+    "beccodicorvo": "Becco di corvo", "chukonu": "Chu Ko Nu", "coltello": "Coltello",
+    "coltellodalancio": "Coltello da lancio", "daga": "Daga", "estoc": "Estoc",
+    "fioretto": "Fioretto", "grimorio": "Grimorio", "katana": "Katana", "kriss": "Kriss",
+    "kusarigama": "Kusarigama", "lancia": "Lancia", "maninude": "Mani nude",
+    "martello": "Martello", "martellodaguerra": "Martello da guerra", "mazza": "Mazza",
+    "mazzafrusta": "Mazzafrusta", "natura1": "Forma naturale corta",
+    "natura2": "Forma naturale media", "natura3": "Forma naturale lunga",
+    "nunchaku": "Nunchaku", "picca": "Picca", "rapier": "Rapier", "sciabola": "Sciabola",
+    "shiv": "Shiv", "shuriken": "Shuriken", "spadalunga": "Spada lunga", "spadone": "Spadone",
+    "stiletto": "Stiletto", "tirapugni": "Tirapugni", "tonfa": "Tonfa", "tridente": "Tridente",
+    "zweihander": "Zweihander",
+}
+
+_WEAPON_MODE_SECTIONS = (
+    ("melee", "Armi da mischia", "Colpiscono in contatto. La lunghezza decide i PA per attacco e se servono due mani."),
+    ("throwable", "Armi da lancio", "Gittata base 4 m, poi -2 ATK per cella; gittata massima pari alla Forza in metri; in mischia -4 ATK."),
+    ("ranged", "Armi a distanza", "Gittata base 9 m, poi -2 ATK per cella; in mischia -7 ATK salvo eccezioni. Consumano munizioni dalla faretra."),
+    ("unarmed", "Mani nude", "Profilo usato quando nessuna arma principale è equipaggiata."),
+    ("magic", "Armi magiche", "Focalizzatori arcani con regole proprie."),
+    ("nature", "Forme naturali", "Preset per artigli, zanne e attacchi naturali delle Unit."),
+)
+
+_WEAPON_LENGTH_SUMMARY = {
+    "corta": "corta, 3 PA/attacco, una mano",
+    "media": "media, 4 PA/attacco, una mano",
+    "lunga": "lunga, 6 PA/attacco, due mani",
+    "maninude": "mani nude, 2 PA/attacco",
+}
+
+
+def _weapon_label(name: str) -> str:
+    return WEAPON_TYPE_LABELS.get(name, str(name or "").replace("_", " ").title())
+
+
+def weapon_catalogue_guide_blocks(weapon_types: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """Build the weapon guide from the TipoArma catalogue actually loaded in the game.
+
+    Every number shown here is read from the same presets the weapon creator uses,
+    so the guide cannot drift away from the rules the server applies.
+    """
+    blocks: list[dict[str, Any]] = [
+        {
+            "type": "paragraph",
+            "text": (
+                "Ogni arma combina quattro assi indipendenti: pesantezza, lunghezza, precisione/potenza "
+                "e tipo di danno. Questa pagina è generata dal catalogo Tipi arma caricato nel gioco: "
+                "i valori qui sotto sono gli stessi che il creator armi propone e che il combattimento applica."
+            ),
+        },
+        {
+            "type": "callout",
+            "title": "Come leggere una voce",
+            "text": (
+                "Nome — lunghezza e PA per attacco · pesantezza · precisione/potenza · tipo di danno · "
+                "banda di prezzo. Il bonus in corsivo è la regola speciale del tipo: è un promemoria per il "
+                "Master, non un'automazione."
+            ),
+        },
+        {"type": "heading", "text": "Cosa modifica ogni asse"},
+        {
+            "type": "list",
+            "items": [
+                "Pesantezza — Leggera: +4 Attacco, +1 PA, -3 Tier. Media: nessun bonus. Pesante: -4 Attacco, +3 Tier, +1 Energia.",
+                "Lunghezza — Corta: 3 PA/attacco, -2 Tier, +3 AP. Media: 4 PA/attacco, +1 Tier. Lunga: 6 PA/attacco, +5 Tier, +10% AP. Mani nude: 2 PA/attacco.",
+                "Tipo di danno — Perforante: +1 Tier. Taglio: +1 PA. Contundente: +1 Energia. Magico e Natura non aggiungono modificatori.",
+                "Precisione/potenza — non modifica le statistiche: sceglie soltanto quale competenza d'attacco si applica (Precisa, Media o Potente).",
+                "Materiale — famiglia leggera: +2 PA e +1 Attacco. Famiglia pesante: +2 Energia e +1 Tier. Il tier del materiale (1-7) guida solo il prezzo suggerito.",
+            ],
+        },
+        {
+            "type": "callout",
+            "title": "I bonus DMG sono Tier",
+            "text": (
+                "Tutto ciò che il regolamento chiama bonus al danno è salvato sul bersaglio tier, che sceglie "
+                "la formula dei dadi di danno. Non esiste un bonus di danno fisso separato."
+            ),
+        },
+    ]
+
+    by_mode: dict[str, list[Mapping[str, Any]]] = {}
+    incomplete: list[Mapping[str, Any]] = []
+    for entry in weapon_types:
+        if entry.get("incomplete"):
+            incomplete.append(entry)
+        else:
+            by_mode.setdefault(str(entry.get("combatMode") or "melee"), []).append(entry)
+
+    for mode, title, description in _WEAPON_MODE_SECTIONS:
+        entries = by_mode.get(mode)
+        if not entries:
+            continue
+        blocks.extend(({"type": "heading", "text": title}, {"type": "paragraph", "text": description}))
+        items: list[dict[str, str]] = []
+        for entry in sorted(entries, key=lambda item: _weapon_label(str(item.get("name") or ""))):
+            length = str(entry.get("length") or "")
+            details = [_WEAPON_LENGTH_SUMMARY.get(length, length)]
+            for key in ("heaviness", "power", "damageType"):
+                value = str(entry.get(key) or "")
+                if value and value != "maninude":
+                    details.append(value)
+            band = str(entry.get("costBand") or "")
+            if band:
+                details.append(f"banda {band}")
+            items.append(
+                {
+                    "title": _weapon_label(str(entry.get("name") or "")),
+                    "meta": " · ".join(detail for detail in details if detail),
+                    "note": " ".join(str(note) for note in entry.get("bonusNotes") or []),
+                }
+            )
+        blocks.append({"type": "entries", "items": items})
+
+    if incomplete:
+        blocks.extend(
+            (
+                {"type": "heading", "text": "Tipi arma da completare"},
+                {
+                    "type": "warning",
+                    "title": "Profilo mancante",
+                    "text": (
+                        "Questi Tipi arma non hanno un profilo completo, quindi il creator non può proporne i "
+                        "modificatori: "
+                        + ", ".join(
+                            _weapon_label(str(entry.get("name") or ""))
+                            for entry in sorted(incomplete, key=lambda item: str(item.get("name") or ""))
+                        )
+                        + ". Completali dall'Amministrazione oppure archiviali."
+                    ),
+                },
+            )
+        )
+
+    blocks.extend(
+        (
+            {"type": "heading", "text": "Una mano, due mani e doppia impugnatura"},
+            {
+                "type": "list",
+                "items": [
+                    "La lunghezza determina le mani: Corta e Media sono a una mano, Lunga richiede due mani e lo slot Scudo libero.",
+                    "Per la doppia impugnatura inserisci una seconda arma Corta o Media nello slot Scudo.",
+                    "Una sola arma è primaria: soltanto i suoi effetti e le sue categorie modificano la scheda.",
+                    "Cambiare arma primaria dalla scheda o dal combattimento non costa Punti Azione.",
+                ],
+            },
+            {"type": "heading", "text": "Munizioni e ricarica"},
+            {
+                "type": "list",
+                "items": [
+                    "Un'arma consuma munizioni solo se ha modalità a distanza e un tipo di munizione configurato (freccia, dardo o proiettile).",
+                    "Capacità del caricatore, costo fisso di ricarica e costo per proiettile sono salvati nel profilo dell'arma e usati dalla postazione Combattimento.",
+                    "Le frecce e i dardi vengono prelevati dalla faretra del personaggio.",
+                ],
+            },
+            {
+                "type": "callout",
+                "title": "I modificatori sono incorporati una sola volta",
+                "text": (
+                    "Il creator mostra un'anteprima e il comando Applica modificatori suggeriti. Solo quel comando "
+                    "copia i bonus negli effetti dell'oggetto e il costo PA nel record. Dopo il salvataggio non vengono "
+                    "ricalcolati: puoi cambiare categoria, togliere bonus o creare un'arma con le stesse categorie e "
+                    "nessun modificatore. Prezzo e peso delle bande sono suggerimenti, non vincoli."
+                ),
+            },
+        )
+    )
+    return blocks
+
+
 def _guide_content(*blocks: dict) -> str:
     return json.dumps(list(blocks), ensure_ascii=False, indent=2)
 
@@ -298,69 +475,20 @@ def _difference_warning(text: str) -> dict[str, str]:
     }
 
 
-def _deprecated_short_redjango_rules_guide_content() -> str:
-    """Rebuild-facing companion to Elder's ``Regole Varie``.
-
-    It deliberately documents the rule intent while distinguishing gameplay rules
-    that are stored/calculated by ReDjango from workflows still run by the Master.
-    """
-    implemented = "Implementato in ReDjango"
-    pending = "NON ANCORA IMPLEMENTATO"
-    incorrect = "NON CORRETTO PER REDJANGO"
-    return _guide_content(
-        {"type": "paragraph", "text": "Versione ReDjango della guida Elder “Regole Varie”. Le regole qui sotto sono divise per stato: usa i collegamenti per aprire gli strumenti che le applicano davvero."},
-        {"type": "callout", "title": "Come leggere questa guida", "text": f"{implemented}: la regola ha supporto dati o calcolo nel gioco. {pending}: il Master la gestisce manualmente. {incorrect}: il testo Elder non descrive il comportamento attuale e non va applicato automaticamente."},
-        {"type": "heading", "text": "Indice"},
-        {"type": "list", "items": ["[Personaggio e risorse](/characters)", "[Competenze](/competencies) e [Abilità](/skills)", "[Combattimento](/combat)", "[Creazione e alchimia](/creation)", "[Scheda ed equipaggiamento](/characters)", "[Variabili del personaggio](/guides)"]},
-        {"type": "heading", "text": "Base e risorse del personaggio"},
-        {"type": "paragraph", "text": "Il dado base Elder è d6; prove e soglie rimangono una decisione del Master. PF, Mana, Energia, Potere e PA sono mostrati e calcolati nella scheda; i valori correnti possono essere aggiornati con salvataggio esplicito."},
-        {"type": "warning", "title": pending, "text": "La penalità Elder a 0 PF, il recupero automatico dell'Energia a −1 e il riposo completo non sono un motore di risoluzione automatica. Applicali manualmente finché non saranno introdotti come azioni di gioco."},
-        {"type": "heading", "text": "Competenze e check"},
-        {"type": "paragraph", "text": "Le 21 competenze hanno due barre da 0 a 7. La prima aggiunge il bonus al tiro; la seconda abilita d8, d10, d12, bonus Energia, riduzioni e due rilanci giornalieri al grado 7. Il costo è progressivo/triangolare e i tiri sono eseguiti lato server."},
-        {"type": "callout", "title": implemented, "text": "Apri [Competenze](/competencies): lì trovi avanzamento atomico, extra manuale, bonus da equipaggiamento/effetti/abilità e i tiri. Il Master definisce ancora la soglia e interpreta il risultato."},
-        {"type": "heading", "text": "Equipaggiamento, inventario e carico"},
-        {"type": "paragraph", "text": "La scheda gestisce slot equipaggiati, zaino, spazi magici e normali, faretre e peso. Gli oggetti si spostano con trascinamento o clic; lo scambio è valido solo se entrambe le destinazioni sono compatibili. Il carico riduce i PA senza scendere sotto 4."},
-        {"type": "warning", "title": incorrect, "text": "In Elder slot_magici indicava talvolta slot di equipaggiamento magico. In ReDjango è la quantità iniziale di spazi magici dello zaino che ignorano il peso: non usare la definizione Elder per gli accessori."},
-        {"type": "warning", "title": pending, "text": "La conversione automatica monete/spazi, le regole complete di vestiti/chainmail incompatibili e la logica di rifornimento non sono ancora implementate."},
-        {"type": "heading", "text": "Negozi e viaggio"},
-        {"type": "paragraph", "text": "Elder definisce scorte, produzione su ordinazione, velocità su strada/terreno, stanchezza di viaggio e cavalcature. Usa queste regole come riferimento narrativo del Master."},
-        {"type": "warning", "title": pending, "text": "Non esistono ancora una pagina negozi, stock, acquisti, mappa di viaggio, avanzamento orario o automazione della stanchezza di viaggio."},
-        {"type": "heading", "text": "Combattimento"},
-        {"type": "paragraph", "text": "La postazione [Combattimento](/combat) genera e gestisce Unit, livelli e schede complete. Attacco, Difesa, resistenze, RD, perforazione, tier e costi delle armi restano valori disponibili nella scheda e nei dati degli oggetti."},
-        {"type": "warning", "title": pending, "text": "Iniziativa 1d10 + Mod Agilità + Mod Velocità, griglia esagonale, consumo PA per movimento, attacco-vs-difesa, danno, critici, gittate, opportunità e resistenze/RD NON sono ancora risolti automaticamente dal combattimento ReDjango."},
-        {"type": "heading", "text": "Malattie, status, scassinare e borseggiare"},
-        {"type": "paragraph", "text": "La scheda dispone di effetti persistenti/temporanei strutturati: possono modificare più variabili, avere formule, durata e origine. È la base corretta per stati e malattie personalizzati."},
-        {"type": "warning", "title": pending, "text": "Le tabelle Elder di status/malattie, il tiro giornaliero di guarigione, Cura effetti, scasso con attrezzi fragili e borseggio con soglie non hanno ancora workflow o risoluzione dedicata."},
-        {"type": "heading", "text": "Livelli, PE e creazione del personaggio"},
-        {"type": "paragraph", "text": "Le [Abilità](/skills) applicano prerequisiti, costo PE e sconti atomici; la scheda conserva livello, caratteristiche, razze e bonus tramite effetti. Il calcolo delle statistiche usa il profilo formule amministrativo attivo."},
-        {"type": "warning", "title": incorrect, "text": "La tabella Elder XP 20 + livello, le quattro categorie di PE, perk per livello e la caratteristica preferita automatica non sono un sistema ReDjango attivo. Non assegnarli come automazione senza una regola di campagna esplicita."},
-        {"type": "heading", "text": "Resurrezione, evocazione, insegnamento, grimori e cavalcare"},
-        {"type": "paragraph", "text": "Queste sezioni Elder rimangono materiale di riferimento per il Master: costi, limiti e conseguenze vanno annotati nella sessione e, quando producono un bonus/malus persistente, rappresentati con un effetto strutturato."},
-        {"type": "warning", "title": pending, "text": "Non esistono ancora workflow dedicati per resurrezione, evocazioni, apprendimento con insegnante, grimori, cattura anime o cavalcature."},
-        {"type": "heading", "text": "Alchimia, incantamento e forgiatura"},
-        {"type": "paragraph", "text": "[Creazione](/creation) implementa l'alchimia: borsa canonica, 42 reagenti Elder rosso/verde/blu di livello 1–4, estrazione, miscela fino a quattro reagenti, anteprima della formula e distillazione transazionale. Potenza e soglie 3–30 usano le variabili calcolate del personaggio."},
-        {"type": "warning", "title": pending, "text": "Incantamento (gemme, anime, cariche) e forgiatura (lingotti, miglioramenti, cumulo dei costi) hanno una sede nella Creazione ma non sono ancora implementati. Non applicare automaticamente le tabelle Elder di materiali o miglioramenti."},
-        {"type": "heading", "text": "Modificatori di gioco"},
-        {"type": "paragraph", "text": "Consulta “Variabili del personaggio e alchimia” in questa sezione Guide per valori base, formule attive e dipendenze. Stanchezza, modificatore generale, Fortuna, resistenze, RD, carico, limiti accessori, tier, conversioni magiche e moltiplicatori alchemici sono variabili disponibili agli effetti."},
-        {"type": "warning", "title": pending, "text": "Le conversioni Mana/EN/PA e il sifone sono descritti e configurabili, ma il loro impiego completo nelle azioni di combattimento/magia non è ancora automatizzato."},
-    )
-
 _ELDER_RULES_PATH = Path(__file__).with_name("regole_varie_elder.html")
 
 _RULE_STATUS_NOTES: dict[str | tuple[str, str], tuple[str, str]] = {
     "INDICE": ("implemented", "INDICE ORIGINALE — I collegamenti restano interni a questa guida e portano alle sezioni Elder sottostanti."),
-    "BASE": ("partial", "PARZIALMENTE IMPLEMENTATO — ReDjango offre i dadi e conserva le risorse, ma non applica automaticamente tutte le eccezioni Elder."),
+    "BASE": ("partial", "PARZIALMENTE IMPLEMENTATO — In ReDjango si possono usare tutti i dadi: il d20 risolve gli attacchi, le competenze salgono da d6 a d12 e gli strumenti rapidi tirano qualsiasi set configurato. Le risorse sono conservate, ma non tutte le eccezioni Elder sono applicate automaticamente."),
     "Risorse del Personaggio": ("partial", "PARZIALMENTE IMPLEMENTATO — PF, Mana, Energia, Potere, PA e Stanchezza sono presenti. NON ANCORA IMPLEMENTATI: morte a −Resistenza PF, raddoppio automatico dei PA a 0 PF, ciclo Energia −1/Stanchezza e recuperi completi del riposo."),
     "Competenze e Barre": ("implemented", "IMPLEMENTATO — Due barre 0–7, costo progressivo, tecniche in Energia, dadi superiori e reroll giornalieri sono gestiti nella pagina Competenze."),
     "Lista Competenze": ("implemented", "IMPLEMENTATO — Le 21 competenze Elder sono presenti nell’atlante ReDjango."),
     "Check di Competenza": ("implemented", "IMPLEMENTATO — Il tiro è server-side e somma i bonus; soglia e interpretazione restano al Master, come previsto dalla guida."),
     "Equipaggiamento e Slot": ("partial", "PARZIALMENTE IMPLEMENTATO — Slot, zaino, faretre, limiti di anelli/orecchini/sacchi, compatibilità e peso sono gestiti. Alcune incompatibilità narrative Elder fra strati di vestiario non sono ancora automatizzate."),
-    "NEGOZI": ("missing", "NON ANCORA IMPLEMENTATO — ReDjango non dispone ancora di pagina negozi, stock, ordini, acquisti o rifornimenti automatici. Questa sezione resta regola manuale del Master."),
-    "VIAGGIO": ("missing", "NON ANCORA IMPLEMENTATO — Velocità, terreno, ore di marcia, Stanchezza di viaggio, sonno e cavalcature non hanno ancora un flusso automatico."),
-    "COMBAT": ("partial", "PARZIALMENTE IMPLEMENTATO — Esistono postazione Combattimento, Unit e schede controllabili; NON ANCORA IMPLEMENTATO il motore completo di risoluzione descritto qui."),
-    "Turni, Iniziativa e Punti Azione": ("missing", "NON ANCORA IMPLEMENTATO — Iniziativa, turni, ricarica PA e movimento su griglia non sono risolti automaticamente."),
-    "Attacco, Difesa e Risoluzione": ("missing", "NON ANCORA IMPLEMENTATO — Attacco contro Difesa, danno, moltiplicatori, resistenze, RD e perforazione sono dati disponibili ma non una pipeline automatica di combattimento."),
-    "Critici": ("missing", "NON ANCORA IMPLEMENTATO — Critici, gittata, malus in mischia, ricarica e attacchi di opportunità rimangono regole manuali."),
+    "COMBAT": ("implemented", "IMPLEMENTATO — La postazione Combattimento risolve l’attacco lato server: d20, differenza d’attacco, moltiplicatore di danno, Tier, critici, resistenze, RD e perforazione. Restano manuali soltanto iniziativa e ordine dei turni."),
+    "Turni, Iniziativa e Punti Azione": ("partial", "PARZIALMENTE IMPLEMENTATO — Movimento su griglia e costo in PA sono calcolati (percorso più rapido, moltiplicatori di terreno, celle bloccate o invalicabili, PA arrotondati per eccesso). NON ANCORA IMPLEMENTATI iniziativa e ordine dei turni: il Master li gestisce a mano."),
+    "Attacco, Difesa e Risoluzione": ("implemented", "IMPLEMENTATO — Catena completa: differenza = −4 + Attacco + d20 − Difesa + mod. Fortuna attaccante (calcolato su una Fortuna minima di 12) − mod. Fortuna difensore, limitata da −25 a +45; la tabella d20 × differenza dà la percentuale di danno; il Tier sceglie la formula dei dadi; poi resistenza percentuale, RD fissa e recupero da perforazione. Il tiro di 1 è sempre fallimento critico."),
+    "Critici": ("partial", "PARZIALMENTE IMPLEMENTATO — I critici sono risolti: le soglie crit_min/crit_nor/crit_mag danno +40%/+60%/+80% di danno, corretti dalla Fortuna e dalla differenza d’attacco. NON ANCORA IMPLEMENTATI gittata, malus in mischia e attacchi di opportunità, che restano regole manuali; la ricarica delle armi a distanza è invece gestita dalla postazione."),
     "MALATTIE E STATUS": ("partial", "PARZIALMENTE IMPLEMENTATO — Gli effetti strutturati possono rappresentare stati e malattie; NON ANCORA IMPLEMENTATI guarigione giornaliera, Cura Effetti e scadenza completa legata alla causa."),
     "Status": ("partial", "PARZIALMENTE IMPLEMENTATO — I singoli status possono essere creati come effetti, ma questo catalogo Elder non è ancora applicato e risolto automaticamente."),
     "Malattie": ("partial", "PARZIALMENTE IMPLEMENTATO — Le malattie possono essere registrate come effetti persistenti, ma tiri, progressione, Astinenza e guarigione non sono automatizzati."),
@@ -388,24 +516,24 @@ _RULE_STATUS_NOTES: dict[str | tuple[str, str], tuple[str, str]] = {
     "Creazione degli Oggetti": ("missing", "NON ANCORA IMPLEMENTATO — Lingotti, tempi e rese delle munizioni non vengono consumati o prodotti automaticamente."),
     "Miglioramento degli Oggetti": ("missing", "NON ANCORA IMPLEMENTATO — I miglioramenti elencati non hanno ancora un servizio transazionale di forgiatura."),
     "Cumulare Miglioramenti": ("missing", "NON ANCORA IMPLEMENTATO — Il raddoppio cumulativo dei costi non è calcolato dal sistema."),
-    "MODIFICATORI DI GIOCO": ("partial", "PARZIALMENTE IMPLEMENTATO — Le variabili esistono e possono ricevere effetti; alcune hanno calcolo completo, altre sono solo disponibili per regole future."),
+    "MODIFICATORI DI GIOCO": ("partial", "PARZIALMENTE IMPLEMENTATO — Le variabili esistono e possono ricevere effetti. Quelle di combattimento (Tier, resistenze, RD, perforazione, Attacco, Difesa, Fortuna) sono calcolate e applicate; altre sono conservate in attesa delle regole che le useranno."),
     "stanchezza": ("implemented", "IMPLEMENTATO CON CONFIGURAZIONE REDJANGO — Il valore entra nei totali secondo il profilo amministrativo attivo; la percentuale Elder −8% non è necessariamente fissa."),
     "modificatore_generale": ("implemented", "IMPLEMENTATO CON CONFIGURAZIONE REDJANGO — Il valore modifica i bersagli configurati; il +12% Elder non è necessariamente fisso."),
     "fortuna": ("partial", "PARZIALMENTE IMPLEMENTATO — Fortuna e relativo modificatore sono disponibili ai dadi e alle formule; non tutti gli effetti indiretti Elder sono automatizzati."),
-    "rd_fis": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — RD fisica è calcolabile e visibile, ma non viene sottratta automaticamente in un motore danni completo."),
-    "res_contundente": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — La resistenza è disponibile, ma il danno contundente non è risolto automaticamente."),
-    "res_taglio": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — La resistenza è disponibile, ma il danno da taglio non è risolto automaticamente."),
-    "res_perforante": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — La resistenza è disponibile, ma il danno perforante non è risolto automaticamente."),
-    "res_fuoco": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — La resistenza è disponibile, ma il danno da fuoco non è risolto automaticamente."),
-    "res_gelo": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — La resistenza è disponibile, ma il danno da gelo non è risolto automaticamente."),
-    "res_elettro": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — La resistenza è disponibile, ma il danno elettrico non è risolto automaticamente."),
-    "rd_fuoco": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — RD fuoco è disponibile, ma non applicata da un motore danni completo."),
-    "rd_gelo": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — RD gelo è disponibile, ma non applicata da un motore danni completo."),
-    "rd_elettro": ("partial", "DATO IMPLEMENTATO; RISOLUZIONE NON ANCORA IMPLEMENTATA — RD elettrica è disponibile, ma non applicata da un motore danni completo."),
+    "rd_fis": ("implemented", "IMPLEMENTATO — RD fisica è sottratta dopo la resistenza a ogni danno Contundente, Perforante e Taglio. La perforazione dell’attaccante può recuperare quanto è stato assorbito, mai di più."),
+    "res_contundente": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale dalla scala configurata e sottratto al danno contundente. L'ordine è: resistenza percentuale, poi RD fissa, poi recupero da perforazione."),
+    "res_taglio": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale dalla scala configurata e sottratto al danno da taglio. L'ordine è: resistenza percentuale, poi RD fissa, poi recupero da perforazione."),
+    "res_perforante": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale dalla scala configurata e sottratto al danno perforante. L'ordine è: resistenza percentuale, poi RD fissa, poi recupero da perforazione."),
+    "res_fuoco": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale e sottratto al danno da fuoco; la riduzione fissa usata è rd_fuoco, non rd_fis."),
+    "res_gelo": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale e sottratto al danno da gelo; la riduzione fissa usata è rd_gelo, non rd_fis."),
+    "res_elettro": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale e sottratto al danno elettrico; la riduzione fissa usata è rd_elettro, non rd_fis."),
+    "rd_fuoco": ("implemented", "IMPLEMENTATO — Sottratta al danno da fuoco dopo la resistenza. La perforazione non la recupera: agisce solo sui danni fisici."),
+    "rd_gelo": ("implemented", "IMPLEMENTATO — Sottratta al danno da gelo dopo la resistenza. La perforazione non la recupera: agisce solo sui danni fisici."),
+    "rd_elettro": ("implemented", "IMPLEMENTATO — Sottratta al danno elettrico dopo la resistenza. La perforazione non la recupera: agisce solo sui danni fisici."),
     "slot_magici": ("incorrect", "NON CORRETTO PER REDJANGO — Qui la descrizione Elder parla di equipaggiamento magico; in ReDjango slot_magici indica gli spazi iniziali dello zaino che ignorano il peso."),
     "slot_non_magici": ("implemented", "IMPLEMENTATO — Aggiunge spazi normali allo zaino ReDjango."),
-    "monete_per_slot": ("missing", "NON ANCORA IMPLEMENTATO — Il valore è conservato, ma monete e occupazione degli spazi non vengono convertite automaticamente."),
-    "tier": ("partial", "PARZIALMENTE IMPLEMENTATO — Tier è disponibile in schede, oggetti e Unit; la progressione automatica dei dadi di danno non è completa."),
+    "monete_per_slot": ("implemented", "IMPLEMENTATO — Le monete personali occupano automaticamente spazi protetti nello zaino; l'eccedenza può essere trasferita esplicitamente alle monete condivise della campagna."),
+    "tier": ("implemented", "IMPLEMENTATO — Il Tier totale dell’attaccante sceglie la formula dei dadi di danno nella tabella configurata (da −5 a 30, per esempio 0 → 1d8, 4 → 2d6, 10 → 3d10). È il bersaglio su cui il creator armi salva i bonus chiamati DMG."),
     "sifone_di_mana": ("missing", "NON ANCORA IMPLEMENTATO — La variabile è disponibile, ma accumulo e recupero del sifone non hanno un flusso completo."),
     "ogni_en_x_mana_ordine": ("incorrect", "NOME LEGACY NON CORRETTO PER REDJANGO — ReDjango usa il rapporto unificato ogni_en_x_mana nell’anteprima magie, senza rami Ordine/Caos separati."),
     "ogni_pa_x_mana_ordine": ("incorrect", "NOME LEGACY NON CORRETTO PER REDJANGO — ReDjango usa il rapporto unificato ogni_pa_x_mana nell’anteprima magie, senza rami Ordine/Caos separati."),
@@ -475,14 +603,67 @@ def _redjango_rules_guide_content() -> str:
     return _guide_content({"type": "legacy_html", "html": _annotated_elder_rules_html()})
 
 
+CODE_ITEM_EFFECTS = """[
+  {"target": "attacco", "operation": "add", "value": 3},
+  {"target": "pf", "operation": "add", "value": "floor(personaggio.livello / 2)"}
+]"""
+
+CODE_SKILL = """{
+  "nome": "Svelto 2",
+  "slug": "svelto-2",
+  "numero": 100000002,
+  "famiglia": "Combattimento",
+  "ordine_famiglia": 20,
+  "costo_pe": 5,
+  "tipo_pe": "general",
+  "prerequisiti": ["Svelto 1"],
+  "requisiti": "Richiede Svelto 1.",
+  "metadata": {
+    "unlockRequirements": [
+      {"type": "caratteristica", "stat": "velocita", "minimum": 12}
+    ]
+  }
+}"""
+
+CODE_EFFECT = """{
+  "nome": "Guardia salda",
+  "tipo": "passivo",
+  "origine_tipo": "skill",
+  "origine_nome": "Difensore",
+  "effect_payload": {
+    "operations": [
+      {"target": "difesa", "operation": "add", "value": 2},
+      {"target": "pf", "operation": "add", "value": "floor(personaggio.livello / 3)",
+       "condition": "personaggio.livello >= 5"}
+    ]
+  }
+}"""
+
+CODE_DISEASE = """{
+  "tipo": "malattia",
+  "nome": "Febbre delle paludi",
+  "descrizione": "Indebolisce il viaggiatore finche non viene curato.",
+  "default_duration_turns": 6,
+  "stacking_rule": "refresh",
+  "icon": "veleno",
+  "effect_payload": {
+    "operations": [
+      {"target": "energia", "operation": "subtract", "value": 2}
+    ]
+  }
+}"""
+
+
 V2_GUIDE_DEFAULTS = [
     {
+        "seed_key": "regole-varie",
         "nome": "Regole Varie — ReDjango",
         "categoria": "Regolamento",
         "ordine": 5,
         "contenuto": _redjango_rules_guide_content(),
     },
     {
+        "seed_key": "oggetti",
         "nome": "Creare oggetti correttamente",
         "categoria": "Contenuti",
         "ordine": 10,
@@ -498,21 +679,36 @@ V2_GUIDE_DEFAULTS = [
             {
                 "type": "list",
                 "items": [
-                    "Mantieni nome univoco e leggibile.",
-                    "Usa tipo_1 fino a tipo_4 scegliendo opzioni configurate nell'Amministrazione Django.",
-                    "Imposta modello=True per il catalogo e temporaneo=True per copie irripetibili.",
-                    "Compila valore, peso, rarità (Unico oppure 1-5), livello e regione per negozi e generazione del bottino.",
+                    "Mantieni nome univoco e leggibile: è il campo su cui il resto del sistema ritrova l'oggetto.",
+                    "Usa tipo_1 fino a tipo_4 scegliendo opzioni configurate nell'Amministrazione Django. tipo_1 è quello che conta per negozi e bottino.",
+                    "Imposta modello=True per il catalogo; le copie assegnate a un personaggio hanno modello=False.",
+                    "Compila valore, peso e rarita (Unico oppure 1-5).",
+                    "Per negozi e bottino servono lv_loot (livello singolo o fascia, per esempio 3 oppure 4-6), regione_loot e, se vuoi pesare la regione, peso_regione.",
                     "Conserva i testi Elder in effetto_1 fino a effetto_8 finché non vengono convertiti consapevolmente in effects.",
                 ],
             },
-            {"type": "heading", "text": "Effetti dell'oggetto"},
+            {"type": "heading", "text": "Profili specializzati"},
             {
-                "type": "code",
-                "language": "json",
-                "text": """[
-  {"target": "attacco", "operation": "add", "value": 3},
-  {"target": "pf", "operation": "add", "value": "personaggio.livello * 2"}
-]""",
+                "type": "list",
+                "items": [
+                    "weapon_profile — assi dell'arma, modalità di combattimento, munizioni e ricarica. Vedi la Guida Armi.",
+                    "alchemy_profile — dati del banco alchemico.",
+                    "crafting_profile — dati di forgiatura, ancora in ricostruzione.",
+                    "tipo_arma collega l'oggetto a un Tipo arma del catalogo; pa_per_attacco salva il costo in PA.",
+                    "speciale=True marca gli oggetti anomali o da rivedere; archiviato=True li toglie dall'autoring normale.",
+                ],
+            },
+            {"type": "heading", "text": "Effetti dell'oggetto"},
+            {"type": "code", "language": "json", "text": CODE_ITEM_EFFECTS},
+            {
+                "type": "callout",
+                "title": "Perché un oggetto non compare mai in negozio",
+                "text": (
+                    "Il generatore delle scorte considera soltanto oggetti con modello=True, archiviato=False, "
+                    "speciale=False, rarita diversa da Unico, un lv_loot leggibile e un tipo_1 fra quelli previsti "
+                    "dalla categoria del negozio. Se manca anche una sola condizione l'oggetto viene ignorato in "
+                    "silenzio. La pagina Gestione Negozi elenca gli oggetti esclusi."
+                ),
             },
             {
                 "type": "callout",
@@ -528,6 +724,7 @@ V2_GUIDE_DEFAULTS = [
         ),
     },
     {
+        "seed_key": "armi-uso",
         "nome": "Creare e usare le armi",
         "categoria": "Combattimento",
         "ordine": 15,
@@ -553,8 +750,9 @@ V2_GUIDE_DEFAULTS = [
                 "type": "list",
                 "items": [
                     "Pesantezza: Leggera (+4 ATK, +1 PA, -3 DMG), Media (nessun bonus), Pesante (-4 ATK, +3 DMG, +1 EN).",
-                    "Lunghezza: Corta (3 PA/attacco, -2 DMG, +3 AP), Media (4 PA/attacco, +1 DMG), Lunga (6 PA/attacco, +5 DMG, +10% AP).",
-                    "Danno: Perforante (+1 DMG), Taglio (+1 PA), Contundente (+1 EN).",
+                    "Lunghezza: Corta (3 PA/attacco, -2 DMG, +3 AP), Media (4 PA/attacco, +1 DMG), Lunga (6 PA/attacco, +5 DMG, +10% AP), Mani nude (2 PA/attacco).",
+                    "Danno: Perforante (+1 DMG), Taglio (+1 PA), Contundente (+1 EN). Magico e Natura non aggiungono modificatori.",
+                    "Precisione/potenza non cambia le statistiche: decide soltanto quale competenza d'attacco si applica.",
                     "Materiali leggeri: +2 PA e +1 ATK; materiali pesanti: +2 EN e +1 DMG. Il tier del materiale guida soltanto il prezzo suggerito.",
                     "Le bande A-D propongono prezzo e peso copiati da Elder; sono linee guida e non vincoli.",
                 ],
@@ -585,11 +783,20 @@ V2_GUIDE_DEFAULTS = [
                 "I bonus indicati qui come DMG vengono salvati dal creator sul bersaglio tecnico tier, che determina "
                 "i dadi di danno, non come bonus di danno fisso. Inoltre una munizione viene consumata soltanto per "
                 "un'arma con modalità ranged e ammunitionType configurato; un profilo a distanza senza quel campo "
-                "non preleva frecce, dardi o proiettili dalla faretra."
+                "non preleva frecce, dardi o proiettili dalla faretra. Gittate, malus in mischia e attacchi di "
+                "opportunità restano regole applicate dal Master."
             ),
         ),
     },
     {
+        "seed_key": "guida-armi",
+        "nome": WEAPON_CATALOGUE_GUIDE_NAME,
+        "categoria": "Combattimento",
+        "ordine": 18,
+        "contenuto": _guide_content({"type": "dynamic_weapon_catalogue"}),
+    },
+    {
+        "seed_key": "abilita",
         "nome": "Creare abilità correttamente",
         "categoria": "Contenuti",
         "ordine": 20,
@@ -604,35 +811,29 @@ V2_GUIDE_DEFAULTS = [
             {
                 "type": "list",
                 "items": [
-                    "numero deve rimanere univoco e stabile.",
-                    "famiglia raggruppa l'albero e ordine_famiglia decide la posizione.",
-                    "Usa costo_pe e tipo_pe per il costo strutturato, requisiti per i vincoli di accesso.",
+                    "nome, slug e numero devono restare univoci e stabili.",
+                    "famiglia è un riferimento a FamigliaSkill: usa una famiglia esistente, non una stringa libera. ordine_famiglia decide la posizione nell'albero.",
+                    "costo_pe e tipo_pe definiscono il costo strutturato; tipo_pe accetta all, general, red, green o blue.",
+                    "prerequisiti è la relazione fra Skill che il sistema verifica davvero; requisiti è soltanto testo descrittivo e non blocca lo sblocco.",
+                    "Le condizioni automatiche sul personaggio si scrivono in metadata.unlockRequirements.",
+                    "effetti_passivi e azioni_attive sono salvati sulla Skill; le azioni attive sono promemoria e non spendono risorse da sole.",
                     "Un grado successivo aggiunge soltanto il nuovo incremento, non l'intero totale cumulativo.",
                 ],
             },
             {"type": "heading", "text": "Esempio essenziale"},
+            {"type": "code", "language": "json", "text": CODE_SKILL},
             {
-                "type": "code",
-                "language": "json",
-                "text": """{
-  "nome": "Svelto 2",
-  "numero": 100000002,
-  "famiglia": "Combattimento",
-  "ordine_famiglia": 20,
-  "costo_pe": 5,
-  "requisiti": "Svelto 1"
-}""",
+                "type": "callout",
+                "title": "famiglia e prerequisiti sono relazioni",
+                "text": (
+                    "Nell'esempio i nomi servono a indicare quale FamigliaSkill e quali Skill collegare: "
+                    "vanno risolti in riferimenti reali. Una famiglia inesistente fa fallire il salvataggio."
+                ),
             },
-            _difference_warning(
-                "Nel sistema attuale famiglia è un riferimento a FamigliaSkill, non una stringa libera. requisiti è "
-                "testo descrittivo e non blocca lo sblocco: i prerequisiti verificati sono la relazione prerequisiti "
-                "e le regole strutturate in metadata.unlockRequirements. Passivi e azioni sono salvati direttamente "
-                "in effetti_passivi e azioni_attive della Skill; le azioni attive sono promemoria e non eseguono né "
-                "spendono risorse automaticamente."
-            ),
         ),
     },
     {
+        "seed_key": "effetti",
         "nome": "Creare effetti correttamente",
         "categoria": "Contenuti",
         "ordine": 30,
@@ -640,42 +841,43 @@ V2_GUIDE_DEFAULTS = [
             {
                 "type": "paragraph",
                 "text": (
-                    "Usa Effetto per una modifica strutturata e riutilizzabile. Definisci sempre una fonte, "
+                    "Usa Effetto per una modifica strutturata e riutilizzabile. Definisci sempre un'origine, "
                     "un bersaglio, un'operazione e un valore; aggiungi condizioni soltanto quando sono necessarie."
                 ),
             },
-            {
-                "type": "code",
-                "language": "json",
-                "text": """{
-  "nome": "Guardia salda",
-  "fonte_tipo": "skill",
-  "fonte_nome": "Difensore",
-  "tipo": "passivo",
-  "effect_payload": {
-    "operations": [
-      {"target": "difesa", "operation": "add", "value": 2}
-    ]
-  }
-}""",
-            },
+            {"type": "code", "language": "json", "text": CODE_EFFECT},
+            {"type": "heading", "text": "Operazioni e ordine di applicazione"},
             {
                 "type": "list",
                 "items": [
-                    "Preferisci add, subtract, multiply, percent, min, max, cap e set.",
-                    "Usa formule leggibili e limitate alle chiavi consentite.",
-                    "Descrizione e messaggi devono spiegare chiaramente l'effetto in italiano.",
+                    "Nell'ordine: add, subtract, multiply, percent, min, max oppure cap, set.",
+                    "formula_override agisce prima di tutte: sostituisce la formula base della statistica.",
+                    "strong_set agisce per ultima e blocca il valore finale anche dopo Stanchezza e Modificatore generale; set invece resta soggetto a quelle correzioni.",
+                    "Un effetto può contenere al massimo 24 operazioni.",
                 ],
             },
-            _difference_warning(
-                "L'esempio usa i nomi fonte_tipo e fonte_nome, ma il modello Effetto corrente espone origine_tipo e "
-                "origine_nome. L'editor della scheda crea invece EffettoPersonalizzato con righe di operazione "
-                "separate. Oltre alle operazioni elencate sono supportate strong_set (Imposta forte) e "
-                "formula_override; quest'ultima sostituisce la formula prima delle altre operazioni."
-            ),
+            {"type": "heading", "text": "Formule"},
+            {
+                "type": "list",
+                "items": [
+                    "Al posto di un numero puoi scrivere un calcolo, senza il segno = iniziale.",
+                    "Sono disponibili base.<variabile>, final.<variabile> e i campi anagrafici sotto personaggio: livello, eta, monete, danno, mana_speso, energia_spesa, potere_speso, mana_in_sifone, pe_generali, pe_rossi, pe_verdi, pe_blu, pe_abilita.",
+                    "condition applica la modifica soltanto quando l'espressione è vera, per esempio final.pf < 10.",
+                ],
+            },
+            {
+                "type": "callout",
+                "title": "Effetto ed EffettoPersonalizzato",
+                "text": (
+                    "Effetto è il catalogo riutilizzabile con origine_tipo e origine_nome. L'editor della scheda "
+                    "crea invece EffettoPersonalizzato, con le stesse operazioni scritte su righe separate. "
+                    "Descrizione e messaggi devono spiegare l'effetto in italiano."
+                ),
+            },
         ),
     },
     {
+        "seed_key": "malattie-stati",
         "nome": "Creare malattie e stati correttamente",
         "categoria": "Contenuti",
         "ordine": 40,
@@ -687,22 +889,7 @@ V2_GUIDE_DEFAULTS = [
                     "Il record definisce durata, regola di cumulo e operazioni applicate al personaggio."
                 ),
             },
-            {
-                "type": "code",
-                "language": "json",
-                "text": """{
-  "tipo": "malattia",
-  "nome": "Febbre delle paludi",
-  "descrizione": "Indebolisce il viaggiatore finché non viene curato.",
-  "default_duration_turns": 6,
-  "stacking_rule": "refresh",
-  "effect_payload": {
-    "operations": [
-      {"target": "energia", "operation": "subtract", "value": 2}
-    ]
-  }
-}""",
-            },
+            {"type": "code", "language": "json", "text": CODE_DISEASE},
             {
                 "type": "callout",
                 "title": "Durata e cumulo",
@@ -717,53 +904,16 @@ V2_GUIDE_DEFAULTS = [
         ),
     },
     {
-        "nome": "Creare negozi correttamente",
-        "categoria": "Contenuti",
-        "ordine": 50,
-        "contenuto": _guide_content(
-            {
-                "type": "paragraph",
-                "text": (
-                    "Usa Negozio per descrivere esercizio, proprietario, regione, città e inventario. "
-                    "Le immagini di regione, città e sfondo sono record dell'Archivio immagini e possono essere riutilizzate."
-                ),
-            },
-            {
-                "type": "list",
-                "items": [
-                    "Mantieni regione e città in campi separati.",
-                    "lista_oggetti può contenere riferimenti diretti oppure filtri per la generazione.",
-                    "Usa generation_seed per rigenerazioni ripetibili.",
-                    "Aggiorna le scorte invece di duplicare il negozio a ogni rifornimento.",
-                ],
-            },
-            {"type": "heading", "text": "Scorte miste"},
-            {
-                "type": "code",
-                "language": "json",
-                "text": """[
-  {"oggetto_nome": "Martello elfico", "quantita": 1, "prezzo_mod": 1.15},
-  {"tipo_1": "arma", "rarita_min": 2, "rarita_max": 4, "quantita": "2d3"}
-]""",
-            },
-            _difference_warning(
-                "Negozio, lista_oggetti e generation_seed esistono nel database, ma non c'è ancora una pagina negozi, "
-                "un generatore di scorte o un comando di rifornimento che interpreti questi esempi. Riferimenti, filtri, "
-                "quantità a dadi e seed restano quindi dati descrittivi finché il relativo servizio non viene implementato."
-            ),
-        ),
-    },
-    {
+        "seed_key": "variabili-personaggio",
         "nome": CHARACTER_VARIABLE_GUIDE_NAME,
         "categoria": "Personaggio",
         "ordine": 60,
         "contenuto": _guide_content(
             {"type": "dynamic_character_variables"},
             _difference_warning(
-                "Il combattimento attuale usa già Tier, dadi di danno, resistenze, riduzioni e perforazione, quindi le "
-                "note che li descrivono come automazione ancora incompleta sono superate. Al contrario, i PA non hanno "
-                "uno storico di spesa persistente lato server e l'anteprima degli incantesimi non spende risorse; anche "
-                "Sifone di Mana ed en_per_mana/pa_per_mana restano valori compatibili con Elder, non automazioni attive."
+                "Alcune variabili sono calcolate e mostrate ma non ancora spese automaticamente: i PA non hanno uno "
+                "storico di spesa persistente lato server, l'anteprima degli incantesimi non consuma risorse, e "
+                "Sifone di Mana, en_per_mana e pa_per_mana restano valori compatibili con Elder senza automazione attiva."
             ),
         ),
     },

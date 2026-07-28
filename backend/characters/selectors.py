@@ -35,6 +35,7 @@ from .services.inventory_rules import (
     normalize_item_types,
     quiver_capacity,
 )
+from .services.coins import COIN_SYSTEM_KEY, coin_storage_payload
 from .services.refresh_personaggio import collect_calculation_effects
 from .services.extended_inventory import (
     PERSONAL_CONTAINER_CAPACITY,
@@ -356,6 +357,13 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
         "imageUrl": _item_image_url(item),
         "archived": item.archiviato,
         "special": item.speciale,
+        "systemManaged": bool(
+            isinstance(item.metadata, dict)
+            and (
+                item.metadata.get("systemManaged")
+                or item.metadata.get("systemKey") == COIN_SYSTEM_KEY
+            )
+        ),
         "isProjectile": bool(
             normalize_item_types(item)
             & {"freccia", "frecce", "dardo", "dardi", "proiettile", "proiettili", "munizione", "munizioni"}
@@ -450,6 +458,7 @@ def _reagent_bag_payload(
 
 
 def _slot_payload(group: str, index: int, capacity: int, item: Oggetto | None, *, magical: bool = False) -> dict:
+    item_payload = serialize_item(item)
     return {
         "id": f"{group}:{index}",
         "group": group,
@@ -463,7 +472,8 @@ def _slot_payload(group: str, index: int, capacity: int, item: Oggetto | None, *
         "quantity": 1,
         "stackable": False,
         "weightless": False,
-        "item": serialize_item(item),
+        "systemManaged": bool(item_payload and item_payload["systemManaged"]),
+        "item": item_payload,
     }
 
 
@@ -552,6 +562,7 @@ def _extended_container_payload(personaggio: Personaggio, group: str) -> dict[st
                 "quantity": quantity,
                 "stackable": True,
                 "weightless": True,
+                "systemManaged": False,
                 "item": item_payload,
             }
         )
@@ -1110,6 +1121,7 @@ def personaggio_detail(
         "quiver": _container_payload(personaggio, "quiver", personaggio.faretra, items),
         "utilityContainer": _extended_container_payload(personaggio, "utility"),
         "campaignContainer": _extended_container_payload(personaggio, "campaign"),
+        "coinStorage": coin_storage_payload(personaggio),
         "effects": _effects(personaggio),
         # Skill cards, pricing and prerequisite analysis belong to /skills.
         # The character sheet does not render them, and calculating them here

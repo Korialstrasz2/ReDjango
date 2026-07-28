@@ -227,6 +227,13 @@ def assign_extended_item(
             item = Oggetto.objects.get(pk=item_id, archiviato=False, archived_at__isnull=True)
         except Oggetto.DoesNotExist as exc:
             raise ApiError("inventory.item_not_found", "Oggetto non trovato.", "itemId", 404) from exc
+        if isinstance(item.metadata, dict) and item.metadata.get("systemManaged"):
+            raise ApiError(
+                "inventory.system_item_managed",
+                f"{item.nome} è gestito automaticamente e non può essere inserito manualmente.",
+                "itemId",
+                409,
+            )
         if group == "utility" and (legacy_key := legacy_reagent_stock_key(item)):
             item_id = None
             item = None

@@ -106,6 +106,35 @@ class CharacterWorkspaceApiTests(TestCase):
             },
         )
 
+    def test_player_can_update_carried_and_shared_coins_through_typed_actions(self):
+        carried = self.command(
+            "character.updateCoins",
+            {
+                "characterId": self.character.id,
+                "coins": 0,
+                "expectedCoins": self.character.monete,
+                "transferOverflow": False,
+            },
+        )
+        self.assertEqual(carried.status_code, 200)
+        carried_sheet = carried.json()["data"]["character"]
+        self.assertEqual(carried_sheet["coins"], 0)
+        self.assertEqual(carried_sheet["coinStorage"]["requiredSlots"], 0)
+
+        self.character.campagna.refresh_from_db()
+        shared = self.command(
+            "campaign.updateSharedCoins",
+            {
+                "characterId": self.character.id,
+                "coins": 4_321,
+                "expectedCoins": self.character.campagna.monete_condivise,
+            },
+        )
+        self.assertEqual(shared.status_code, 200)
+        shared_sheet = shared.json()["data"]["character"]
+        self.assertEqual(shared_sheet["coinStorage"]["sharedCoins"], 4_321)
+        self.assertEqual(shared_sheet["campaignContainer"]["occupied"], carried_sheet["campaignContainer"]["occupied"])
+
     def test_sheet_and_stack_updates_do_not_recalculate_owned_skill_cards(self):
         family = FamigliaSkill.objects.first()
         skills = [
@@ -1226,7 +1255,8 @@ class CharacterWorkspaceApiTests(TestCase):
         schema_text = json.dumps(response.json())
         for action in (
             "inventory.swapItems", "inventory.assignItem", "character.updateResource",
-            "character.adjustQuickStat", "character.rest", "character.updateOverview", "effects.apply", "effects.remove",
+            "character.adjustQuickStat", "character.rest", "character.updateOverview",
+            "character.updateCoins", "campaign.updateSharedCoins", "effects.apply", "effects.remove",
             "items.create", "items.update", "items.archive", "items.compareSave",
             "management.characters.update", "management.characters.delete", "management.characters.attach",
         ):

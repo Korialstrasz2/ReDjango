@@ -35,6 +35,7 @@ const slot = (overrides: Partial<CharacterSlot>): CharacterSlot => ({
   quantity: 1,
   stackable: false,
   weightless: false,
+  systemManaged: false,
   item: null,
   ...overrides,
 });

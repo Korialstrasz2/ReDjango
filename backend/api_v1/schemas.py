@@ -34,6 +34,7 @@ class ItemSchema(Schema):
     imageUrl: str = ""
     archived: bool = False
     special: bool = False
+    systemManaged: bool = False
     isProjectile: bool = False
     compatibleEquipmentSlots: list[str] = []
     model: bool | None = None
@@ -67,6 +68,7 @@ class SlotSchema(Schema):
     quantity: int = 1
     stackable: bool = False
     weightless: bool = False
+    systemManaged: bool = False
     item: ItemSchema | None = None
 
 
@@ -91,6 +93,18 @@ class ContainerSchema(Schema):
     shared: bool = False
     available: bool = True
     slots: list[SlotSchema]
+
+
+class CoinStorageSchema(Schema):
+    coinsPerSlot: int
+    requiredSlots: int
+    placedSlots: int
+    availableSlots: int
+    maxCarryableCoins: int
+    fits: bool
+    coinItemId: int | None = None
+    sharedCoins: int = 0
+    canTransferToShared: bool = False
 
 
 class CalculationContributionSchema(Schema):
@@ -265,6 +279,7 @@ class CharacterSheetSchema(CharacterSummarySchema):
     quiver: ContainerSchema
     utilityContainer: ContainerSchema
     campaignContainer: ContainerSchema
+    coinStorage: CoinStorageSchema
     effects: list[EffectSchema]
     skills: list[dict[str, Any]]
     abilities: list[dict[str, Any]]
@@ -390,6 +405,20 @@ class RestPayloadSchema(Schema):
 class OverviewPayloadSchema(Schema):
     characterId: int
     values: dict[str, Any]
+
+
+class CoinsPayloadSchema(Schema):
+    characterId: int
+    coins: int = Field(ge=0, le=2_147_483_647)
+    expectedCoins: int | None = Field(default=None, ge=0, le=2_147_483_647)
+    transferOverflow: bool = False
+    expectedSharedCoins: int | None = Field(default=None, ge=0, le=2_147_483_647)
+
+
+class SharedCoinsPayloadSchema(Schema):
+    characterId: int
+    coins: int = Field(ge=0, le=2_147_483_647)
+    expectedCoins: int | None = Field(default=None, ge=0, le=2_147_483_647)
 
 
 class ApplyEffectPayloadSchema(Schema):
@@ -1269,6 +1298,16 @@ class OverviewActionSchema(ActionBaseSchema):
     payload: OverviewPayloadSchema
 
 
+class CoinsActionSchema(ActionBaseSchema):
+    action: Literal["character.updateCoins"]
+    payload: CoinsPayloadSchema
+
+
+class SharedCoinsActionSchema(ActionBaseSchema):
+    action: Literal["campaign.updateSharedCoins"]
+    payload: SharedCoinsPayloadSchema
+
+
 class ApplyEffectActionSchema(ActionBaseSchema):
     action: Literal["effects.apply"]
     payload: ApplyEffectPayloadSchema
@@ -1698,6 +1737,8 @@ ActionEnvelopeSchema = Annotated[
     | QuickStatActionSchema
     | RestActionSchema
     | OverviewActionSchema
+    | CoinsActionSchema
+    | SharedCoinsActionSchema
     | ApplyEffectActionSchema
     | RemoveEffectActionSchema
     | CreateEffectActionSchema

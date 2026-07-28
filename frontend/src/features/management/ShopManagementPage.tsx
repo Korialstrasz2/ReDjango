@@ -14,10 +14,11 @@ import type {
   ShopSummary,
   ShopType,
   ShopTypeConfiguration,
+  StockEligibility,
 } from "../market/types";
 import { itemTypeLabel, rankOptions, shopIcon, shopIconOptions, uniqueSlug } from "../market/ui";
 
-type WorkspaceTab = "territory" | "types" | "profiles" | "generator" | "batch";
+type WorkspaceTab = "territory" | "types" | "profiles" | "eligibility" | "generator" | "batch";
 
 function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
   const target = index + direction;
@@ -303,6 +304,51 @@ function BatchCreator({ market, saving, onCreate }: { market: MarketData; saving
   </section>;
 }
 
+const EXCLUSION_HINTS: Record<string, string> = {
+  notTemplate: "Sono copie assegnate, non modelli di catalogo. Normale per gli oggetti già in mano ai personaggi.",
+  archived: "Voluto se l'oggetto è fuori uso; toglilo dall'archivio per rimetterlo in circolazione.",
+  special: "Marcati come anomali o da rivedere. È la causa più frequente: controlla se il flag è ancora giustificato.",
+  unique: "I pezzi Unici sono esclusi per scelta: vanno assegnati a mano.",
+  noLootLevel: "Basta compilare lv_loot con un livello (3) o una fascia (4-6).",
+  unrankedType: "Il tipo_1 non compare in nessuna categoria di negozio, oppure ha rango 5. Aggiungilo in Tipi e assortimento.",
+};
+
+function StockEligibilityPanel({ report }: { report: StockEligibility }) {
+  const [reason, setReason] = useState<string>("");
+  const samples = reason ? report.samples.filter((item) => item.reasons.includes(reason)) : report.samples;
+  const total = report.eligibleCount + report.excludedCount;
+  return <section className="panel stock-eligibility-panel" data-component-type="report" data-theme="parchment">
+    <div className="callout guide-warning stock-eligibility-alert" role="alert">
+      <strong>{report.excludedCount} oggetti su {total} non possono comparire in nessun negozio</strong>
+      <p>Il generatore delle scorte scarta in silenzio ogni oggetto che non superi tutti i filtri. Un oggetto escluso non verrà mai generato, in nessuna categoria e a nessun livello.</p>
+    </div>
+    <p className="stock-eligibility-summary">Idonei alla generazione: <strong>{report.eligibleCount}</strong>. Un oggetto può essere escluso per più motivi contemporaneamente.</p>
+    <ul className="stock-eligibility-reasons">
+      {report.reasons.map((entry) => <li key={entry.key}>
+        <button type="button" className={reason === entry.key ? "active" : ""} aria-pressed={reason === entry.key} onClick={() => setReason(reason === entry.key ? "" : entry.key)}>
+          <strong>{entry.count}</strong><span>{entry.label}</span>
+        </button>
+        <small>{EXCLUSION_HINTS[entry.key]}</small>
+      </li>)}
+    </ul>
+    <h3>Oggetti esclusi{reason ? ` — ${report.reasons.find((entry) => entry.key === reason)?.label}` : ""}</h3>
+    <p className="stock-eligibility-summary">Elenco limitato ai primi {report.sampleLimit} oggetti esclusi. Mostrati: {samples.length}.</p>
+    <div className="table-scroll">
+      <table className="data-table stock-eligibility-table">
+        <thead><tr><th>Oggetto</th><th>tipo_1</th><th>lv_loot</th><th>Motivi</th></tr></thead>
+        <tbody>
+          {samples.map((item) => <tr key={item.id}>
+            <td>{item.name}</td>
+            <td>{item.itemType || <em>vuoto</em>}</td>
+            <td>{item.lootLevel || <em>vuoto</em>}</td>
+            <td>{item.reasons.map((key) => report.reasons.find((entry) => entry.key === key)?.label || key).join(" · ")}</td>
+          </tr>)}
+        </tbody>
+      </table>
+    </div>
+  </section>;
+}
+
 function ShopManagementWorkspace({ market, saving, onSave, onAssign, onBatch }: {
   market: MarketData;
   saving: boolean;
@@ -321,6 +367,7 @@ function ShopManagementWorkspace({ market, saving, onSave, onAssign, onBatch }: 
     { key: "territory", label: "Territorio", count: locations.regions.length },
     { key: "types", label: "Tipi e assortimento", count: shopTypes.types.length },
     { key: "profiles", label: "Profili", count: profiles.profiles.length },
+    ...(market.stockEligibility ? [{ key: "eligibility" as const, label: "Oggetti esclusi", count: market.stockEligibility.excludedCount }] : []),
     ...(market.permissions.canTuneGenerator ? [{ key: "generator" as const, label: "Generatore" }] : []),
     ...(market.permissions.canBatchCreate ? [{ key: "batch" as const, label: "Operazioni multiple" }] : []),
   ];
@@ -338,6 +385,7 @@ function ShopManagementWorkspace({ market, saving, onSave, onAssign, onBatch }: 
     {tab === "territory" && <TerritoryEditor configuration={locations} market={market} onChange={setLocations} />}
     {tab === "types" && <ShopTypesEditor configuration={shopTypes} itemTypes={market.configuration.itemTypes || []} shops={market.shops} onChange={setShopTypes} />}
     {tab === "profiles" && <ProfilesEditor configuration={profiles} shops={market.shops} canEdit={market.permissions.canEditGenerationProfiles} assigning={saving} onChange={setProfiles} onAssign={onAssign} />}
+    {tab === "eligibility" && market.stockEligibility && <StockEligibilityPanel report={market.stockEligibility} />}
     {tab === "generator" && rules && <section className="panel shop-generator-workspace" data-component-type="form" data-theme="parchment"><GeneratorRulesEditor rules={rules} onChange={setRules} /></section>}
     {tab === "batch" && <BatchCreator market={market} saving={saving} onCreate={onBatch} />}
     {tab !== "batch" && <footer className="sticky-actions shop-management-savebar" data-component-type="toolbar" data-theme="dark"><span>{isDirty ? "Modifiche non ancora salvate" : "Configurazione aggiornata"}</span><button type="button" className="button primary" disabled={saving || !isDirty} onClick={save}>{saving ? "Salvataggio…" : "Salva configurazione"}</button></footer>}
@@ -364,6 +412,9 @@ export function ShopManagementPage() {
 
   return <div className="page management-page shop-management-page">
     <header className="page-header"><div><p className="eyebrow">Gestione del gioco</p><h1>Gestione Negozi</h1><p>Struttura del mondo commerciale, assortimenti e profili di generazione in un'unica postazione.</p></div><div className="button-row"><Link className="button secondary" to="/tools">Tutti gli strumenti</Link><Link className="button secondary" to="/market">Apri Mercato</Link></div></header>
+    {market?.stockEligibility && market.stockEligibility.excludedCount > 0 && <section className="panel danger-panel stock-eligibility-banner" role="alert">
+      <p><strong>{market.stockEligibility.excludedCount} oggetti non possono comparire in nessun negozio.</strong> Il generatore li scarta senza avvisare: mancano i requisiti di modello, archiviazione, rarità, lv_loot o tipo_1.</p>
+    </section>}
     {managementQuery.isLoading && <section className="panel"><p>Preparazione della gestione negozi…</p></section>}
     {managementQuery.error && <section className="panel danger-panel"><p>{(managementQuery.error as Error).message}</p></section>}
     {market?.configuration.locations && market.configuration.shopTypes && market.configuration.generationProfiles && <ShopManagementWorkspace

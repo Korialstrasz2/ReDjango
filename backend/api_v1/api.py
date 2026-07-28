@@ -15,6 +15,7 @@ from backend.characters.alchemy_selectors import alchemy_creation_payload
 from backend.characters.note_selectors import character_notes_payload
 from backend.characters.selectors import effect_catalog_payload, ordered_personaggi_for, personaggio_detail, serialize_item
 from backend.characters.services.commands import adjust_quick_stat, apply_effect, assign_item, rest_character, swap_items, switch_primary_weapon, update_overview, update_resource
+from backend.characters.services.coins import update_carried_coins, update_shared_coins
 from backend.characters.services.extended_inventory import (
     EXTENDED_INVENTORY_GROUPS,
     assign_extended_item,
@@ -657,6 +658,29 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             character = update_overview(payload["characterId"], payload["values"])
             data = {"character": _character_sheet_payload(character, user, giocatore)}
             message = "Personaggio aggiornato."
+        elif action == "character.updateCoins":
+            result = update_carried_coins(
+                payload["characterId"],
+                payload["coins"],
+                transfer_overflow=payload.get("transferOverflow", False),
+                expected_coins=payload.get("expectedCoins"),
+                expected_shared_coins=payload.get("expectedSharedCoins"),
+            )
+            character = result.character
+            data = {"character": _character_sheet_payload(character, user, giocatore)}
+            message = (
+                f"{result.transferred} monete trasferite alle risorse condivise."
+                if result.transferred
+                else "Monete trasportate aggiornate."
+            )
+        elif action == "campaign.updateSharedCoins":
+            character = update_shared_coins(
+                payload["characterId"],
+                payload["coins"],
+                expected_coins=payload.get("expectedCoins"),
+            )
+            data = {"character": _character_sheet_payload(character, user, giocatore)}
+            message = "Monete condivise aggiornate."
         elif action == "effects.apply":
             character = apply_effect(payload["characterId"], payload["effectId"])
             data = {"character": _character_sheet_payload(character, user, giocatore)}

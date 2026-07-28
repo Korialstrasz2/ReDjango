@@ -11,6 +11,7 @@ import { CharacterEffectsWorkspace } from "./CharacterEffectsWorkspace";
 import { CharacterEquipment } from "./CharacterEquipment";
 import { CharacterSlot } from "./CharacterSlot";
 import { ItemEditorModal } from "./ItemEditorModal";
+import { CarriedCoinsControl, SharedCoinsCard } from "./CoinControls";
 
 type RaceConfiguration = {
   races: Array<{ value: string; label: string; subraces: Array<{ value: string; label: string }> }>;
@@ -21,6 +22,7 @@ type ActionData = { character?: CharacterSheet | null; item?: Item | null; catal
 
 export function fits(item: Item | null | undefined, target: Slot): boolean {
   if (!item) return true;
+  if (target.systemManaged) return false;
   if (target.isLocked) return false;
   const storageOnly = Boolean((item.metadata as Record<string, unknown> | undefined)?.storageOnly);
   if (target.group === "utility" || target.group === "campaign") return true;
@@ -254,7 +256,7 @@ export function CharacterPage() {
     return [
       ...(itemSearchQuery.data?.items || []),
       ...storageItems.filter((item) => !query || [item.name, item.description, ...item.types].some((value) => value.toLocaleLowerCase("it").includes(query))),
-    ];
+    ].filter((item) => !item.systemManaged);
   }, [deferredSearch, itemSearchQuery.data?.items, sheetQuery.data?.storageCatalog]);
   const selectedCatalogItem = searchableItems.find((item) => item.id === selectedCatalogItemId) || null;
   const selectedItem = selectedCatalogItem || selectedSlot?.item || null;
@@ -442,7 +444,7 @@ export function CharacterPage() {
       <div className="items-stage-object">
       <button className="objects-spine" type="button" onClick={() => setEffectsOpen(false)} aria-label="Torna a equipaggiamento e inventario"><span>OGGETTI</span></button>
       <section className="items-workspace panel"><header className="panel-header"><div><p className="eyebrow">Oggetti</p><h2>Equipaggiamento e inventario</h2></div><div className="button-row">{character.permissions.canManageItems && <button className="button secondary" onClick={() => setItemEditor({ item: null })}>Crea oggetto</button>}</div></header><div className="items-columns">
-        <section className="equipment-column"><CharacterEquipment character={character} selectedSlotId={selectedSlotId} moveSourceId={moveSourceId} equipItem={selectedCatalogItem} actionPending={actionMutation.isPending} compatibility={slotCompatibility} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onSwitchPrimary={() => actionMutation.mutate({ action: "equipment.switchPrimaryWeapon", payload: { characterId: id } })} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} /></section>
+        <section className="equipment-column"><CharacterEquipment character={character} selectedSlotId={selectedSlotId} moveSourceId={moveSourceId} equipItem={selectedCatalogItem} actionPending={actionMutation.isPending} compatibility={slotCompatibility} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onSwitchPrimary={() => actionMutation.mutate({ action: "equipment.switchPrimaryWeapon", payload: { characterId: id } })} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} coinsControl={<CarriedCoinsControl character={character} onUpdate={updateCharacter} />} /></section>
         <section className="container-column">
           <div className="container-tabs">
             <button className={containerView === "backpack" ? "active" : ""} onClick={() => setContainerView("backpack")}>Zaino <span>{character.inventory.occupied}/{character.inventory.capacity}{character.inventory.magicalSlots > 0 ? ` (${character.inventory.magicalSlots} magici)` : ""}</span></button>
@@ -452,7 +454,7 @@ export function CharacterPage() {
           </div>
           {containerView === "quiver" && <div className="capacity-note"><strong>Capacità dai contenitori equipaggiati</strong><span>Solo frecce, dardi e proiettili.</span></div>}
           {(containerView === "utility" || containerView === "campaign") && <div className="capacity-note"><strong>{visibleContainer.shared ? "Condiviso con la campagna" : "Alchimia, pozioni e pergamene"}</strong><span>Le pile occupano uno spazio e il peso non viene conteggiato.</span></div>}
-          <div className="container-grid">{containerSlots.map((slot) => <CharacterSlot key={slot.id} slot={slot} selected={selectedSlotId === slot.id} moveSource={moveSourceId === slot.id} compatibility={slotCompatibility(slot)} equipItem={selectedCatalogItem} actionsVisible={selectedSlotId === slot.id} actionPending={actionMutation.isPending} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onQuantityChange={containerView === "utility" || containerView === "campaign" ? changeSlotQuantity : changeSlotQuantityImmediately} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} />)}</div>
+          <div className="container-grid">{containerView === "campaign" && <SharedCoinsCard character={character} onUpdate={updateCharacter} />}{containerSlots.map((slot) => <CharacterSlot key={slot.id} slot={slot} selected={selectedSlotId === slot.id} moveSource={moveSourceId === slot.id} compatibility={slotCompatibility(slot)} equipItem={selectedCatalogItem} actionsVisible={selectedSlotId === slot.id} actionPending={actionMutation.isPending} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onQuantityChange={containerView === "utility" || containerView === "campaign" ? changeSlotQuantity : changeSlotQuantityImmediately} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} />)}</div>
           {character.permissions.canShowLockedSlots && visibleContainer.slots.some((slot) => slot.isLocked) && <button className="locked-toggle" onClick={() => setShowLocked((value) => !value)}>{showLocked ? "Nascondi spazi bloccati" : `Mostra ${visibleContainer.slots.filter((slot) => slot.isLocked).length} spazi bloccati`}</button>}
         </section>
         <aside className="item-inspector">

@@ -554,27 +554,30 @@ class Command(BaseCommand):
         return touched
 
     def _seed_guides(self) -> int:
+        # Guides are matched on their stable seed_key, never on ordine or nome:
+        # both are editable, so matching on them made a reordered or renamed
+        # guide overwrite an unrelated row.
         touched = 0
         for guide_defaults in V2_GUIDE_DEFAULTS:
-            guide = Guida.objects.filter(
-                metadata__seed_kind="guide",
-                ordine=guide_defaults.get("ordine", 0),
-            ).first()
-            created = guide is None
+            seed_key = guide_defaults["seed_key"]
+            guide = (
+                Guida.objects.filter(metadata__seed_key=seed_key).first()
+                or Guida.objects.filter(
+                    metadata__seed_kind="guide", nome=guide_defaults["nome"]
+                ).first()
+            )
             if guide is None:
-                guide, created = Guida.objects.get_or_create(
+                Guida.objects.create(
                     nome=guide_defaults["nome"],
-                    defaults={
-                        "categoria": guide_defaults.get("categoria", ""),
-                        "ordine": guide_defaults.get("ordine", 0),
-                        "contenuto": guide_defaults["contenuto"],
-                        "metadata": {
-                            "seed_kind": "guide",
-                            "seed_version": V2_GUIDE_DEFAULT_VERSION,
-                        },
+                    categoria=guide_defaults.get("categoria", ""),
+                    ordine=guide_defaults.get("ordine", 0),
+                    contenuto=guide_defaults["contenuto"],
+                    metadata={
+                        "seed_kind": "guide",
+                        "seed_key": seed_key,
+                        "seed_version": V2_GUIDE_DEFAULT_VERSION,
                     },
                 )
-            if created:
                 touched += 1
                 continue
 
@@ -593,10 +596,23 @@ class Command(BaseCommand):
             guide.metadata = {
                 **metadata,
                 "seed_kind": "guide",
+                "seed_key": seed_key,
                 "seed_version": V2_GUIDE_DEFAULT_VERSION,
             }
             guide.save(update_fields=["nome", "categoria", "ordine", "contenuto", "metadata", "updated_at"])
             touched += 1
+
+        # Filtered in Python: a JSON __in lookup evaluates to NULL for rows that
+        # never got a seed_key, and exclude() then silently keeps them.
+        current = {entry["seed_key"] for entry in V2_GUIDE_DEFAULTS}
+        retired = [
+            guide.pk
+            for guide in Guida.objects.filter(metadata__seed_kind="guide")
+            if (guide.metadata or {}).get("seed_key") not in current
+        ]
+        if retired:
+            Guida.objects.filter(pk__in=retired).delete()
+            touched += len(retired)
         return touched
 
     def _seed_poc_items(self) -> tuple[int, dict[str, Oggetto]]:

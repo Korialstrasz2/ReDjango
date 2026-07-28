@@ -67,6 +67,16 @@ def _api_error(error: InventoryRuleError) -> ApiError:
     return ApiError(error.code, error.message, error.field, status=409)
 
 
+def _reject_system_managed_item(item: Oggetto | None) -> None:
+    metadata = item.metadata if item and isinstance(item.metadata, dict) else {}
+    if metadata.get("systemManaged"):
+        raise ApiError(
+            "inventory.system_item_managed",
+            f"{item.nome} è gestito automaticamente e non può essere spostato o sostituito.",
+            status=409,
+        )
+
+
 def _save_changed_containers(personaggio: Personaggio, references: tuple[SlotReference, SlotReference]) -> None:
     groups = {reference.group for reference in references}
     if "equipment" in groups and personaggio.equip:
@@ -150,6 +160,8 @@ def swap_items(personaggio_id: int, source: dict[str, Any], target: dict[str, An
         validate_reference_is_active(personaggio, target_ref, personaggio.tot or {})
         source_item = get_slot_item(personaggio, source_ref)
         target_item = get_slot_item(personaggio, target_ref)
+        _reject_system_managed_item(source_item)
+        _reject_system_managed_item(target_item)
         if source_item is None:
             raise InventoryRuleError("inventory.empty_source", "Lo spazio di partenza è vuoto.")
         validate_item_for_reference(source_item, target_ref)
@@ -190,6 +202,7 @@ def assign_item(personaggio_id: int, target: dict[str, Any], item_id: int | None
     personaggio = _locked_personaggio(personaggio_id)
     target_ref = SlotReference(str(target.get("group", "")), str(target.get("slot", "")))
     item = None if item_id is None else Oggetto.objects.get(pk=item_id, archiviato=False, archived_at__isnull=True)
+    _reject_system_managed_item(item)
     existing_backpack_overflow = set(
         occupied_slots_after(personaggio.zaino, backpack_capacity(personaggio.tot or {}))
     )
@@ -197,6 +210,7 @@ def assign_item(personaggio_id: int, target: dict[str, Any], item_id: int | None
         validate_reference_is_active(personaggio, target_ref, personaggio.tot or {})
         validate_item_for_reference(item, target_ref)
         replaced_item = get_slot_item(personaggio, target_ref)
+        _reject_system_managed_item(replaced_item)
         if replaced_item == item:
             _mappings, order_changed = _sort_changed_containers(personaggio, {target_ref.group})
             if order_changed:
@@ -377,7 +391,10 @@ def rest_character(personaggio_id: int, fatigue_recovery: int) -> Personaggio:
 
 @transaction.atomic
 def update_overview(personaggio_id: int, payload: dict[str, Any]) -> Personaggio:
+    from .coins import update_carried_coins
+
     personaggio = _locked_personaggio(personaggio_id)
+    coin_value = payload.get("coins") if "coins" in payload else None
     allowed = {
         "name": ("nome", str),
         "race1": ("razza_1", str),
@@ -386,7 +403,6 @@ def update_overview(personaggio_id: int, payload: dict[str, Any]) -> Personaggio
         "level": ("livello", int),
         "age": ("eta", int),
         "sex": ("sesso", str),
-        "coins": ("monete", int),
         "details": ("dettagli_personaggio", str),
         "critMin": ("crit_min", str),
         "critNormal": ("crit_nor", str),
@@ -419,6 +435,8 @@ def update_overview(personaggio_id: int, payload: dict[str, Any]) -> Personaggio
         personaggio.save(update_fields=[*changed, "updated_at"])
         refresh_personaggio(personaggio)
         personaggio.refresh_from_db()
+    if coin_value is not None:
+        personaggio = update_carried_coins(personaggio_id, coin_value).character
     return personaggio
 
 

@@ -8,7 +8,9 @@ from django.db.models import F
 from django.utils import timezone
 
 from backend.characters.models import Personaggio, Zaino
-from backend.characters.services.inventory_rules import backpack_capacity
+from backend.characters.services.coins import apply_carried_coin_balance_locked
+from backend.characters.services.inventory_rules import backpack_capacity, sort_container_items_by_weight
+from backend.characters.services.refresh_personaggio import refresh_personaggio
 from backend.core.api import ApiError
 from backend.core.management_services import require_game_manager
 from backend.core.models import Giocatore, Negozio, Oggetto, SettingDefinition
@@ -274,24 +276,36 @@ def purchase(user, giocatore: Giocatore, values: dict) -> tuple[Negozio, Persona
     character_id = int(values.get("characterId")); shop_id = int(values.get("shopId"))
     try: shop = Negozio.objects.select_for_update().get(pk=shop_id, archived_at__isnull=True)
     except Negozio.DoesNotExist as exc: raise ApiError("market.shop_not_found", "Negozio non trovato.", "shopId", 404) from exc
-    character = Personaggio.objects.select_for_update().select_related("zaino").get(pk=character_id)
+    character = Personaggio.objects.select_for_update().select_related("zaino", "campagna").get(pk=character_id)
     if int(values.get("stockRevision", -1)) != shop.stock_revision: raise ApiError("market.stale_stock", "Lo stock è cambiato: aggiorna il carrello.", "stockRevision", 409)
     lines, base_total = _lines(shop, values.get("lines"))
     total, negotiation_percent = _negotiated_total(base_total, values.get("negotiationPercent", 0))
     if character.monete < total: raise ApiError("market.insufficient_coins", "Monete insufficienti.", "lines", 409)
     if character.zaino is None: raise ApiError("market.backpack_missing", "Il personaggio non ha uno zaino.", "characterId", 409)
+    apply_carried_coin_balance_locked(character, character.monete - total, refresh=False)
     capacity = backpack_capacity(character.tot if isinstance(character.tot, dict) else {})
     free_slots = [index for index in range(1, capacity + 1) if getattr(character.zaino, f"slot_{index}_id") is None]
     needed = sum(line["quantity"] for line in lines)
     if len(free_slots) < needed: raise ApiError("market.backpack_full", "Non ci sono abbastanza spazi liberi nello zaino.", "lines", 409)
     items = Oggetto.objects.in_bulk([line["itemId"] for line in lines])
     if len(items) != len(lines): raise ApiError("market.item_missing", "Uno degli oggetti non è più disponibile.", "lines", 409)
+    if any(isinstance(item.metadata, dict) and item.metadata.get("systemManaged") for item in items.values()):
+        raise ApiError(
+            "market.system_item_unavailable",
+            "Le Monete sono gestite dal saldo del personaggio e non possono essere acquistate come oggetto.",
+            "lines",
+            409,
+        )
     slot_index = 0
     for line in lines:
         for _ in range(line["quantity"]):
             setattr(character.zaino, f"slot_{free_slots[slot_index]}", items[line["itemId"]]); slot_index += 1
     character.zaino.save(update_fields=[f"slot_{index}" for index in free_slots[:needed]] + ["updated_at"])
-    character.monete -= total; character.save(update_fields=["monete", "updated_at"])
+    _mapping, sorted_fields = sort_container_items_by_weight(character.zaino)
+    if sorted_fields:
+        character.zaino.save(update_fields=[*sorted_fields, "updated_at"])
+    refresh_personaggio(character)
+    character.refresh_from_db()
     stock = normalize_stock(shop.lista_oggetti)
     purchased = {line["itemId"]: line["quantity"] for line in lines}
     for entry in stock["entries"]:

@@ -5,6 +5,18 @@ from backend.core.models import Giocatore, Negozio, Oggetto
 from backend.core.security import effective_role, has_minimum_role
 
 from .config import configuration_payload, get_market_locations, get_shop_type_definitions, market_settings_payload, resolve_location
+from .generator import parse_loot_levels
+
+# Mirrors the filters in generator.generate_stock. Kept as data so the reasons a
+# template is skipped can be reported instead of failing silently.
+STOCK_EXCLUSION_REASONS = (
+    ("notTemplate", "Non è un modello (modello=False)"),
+    ("archived", "Archiviato"),
+    ("special", "Marcato speciale"),
+    ("unique", "Rarità Unico"),
+    ("noLootLevel", "lv_loot mancante o illeggibile"),
+    ("unrankedType", "tipo_1 assente o non previsto da nessuna categoria di negozio"),
+)
 
 
 def normalize_stock(value: object) -> dict:
@@ -93,12 +105,74 @@ def market_overview(giocatore: Giocatore, *, selected_shop_id: int | None = None
     return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canTuneGenerator": is_admin, "canEditGenerationProfiles": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
 
 
+def _exclusion_reasons(item: Oggetto, ranked_types: set[str]) -> list[str]:
+    reasons = []
+    if not item.modello:
+        reasons.append("notTemplate")
+    if item.archiviato or item.archived_at:
+        reasons.append("archived")
+    if item.speciale:
+        reasons.append("special")
+    if item.rarita == Oggetto.Rarita.UNICO:
+        reasons.append("unique")
+    if not parse_loot_levels(item.lv_loot):
+        reasons.append("noLootLevel")
+    if item.tipo_1.strip() not in ranked_types:
+        reasons.append("unrankedType")
+    return reasons
+
+
+def stock_eligibility_report(*, limit: int = 200) -> dict:
+    """List catalogue items the stock generator can never pick, and why.
+
+    Every filter is silent inside the generator, so an item with a missing
+    lv_loot or an unranked tipo_1 simply never appears in any shop. Surfacing
+    the count and the reasons is the only way to notice.
+    """
+    ranked_types = {
+        item_type
+        for definition in get_shop_type_definitions()["types"]
+        for item_type, rank in definition["itemTypeRanks"].items()
+        if rank < 5
+    }
+    items = Oggetto.objects.only(
+        "id", "nome", "modello", "archiviato", "archived_at", "speciale",
+        "rarita", "lv_loot", "tipo_1",
+    )
+    eligible = 0
+    excluded = 0
+    counts = {key: 0 for key, _label in STOCK_EXCLUSION_REASONS}
+    samples: list[dict] = []
+    for item in items.iterator(chunk_size=2000):
+        reasons = _exclusion_reasons(item, ranked_types)
+        if not reasons:
+            eligible += 1
+            continue
+        excluded += 1
+        for reason in reasons:
+            counts[reason] += 1
+        if len(samples) < limit:
+            samples.append({"id": item.id, "name": item.nome, "itemType": item.tipo_1, "lootLevel": item.lv_loot, "reasons": reasons})
+    return {
+        "eligibleCount": eligible,
+        "excludedCount": excluded,
+        "rankedTypes": sorted(ranked_types),
+        "reasons": [
+            {"key": key, "label": label, "count": counts[key]}
+            for key, label in STOCK_EXCLUSION_REASONS
+        ],
+        "samples": samples,
+        "sampleLimit": limit,
+    }
+
+
 def management_overview(giocatore: Giocatore) -> dict:
     payload = market_overview(giocatore, include_archived=True)
     settings = market_settings_payload()
     if effective_role(None, giocatore) != Giocatore.ROLE_ADMIN:
         settings["generatorRules"] = None
     payload["settings"] = settings
+    payload["stockEligibility"] = stock_eligibility_report()
     return payload
 
 

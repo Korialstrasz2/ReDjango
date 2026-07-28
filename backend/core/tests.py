@@ -247,13 +247,53 @@ class CoreContractTests(TestCase):
             with self.subTest(character_variable=key):
                 self.assertIn(f"({key})", guide_text)
         self.assertIn("Borsa dei reagenti e alchimia", guide_text)
+        # A guide only carries a divergence warning when it actually diverges;
+        # guides that match the system must not invent one.
         for guide in guides[1:]:
             with self.subTest(reviewed_guide=guide["name"]):
-                warning = guide["content"][-1]
-                self.assertEqual(warning["type"], "warning")
-                self.assertEqual(warning["title"], "Differenze rispetto al sistema attuale")
-                self.assertTrue(warning["text"])
+                warnings = [
+                    block for block in guide["content"]
+                    if block.get("title") == "Differenze rispetto al sistema attuale"
+                ]
+                for warning in warnings:
+                    self.assertEqual(warning["type"], "warning")
+                    self.assertTrue(warning["text"])
+        diverging = {
+            guide["name"] for guide in guides
+            if any(
+                block.get("title") == "Differenze rispetto al sistema attuale"
+                for block in guide["content"]
+            )
+        }
+        self.assertEqual(
+            diverging,
+            {
+                "Creare oggetti correttamente",
+                "Creare e usare le armi",
+                "Creare malattie e stati correttamente",
+                "Variabili del personaggio e alchimia",
+            },
+        )
         self.assertNotEqual(rules_guide["content"][-1].get("type"), "warning")
+
+    def test_guides_do_not_contradict_implemented_market_and_combat(self):
+        response = self.client.get("/api/bootstrap/", HTTP_X_REDJANGO_REQUEST_ID="guide-contradictions")
+        self.assertEqual(response.status_code, 200)
+        guides = response.json()["data"]["guides"]
+        names = {guide["name"] for guide in guides}
+        self.assertNotIn("Creare negozi correttamente", names)
+        self.assertIn("Guida Armi", names)
+
+        weapons = next(guide for guide in guides if guide["name"] == "Guida Armi")
+        entries = [block for block in weapons["content"] if block["type"] == "entries"]
+        self.assertTrue(entries)
+        titles = {item["title"] for block in entries for item in block["items"]}
+        self.assertIn("Katana", titles)
+        self.assertIn("Mani nude", titles)
+
+        rules_html = guides[0]["content"][0]["html"]
+        self.assertNotIn("NEGOZI</h1>\n<aside", rules_html)
+        self.assertNotIn("RISOLUZIONE NON ANCORA IMPLEMENTATA", rules_html)
 
     def test_character_variable_guide_uses_current_admin_formula_profile(self):
         GlobalModifiers.objects.create(
@@ -310,6 +350,9 @@ class HierarchicalSettingsTests(TestCase):
 
     def test_seed_creates_admin_editable_setting_table_without_overwriting_admin_value(self):
         self.assertGreaterEqual(SettingDefinition.objects.count(), len(V2_SETTING_DEFAULTS))
+        self.assertFalse(
+            SettingDefinition.objects.filter(key="features.experimental_tools").exists()
+        )
         movement = SettingDefinition.objects.get(key="combat.base_movement_ap")
         self.assertEqual(movement.base_value, 1)
         self.assertEqual(Theme.objects.count(), 6)
@@ -320,11 +363,22 @@ class HierarchicalSettingsTests(TestCase):
         accent = SettingDefinition.objects.get(key="appearance.accent_color")
         accent.value = "#123456"
         accent.save(update_fields=["value", "updated_at"])
+        SettingDefinition.objects.create(
+            key="features.experimental_tools",
+            label="Strumenti sperimentali",
+            category="funzioni",
+            value_type=SettingDefinition.TYPE_BOOL,
+            default_value=False,
+            value=False,
+        )
 
         call_command("seed_minimum_data", verbosity=0)
         accent.refresh_from_db()
 
         self.assertEqual(accent.value, "#123456")
+        self.assertFalse(
+            SettingDefinition.objects.filter(key="features.experimental_tools").exists()
+        )
         self.assertIn(SettingDefinition, admin.site._registry)
         self.assertIn(SettingOverride, admin.site._registry)
         self.assertIn(Theme, admin.site._registry)

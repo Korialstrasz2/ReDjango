@@ -38,32 +38,33 @@ export function CharacterSlot({
   onActionsEnter,
   onActionsLeave,
 }: Props) {
-  const draggable = useDraggable({ id: `drag:${slot.id}`, data: { slot }, disabled: !slot.item || slot.isLocked });
-  const droppable = useDroppable({ id: `drop:${slot.id}`, data: { slot }, disabled: slot.isLocked });
+  const unavailable = slot.isLocked || slot.systemManaged;
+  const draggable = useDraggable({ id: `drag:${slot.id}`, data: { slot }, disabled: !slot.item || unavailable });
+  const droppable = useDroppable({ id: `drop:${slot.id}`, data: { slot }, disabled: unavailable });
   // Container slots trade their "Spazio N" label for the item's icon and
   // category; equipment slots keep the label that names the body part.
   const showItemHeading = variant !== "figure" && slot.group !== "equipment" && Boolean(slot.item);
   const style: CSSProperties = draggable.transform ? { transform: `translate3d(${draggable.transform.x}px, ${draggable.transform.y}px, 0)` } : {};
   return <article
     ref={(node) => { draggable.setNodeRef(node); droppable.setNodeRef(node); }}
-    className={`character-slot ${variant === "figure" ? "figure-slot" : ""} ${selected ? "selected" : ""} ${moveSource ? "move-source" : ""} ${compatibility} ${slot.isLocked ? "locked" : ""} ${droppable.isOver ? "over" : ""} ${draggable.isDragging ? "dragging" : ""}`}
+    className={`character-slot ${variant === "figure" ? "figure-slot" : ""} ${selected ? "selected" : ""} ${moveSource ? "move-source" : ""} ${compatibility} ${slot.isLocked ? "locked" : ""} ${slot.systemManaged ? "system-managed" : ""} ${droppable.isOver ? "over" : ""} ${draggable.isDragging ? "dragging" : ""}`}
     data-slot-id={slot.id}
     data-figure-slot={variant === "figure" ? slot.slot : undefined}
     data-component-type="card"
     data-theme={slot.isExtraSlot ? "arcane" : "default"}
     data-magical={slot.isMagical ? "true" : undefined}
     style={style}
-    onClick={() => !slot.isLocked && onSelect(slot)}
+    onClick={() => !unavailable && onSelect(slot)}
     onPointerEnter={() => selected && onActionsEnter()}
     onPointerLeave={() => selected && onActionsLeave()}
     {...draggable.listeners}
     {...draggable.attributes}
     role="button"
-    tabIndex={slot.isLocked ? -1 : 0}
-    aria-disabled={slot.isLocked}
+    tabIndex={unavailable ? -1 : 0}
+    aria-disabled={unavailable}
     aria-label={`${slot.label}: ${slot.isLocked ? `bloccato${slot.item ? `, contiene ${slot.item.name}` : ""}` : slot.item?.name || "vuoto"}`}
     onKeyDown={(event) => {
-      if (!slot.isLocked && (event.key === "Enter" || event.key === " ")) {
+      if (!unavailable && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
         onSelect(slot);
       }
@@ -79,7 +80,7 @@ export function CharacterSlot({
       : slot.item
         ? <div className="slot-item"><strong>{slot.item.name}{slot.stackable && slot.quantity > 1 ? ` × ${slot.quantity}` : ""}</strong>{variant !== "figure" && <>{!showItemHeading && <small>{slot.item.types.join(" · ")}</small>}<span>{slot.weightless ? "peso non conteggiato" : `${slot.item.weight ?? 0} peso`}</span></>}</div>
         : <div className="slot-empty">Vuoto</div>}
-    {actionsVisible && !slot.isLocked && <div className="slot-inline-actions" data-component-type="toolbar" data-theme="dark" onPointerDown={(event) => event.stopPropagation()}>
+    {actionsVisible && !unavailable && <div className="slot-inline-actions" data-component-type="toolbar" data-theme="dark" onPointerDown={(event) => event.stopPropagation()}>
       <button
         type="button"
         disabled={actionPending || !equipItem}
@@ -108,6 +109,6 @@ export function CharacterSlot({
         >+</button>
       </>}
     </div>}
-    {variant !== "figure" && slot.item && !slot.isLocked && <button className="slot-move-button" type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onMoveStart(slot); }}>{moveSource ? "Annulla" : "Sposta"}</button>}
+    {variant !== "figure" && slot.item && !unavailable && <button className="slot-move-button" type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onMoveStart(slot); }}>{moveSource ? "Annulla" : "Sposta"}</button>}
   </article>;
 }

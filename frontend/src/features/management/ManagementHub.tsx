@@ -31,6 +31,11 @@ export function ManagementHub() {
         <span><small>Territorio, assortimenti e profili</small><strong>Gestione Negozi</strong><p>Ordina il mondo commerciale, configura i tipi di negozio e assegna profili riproducibili alle scorte.</p></span>
         <b aria-hidden="true">Apri →</b>
       </Link>
+      <Link className="management-tool-card" to="/tools/dungeon" data-component-type="card" data-theme="arcane">
+        <span className="management-tool-icon" aria-hidden="true">⌘</span>
+        <span><small>In lavorazione</small><strong>Aiuto Dungeon</strong><p>Trappole, stanze, ritmo e complicazioni da consultare al tavolo. Strumento del Master, non una guida da leggere.</p></span>
+        <b aria-hidden="true">Apri →</b>
+      </Link>
       {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/themes" data-component-type="card" data-theme="parchment">
         <span className="management-tool-icon" aria-hidden="true">◐</span>
         <span><small>Colori, sfondi e trasparenze</small><strong>Gestione Temi</strong><p>Modifica i temi con anteprima dal vivo, assegna gli sfondi a ogni schermata e scegli il tema predefinito.</p></span>

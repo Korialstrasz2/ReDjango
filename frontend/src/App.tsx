@@ -12,6 +12,7 @@ import { CharacterManagementPage } from "./features/management/CharacterManageme
 import { DamageRulesPage } from "./features/management/DamageRulesPage";
 import { GameVariablesPage } from "./features/management/GameVariablesPage";
 import { ItemManagementPage } from "./features/management/ItemManagementPage";
+import { DungeonHelperPage } from "./features/management/DungeonHelperPage";
 import { ManagementHub } from "./features/management/ManagementHub";
 import { ShopManagementPage } from "./features/management/ShopManagementPage";
 import { SkillManagementPage } from "./features/management/SkillManagementPage";
@@ -27,7 +28,7 @@ import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
 import { matchesShortcut, pageShortcutTargets, shortcutConflictKeys, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
-import type { AuthData, BootstrapData, Guide, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
+import type { AuthData, BootstrapData, Guide, GuideEntry, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
   bootstrap: BootstrapData;
@@ -385,8 +386,9 @@ function GuidesPage() {
   const renderBlock = (block: Guide["content"][number], index: number) => {
     if (block.type === "legacy_html") return <section className="elder-rules-guide" key={index} dangerouslySetInnerHTML={{ __html: block.html ?? "" }} />;
     if (block.type === "heading") return <h3 key={index}>{renderText(block.text)}</h3>;
-    if (block.type === "list") return <ul key={index}>{block.items?.map((item) => <li key={item}>{renderText(item)}</li>)}</ul>;
-    if (block.type === "code") return <pre key={index}>{block.text}</pre>;
+    if (block.type === "list") return <ul key={index}>{(block.items as string[] | undefined)?.map((item) => <li key={item}>{renderText(item)}</li>)}</ul>;
+    if (block.type === "entries") return <div className="guide-entries" key={index}>{(block.items as GuideEntry[] | undefined)?.map((entry) => <article key={entry.title}><strong>{entry.title}</strong>{entry.meta && <span>{entry.meta}</span>}{entry.note && <p>{renderText(entry.note)}</p>}</article>)}</div>;
+    if (block.type === "code") return <pre data-language={block.language} key={index}>{block.text}</pre>;
     if (block.type === "callout") return <aside className="callout" key={index}><strong>{block.title}</strong><p>{renderText(block.text)}</p></aside>;
     if (block.type === "warning") return <aside className="callout guide-warning" key={index}><strong>{block.title}</strong><p>{renderText(block.text)}</p></aside>;
     return <p key={index}>{renderText(block.text)}</p>;
@@ -840,5 +842,5 @@ export function App() {
   if (!bootstrap.data || !personaggi.data || !settings.data || !media.data) return <Loading />;
 
   const context = { bootstrap: bootstrap.data, personaggi: personaggi.data, settings: settings.data, media: media.data.assets, mediaCategories: media.data.categories, notify };
-  return <AppContext.Provider value={context}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<CharactersPage />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
+  return <AppContext.Provider value={context}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<CharactersPage />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
 }

@@ -90,7 +90,25 @@ export type ShopDetail = ShopSummary & {
   diagnostics: Record<string, unknown>;
 };
 
+export type StockExclusionSample = {
+  id: number;
+  name: string;
+  itemType: string;
+  lootLevel: string;
+  reasons: string[];
+};
+
+export type StockEligibility = {
+  eligibleCount: number;
+  excludedCount: number;
+  rankedTypes: string[];
+  reasons: Array<{ key: string; label: string; count: number }>;
+  samples: StockExclusionSample[];
+  sampleLimit: number;
+};
+
 export type MarketData = {
+  stockEligibility?: StockEligibility;
   locations: MarketRegion[];
   shopTypes: ShopType[];
   shops: ShopSummary[];

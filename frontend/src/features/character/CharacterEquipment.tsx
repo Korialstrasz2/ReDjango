@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 import type { CharacterSheet, CharacterSlot as Slot, Item } from "../../lib/types";
 import { CharacterSlot } from "./CharacterSlot";
@@ -19,6 +19,7 @@ type Props = {
   onSwitchPrimary: () => void;
   onActionsEnter: () => void;
   onActionsLeave: () => void;
+  coinsControl: ReactNode;
 };
 
 type FigureRegion = {
@@ -55,6 +56,7 @@ export function CharacterEquipment({
   onSwitchPrimary,
   onActionsEnter,
   onActionsLeave,
+  coinsControl,
 }: Props) {
   const [view, setView] = useState<EquipmentView>("figure");
   const [imageUrl, setImageUrl] = useState(character.appearance.imageUrl);
@@ -116,9 +118,12 @@ export function CharacterEquipment({
   return <>
     <div className="equipment-heading-row">
       <h3>Equipaggiamento</h3>
-      <div className="equipment-view-switch" role="tablist" aria-label="Vista equipaggiamento" data-component-type="tabset" data-theme="dark">
-        <button type="button" role="tab" aria-selected={view === "figure"} className={view === "figure" ? "active" : ""} data-action="equipment.showFigure" onClick={() => setView("figure")}>Sagoma</button>
-        <button type="button" role="tab" aria-selected={view === "grid"} className={view === "grid" ? "active" : ""} data-action="equipment.showGrid" onClick={() => setView("grid")}>Griglia</button>
+      <div className="equipment-heading-tools">
+        <div className="equipment-view-switch" role="tablist" aria-label="Vista equipaggiamento" data-component-type="tabset" data-theme="dark">
+          <button type="button" role="tab" aria-selected={view === "figure"} className={view === "figure" ? "active" : ""} data-action="equipment.showFigure" onClick={() => setView("figure")}>Sagoma</button>
+          <button type="button" role="tab" aria-selected={view === "grid"} className={view === "grid" ? "active" : ""} data-action="equipment.showGrid" onClick={() => setView("grid")}>Griglia</button>
+        </div>
+        {coinsControl}
       </div>
     </div>
 

@@ -158,8 +158,9 @@ def import_legacy_races(source: Path) -> dict[str, int]:
         nome="Razze",
         defaults={
             "contenuto": json.dumps([{"type": "legacy_html", "html": race_guide_html(guide_content)}]),
-            "categoria": "Regole",
-            "ordine": 20,
+            "categoria": "Regolamento",
+            # Kept clear of the seeded guides so the sidebar order is stable.
+            "ordine": 25,
             "metadata": {"sourceProject": "the_elder_django", "sourceTable": "django_slim_guida"},
         },
     )

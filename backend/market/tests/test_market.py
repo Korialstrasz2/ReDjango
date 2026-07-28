@@ -135,7 +135,12 @@ class MarketPurchaseTests(TestCase):
         self.character.refresh_from_db(); self.zaino.refresh_from_db(); self.shop.refresh_from_db()
         self.assertEqual(quote["total"], 60)
         self.assertEqual(self.character.monete, 40)
-        self.assertEqual([self.zaino.slot_1_id, self.zaino.slot_2_id], [self.item.id, self.item.id])
+        carried_ids = [self.zaino.slot_1_id, self.zaino.slot_2_id, self.zaino.slot_3_id]
+        self.assertEqual(carried_ids.count(self.item.id), 2)
+        self.assertEqual(
+            carried_ids.count(Oggetto.objects.get(metadata__systemKey="currency.coins").id),
+            1,
+        )
         self.assertEqual(self.shop.lista_oggetti["entries"][0]["quantity"], 0)
         self.assertEqual(self.shop.stock_revision, 3)
 

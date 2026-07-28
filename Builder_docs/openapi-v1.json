@@ -48,7 +48,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -106,7 +106,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -176,7 +176,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -239,7 +239,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -266,7 +266,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -303,7 +303,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -361,7 +361,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -419,7 +419,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -476,7 +476,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -513,7 +513,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -570,7 +570,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -627,7 +627,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -664,7 +664,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -731,7 +731,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -788,7 +788,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -825,7 +825,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -862,7 +862,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -899,7 +899,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -937,7 +937,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -974,7 +974,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -1021,7 +1021,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -1068,7 +1068,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -1115,7 +1115,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -1301,7 +1301,7 @@
         ],
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -1377,9 +1377,11 @@
                     "campaign.clock.update": "#/components/schemas/CampaignClockUpdateActionSchema",
                     "campaign.notes.update": "#/components/schemas/CampaignNotesUpdateActionSchema",
                     "campaign.select": "#/components/schemas/CampaignSelectActionSchema",
+                    "campaign.updateSharedCoins": "#/components/schemas/SharedCoinsActionSchema",
                     "campaign.weather.reroll": "#/components/schemas/CampaignWeatherRerollActionSchema",
                     "character.adjustQuickStat": "#/components/schemas/QuickStatActionSchema",
                     "character.rest": "#/components/schemas/RestActionSchema",
+                    "character.updateCoins": "#/components/schemas/CoinsActionSchema",
                     "character.updateOverview": "#/components/schemas/OverviewActionSchema",
                     "character.updateResource": "#/components/schemas/ResourceActionSchema",
                     "combatButtons.create": "#/components/schemas/CombatButtonCreateActionSchema",
@@ -1486,6 +1488,12 @@
                   },
                   {
                     "$ref": "#/components/schemas/OverviewActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CoinsActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SharedCoinsActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/ApplyEffectActionSchema"
@@ -1733,7 +1741,7 @@
         },
         "security": [
           {
-            "LocalCookieAuth": []
+            "SessionCookieAuth": []
           }
         ]
       }
@@ -2068,6 +2076,9 @@
           "campaignContainer": {
             "$ref": "#/components/schemas/ContainerSchema"
           },
+          "coinStorage": {
+            "$ref": "#/components/schemas/CoinStorageSchema"
+          },
           "effects": {
             "items": {
               "$ref": "#/components/schemas/EffectSchema"
@@ -2143,6 +2154,7 @@
           "quiver",
           "utilityContainer",
           "campaignContainer",
+          "coinStorage",
           "effects",
           "skills",
           "abilities",
@@ -2180,6 +2192,65 @@
           "values"
         ],
         "title": "CharacterValueGroupSchema",
+        "type": "object"
+      },
+      "CoinStorageSchema": {
+        "properties": {
+          "coinsPerSlot": {
+            "title": "Coinsperslot",
+            "type": "integer"
+          },
+          "requiredSlots": {
+            "title": "Requiredslots",
+            "type": "integer"
+          },
+          "placedSlots": {
+            "title": "Placedslots",
+            "type": "integer"
+          },
+          "availableSlots": {
+            "title": "Availableslots",
+            "type": "integer"
+          },
+          "maxCarryableCoins": {
+            "title": "Maxcarryablecoins",
+            "type": "integer"
+          },
+          "fits": {
+            "title": "Fits",
+            "type": "boolean"
+          },
+          "coinItemId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coinitemid"
+          },
+          "sharedCoins": {
+            "default": 0,
+            "title": "Sharedcoins",
+            "type": "integer"
+          },
+          "canTransferToShared": {
+            "default": false,
+            "title": "Cantransfertoshared",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "coinsPerSlot",
+          "requiredSlots",
+          "placedSlots",
+          "availableSlots",
+          "maxCarryableCoins",
+          "fits"
+        ],
+        "title": "CoinStorageSchema",
         "type": "object"
       },
       "ContainerSchema": {
@@ -2826,6 +2897,11 @@
             "title": "Special",
             "type": "boolean"
           },
+          "systemManaged": {
+            "default": false,
+            "title": "Systemmanaged",
+            "type": "boolean"
+          },
           "isProjectile": {
             "default": false,
             "title": "Isprojectile",
@@ -3212,6 +3288,11 @@
           "weightless": {
             "default": false,
             "title": "Weightless",
+            "type": "boolean"
+          },
+          "systemManaged": {
+            "default": false,
+            "title": "Systemmanaged",
             "type": "boolean"
           },
           "item": {
@@ -7009,6 +7090,92 @@
         "title": "CampaignWeatherRerollPayloadSchema",
         "type": "object"
       },
+      "CoinsActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "character.updateCoins",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CoinsPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "CoinsActionSchema",
+        "type": "object"
+      },
+      "CoinsPayloadSchema": {
+        "properties": {
+          "characterId": {
+            "title": "Characterid",
+            "type": "integer"
+          },
+          "coins": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "title": "Coins",
+            "type": "integer"
+          },
+          "expectedCoins": {
+            "anyOf": [
+              {
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expectedcoins"
+          },
+          "transferOverflow": {
+            "default": false,
+            "title": "Transferoverflow",
+            "type": "boolean"
+          },
+          "expectedSharedCoins": {
+            "anyOf": [
+              {
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expectedsharedcoins"
+          }
+        },
+        "required": [
+          "characterId",
+          "coins"
+        ],
+        "title": "CoinsPayloadSchema",
+        "type": "object"
+      },
       "CombatButtonCreateActionSchema": {
         "properties": {
           "requestId": {
@@ -10462,6 +10629,74 @@
         "title": "SetQuantityPayloadSchema",
         "type": "object"
       },
+      "SharedCoinsActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "campaign.updateSharedCoins",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/SharedCoinsPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "SharedCoinsActionSchema",
+        "type": "object"
+      },
+      "SharedCoinsPayloadSchema": {
+        "properties": {
+          "characterId": {
+            "title": "Characterid",
+            "type": "integer"
+          },
+          "coins": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "title": "Coins",
+            "type": "integer"
+          },
+          "expectedCoins": {
+            "anyOf": [
+              {
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expectedcoins"
+          }
+        },
+        "required": [
+          "characterId",
+          "coins"
+        ],
+        "title": "SharedCoinsPayloadSchema",
+        "type": "object"
+      },
       "SkillArchiveActionSchema": {
         "properties": {
           "requestId": {
@@ -11261,10 +11496,10 @@
       }
     },
     "securitySchemes": {
-      "LocalCookieAuth": {
+      "SessionCookieAuth": {
         "type": "apiKey",
         "in": "cookie",
-        "name": "sessionid"
+        "name": "redjango_sessionid"
       }
     }
   },
