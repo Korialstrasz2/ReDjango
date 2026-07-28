@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { matchesShortcut, shortcutFromKeyboardEvent, shortcutValue } from "./shortcuts";
+import { matchesShortcut, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutValue } from "./shortcuts";
 
 const keyboardEvent = (overrides: Partial<KeyboardEvent> = {}) => ({
   altKey: true,
@@ -26,5 +26,14 @@ describe("keyboard shortcuts", () => {
   it("reads configured shortcut values safely", () => {
     expect(shortcutValue({ "shortcuts.journal": "Alt+K" }, "journal")).toBe("Alt+K");
     expect(shortcutValue({}, "journal")).toBe("");
+  });
+
+  it("reports every shortcut involved in an inline conflict", () => {
+    expect([...shortcutConflictKeys({
+      "shortcuts.dashboard": "Alt+S",
+      "shortcuts.skills": "Alt+A",
+      "shortcuts.lore": "Alt+A",
+      unrelated: "Alt+A",
+    })]).toEqual(["shortcuts.skills", "shortcuts.lore"]);
   });
 });

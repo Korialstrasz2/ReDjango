@@ -15,6 +15,7 @@ class CompetenceWorkspaceApiTests(TestCase):
 
     def setUp(self):
         self.giocatore = Giocatore.objects.get(nome="local_master")
+        self.client.force_login(self.giocatore.user)
         self.character = Personaggio.objects.get(nome_interno="poc_darion_frondaluna")
         self.giocatore.active_character = self.character
         if self.character.id not in self.giocatore.character_ids:

@@ -1,3 +1,4 @@
+from django.conf import settings as django_settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
@@ -66,6 +67,14 @@ class Giocatore(V2Model):
     ]
     ROLE_RANKS = {ROLE_USER: 10, ROLE_MASTER: 20, ROLE_ADMIN: 30}
 
+    user = models.OneToOneField(
+        django_settings.AUTH_USER_MODEL,
+        verbose_name="account Django",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="redjango_giocatore",
+    )
     nome = models.CharField(max_length=120, unique=True)
     display_name = models.CharField(max_length=120, blank=True)
     password_hash = models.CharField(max_length=255, blank=True)
@@ -253,10 +262,12 @@ class Theme(V2Model):
     text_color = models.CharField("colore del testo", max_length=7, default="#202521", validators=[HEX_COLOR_VALIDATOR])
     muted_text_color = models.CharField("colore del testo secondario", max_length=7, default="#6e746e", validators=[HEX_COLOR_VALIDATOR])
     line_color = models.CharField("colore dei bordi", max_length=7, default="#d8ddd3", validators=[HEX_COLOR_VALIDATOR])
-    accent_color = models.CharField("colore principale", max_length=7, default="#2f6f62", validators=[HEX_COLOR_VALIDATOR])
+    # Lasciando vuoti accent/gold/sidebar il tema eredita i colori globali di riserva
+    # definiti in Impostazioni (appearance.accent_color, gold_color, sidebar_color).
+    accent_color = models.CharField("colore principale", max_length=7, default="#2f6f62", blank=True, validators=[HEX_COLOR_VALIDATOR])
     accent_strong_color = models.CharField("colore principale intenso", max_length=7, default="#214f47", validators=[HEX_COLOR_VALIDATOR])
-    gold_color = models.CharField("colore dorato", max_length=7, default="#af7d2f", validators=[HEX_COLOR_VALIDATOR])
-    sidebar_color = models.CharField("colore del menu laterale", max_length=7, default="#1f2a27", validators=[HEX_COLOR_VALIDATOR])
+    gold_color = models.CharField("colore dorato", max_length=7, default="#af7d2f", blank=True, validators=[HEX_COLOR_VALIDATOR])
+    sidebar_color = models.CharField("colore del menu laterale", max_length=7, default="#1f2a27", blank=True, validators=[HEX_COLOR_VALIDATOR])
     health_color = models.CharField("colore punti ferita", max_length=7, default="#a63d40", validators=[HEX_COLOR_VALIDATOR])
     mana_color = models.CharField("colore mana", max_length=7, default="#3f6fa9", validators=[HEX_COLOR_VALIDATOR])
     energy_color = models.CharField("colore energia", max_length=7, default="#4f8a58", validators=[HEX_COLOR_VALIDATOR])
@@ -352,6 +363,22 @@ class Theme(V2Model):
         null=True,
         blank=True,
         related_name="journal_themes",
+    )
+    lore_background = models.ForeignKey(
+        "media_library.UploadedImage",
+        verbose_name="sfondo lore",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lore_themes",
+    )
+    market_background = models.ForeignKey(
+        "media_library.UploadedImage",
+        verbose_name="sfondo mercato",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="market_themes",
     )
 
     class Meta:
@@ -904,6 +931,7 @@ class Negozio(V2Model):
     )
     lista_oggetti = models.JSONField(default=list, blank=True)
     generation_seed = models.CharField(max_length=120, blank=True)
+    generation_profile_key = models.CharField(max_length=80, blank=True)
     descrizione = models.TextField(blank=True)
     location_key = models.CharField(max_length=200, blank=True, db_index=True)
     stock_revision = models.PositiveIntegerField(default=0)
@@ -953,8 +981,14 @@ class Curiosita(V2Model):
 
 
 class TimelineEvent(V2Model):
+    # Dedicated exclusively to Lore > Timeline. Do not reuse this model for
+    # reputation changes, campaign audit logs, quests, or Hall of Fame data.
     nome = models.CharField(max_length=180)
     data_evento = models.CharField(max_length=80, blank=True)
+    ordine_cronologico = models.IntegerField(
+        default=0,
+        help_text="Chiave numerica usata soltanto per ordinare gli eventi nella Timeline del Lore.",
+    )
     immagine = models.ForeignKey(
         "media_library.UploadedImage",
         on_delete=models.SET_NULL,
@@ -967,8 +1001,13 @@ class TimelineEvent(V2Model):
     tags = models.JSONField(default=list, blank=True)
 
     class Meta:
-        ordering = ["data_evento", "nome"]
-        indexes = [models.Index(fields=["campagna", "data_evento"])]
+        ordering = ["ordine_cronologico", "created_at", "id"]
+        indexes = [
+            models.Index(
+                fields=["campagna", "archived_at", "ordine_cronologico"],
+                name="core_timeline_campaign_idx",
+            )
+        ]
 
     def __str__(self) -> str:
         return self.nome

@@ -1,21 +1,26 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
 from backend.core.api import ApiError, api_error_response, api_response, request_payload
-from backend.core.models import Giocatore
+from backend.core.models import Giocatore, Oggetto
 from backend.core.security import effective_role, get_or_create_giocatore_for_user, has_minimum_role
-from backend.core.views import get_local_user
+from backend.core.views import get_authenticated_user
 
-from .selectors import personaggi_payload_for
+from .selectors import personaggi_payload_for, serialize_item
+from .services.item_icons import delete_special_item_icon, store_special_item_icon
 from .services.selection import select_personaggio_for_giocatore
 
 
 def _identity(request):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     return user, get_or_create_giocatore_for_user(user)
 
 
 def _can_control_all_characters(user, giocatore: Giocatore) -> bool:
+    return has_minimum_role(effective_role(user, giocatore), Giocatore.ROLE_MASTER)
+
+
+def _can_manage_items(user, giocatore: Giocatore) -> bool:
     return has_minimum_role(effective_role(user, giocatore), Giocatore.ROLE_MASTER)
 
 
@@ -63,3 +68,33 @@ def select_personaggio(request):
             request,
             ApiError("personaggio.invalid_id", "È richiesto un identificativo valido del personaggio.", "personaggioId"),
         )
+
+
+@require_http_methods(["POST", "DELETE"])
+def item_special_icon(request, item_id: int):
+    """Store or remove the dedicated icon of a single item."""
+    user, giocatore = _identity(request)
+    try:
+        if not _can_manage_items(user, giocatore):
+            raise ApiError("item.admin_required", "Solo un master può modificare le icone degli oggetti.", status=403)
+        try:
+            item = Oggetto.objects.select_related("media", "tipo_arma").get(pk=item_id)
+        except Oggetto.DoesNotExist as exc:
+            raise ApiError("item.not_found", "Oggetto non trovato.", status=404) from exc
+
+        if request.method == "DELETE":
+            removed = delete_special_item_icon(item)
+            message = f"Icona dedicata di {item.nome} rimossa." if removed else f"{item.nome} non aveva un'icona dedicata."
+            event = "item.icon_deleted" if removed else "item.icon_missing"
+        else:
+            store_special_item_icon(item, request.FILES.get("file"))
+            message = f"Icona dedicata di {item.nome} aggiornata."
+            event = "item.icon_uploaded"
+
+        return api_response(
+            request,
+            {"item": serialize_item(item, detailed=True)},
+            events=[{"type": event, "message": message}],
+        )
+    except ApiError as error:
+        return api_error_response(request, error)

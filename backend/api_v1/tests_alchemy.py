@@ -18,6 +18,7 @@ class AlchemyCreationApiTests(TestCase):
 
     def setUp(self):
         self.giocatore = Giocatore.objects.get(nome="local_master")
+        self.client.force_login(self.giocatore.user)
         self.character = Personaggio.objects.get(
             nome_interno="poc_darion_frondaluna"
         )

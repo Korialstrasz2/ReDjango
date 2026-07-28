@@ -16,15 +16,18 @@ Ricostruzione moderna, veloce e a pagina singola di **The Elder Django**. Django
 - Archivio immagini, guide strutturate e impostazioni gerarchiche `user < master < admin`. La pagina Impostazioni include un profilo Giocatore dedicato per alias, richieste di assegnazione dei personaggi e codici di promozione a Game Master/Game Admin; richieste e codici restano sotto il controllo dell'Amministrazione Django.
 - Archivio immagini organizzato con categorie configurabili soltanto dall'Amministrazione Django e gruppi liberi, filtri per la navigazione e selettore visuale a miniature riutilizzato negli editor degli oggetti.
 - Area **Gestione** per master e amministratori: editor organizzato di personaggi e record collegati con ricerca degli orfani e anteprima sicura dell'eliminazione; catalogo oggetti completo con filtri e confronto/copia affiancato; postazione **Gestione Skill** con panoramica, catalogo completo, gruppi e famiglie modificabili e coda persistente per correggere/importare le skill Elder escluse; postazione **Gestione Unit** per autore, validare e provare Animali, Creature e Umanoidi usati dalla generazione rapida in Combattimento; postazione amministrativa **Gestione Variabili** con controlli tipizzati, guide contestuali e convalida server-side obbligatoria prima del salvataggio del profilo globale. Il relativo **Tool Danno** modifica la matrice completa d20 × differenza Attacco/Difesa, le formule dei Tier e le percentuali di resistenza realmente lette dal motore di combattimento.
+- **Gestione Negozi** è una postazione separata dal Mercato operativo: organizza e rinomina regioni, località e tipi senza cambiare le chiavi stabili, modifica ordine, icone, sfondi e assortimenti, e configura profili riutilizzabili per quantità, rarità e prezzi. Un profilo è predefinito per il mondo e può essere sostituito per ogni negozio; master e amministratori possono assegnarlo, mentre la definizione globale dei preset e delle regole del generatore resta amministrativa.
 - Generazione Unit variabile e riproducibile senza LLM: gli Umanoidi ripercorrono PE, prerequisiti, Skill, la tabella perk dell'AI Elder e pool equipaggiamento per fascia; `auto` crea una build diversa a ogni importazione, mentre una Variante nominata resta deterministica. Animali e Creature non hanno Skill a PE né equipaggiamento e usano curve configurabili con valori finali al livello 1/20 e abilità innate. Combattimento offre un selettore di livello per ogni Unit e master/admin possono prendere il controllo del risultato e aprirne la scheda completa. Il seed include l'Umanoide **Arciere Bandito** e l'Animale **Lupo**, ricostruiti dalle Unit Elder e pronti dal livello 1 al 20.
 - Catalogo oggetti predisposto per l'importazione Elder: quattro tipi a scelta configurabili dall'Amministrazione Django, rarità `Unico/1-5` e otto testi effetto conservati separatamente dagli effetti strutturati eseguibili.
 - Importatore oggetti Elder verificabile: `Vuoto` diventa blank, i bonus numerici sicuri vengono convertiti in effetti strutturati, le regole descrittive restano leggibili e marcano l'oggetto `Speciale`; la sostituzione atomica rimappa anche gli oggetti già assegnati. Gestione Oggetti supporta cataloghi completi, filtro Speciale, confronto/copia e clonazione esplicita.
-- Pulsanti globali **Diario** e **Dadi**: il Diario è una superficie di scrittura più sottile e simile a un libro, con sezioni di testo libero e salvataggio automatico. Le note contestuali si aprono dal segnalibro in fondo alla barra laterale al passaggio del mouse o con il focus, e un clic le fissa: Zaino è collegato alla scheda, Combattimento alla relativa pagina e Competenze al suo atlante. Tutte e tre le sezioni sono anche nel Diario. Diario e Dadi si aprono al centro e possono essere spostati e ridimensionati. I dadi offrono tiri singoli animati, forme specifiche per d4–d100, modificatori del personaggio, formula completa del risultato e cronologia di sessione.
-- Scorciatoie personali configurabili nelle Impostazioni aprono le pagine della SPA e gli strumenti rapidi con combinazioni `Alt + lettera`, con assegnazioni predefinite sicure e controllo dei conflitti.
+- Pulsanti globali **Diario** e **Dadi**: il Diario è una superficie di scrittura più sottile e simile a un libro, con sezioni di testo libero e salvataggio automatico. Le note contestuali si aprono dal segnalibro in fondo alla barra laterale al passaggio del mouse o con il focus, e un clic le fissa: Zaino è collegato alla scheda, Combattimento alla relativa pagina e Competenze al suo atlante. Tutte e tre le sezioni sono anche nel Diario. Diario e Dadi si aprono al centro e possono essere spostati e ridimensionati. I dadi offrono tiri singoli animati, forme specifiche per d4–d100, modificatori del personaggio, formula completa del risultato e cronologia di sessione. Master e amministratori possono inoltre consultare, sia in Dadi sia in Competenze, gli ultimi 100 tiri persistenti del gruppo con giocatore, personaggio e orario; la scheda è controllata dall'impostazione di sessione dedicata.
+- Stato di campagna sempre visibile a sinistra della barra rapida: nome della campagna, **Meteo**, **Giorno** e **Ora**. Il testo completo degli effetti del meteo resta nel suggerimento al passaggio del mouse. Solo master e amministratori vedono le frecce di giorno e ora e possono tirare di nuovo il tempo atmosferico con un doppio clic sul meteo; il tiro riprende la tabella Elder d100 con la doppia inclinazione verso `Soleggiato` e verso il prolungamento del meteo in corso. Ogni sei ore di campagna, e a ogni cambio di giorno, una finestra ricorda di tirare il tempo e permette di farlo subito.
+- Scorciatoie personali configurabili nelle Impostazioni aprono tutte le destinazioni principali della SPA e gli strumenti rapidi con combinazioni `Alt + lettera`, con assegnazioni predefinite sicure, avviso immediato dei conflitti e convalida finale del backend.
 - Catalogo `DiceSet` amministrabile sia dallo strumento Dadi sia dalle Impostazioni. Ogni dado può avere una texture immagine indipendente, preparata con controlli di posizione, scala e rotazione sulla stessa anteprima usata durante il tiro; numeri e bordi restano personalizzabili per la leggibilità. Creazione, modifica e archiviazione sono protette lato server come operazioni admin.
 - Catalogo **Abilità** con gerarchia `gruppo di famiglie → famiglia → skill`: ogni carta contiene dettagli, requisiti, costo PE base e calcolato, profilo, effetti passivi strutturati e azioni attive promemoria. Una sezione Cerca Abilità interroga l'intero catalogo per nome o contenuto della carta e offre filtri avanzati per gruppo, famiglia, stato e variabile modificata. La pagina separa Skills, configurazione Azioni del PG e Analisi Skill PG. Lo sblocco è atomico, applica prerequisiti e sconti automatici (con bypass master/admin), richiede l'accettazione esplicita dei passivi e assegna i promemoria senza simulare l'esecuzione dell'azione. Master e amministratori usano lo stesso editor a schede della carta; `/tools/skills` offre la gestione completa di gruppi, famiglie, skill e casi Elder sospesi.
 - Pagina **Competenze** dedicata e integrata nella SPA: atlante compatto delle 21 competenze legacy, due barre da 0 a 7, extra manuale permanente, bonus collegati a equipaggiamento/effetti/abilità, progressione atomica a costo triangolare e tiri server-side d6–d12. Le tecniche di Maestria spendono Energia, il grado 7 offre due rilanci giornalieri sullo stesso tiro e le descrizioni numeriche restano sfumature narrative, mai un verdetto automatico. Icone e atmosfere visive sono curate dagli asset originali dentro un layout nuovo.
 - Pagina **Creazione** avviata con il banco Alchimia completo: le pile canoniche di reagenti Rossi, Verdi e Blu dal livello 1 al 4 vivono direttamente in **Alchimia&Contenitori**, insieme al catalogo dei 42 ingredienti Elder, estrazione atomica, miscela fino a quattro reagenti, anteprima trasparente della formula e distillazione server-side con consumo transazionale. Le soglie da 3 a 30 e i bonus di livello/colore restano collegati alle variabili calcolate del personaggio; Forgiatura e Incantamento hanno già una sede coerente per le prossime fasi.
+- Pagina **Lore** con tre sezioni. **Fazioni** tiene le carte delle fazioni nella colonna principale e affianca una barra laterale con due schede: `Aggiungi` per registrare o correggere un evento e `Storico` per scorrere la cronologia e modificarne o rimuoverne le voci. Ogni fazione mostra la reputazione verso il gruppo su una scala da -100 a +100 con fascia narrativa, e il nome apre lo storico della singola fazione. La reputazione attuale non è mai salvata: nasce dal valore iniziale ripercorrendo tutti gli eventi in ordine di giorno, quindi rimuovere o retrodatare un evento ricalcola davvero il presente. Il master registra eventi con motivo obbligatorio, su una o più fazioni, in variazione o a valore imposto; una variazione si propaga di un solo passo alle fazioni collegate dalla matrice asimmetrica delle reazioni, mentre un valore imposto resta locale. I giocatori leggono fazioni, punteggi ed eventi, ma non vedono la matrice, i valori base, gli strumenti di modifica né gli eventi marcati come riservati, che continuano comunque a spostare i punteggi visibili. **Personaggi** è una galleria di ritratti con il solo nome: aprendo una carta compaiono descrizione, ruolo e appartenenza, e soltanto lì master e amministratori trovano i comandi per modificarla o archiviarla. **Timeline** porta la cronologia storica dentro la stessa pagina: ricerca, navigazione cronologica, dettaglio, immagini facoltative e authoring riservato a master/amministratori, con anni numerici ordinati rispetto alla caduta di Dagoth Ur. Le schede restano narrative e leggere, indipendenti dalle schede giocabili.
 - Contratto OpenAPI versionato e tipi frontend generati.
 
 ## Avvio
@@ -41,13 +44,33 @@ Lo script installa le dipendenze mancanti, costruisce il frontend, applica le mi
 http://127.0.0.1:8003/
 ```
 
-Per un test LAN esplicito:
+Al primo avvio il launcher richiede la creazione di un account amministratore se non ne esiste già uno. ReDjango non espone contenuti di gioco agli utenti anonimi: sono pubbliche soltanto la pagina di accesso, l'accesso Django Admin e le risorse statiche necessarie. Ogni account Django autenticato riceve un profilo Giocatore collegato; i permessi Django Admin e il ruolo di gioco restano separati.
+
+La modalità globale si sceglie in **Impostazioni → Amministrazione → Sicurezza**:
+
+- **Bloccata · solo questo computer** è il valore sicuro predefinito: il server ascolta su `127.0.0.1` e rifiuta anche a livello middleware ogni socket non locale.
+- **Rete locale LAN** ascolta su tutte le interfacce (`0.0.0.0`), ma continua a richiedere il login per ogni pagina e API.
+- **Server online** ascolta su `127.0.0.1` per impostazione predefinita ed è pensata per un reverse proxy HTTPS. Richiede una chiave segreta e host espliciti.
+
+Il cambio dalla UI mostra la conferma «Cambiare questa impostazione richiede il riavvio del server. Riavviare?». Quando l'app è stata avviata con `start_server.bat`, **Salva e riavvia** arresta il processo in modo controllato, il launcher lo riavvia nella nuova modalità e la pagina si riconnette automaticamente. Con un avvio manuale la modalità viene salvata, ma il riavvio deve essere eseguito manualmente.
+
+È possibile scegliere e salvare una modalità anche dalla riga di comando:
 
 ```bat
+start_server.bat locked
 start_server.bat lan
 ```
 
-La modalità LAN resta di sviluppo finché non viene configurata l'autenticazione remota.
+Per la pubblicazione online, configurare almeno:
+
+```bat
+set REDJANGO_SECRET_KEY=una-chiave-lunga-casuale
+set REDJANGO_ALLOWED_HOSTS=gioco.example.it
+set REDJANGO_CSRF_TRUSTED_ORIGINS=https://gioco.example.it
+start_server.bat online
+```
+
+La modalità online abilita cookie sicuri, redirect HTTPS e HSTS. Il launcher rifiuta il passaggio a `online` se `REDJANGO_SECRET_KEY` o `REDJANGO_ALLOWED_HOSTS` mancano. La terminazione TLS, gli aggiornamenti di sicurezza, il firewall e i backup restano responsabilità del server/reverse proxy.
 
 ## Sviluppo frontend
 
@@ -82,9 +105,11 @@ GET  /api/v1/characters/<id>/competencies
 GET  /api/v1/dice-sets
 GET  /api/v1/items
 GET  /api/v1/skills
+GET  /api/v1/lore
 GET  /api/v1/management/units
 GET  /api/v1/management/units/<id>
 GET  /api/v1/management/units/options
+GET  /api/v1/management/shops
 POST /api/v1/actions
 GET  /api/v1/openapi.json
 ```
@@ -129,6 +154,8 @@ backend/core/item_services.py   authoring oggetti e autorizzazione
 backend/core/skill_services.py  authoring, validazione e sblocco abilità
 backend/core/spell_services.py  definizioni e anteprime incantesimo senza spesa risorse
 backend/core/legacy_skill_import.py staging, review queue e import massivo idempotente
+backend/lore/selectors.py       replay della reputazione e proiezione per ruolo
+backend/lore/services.py        authoring fazioni, matrice reazioni ed eventi
 backend/combat/unit_generation.py generazione deterministica Unit usata da Gestione e Combattimento
 Builder_docs/UNIT_AUTHORING_GUIDE_FOR_LLM.md contratto operativo per creare Unit variabili e verificabili
 backend/combat/unit_management_services.py validazione e authoring Unit master/admin
@@ -138,6 +165,7 @@ frontend/src/features/notes     editor condiviso delle note contestuali
 frontend/src/features/quick-tools diario, dadi e forgia dei set condivisa
 frontend/src/features/skills    gruppi/famiglie, carte, azioni PG e analisi abilità
 frontend/src/features/competencies atlante, progressione, extra e tavolo dei tiri
+frontend/src/features/lore      fazioni, reputazione, eventi e personaggi narrativi
 frontend/src/features/management/UnitManagementPage.tsx editor e anteprima delle Unit
 Builder_docs/CONVERSION_MATRIX.md registro della conversione
 Builder_docs/UNIT_GENERATION.md contratto completo di generazione delle Unit
@@ -154,7 +182,7 @@ frontend/static/frontend/images/characters/match/
 
 Il formato preferito è WebP con nome `<primo-nome>_<armatura>.webp`; per esempio `livia_cuoio.webp`. Il fallback è `<primo-nome>_base.webp`, poi il segnaposto incluso. Sono supportati anche i PNG del progetto originale. Le regole complete e gli override disponibili sono documentati nel README della cartella.
 
-In locale, senza accesso esplicito, l'app usa l'utente leggero `local_master`. Il collegamento all'Amministrazione Django non sostituisce l'autenticazione staff; per crearne una:
+Per creare in seguito un altro amministratore Django:
 
 ```bat
 venv\Scripts\python.exe manage.py createsuperuser

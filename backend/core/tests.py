@@ -116,6 +116,19 @@ class LegacyRaceImportTests(TestCase):
 
 
 class CoreContractTests(TestCase):
+    def setUp(self):
+        user = get_user_model().objects.create_user(
+            username="local_master",
+            is_staff=True,
+        )
+        Giocatore.objects.create(
+            user=user,
+            nome="local_master",
+            display_name="Master locale",
+            role=Giocatore.ROLE_MASTER,
+        )
+        self.client.force_login(user)
+
     def test_item_type_options_drive_admin_picklists_and_reject_case_duplicates(self):
         OpzioneTipoOggetto.objects.create(
             posizione=1,
@@ -279,6 +292,7 @@ class CoreContractTests(TestCase):
 class HierarchicalSettingsTests(TestCase):
     def setUp(self):
         call_command("seed_minimum_data", verbosity=0)
+        self.client.force_login(get_user_model().objects.get(username="local_master"))
 
     def post_settings(self, settings: dict, request_id: str = "settings-save"):
         return self.client.post(
@@ -479,6 +493,8 @@ class HierarchicalSettingsTests(TestCase):
                         "settings_background",
                         "dice_background",
                         "journal_background",
+                        "lore_background",
+                        "market_background",
                     ):
                         self.assertTrue(getattr(theme, field_name).file.name.endswith(expected))
 
@@ -496,8 +512,18 @@ class HierarchicalSettingsTests(TestCase):
         )
         self.assertEqual(settings["appearance.font_scale"]["valueType"], "integer")
         self.assertEqual(settings["accessibility.reduced_motion"]["valueType"], "boolean")
-        self.assertEqual(settings["accessibility.contrast_outline"]["valueType"], "boolean")
-        self.assertFalse(settings["accessibility.contrast_outline"]["value"])
+        self.assertEqual(settings["accessibility.contrast_outline"]["valueType"], "select")
+        self.assertEqual(settings["accessibility.text_color_aware_outline"]["valueType"], "boolean")
+        self.assertFalse(settings["accessibility.text_color_aware_outline"]["value"])
+        self.assertEqual(
+            [choice["value"] for choice in settings["accessibility.contrast_outline"]["choices"]],
+            ["off", "soft", "strong"],
+        )
+        self.assertEqual(settings["accessibility.contrast_outline"]["value"], "off")
+        self.assertEqual(
+            [choice["value"] for choice in settings["appearance.density"]["choices"]],
+            ["spacious", "comfortable", "compact", "condensed"],
+        )
 
         for scale in (75, 175):
             with self.subTest(scale=scale):
@@ -510,12 +536,27 @@ class HierarchicalSettingsTests(TestCase):
                 rejected = self.post_settings({"appearance.font_scale": scale}, request_id=f"font-{scale}")
                 self.assertEqual(rejected.status_code, 400)
 
-        outlined = self.post_settings(
+        for level in ("soft", "strong", "off"):
+            with self.subTest(level=level):
+                outlined = self.post_settings(
+                    {"accessibility.contrast_outline": level},
+                    request_id=f"contrast-outline-{level}",
+                )
+                self.assertEqual(outlined.status_code, 200)
+                self.assertEqual(outlined.json()["data"]["ui"]["accessibility.contrast_outline"], level)
+
+        rejected_outline = self.post_settings(
             {"accessibility.contrast_outline": True},
-            request_id="contrast-outline",
+            request_id="contrast-outline-legacy",
         )
-        self.assertEqual(outlined.status_code, 200)
-        self.assertTrue(outlined.json()["data"]["ui"]["accessibility.contrast_outline"])
+        self.assertEqual(rejected_outline.status_code, 400)
+
+        aware_outline = self.post_settings(
+            {"accessibility.text_color_aware_outline": True},
+            request_id="text-color-aware-outline",
+        )
+        self.assertEqual(aware_outline.status_code, 200)
+        self.assertTrue(aware_outline.json()["data"]["ui"]["accessibility.text_color_aware_outline"])
 
     def test_keyboard_shortcuts_have_safe_unique_defaults_and_can_be_changed(self):
         response = self.client.get("/api/settings/")
@@ -531,19 +572,26 @@ class HierarchicalSettingsTests(TestCase):
                 "shortcuts.dashboard": "Alt+S",
                 "shortcuts.characters": "Alt+P",
                 "shortcuts.character": "Alt+C",
+                "shortcuts.skills": "Alt+A",
+                "shortcuts.competencies": "Alt+N",
+                "shortcuts.creation": "Alt+K",
                 "shortcuts.combat": "Alt+B",
+                "shortcuts.travel": "Alt+V",
+                "shortcuts.market": "Alt+Q",
+                "shortcuts.lore": "Alt+L",
                 "shortcuts.media": "Alt+M",
                 "shortcuts.guides": "Alt+G",
                 "shortcuts.settings": "Alt+I",
                 "shortcuts.journal": "Alt+J",
                 "shortcuts.dice": "Alt+R",
+                "shortcuts.tools": "Alt+T",
             },
         )
         self.assertNotIn("Alt+D", {choice["value"] for choice in shortcuts["shortcuts.journal"]["choices"]})
 
-        saved = self.post_settings({"shortcuts.journal": "Alt+K"})
+        saved = self.post_settings({"shortcuts.journal": "Alt+H"})
         self.assertEqual(saved.status_code, 200)
-        self.assertEqual(saved.json()["data"]["ui"]["shortcuts.journal"], "Alt+K")
+        self.assertEqual(saved.json()["data"]["ui"]["shortcuts.journal"], "Alt+H")
 
     def test_keyboard_shortcuts_reject_duplicate_assignments(self):
         response = self.post_settings({"shortcuts.journal": "Alt+R"})
@@ -560,7 +608,12 @@ class HierarchicalSettingsTests(TestCase):
         keys = {setting["key"] for setting in data["settings"]}
         self.assertEqual(data["security"]["role"], Giocatore.ROLE_MASTER)
         self.assertIn("appearance.theme", keys)
-        self.assertIn("master.confirm_dangerous_actions", keys)
+        self.assertIn("master.show_hidden_rolls", keys)
+        self.assertNotIn("master.confirm_dangerous_actions", keys)
+        self.assertNotIn("master.show_master_tools", keys)
+        self.assertNotIn("branding.app_name", keys)
+        self.assertNotIn("branding.subtitle", keys)
+        self.assertTrue(data["ui"]["master.show_hidden_rolls"])
         self.assertNotIn("security.require_login_for_remote", keys)
         self.assertEqual(data["ui"]["appearance.accent_color"], "#2f6f62")
         self.assertFalse(data["security"]["showRoleLabels"])
@@ -576,7 +629,7 @@ class HierarchicalSettingsTests(TestCase):
             {
                 "appearance.theme": "arcane",
                 "appearance.font_scale": 115,
-                "master.confirm_dangerous_actions": False,
+                "master.show_hidden_rolls": False,
             }
         )
 
@@ -605,11 +658,17 @@ class HierarchicalSettingsTests(TestCase):
         self.assertTrue(list_response.json()["data"]["security"]["showAdminLink"])
         self.assertTrue(list_response.json()["data"]["security"]["canUseDjangoAdmin"])
         self.assertFalse(list_response.json()["data"]["security"]["canManageGameData"])
-        self.assertNotIn("master.confirm_dangerous_actions", keys)
+        self.assertNotIn("master.show_hidden_rolls", keys)
+        self.assertNotIn("shortcuts.tools", keys)
+        self.assertNotIn("master.show_hidden_rolls", list_response.json()["data"]["ui"])
+        self.assertNotIn("shortcuts.tools", list_response.json()["data"]["ui"])
 
-        save_response = self.post_settings({"master.confirm_dangerous_actions": False})
+        save_response = self.post_settings({"master.show_hidden_rolls": False})
         self.assertEqual(save_response.status_code, 403)
         self.assertEqual(save_response.json()["errors"][0]["code"], "settings.forbidden")
+
+        visible_shortcut = self.post_settings({"shortcuts.dashboard": "Alt+T"})
+        self.assertEqual(visible_shortcut.status_code, 200)
 
     def test_superuser_uses_selected_game_role_for_game_settings(self):
         User = get_user_model()
@@ -626,6 +685,7 @@ class HierarchicalSettingsTests(TestCase):
         self.assertEqual(data["security"]["hierarchy"], [])
         self.assertNotIn("security.require_login_for_remote", keys)
         self.assertNotIn("branding.app_name", keys)
+        self.assertNotIn("branding.subtitle", keys)
 
         switched = self.client.post(
             "/api/settings/",
@@ -637,8 +697,9 @@ class HierarchicalSettingsTests(TestCase):
         self.assertEqual(admin_data["security"]["role"], Giocatore.ROLE_ADMIN)
         self.assertTrue(admin_data["security"]["showRoleLabels"])
         self.assertEqual(len(admin_data["security"]["hierarchy"]), 3)
-        self.assertIn("security.require_login_for_remote", admin_keys)
-        self.assertIn("branding.app_name", admin_keys)
+        self.assertIn("security.access_mode", admin_keys)
+        self.assertNotIn("branding.app_name", admin_keys)
+        self.assertNotIn("branding.subtitle", admin_keys)
 
     def test_active_admin_theme_is_selectable_without_frontend_code_changes(self):
         Theme.objects.create(
@@ -671,3 +732,125 @@ class HierarchicalSettingsTests(TestCase):
 
         with self.assertRaises(ValidationError):
             theme.full_clean()
+
+
+class ThemeManagementTests(TestCase):
+    def setUp(self):
+        call_command("seed_minimum_data", verbosity=0)
+        self.user = get_user_model().objects.create_superuser(username="theme-admin", password="x")
+        self.client.force_login(self.user)
+        self.become("admin")
+
+    def become(self, role: str):
+        return self.client.post(
+            "/api/settings/",
+            data=json.dumps({"action": "player.selectRole", "payload": {"roleSelection": {"targetRole": role}}}),
+            content_type="application/json",
+        )
+
+    def action(self, action: str, payload: dict, request_id: str = "theme-action"):
+        return self.client.post(
+            "/api/v1/actions",
+            data=json.dumps(
+                {
+                    "action": action,
+                    "requestId": request_id,
+                    "context": {"screen": "settings"},
+                    "payload": payload,
+                }
+            ),
+            content_type="application/json",
+        )
+
+    def test_payload_exposes_every_screen_including_lore_and_market(self):
+        response = self.client.get("/api/v1/management/themes")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()["data"]
+
+        background_keys = [entry["key"] for entry in data["backgroundFields"]]
+        self.assertIn("lore", background_keys)
+        self.assertIn("market", background_keys)
+        self.assertEqual(len(data["themes"]), 6)
+
+        parchment = next(theme for theme in data["themes"] if theme["slug"] == "parchment")
+        self.assertTrue(parchment["backgrounds"]["lore_background"]["url"])
+        self.assertTrue(parchment["backgrounds"]["market_background"]["url"])
+        self.assertTrue(parchment["preview"]["backgrounds"]["lore"])
+        self.assertTrue(parchment["preview"]["backgrounds"]["market"])
+
+    def test_accent_gold_and_sidebar_can_fall_back_to_the_global_settings(self):
+        theme = Theme.objects.get(slug="midnight")
+        response = self.action(
+            "management.themes.save",
+            {"themeId": theme.id, "theme": {"colors": {"accent_color": "", "gold_color": ""}}},
+        )
+        self.assertEqual(response.status_code, 200)
+
+        theme.refresh_from_db()
+        self.assertEqual(theme.accent_color, "")
+        self.assertEqual(theme.gold_color, "")
+
+        saved = response.json()["data"]["management"]["theme"]
+        self.assertEqual(saved["colors"]["accent_color"], "")
+        self.assertEqual(response.json()["data"]["management"]["fallbacks"]["appearance.accent_color"], "#2f6f62")
+
+    def test_mandatory_colours_cannot_be_cleared(self):
+        theme = Theme.objects.get(slug="midnight")
+        response = self.action(
+            "management.themes.save",
+            {"themeId": theme.id, "theme": {"colors": {"text_color": ""}}},
+        )
+        self.assertEqual(response.status_code, 400)
+        theme.refresh_from_db()
+        self.assertTrue(theme.text_color)
+
+    def test_duplicate_creates_an_independent_inactive_copy(self):
+        source = Theme.objects.get(slug="arcane")
+        response = self.action(
+            "management.themes.create",
+            {"theme": {"name": "Arcano notturno", "duplicateOfId": source.id, "isActive": False}},
+        )
+        self.assertEqual(response.status_code, 200)
+
+        created = Theme.objects.get(slug="arcano-notturno")
+        self.assertFalse(created.is_default)
+        self.assertFalse(created.is_active)
+        self.assertEqual(created.background_color, source.background_color)
+        self.assertEqual(created.metadata["duplicated_from"], "arcane")
+
+    def test_default_theme_moves_and_stays_unique(self):
+        target = Theme.objects.get(slug="oblivion")
+        response = self.action("management.themes.setDefault", {"themeId": target.id})
+        self.assertEqual(response.status_code, 200)
+
+        target.refresh_from_db()
+        self.assertTrue(target.is_default)
+        self.assertEqual(Theme.objects.filter(is_default=True).count(), 1)
+
+        blocked = self.action(
+            "management.themes.save",
+            {"themeId": target.id, "theme": {"isActive": False}},
+        )
+        self.assertEqual(blocked.status_code, 400)
+
+    def test_seeded_themes_are_not_archivable_but_custom_ones_are(self):
+        seeded = Theme.objects.get(slug="skyrim")
+        self.assertEqual(self.action("management.themes.archive", {"themeId": seeded.id}).status_code, 400)
+
+        self.action("management.themes.create", {"theme": {"name": "Tema di prova"}})
+        custom = Theme.objects.get(slug="tema-di-prova")
+        self.assertEqual(self.action("management.themes.archive", {"themeId": custom.id}).status_code, 200)
+
+        custom.refresh_from_db()
+        self.assertIsNotNone(custom.archived_at)
+        self.assertFalse(custom.is_active)
+
+    def test_non_admins_cannot_reach_the_theme_tools(self):
+        self.become("user")
+
+        self.assertEqual(self.client.get("/api/v1/management/themes").status_code, 403)
+        theme = Theme.objects.get(slug="midnight")
+        self.assertEqual(
+            self.action("management.themes.save", {"themeId": theme.id, "theme": {"name": "Nope"}}).status_code,
+            403,
+        )

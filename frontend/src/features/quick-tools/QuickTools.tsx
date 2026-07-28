@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { matchesShortcut, quickToolShortcutTargets, shortcutValue } from "../../lib/shortcuts";
 import type { CampaignData, SettingsData } from "../../lib/types";
+import { CampaignStatus } from "../campaign/CampaignStatus";
 import { DiceTool } from "./DiceTool";
 import { JournalTool } from "./JournalTool";
 import { ToolDrawer } from "./ToolDrawer";
@@ -33,13 +34,16 @@ export function QuickTools({ characterId, characterName, campaign, settings, not
   }, [settings.ui]);
   return <>
     <div className="quick-tools-bar" aria-label="Strumenti rapidi" data-component-type="toolbar" data-theme="dark">
-      <span>Strumenti rapidi</span>
-      <button type="button" className={tool === "journal" ? "active" : ""} onClick={() => setTool((current) => current === "journal" ? null : "journal")} aria-expanded={tool === "journal"} aria-keyshortcuts={journalShortcut || undefined} title={journalShortcut ? `Diario (${journalShortcut.replace("+", " + ")})` : "Diario"}>
-        <span aria-hidden="true">⌑</span><strong>Diario</strong>
-      </button>
-      <button type="button" className={tool === "dice" ? "active" : ""} onClick={() => setTool((current) => current === "dice" ? null : "dice")} aria-expanded={tool === "dice"} aria-keyshortcuts={diceShortcut || undefined} title={diceShortcut ? `Dadi (${diceShortcut.replace("+", " + ")})` : "Dadi"}>
-        <span aria-hidden="true">◆</span><strong>Dadi</strong>
-      </button>
+      <CampaignStatus campaign={campaign} settings={settings} notify={notify} />
+      <div className="quick-tools-actions">
+        <span>Strumenti rapidi</span>
+        <button type="button" className={tool === "journal" ? "active" : ""} onClick={() => setTool((current) => current === "journal" ? null : "journal")} aria-expanded={tool === "journal"} aria-keyshortcuts={journalShortcut || undefined} title={journalShortcut ? `Diario (${journalShortcut.replace("+", " + ")})` : "Diario"}>
+          <span aria-hidden="true">⌑</span><strong>Diario</strong>
+        </button>
+        <button type="button" className={tool === "dice" ? "active" : ""} onClick={() => setTool((current) => current === "dice" ? null : "dice")} aria-expanded={tool === "dice"} aria-keyshortcuts={diceShortcut || undefined} title={diceShortcut ? `Dadi (${diceShortcut.replace("+", " + ")})` : "Dadi"}>
+          <span aria-hidden="true">◆</span><strong>Dadi</strong>
+        </button>
+      </div>
     </div>
     {tool === "journal" && <ToolDrawer title="Diario" eyebrow={characterName || "Nessun personaggio"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.journal} wide draggable resizable>
       <JournalTool characterId={characterId} campaign={campaign} notify={notify} />

@@ -13,6 +13,7 @@ from backend.core.models import SettingDefinition
 LOCATION_KEY = "mercato.locations"
 SHOP_TYPES_KEY = "mercato.shop_types"
 GENERATOR_RULES_KEY = "mercato.generator_rules"
+GENERATION_PROFILES_KEY = "mercato.generation_profiles"
 _KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
@@ -144,9 +145,73 @@ def validate_generator_rules(value: object) -> dict:
     return result
 
 
+def validate_generation_profiles(value: object) -> dict:
+    if not isinstance(value, dict) or not isinstance(value.get("profiles"), list):
+        raise ValidationError("mercato.generation_profiles deve contenere una lista profiles.")
+    keys: set[str] = set()
+    profiles = []
+    for index, raw in enumerate(value["profiles"]):
+        if not isinstance(raw, dict):
+            raise ValidationError({"profiles": f"Profilo #{index + 1} non valido."})
+        key = _key(raw.get("key"), f"profiles[{index}].key")
+        if key in keys:
+            raise ValidationError({"profiles": f"Chiave profilo duplicata: {key}."})
+        keys.add(key)
+        try:
+            quantity_multiplier = float(raw.get("quantityMultiplier", 1))
+            price_multiplier = float(raw.get("priceMultiplier", 1))
+        except (TypeError, ValueError) as exc:
+            raise ValidationError({"profiles": f"{key}: i moltiplicatori devono essere numeri."}) from exc
+        if not .1 <= quantity_multiplier <= 5:
+            raise ValidationError({"profiles": f"{key}: la quantità deve essere compresa tra 0,1 e 5."})
+        if not .1 <= price_multiplier <= 5:
+            raise ValidationError({"profiles": f"{key}: il prezzo deve essere compreso tra 0,1 e 5."})
+        probabilities = raw.get("rarityProbabilities")
+        if not isinstance(probabilities, dict):
+            raise ValidationError({"profiles": f"{key}: rarityProbabilities deve essere un oggetto."})
+        try:
+            normalized_probabilities = {
+                str(rarity): float(probabilities.get(str(rarity), probabilities.get(rarity, 0)))
+                for rarity in range(1, 5)
+            }
+        except (TypeError, ValueError) as exc:
+            raise ValidationError({"profiles": f"{key}: probabilità di rarità non valide."}) from exc
+        if any(probability < 0 for probability in normalized_probabilities.values()) or abs(sum(normalized_probabilities.values()) - 1) > .001:
+            raise ValidationError({"profiles": f"{key}: le probabilità di rarità devono sommare a 1."})
+        profiles.append({
+            "key": key,
+            "label": _label(raw.get("label"), "profile.label"),
+            "enabled": bool(raw.get("enabled", True)),
+            "quantityMultiplier": quantity_multiplier,
+            "priceMultiplier": price_multiplier,
+            "rarityProbabilities": normalized_probabilities,
+        })
+    if not profiles:
+        raise ValidationError({"profiles": "Configura almeno un profilo di generazione."})
+    default_key = _key(value.get("defaultProfileKey"), "defaultProfileKey")
+    default_profile = next((profile for profile in profiles if profile["key"] == default_key), None)
+    if default_profile is None:
+        raise ValidationError({"defaultProfileKey": "Il profilo predefinito non esiste."})
+    if not default_profile["enabled"]:
+        raise ValidationError({"defaultProfileKey": "Il profilo predefinito deve essere attivo."})
+    return {"version": int(value.get("version", 1)), "defaultProfileKey": default_key, "profiles": profiles}
+
+
 def get_market_locations() -> dict: return validate_market_locations(_value(LOCATION_KEY))
 def get_shop_type_definitions() -> dict: return validate_shop_types(_value(SHOP_TYPES_KEY))
 def get_generator_rules() -> dict: return validate_generator_rules(_value(GENERATOR_RULES_KEY))
+def get_generation_profiles() -> dict: return validate_generation_profiles(_value(GENERATION_PROFILES_KEY))
+
+
+def resolve_generation_profile(profile_key: str = "", *, selectable: bool = False) -> dict:
+    configuration = get_generation_profiles()
+    effective_key = str(profile_key or configuration["defaultProfileKey"]).strip()
+    profile = next((item for item in configuration["profiles"] if item["key"] == effective_key), None)
+    if profile is None:
+        raise ValidationError("Profilo di generazione non configurato.")
+    if selectable and not profile["enabled"]:
+        raise ValidationError("Il profilo di generazione è disabilitato.")
+    return profile
 
 
 def resolve_location(location_key: str, *, selectable: bool = False) -> dict:
@@ -160,10 +225,10 @@ def resolve_location(location_key: str, *, selectable: bool = False) -> dict:
 
 
 def configuration_payload() -> dict:
-    locations, types, rules = get_market_locations(), get_shop_type_definitions(), get_generator_rules()
-    canonical = json.dumps({"locations": locations, "shopTypes": types, "rules": rules}, sort_keys=True, separators=(",", ":"))
-    return {"locationsVersion": locations["version"], "shopTypesVersion": types["version"], "hash": hashlib.sha256(canonical.encode()).hexdigest()[:16], "locations": locations, "shopTypes": types, "generatorRules": rules, "limits": {"minLevel": rules["minLevel"], "maxLevel": rules["maxLevel"], "maximumNegotiationPercent": rules["maximumNegotiationPercent"], "batchMaximum": 20}}
+    locations, types, rules, profiles = get_market_locations(), get_shop_type_definitions(), get_generator_rules(), get_generation_profiles()
+    canonical = json.dumps({"locations": locations, "shopTypes": types, "rules": rules, "generationProfiles": profiles}, sort_keys=True, separators=(",", ":"))
+    return {"locationsVersion": locations["version"], "shopTypesVersion": types["version"], "hash": hashlib.sha256(canonical.encode()).hexdigest()[:16], "locations": locations, "shopTypes": types, "generatorRules": rules, "generationProfiles": profiles, "limits": {"minLevel": rules["minLevel"], "maxLevel": rules["maxLevel"], "maximumNegotiationPercent": rules["maximumNegotiationPercent"], "batchMaximum": 20}}
 
 
 def market_settings_payload() -> dict:
-    return {"locations": get_market_locations(), "shopTypes": get_shop_type_definitions(), "generatorRules": get_generator_rules()}
+    return {"locations": get_market_locations(), "shopTypes": get_shop_type_definitions(), "generatorRules": get_generator_rules(), "generationProfiles": get_generation_profiles()}

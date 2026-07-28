@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 venv/
 .env
+.redjango-access-mode
 
 # Django/runtime
 media/
@@ -29,6 +30,8 @@ scratch.py
 frontend/node_modules/
 frontend/test-results/
 frontend/playwright-report/
+frontend/.playwright/
+frontend/e2e.sqlite3
 frontend/static/frontend/dist/
 redjango/e2e-results/
 shop-import-receipts/

@@ -28,9 +28,14 @@ export function ManagementHub() {
       </Link>
       <Link className="management-tool-card" to="/tools/shops" data-component-type="card" data-theme="gold">
         <span className="management-tool-icon" aria-hidden="true">¤</span>
-        <span><small>Regioni, località e scorte</small><strong>Gestione Negozi</strong><p>Crea negozi, configura il mondo commerciale e rigenera inventari riproducibili.</p></span>
+        <span><small>Territorio, assortimenti e profili</small><strong>Gestione Negozi</strong><p>Ordina il mondo commerciale, configura i tipi di negozio e assegna profili riproducibili alle scorte.</p></span>
         <b aria-hidden="true">Apri →</b>
       </Link>
+      {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/themes" data-component-type="card" data-theme="parchment">
+        <span className="management-tool-icon" aria-hidden="true">◐</span>
+        <span><small>Colori, sfondi e trasparenze</small><strong>Gestione Temi</strong><p>Modifica i temi con anteprima dal vivo, assegna gli sfondi a ogni schermata e scegli il tema predefinito.</p></span>
+        <b aria-hidden="true">Apri →</b>
+      </Link>}
       {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/variables" data-component-type="card" data-theme="arcane">
         <span className="management-tool-icon" aria-hidden="true">ƒ</span>
         <span><small>Formule e regole globali</small><strong>Gestione Variabili</strong><p>Controlla valori base, formule, Stanchezza e prezzi Skill con validazione obbligatoria prima del salvataggio.</p></span>

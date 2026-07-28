@@ -40,7 +40,7 @@ Read-only features may omit a mutation service. Features without legacy data may
 | Campaign/lore | 138 entries, 298 relations | `DatiCampagna`, `CampaignLoreEntry`, `CampaignLoreRelation` | None | None | None | None | Build after core compendia and Personaggio mutations. |
 | Maps | `CampaignMap`, `GlobalImage` | `DatiMappa`, `UploadedImage` | None | None | None | None | Postpone canvas/realtime work until campaign slice. |
 | Audio/messages | `AudioFile`, tags, messages | `AudioFile`, `Messaggio` | None | None | None | None | Later support slice. |
-| Timeline/fame | Timeline and hall-of-fame tables | `TimelineEvent`, `HallOfFameCharacter` | None | None | None | None | Later read-only content slice. |
+| Timeline/fame | 9 legacy timeline rows plus hall-of-fame tables | `TimelineEvent`, `HallOfFameCharacter` | Idempotent, dry-run-first Timeline importer with media provenance; Hall of Fame not imported | Typed Lore projection plus atomic Timeline save/archive services | Timeline is the third `/lore` tab with search, keyboard/rail navigation, detail and manager authoring; Hall of Fame intentionally absent | Ordering, permissions, campaign isolation, archive, API and importer idempotency tests | Timeline complete after data reconciliation; Hall of Fame remains a separate future slice and must not reuse `TimelineEvent`. |
 | AI/orchestration | prompts, logs, Comfy/TTS/orchestrator tools | Contract still expects `LLMPrompt`, `LLMLog`, `LogControl`, `ToolControl` | None | None | None | None | Persistence not implemented; intentionally last after background-job design. |
 | Combat | large cross-domain workflow | Partial durable data only | None | None | None | None | Intentionally late: depends on characters, rules, effects, inventory, maps, and events. |
 

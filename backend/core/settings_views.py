@@ -10,12 +10,12 @@ from .settings_services import (
     select_game_role,
     update_player_alias,
 )
-from .views import get_local_user
+from .views import get_authenticated_user
 
 
 @require_http_methods(["GET", "POST"])
 def settings_collection(request):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     if request.method == "GET":
         return api_response(request, settings_payload(user, giocatore))

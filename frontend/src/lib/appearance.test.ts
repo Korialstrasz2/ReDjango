@@ -6,6 +6,8 @@ describe("appearance contrast helpers", () => {
   it("chooses black around light primary text and white around dark primary text", () => {
     expect(contrastingTextOutline("#f5efff")).toBe("#000000");
     expect(contrastingTextOutline("#291d15")).toBe("#ffffff");
+    expect(contrastingTextOutline("rgb(245, 239, 255)")).toBe("#000000");
+    expect(contrastingTextOutline("color(srgb 0.16 0.11 0.08)")).toBe("#ffffff");
   });
 
   it("uses the safe light outline fallback for invalid colors", () => {

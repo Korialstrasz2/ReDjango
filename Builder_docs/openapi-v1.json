@@ -244,6 +244,33 @@
         ]
       }
     },
+    "/api/v1/lore": {
+      "get": {
+        "operationId": "backend_api_v1_api_lore",
+        "summary": "Lore",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoreEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "lore"
+        ],
+        "security": [
+          {
+            "LocalCookieAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/management/shops": {
       "get": {
         "operationId": "backend_api_v1_api_managed_shops",
@@ -803,6 +830,43 @@
         ]
       }
     },
+    "/api/v1/management/themes": {
+      "get": {
+        "operationId": "backend_api_v1_api_managed_themes",
+        "summary": "Managed Themes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagementEnvelopeSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "management"
+        ],
+        "security": [
+          {
+            "LocalCookieAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/management/damage-rules": {
       "get": {
         "operationId": "backend_api_v1_api_managed_damage_rules",
@@ -863,6 +927,43 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DiceSetsEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dice"
+        ],
+        "security": [
+          {
+            "LocalCookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dice-history": {
+      "get": {
+        "operationId": "backend_api_v1_api_dice_history",
+        "summary": "Dice History",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiceHistoryEnvelopeSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
                 }
               }
             }
@@ -1273,8 +1374,10 @@
                   "mapping": {
                     "alchemy.brew": "#/components/schemas/AlchemyBrewActionSchema",
                     "alchemy.extract": "#/components/schemas/AlchemyExtractActionSchema",
+                    "campaign.clock.update": "#/components/schemas/CampaignClockUpdateActionSchema",
                     "campaign.notes.update": "#/components/schemas/CampaignNotesUpdateActionSchema",
                     "campaign.select": "#/components/schemas/CampaignSelectActionSchema",
+                    "campaign.weather.reroll": "#/components/schemas/CampaignWeatherRerollActionSchema",
                     "character.adjustQuickStat": "#/components/schemas/QuickStatActionSchema",
                     "character.rest": "#/components/schemas/RestActionSchema",
                     "character.updateOverview": "#/components/schemas/OverviewActionSchema",
@@ -1303,6 +1406,16 @@
                     "items.compareSave": "#/components/schemas/CompareItemActionSchema",
                     "items.create": "#/components/schemas/CreateItemActionSchema",
                     "items.update": "#/components/schemas/UpdateItemActionSchema",
+                    "lore.character.delete": "#/components/schemas/LoreCharacterDeleteActionSchema",
+                    "lore.character.save": "#/components/schemas/LoreCharacterSaveActionSchema",
+                    "lore.event.delete": "#/components/schemas/LoreEventDeleteActionSchema",
+                    "lore.event.record": "#/components/schemas/LoreEventRecordActionSchema",
+                    "lore.event.update": "#/components/schemas/LoreEventUpdateActionSchema",
+                    "lore.faction.delete": "#/components/schemas/LoreFactionDeleteActionSchema",
+                    "lore.faction.save": "#/components/schemas/LoreFactionSaveActionSchema",
+                    "lore.relations.save": "#/components/schemas/LoreRelationsSaveActionSchema",
+                    "lore.timeline.archive": "#/components/schemas/LoreTimelineArchiveActionSchema",
+                    "lore.timeline.save": "#/components/schemas/LoreTimelineSaveActionSchema",
                     "management.characters.attach": "#/components/schemas/ManagedCharacterAttachActionSchema",
                     "management.characters.delete": "#/components/schemas/ManagedCharacterDeleteActionSchema",
                     "management.characters.update": "#/components/schemas/ManagedCharacterUpdateActionSchema",
@@ -1317,6 +1430,10 @@
                     "management.skills.review.status": "#/components/schemas/ManagedSkillReviewStatusActionSchema",
                     "management.skills.review.sync": "#/components/schemas/ManagedSkillReviewSyncActionSchema",
                     "management.skills.skill.state": "#/components/schemas/ManagedSkillStateActionSchema",
+                    "management.themes.archive": "#/components/schemas/ManagedThemeArchiveActionSchema",
+                    "management.themes.create": "#/components/schemas/ManagedThemeCreateActionSchema",
+                    "management.themes.save": "#/components/schemas/ManagedThemeSaveActionSchema",
+                    "management.themes.setDefault": "#/components/schemas/ManagedThemeSetDefaultActionSchema",
                     "management.units.preview": "#/components/schemas/ManagedUnitPreviewActionSchema",
                     "management.units.save": "#/components/schemas/ManagedUnitSaveActionSchema",
                     "management.units.state": "#/components/schemas/ManagedUnitStateActionSchema",
@@ -1327,6 +1444,7 @@
                     "market.settings.save": "#/components/schemas/MarketSettingsSaveActionSchema",
                     "market.shop.batchCreate": "#/components/schemas/MarketShopBatchActionSchema",
                     "market.shop.preview": "#/components/schemas/MarketShopPreviewActionSchema",
+                    "market.shop.profileAssign": "#/components/schemas/MarketProfileAssignmentActionSchema",
                     "market.shop.regenerate": "#/components/schemas/MarketShopRegenerateActionSchema",
                     "market.shop.save": "#/components/schemas/MarketShopSaveActionSchema",
                     "market.shop.state": "#/components/schemas/MarketShopStateActionSchema",
@@ -1448,6 +1566,18 @@
                     "$ref": "#/components/schemas/ManagedVariablesSaveActionSchema"
                   },
                   {
+                    "$ref": "#/components/schemas/ManagedThemeSaveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedThemeCreateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedThemeSetDefaultActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedThemeArchiveActionSchema"
+                  },
+                  {
                     "$ref": "#/components/schemas/ManagedDamageRulesValidateActionSchema"
                   },
                   {
@@ -1473,6 +1603,12 @@
                   },
                   {
                     "$ref": "#/components/schemas/CampaignNotesUpdateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CampaignClockUpdateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CampaignWeatherRerollActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/AlchemyBrewActionSchema"
@@ -1547,6 +1683,9 @@
                     "$ref": "#/components/schemas/MarketShopStateActionSchema"
                   },
                   {
+                    "$ref": "#/components/schemas/MarketProfileAssignmentActionSchema"
+                  },
+                  {
                     "$ref": "#/components/schemas/MarketSettingsSaveActionSchema"
                   },
                   {
@@ -1554,6 +1693,36 @@
                   },
                   {
                     "$ref": "#/components/schemas/MarketPurchaseActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreFactionSaveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreFactionDeleteActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreRelationsSaveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreEventRecordActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreEventUpdateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreEventDeleteActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreCharacterSaveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreCharacterDeleteActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreTimelineSaveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LoreTimelineArchiveActionSchema"
                   }
                 ],
                 "title": "Command"
@@ -3395,6 +3564,55 @@
         "title": "MarketEnvelopeSchema",
         "type": "object"
       },
+      "LoreEnvelopeSchema": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EventSchema"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "title": "Errors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "requestId",
+          "data"
+        ],
+        "title": "LoreEnvelopeSchema",
+        "type": "object"
+      },
       "ManagementEnvelopeSchema": {
         "properties": {
           "ok": {
@@ -3660,6 +3878,160 @@
           "imageUrl"
         ],
         "title": "DiceTextureSchema",
+        "type": "object"
+      },
+      "DiceHistoryDataSchema": {
+        "properties": {
+          "rolls": {
+            "items": {
+              "$ref": "#/components/schemas/DiceHistoryRollSchema"
+            },
+            "title": "Rolls",
+            "type": "array"
+          },
+          "limit": {
+            "default": 100,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rolls"
+        ],
+        "title": "DiceHistoryDataSchema",
+        "type": "object"
+      },
+      "DiceHistoryEnvelopeSchema": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/DiceHistoryDataSchema"
+          },
+          "events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EventSchema"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "title": "Errors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "requestId",
+          "data"
+        ],
+        "title": "DiceHistoryEnvelopeSchema",
+        "type": "object"
+      },
+      "DiceHistoryRollSchema": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "source": {
+            "enum": [
+              "quick",
+              "competence"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "sourceLabel": {
+            "title": "Sourcelabel",
+            "type": "string"
+          },
+          "playerName": {
+            "title": "Playername",
+            "type": "string"
+          },
+          "characterId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Characterid"
+          },
+          "characterName": {
+            "default": "",
+            "title": "Charactername",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "notation": {
+            "title": "Notation",
+            "type": "string"
+          },
+          "rolls": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Rolls",
+            "type": "array"
+          },
+          "modifier": {
+            "title": "Modifier",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "diceSetName": {
+            "default": "",
+            "title": "Dicesetname",
+            "type": "string"
+          },
+          "rolledAt": {
+            "title": "Rolledat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "sourceLabel",
+          "playerName",
+          "notation",
+          "rolls",
+          "modifier",
+          "total",
+          "rolledAt"
+        ],
+        "title": "DiceHistoryRollSchema",
         "type": "object"
       },
       "CharacterNotesDataSchema": {
@@ -5551,6 +5923,17 @@
             ],
             "title": "Campaigns"
           },
+          "weatherReminder": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weatherreminder"
+          },
           "management": {
             "anyOf": [
               {
@@ -5690,6 +6073,18 @@
               }
             ],
             "title": "Marketquote"
+          },
+          "lore": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lore"
           }
         },
         "title": "ActionDataSchema",
@@ -6399,6 +6794,72 @@
         "title": "AssignItemPayloadSchema",
         "type": "object"
       },
+      "CampaignClockUpdateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "campaign.clock.update",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CampaignClockUpdatePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "CampaignClockUpdateActionSchema",
+        "type": "object"
+      },
+      "CampaignClockUpdatePayloadSchema": {
+        "properties": {
+          "campaignId": {
+            "title": "Campaignid",
+            "type": "integer"
+          },
+          "field": {
+            "enum": [
+              "ora",
+              "giorno"
+            ],
+            "title": "Field",
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "increase",
+              "decrease"
+            ],
+            "title": "Direction",
+            "type": "string"
+          }
+        },
+        "required": [
+          "campaignId",
+          "field",
+          "direction"
+        ],
+        "title": "CampaignClockUpdatePayloadSchema",
+        "type": "object"
+      },
       "CampaignNotesUpdateActionSchema": {
         "properties": {
           "requestId": {
@@ -6498,6 +6959,54 @@
           "campaignId"
         ],
         "title": "CampaignSelectPayloadSchema",
+        "type": "object"
+      },
+      "CampaignWeatherRerollActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "campaign.weather.reroll",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CampaignWeatherRerollPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "CampaignWeatherRerollActionSchema",
+        "type": "object"
+      },
+      "CampaignWeatherRerollPayloadSchema": {
+        "properties": {
+          "campaignId": {
+            "title": "Campaignid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "campaignId"
+        ],
+        "title": "CampaignWeatherRerollPayloadSchema",
         "type": "object"
       },
       "CombatButtonCreateActionSchema": {
@@ -7315,6 +7824,463 @@
         "title": "ItemWritePayloadSchema",
         "type": "object"
       },
+      "LoreCharacterDeleteActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.character.delete",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreCharacterDeleteActionSchema",
+        "type": "object"
+      },
+      "LoreCharacterSaveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.character.save",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreValuesPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreCharacterSaveActionSchema",
+        "type": "object"
+      },
+      "LoreEventDeleteActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.event.delete",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreEventDeleteActionSchema",
+        "type": "object"
+      },
+      "LoreEventRecordActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.event.record",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreValuesPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreEventRecordActionSchema",
+        "type": "object"
+      },
+      "LoreEventUpdateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.event.update",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreValuesPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreEventUpdateActionSchema",
+        "type": "object"
+      },
+      "LoreFactionDeleteActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.faction.delete",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreFactionDeleteActionSchema",
+        "type": "object"
+      },
+      "LoreFactionSaveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.faction.save",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreValuesPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreFactionSaveActionSchema",
+        "type": "object"
+      },
+      "LoreIdPayloadSchema": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "LoreIdPayloadSchema",
+        "type": "object"
+      },
+      "LoreRelationsPayloadSchema": {
+        "properties": {
+          "relations": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Relations",
+            "type": "array"
+          }
+        },
+        "title": "LoreRelationsPayloadSchema",
+        "type": "object"
+      },
+      "LoreRelationsSaveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.relations.save",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreRelationsPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreRelationsSaveActionSchema",
+        "type": "object"
+      },
+      "LoreTimelineArchiveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.timeline.archive",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreTimelineArchiveActionSchema",
+        "type": "object"
+      },
+      "LoreTimelineSaveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "lore.timeline.save",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LoreTimelineSavePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "LoreTimelineSaveActionSchema",
+        "type": "object"
+      },
+      "LoreTimelineSavePayloadSchema": {
+        "properties": {
+          "values": {
+            "$ref": "#/components/schemas/LoreTimelineValuesSchema"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "LoreTimelineSavePayloadSchema",
+        "type": "object"
+      },
+      "LoreTimelineValuesSchema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "imageId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imageid"
+          },
+          "tags": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "title",
+          "year"
+        ],
+        "title": "LoreTimelineValuesSchema",
+        "type": "object"
+      },
+      "LoreValuesPayloadSchema": {
+        "properties": {
+          "values": {
+            "additionalProperties": true,
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "LoreValuesPayloadSchema",
+        "type": "object"
+      },
       "ManagedCharacterAttachActionSchema": {
         "properties": {
           "requestId": {
@@ -8060,6 +9026,192 @@
         "title": "ManagedSkillStructureWritePayloadSchema",
         "type": "object"
       },
+      "ManagedThemeArchiveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.themes.archive",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedThemeIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedThemeArchiveActionSchema",
+        "type": "object"
+      },
+      "ManagedThemeCreateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.themes.create",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedThemeCreatePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedThemeCreateActionSchema",
+        "type": "object"
+      },
+      "ManagedThemeCreatePayloadSchema": {
+        "properties": {
+          "theme": {
+            "additionalProperties": true,
+            "title": "Theme",
+            "type": "object"
+          }
+        },
+        "required": [
+          "theme"
+        ],
+        "title": "ManagedThemeCreatePayloadSchema",
+        "type": "object"
+      },
+      "ManagedThemeIdPayloadSchema": {
+        "properties": {
+          "themeId": {
+            "title": "Themeid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "themeId"
+        ],
+        "title": "ManagedThemeIdPayloadSchema",
+        "type": "object"
+      },
+      "ManagedThemeSaveActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.themes.save",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedThemeSavePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedThemeSaveActionSchema",
+        "type": "object"
+      },
+      "ManagedThemeSavePayloadSchema": {
+        "properties": {
+          "themeId": {
+            "title": "Themeid",
+            "type": "integer"
+          },
+          "theme": {
+            "additionalProperties": true,
+            "title": "Theme",
+            "type": "object"
+          }
+        },
+        "required": [
+          "themeId",
+          "theme"
+        ],
+        "title": "ManagedThemeSavePayloadSchema",
+        "type": "object"
+      },
+      "ManagedThemeSetDefaultActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.themes.setDefault",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedThemeIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedThemeSetDefaultActionSchema",
+        "type": "object"
+      },
       "ManagedUnitPreviewActionSchema": {
         "properties": {
           "requestId": {
@@ -8377,6 +9529,59 @@
           }
         },
         "title": "MarketGenerationPayloadSchema",
+        "type": "object"
+      },
+      "MarketProfileAssignmentActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "market.shop.profileAssign",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/MarketProfileAssignmentPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "MarketProfileAssignmentActionSchema",
+        "type": "object"
+      },
+      "MarketProfileAssignmentPayloadSchema": {
+        "properties": {
+          "shopId": {
+            "title": "Shopid",
+            "type": "integer"
+          },
+          "profileKey": {
+            "default": "",
+            "title": "Profilekey",
+            "type": "string"
+          }
+        },
+        "required": [
+          "shopId"
+        ],
+        "title": "MarketProfileAssignmentPayloadSchema",
         "type": "object"
       },
       "MarketPurchaseActionSchema": {

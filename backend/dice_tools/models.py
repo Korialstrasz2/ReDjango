@@ -108,3 +108,52 @@ class DiceTexture(V2Model):
 
     def __str__(self):
         return f"{self.dice_set} · d{self.sides}"
+
+
+class DiceRollRecord(V2Model):
+    SOURCE_QUICK = "quick"
+    SOURCE_COMPETENCE = "competence"
+    SOURCE_CHOICES = [
+        (SOURCE_QUICK, "Dadi"),
+        (SOURCE_COMPETENCE, "Competenza"),
+    ]
+
+    giocatore = models.ForeignKey(
+        "core.Giocatore",
+        verbose_name="giocatore",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="dice_roll_records",
+    )
+    player_name = models.CharField("nome giocatore", max_length=120)
+    personaggio = models.ForeignKey(
+        "characters.Personaggio",
+        verbose_name="personaggio",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="dice_roll_records",
+    )
+    character_name = models.CharField("nome personaggio", max_length=160, blank=True)
+    source = models.CharField("origine", max_length=24, choices=SOURCE_CHOICES)
+    label = models.CharField("contesto", max_length=180, blank=True)
+    notation = models.CharField("notazione", max_length=80)
+    rolls = models.JSONField("risultati dei dadi", default=list)
+    modifier = models.IntegerField("modificatore", default=0)
+    total = models.IntegerField("totale")
+    dice_set_name = models.CharField("set di dadi", max_length=120, blank=True)
+
+    class Meta:
+        ordering = ["-created_at", "-id"]
+        verbose_name = "tiro di dado registrato"
+        verbose_name_plural = "tiri di dado registrati"
+        indexes = [
+            models.Index(fields=["created_at"], name="dice_roll_created_idx"),
+            models.Index(fields=["giocatore", "created_at"], name="dice_roll_player_idx"),
+            models.Index(fields=["personaggio", "created_at"], name="dice_roll_character_idx"),
+        ]
+
+    def __str__(self):
+        owner = self.character_name or self.player_name
+        return f"{owner} · {self.notation}: {self.total}"

@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from backend.core.defaults import (
@@ -13,11 +14,14 @@ from backend.core.models import Giocatore, GlobalModifiers
 
 class GameVariableManagementApiTests(TestCase):
     def setUp(self):
+        user = get_user_model().objects.create_user(username="variables-admin")
         self.giocatore = Giocatore.objects.create(
+            user=user,
             nome="local_master",
             display_name="Admin test",
             role=Giocatore.ROLE_ADMIN,
         )
+        self.client.force_login(user)
         self.profile = GlobalModifiers.objects.create(
             name="Formule_base",
             value_float=dict(FORMULE_BASE_VALUE_FLOAT),

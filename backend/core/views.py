@@ -1,7 +1,7 @@
 import json
 import re
 
-from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET
@@ -22,19 +22,10 @@ from .models import GlobalModifiers, Guida
 from .security import get_or_create_giocatore_for_user, security_payload
 
 
-def get_local_user(request):
-    if request.user.is_authenticated:
-        return request.user
-
-    User = get_user_model()
-    user, created = User.objects.get_or_create(
-        username="local_master",
-        defaults={"is_staff": True, "is_superuser": False},
-    )
-    if created:
-        user.set_unusable_password()
-        user.save(update_fields=["password"])
-    return user
+def get_authenticated_user(request):
+    if not request.user.is_authenticated:
+        raise PermissionDenied("Accedi per utilizzare ReDjango.")
+    return request.user
 
 
 @ensure_csrf_cookie
@@ -120,7 +111,7 @@ def _guides_payload():
 @ensure_csrf_cookie
 @require_GET
 def bootstrap(request):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     security = security_payload(user, giocatore)
     menus = [

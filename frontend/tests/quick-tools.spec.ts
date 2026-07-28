@@ -23,6 +23,10 @@ test("Diario e Dadi sono strumenti rapidi persistenti e usabili", async ({ page,
   await diceDrawer.getByRole("button", { name: "Tira d20" }).click();
   await expect(diceDrawer.locator(".dice-equation strong")).toHaveText(/^\d+$/);
   await expect(diceDrawer.locator(".dice-history li")).toHaveCount(1);
+  await diceDrawer.getByRole("tab", { name: "Tiri del gruppo" }).click();
+  await expect(diceDrawer.locator(".group-dice-history-list > li").first()).toContainText(activeCharacter.name);
+  await expect(diceDrawer.locator(".group-dice-history-list > li").first()).toContainText(characters.data.giocatore.displayName);
+  await diceDrawer.getByRole("tab", { name: "Tiro", exact: true }).click();
   await diceDrawer.getByRole("button", { name: "Chiudi Dadi" }).click();
 
   const contextNoteButton = page.getByRole("button", { name: "Note della pagina: Zaino" });
@@ -54,6 +58,45 @@ test("Diario e Dadi sono strumenti rapidi persistenti e usabili", async ({ page,
   await expect(pageNotes).toHaveValue(originalNotes);
 });
 
+test("la barra rapida mostra la campagna e ricorda il meteo ogni sei ore", async ({ page, request }) => {
+  const bootstrap = await (await request.get("/api/bootstrap/")).json();
+  const campaign = bootstrap.data.campaigns.find((entry: { id: number }) => entry.id === bootstrap.data.activeCampaignId);
+  await page.goto("/");
+
+  const status = page.getByRole("group", { name: "Informazioni della campagna" });
+  const reminder = page.getByRole("dialog", { name: "Tempo atmosferico" });
+  const entryValue = (label: string) => status.locator(".campaign-status-entry", { hasText: label }).locator(".campaign-status-value");
+  const hourValue = entryValue("Ora:");
+
+  await expect(status).toContainText(campaign.name);
+  await expect(entryValue("Giorno:")).toHaveText(String(campaign.daysSinceStart));
+  await expect(status.locator(".campaign-status-weather")).toHaveText(campaign.weatherLabel || "Sconosciuto");
+
+  // The clock is restored press by press, so the run leaves the campaign as it found it.
+  const startingHour = Number((await hourValue.innerText()).replace("—", "")) || 0;
+  const stepsToReminder = (6 - (startingHour % 6)) % 6 || 6;
+  const stepHour = async (direction: "Ora successiva" | "Ora precedente", expected: number) => {
+    await status.getByRole("button", { name: direction }).click();
+    await expect(hourValue).toHaveText(String(expected));
+    const later = reminder.getByRole("button", { name: "Più tardi" });
+    if (await later.count()) await later.click();
+  };
+
+  for (let step = 1; step < stepsToReminder; step += 1) {
+    await stepHour("Ora successiva", (startingHour + step) % 24);
+  }
+  await status.getByRole("button", { name: "Ora successiva" }).click();
+  await expect(hourValue).toHaveText(String((startingHour + stepsToReminder) % 24));
+  await expect(reminder).toBeVisible();
+  await expect(reminder).toContainText("ricorda di tirare il tempo atmosferico");
+  await reminder.getByRole("button", { name: "Più tardi" }).click();
+  await expect(reminder).toHaveCount(0);
+
+  for (let step = stepsToReminder - 1; step >= 0; step -= 1) {
+    await stepHour("Ora precedente", (startingHour + step) % 24);
+  }
+});
+
 test("la pagina Combattimento espone le sue note in anteprima e le può fissare", async ({ page, request }) => {
   const characters = await (await request.get("/api/personaggi/")).json();
   const characterId = characters.data.giocatore.activePersonaggioId;
@@ -61,8 +104,7 @@ test("la pagina Combattimento espone le sue note in anteprima e le può fissare"
   const notes = await (await request.get(`/api/v1/characters/${characterId}/notes`)).json();
 
   await page.goto("/combat");
-  await expect(page.getByRole("heading", { name: "Combattimento", exact: true })).toBeVisible();
-  await expect(page.getByText("Il tavolo degli scontri sta prendendo forma")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Mappa attiva/ })).toBeVisible();
 
   const trigger = page.getByRole("button", { name: "Note della pagina: Combattimento" });
   const flyout = page.getByRole("complementary", { name: `Note Combattimento di ${activeCharacter.name}` });
@@ -170,12 +212,28 @@ test("le scorciatoie configurate aprono pagine, Diario e Dadi", async ({ page })
 
   await page.getByRole("link", { name: "Guide", exact: true }).press("Alt+B");
   await expect(page).toHaveURL(/\/combat$/);
-  await expect(page.getByRole("heading", { name: "Combattimento", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Mappa attiva/ })).toBeVisible();
 
   await page.getByRole("link", { name: "Combattimento", exact: true }).press("Alt+I");
   await expect(page).toHaveURL(/\/settings$/);
+  await page.getByRole("tab", { name: "Scorciatoie" }).click();
   await expect(page.locator('.setting-row:has-text("Diario rapido") select')).toHaveValue("Alt+J");
   await expect(page.locator('.setting-row:has-text("Combattimento") select')).toHaveValue("Alt+B");
+  const skillsShortcut = page.locator('.setting-row:has-text("Abilità") select');
+  const loreShortcut = page.locator('.setting-row:has-text("Lore") select');
+  await expect(skillsShortcut).toHaveValue("Alt+A");
+  await expect(page.locator('.setting-row:has-text("Competenze") select')).toHaveValue("Alt+N");
+  await expect(page.locator('.setting-row:has-text("Creazione") select')).toHaveValue("Alt+K");
+  await expect(page.locator('.setting-row:has-text("Viaggio") select')).toHaveValue("Alt+V");
+  await expect(page.locator('.setting-row:has-text("Mercato") select')).toHaveValue("Alt+Q");
+  await expect(loreShortcut).toHaveValue("Alt+L");
+  await expect(page.locator('.setting-row:has-text("Strumenti") select')).toHaveValue("Alt+T");
+
+  await loreShortcut.selectOption("Alt+A");
+  await expect(page.locator(".setting-row-conflict")).toHaveCount(2);
+  await expect(page.getByRole("button", { name: "Salva impostazioni" })).toBeDisabled();
+  await loreShortcut.selectOption("Alt+L");
+  await expect(page.locator(".setting-row-conflict")).toHaveCount(0);
 
   await page.getByRole("link", { name: "Impostazioni", exact: true }).press("Alt+J");
   await expect(page.getByRole("dialog", { name: "Diario" })).toBeVisible();
@@ -184,4 +242,9 @@ test("le scorciatoie configurate aprono pagine, Diario e Dadi", async ({ page })
 
   await page.getByRole("button", { name: /^Dadi/ }).press("Alt+R");
   await expect(page.getByRole("dialog", { name: "Dadi" })).toBeVisible();
+  await page.getByRole("button", { name: "Chiudi Dadi" }).click();
+
+  await page.getByRole("link", { name: "Impostazioni", exact: true }).press("Alt+A");
+  await expect(page).toHaveURL(/\/skills$/);
+  await expect(page.getByRole("heading", { name: "Abilità", exact: true }).first()).toBeVisible();
 });

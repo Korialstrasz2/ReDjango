@@ -1,6 +1,7 @@
 import copy
 import json
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from backend.combat.damage_rules import (
@@ -13,11 +14,14 @@ from backend.core.models import Giocatore, GlobalModifiers
 
 class DamageRuleManagementApiTests(TestCase):
     def setUp(self):
+        user = get_user_model().objects.create_user(username="damage-admin")
         self.giocatore = Giocatore.objects.create(
+            user=user,
             nome="local_master",
             display_name="Admin danno",
             role=Giocatore.ROLE_ADMIN,
         )
+        self.client.force_login(user)
         self.profile = GlobalModifiers.objects.create(
             name="Formule_base",
             value_string={

@@ -34,6 +34,7 @@ from backend.core.defaults import (
     V2_POC_ITEM_DEFAULTS,
     V2_POC_PERSONAGGIO_DEFAULTS,
     V2_POC_SEED_VERSION,
+    V2_RETIRED_SETTING_KEYS,
     V2_SKILL_FAMILY_DEFAULTS,
     V2_SETTING_DEFAULTS,
     V2_SETTINGS_SEED_VERSION,
@@ -208,7 +209,8 @@ class Command(BaseCommand):
         return touched
 
     def _seed_settings(self) -> int:
-        touched = 0
+        touched = SettingDefinition.objects.filter(key__in=V2_RETIRED_SETTING_KEYS).count()
+        SettingDefinition.objects.filter(key__in=V2_RETIRED_SETTING_KEYS).delete()
         for definition in V2_SETTING_DEFAULTS:
             metadata = {
                 "seed_kind": "setting_definition",
@@ -237,11 +239,6 @@ class Command(BaseCommand):
                 **managed_fields,
                 "metadata": {**current_metadata, **metadata},
             }
-            if (
-                definition["key"] == "branding.subtitle"
-                and setting.value == "The Elder Django Rebuilt"
-            ):
-                update_values["value"] = definition["default_value"]
             touched += self._save_if_changed(setting, update_values)
         return touched
 
@@ -1053,8 +1050,11 @@ class Command(BaseCommand):
 
         giocatore, _ = Giocatore.objects.get_or_create(
             nome=LOCAL_PLAYER_NAME,
-            defaults={"display_name": "Master locale", "role": Giocatore.ROLE_MASTER},
+            defaults={"user": user, "display_name": "Master locale", "role": Giocatore.ROLE_MASTER},
         )
+        if giocatore.user_id is None:
+            giocatore.user = user
+            giocatore.save(update_fields=["user", "updated_at"])
         if giocatore.display_name == "Local Master":
             giocatore.display_name = "Master locale"
             giocatore.save(update_fields=["display_name", "updated_at"])

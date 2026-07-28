@@ -1,7 +1,7 @@
 from django.views.decorators.http import require_http_methods
 
 from backend.core.api import ApiError, api_error_response, api_response, multipart_payload, request_payload
-from backend.core.views import get_local_user
+from backend.core.views import get_authenticated_user
 
 from .models import UploadedImage
 from .selectors import get_uploaded_image_for_user, media_detail_payload, media_list_payload, user_can_manage_all_images
@@ -28,7 +28,7 @@ def _asset_for_user(user, asset_id: int) -> UploadedImage:
 
 @require_http_methods(["GET", "POST"])
 def media_collection(request):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     if request.method == "GET":
         return api_response(request, media_list_payload(user))
 
@@ -46,7 +46,7 @@ def media_collection(request):
 
 @require_http_methods(["GET", "PATCH", "DELETE"])
 def media_detail(request, asset_id: int):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     try:
         asset = _asset_for_user(user, asset_id)
         if request.method == "GET":

@@ -1,21 +1,23 @@
 @echo off
-setlocal
+setlocal enableextensions enabledelayedexpansion
 
 cd /d "%~dp0"
 
 set "PYTHON=python"
-set "BIND_ADDRESS=127.0.0.1:8003"
-set "RUN_MODE=local"
-if /I "%~1"=="lan" (
-    set "BIND_ADDRESS=0.0.0.0:8003"
-    set "RUN_MODE=lan"
+set "REQUESTED_MODE=%~1"
+if /I "%REQUESTED_MODE%"=="local" set "REQUESTED_MODE=locked"
+if defined REQUESTED_MODE if /I not "%REQUESTED_MODE%"=="locked" if /I not "%REQUESTED_MODE%"=="lan" if /I not "%REQUESTED_MODE%"=="online" (
+    echo Modalita non valida: %REQUESTED_MODE%
+    echo Usa: start_server.bat [locked^|lan^|online]
+    goto :error
 )
+if defined REQUESTED_MODE set "REDJANGO_ACCESS_MODE=%REQUESTED_MODE%"
 if exist "venv\Scripts\python.exe" set "PYTHON=venv\Scripts\python.exe"
 if exist ".venv\Scripts\python.exe" set "PYTHON=.venv\Scripts\python.exe"
 
-%PYTHON% -c "import django" >nul 2>nul
+%PYTHON% -c "import django, waitress, whitenoise" >nul 2>nul
 if errorlevel 1 (
-    echo Django non e disponibile; creazione dell'ambiente virtuale locale...
+    echo Preparazione dell'ambiente virtuale locale...
     if not exist ".venv\Scripts\python.exe" python -m venv .venv
     set "PYTHON=.venv\Scripts\python.exe"
     echo Installazione delle dipendenze Python...
@@ -51,16 +53,50 @@ echo Preparazione dei dati locali minimi...
 %PYTHON% manage.py seed_minimum_data
 if errorlevel 1 goto :error
 
-echo.
-echo Pagina principale di ReDjango: http://127.0.0.1:8003/
-if /I "%RUN_MODE%"=="lan" (
-    echo Modalita LAN attiva. Indirizzo di ascolto: 0.0.0.0:8003
-) else (
-    echo Modalita locale attiva. Per consentire client LAN, esegui: start_server.bat lan
+echo Verifica dell'account amministratore...
+%PYTHON% manage.py ensure_admin_login
+if errorlevel 1 goto :error
+
+if defined REQUESTED_MODE (
+    echo Impostazione della modalita %REQUESTED_MODE%...
+    %PYTHON% manage.py access_mode --set %REQUESTED_MODE%
+    if errorlevel 1 goto :error
 )
+
+:configure_runtime
+set "ACCESS_MODE="
+for /f "usebackq delims=" %%M in (`%PYTHON% manage.py access_mode`) do set "ACCESS_MODE=%%M"
+if not defined ACCESS_MODE goto :error
+
+set "REDJANGO_ACCESS_MODE=%ACCESS_MODE%"
+set "REDJANGO_MANAGED_LAUNCHER=1"
+set "BIND_ADDRESS=127.0.0.1:8003"
+if /I "%ACCESS_MODE%"=="lan" set "BIND_ADDRESS=0.0.0.0:8003"
+if /I "%ACCESS_MODE%"=="online" (
+    if not defined REDJANGO_ONLINE_BIND set "REDJANGO_ONLINE_BIND=127.0.0.1:8003"
+    set "BIND_ADDRESS=!REDJANGO_ONLINE_BIND!"
+    echo Raccolta degli asset statici per la modalita online...
+    %PYTHON% manage.py collectstatic --noinput
+    if errorlevel 1 goto :error
+)
+
+echo.
+echo Modalita di accesso attiva: %ACCESS_MODE%
+echo Indirizzo di ascolto: %BIND_ADDRESS%
+if /I "%ACCESS_MODE%"=="locked" echo ReDjango accetta richieste soltanto da questo computer.
+if /I "%ACCESS_MODE%"=="lan" echo I client della rete locale possono aprire l'IP di questo computer sulla porta 8003.
+if /I "%ACCESS_MODE%"=="online" echo Pubblicazione online protetta: usa HTTPS e un reverse proxy configurato.
+echo Pagina principale locale: http://127.0.0.1:8003/
 echo Apri o usa Ctrl+clic sull'indirizzo della pagina principale indicato sopra.
 echo.
-%PYTHON% manage.py runserver %BIND_ADDRESS%
+
+%PYTHON% -m waitress --listen=%BIND_ADDRESS% redjango.wsgi:application
+set "SERVER_EXIT=%ERRORLEVEL%"
+if "%SERVER_EXIT%"=="75" (
+    echo Riavvio richiesto dall'interfaccia...
+    goto :configure_runtime
+)
+if not "%SERVER_EXIT%"=="0" goto :error
 goto :eof
 
 :error

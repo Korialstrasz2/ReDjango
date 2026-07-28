@@ -52,9 +52,24 @@ class MediaApiContractTests(TestCase):
         cls.media_root.cleanup()
         super().tearDownClass()
 
+    def setUp(self):
+        user = get_user_model().objects.create_user(username="media_master")
+        Giocatore.objects.create(
+            user=user,
+            nome=user.username,
+            display_name="Media Master",
+            role=Giocatore.ROLE_MASTER,
+        )
+        self.client.force_login(user)
+
     def login_admin(self):
         user = get_user_model().objects.create_user(username="media_admin")
-        Giocatore.objects.create(nome=user.username, display_name="Media Admin", role=Giocatore.ROLE_ADMIN)
+        Giocatore.objects.create(
+            user=user,
+            nome=user.username,
+            display_name="Media Admin",
+            role=Giocatore.ROLE_ADMIN,
+        )
         self.client.force_login(user)
         return user
 

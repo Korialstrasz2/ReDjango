@@ -2,7 +2,9 @@ import { expect, test } from "@playwright/test";
 
 test("la barra attivi prepara l'attacco e Percorso calcola dalla mappa", async ({ page }) => {
   await page.goto("/combat");
-  await expect(page.getByRole("heading", { name: "Combattimento", exact: true })).toBeVisible();
+  const activeHeader = page.locator(".combat-active-strip-heading");
+  await expect(activeHeader.getByRole("button", { name: /Mappa attiva/ })).toBeVisible();
+  await expect(activeHeader.getByRole("button", { name: "Percorso" })).toBeVisible();
   const selected = page.locator(".combat-selected-character");
   const roster = page.locator(".combat-active-roster");
   const rosterCards = roster.locator(":scope > div");
@@ -37,7 +39,7 @@ test("la barra attivi prepara l'attacco e Percorso calcola dalla mappa", async (
 
 test("Azioni rapide è una finestra ridimensionabile senza ombra scura", async ({ page }) => {
   await page.goto("/combat");
-  await expect(page.getByRole("heading", { name: "Combattimento", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Mappa attiva/ })).toBeVisible();
   const trigger = page.getByRole("button", { name: /Azioni rapide/ });
   test.skip(await trigger.count() === 0, "Serve una mappa di combattimento attiva.");
   await trigger.click();
@@ -120,7 +122,7 @@ test("Azioni rapide seleziona il tipo e converte l'effetto in Mana", async ({ pa
 
 test("il personaggio trascinato sulla mappa resta visibile sotto il cursore", async ({ page }) => {
   await page.goto("/combat");
-  await expect(page.getByRole("heading", { name: "Combattimento", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Mappa attiva/ })).toBeVisible();
   const movableTokens = page.locator(".combat-token.can-move");
   test.skip(await movableTokens.count() === 0, "Serve un personaggio controllabile sulla mappa.");
 

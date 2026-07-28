@@ -5,10 +5,22 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 
+from .access import (
+    ACCESS_MODE_ONLINE,
+    ACCESS_MODE_SETTING_KEY,
+    online_configuration_errors,
+    persist_access_mode,
+)
 from .api import ApiError
 from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme
 from .security import effective_role, has_minimum_role, role_rank
-from .settings_selectors import ADMIN_MANAGED_SETTING_KEYS, can_edit_setting, global_setting_value, setting_base_value
+from .settings_selectors import (
+    ADMIN_MANAGED_SETTING_KEYS,
+    GLOBAL_EDITABLE_SETTING_KEYS,
+    can_edit_setting,
+    global_setting_value,
+    setting_base_value,
+)
 
 
 COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -98,6 +110,17 @@ def save_setting_overrides(user, giocatore: Giocatore, submitted: dict) -> None:
             raise ApiError("settings.forbidden", f"Non hai il permesso di modificare {setting.label}.", key, 403)
 
         value = None if raw_value is None else validate_setting_value(setting, raw_value)
+        if setting.key == ACCESS_MODE_SETTING_KEY and value == ACCESS_MODE_ONLINE:
+            missing = online_configuration_errors()
+            if missing:
+                raise ApiError(
+                    "security.online_configuration_incomplete",
+                    "Prima di attivare il server online configura "
+                    + " e ".join(missing)
+                    + " nell'ambiente del launcher.",
+                    setting.key,
+                    409,
+                )
         prepared_values.append((setting, value))
 
     shortcut_definitions = list(
@@ -107,6 +130,11 @@ def save_setting_overrides(user, giocatore: Giocatore, submitted: dict) -> None:
             archived_at__isnull=True,
         )
     )
+    shortcut_definitions = [
+        setting
+        for setting in shortcut_definitions
+        if has_minimum_role(role, setting.minimum_role)
+    ]
     shortcut_overrides = {
         override.setting_id: override.value
         for override in SettingOverride.objects.filter(
@@ -137,6 +165,13 @@ def save_setting_overrides(user, giocatore: Giocatore, submitted: dict) -> None:
         shortcut_owners[shortcut] = key
 
     for setting, value in prepared_values:
+        if setting.key in GLOBAL_EDITABLE_SETTING_KEYS:
+            SettingOverride.objects.filter(setting=setting).delete()
+            setting.value = value
+            setting.save(update_fields=["value", "updated_at"])
+            if setting.key == ACCESS_MODE_SETTING_KEY:
+                transaction.on_commit(lambda selected=value: persist_access_mode(selected))
+            continue
         if value is None:
             SettingOverride.objects.filter(setting=setting, giocatore=giocatore).delete()
             continue

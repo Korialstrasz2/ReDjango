@@ -10,7 +10,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from backend.core.api import ApiError
 from backend.core.security import get_or_create_giocatore_for_user
-from backend.core.views import get_local_user
+from backend.core.views import get_authenticated_user
 
 from .models import CombatEvent
 from .selectors import combat_workspace_payload
@@ -73,7 +73,7 @@ def _error(request, error, request_id=""):
 
 
 def _identity(request):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     return user, get_or_create_giocatore_for_user(user)
 
 

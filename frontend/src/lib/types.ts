@@ -51,7 +51,10 @@ export type CampaignData = {
   isActive: boolean;
   isSelected: boolean;
   weather: string;
+  weatherLabel: string;
+  weatherEffects: string;
   currentTime: string;
+  currentHour: number;
   daysSinceStart: number;
   sharedNotes: string;
 };
@@ -66,6 +69,27 @@ export type SecurityData = {
   canManageMasterSettings: boolean;
   canManageGameData: boolean;
   canManageAdminSettings: boolean;
+  adminUrl: string;
+};
+
+export type AccessRuntimeData = {
+  activeAccessMode: "locked" | "lan" | "online";
+  configuredAccessMode: "locked" | "lan" | "online";
+  restartRequired: boolean;
+  restartAvailable: boolean;
+  onlineReady: boolean;
+};
+
+export type AuthData = {
+  authenticated: boolean;
+  user: {
+    id: number;
+    username: string;
+    displayName: string;
+    role: "user" | "master" | "admin";
+    canUseDjangoAdmin: boolean;
+  } | null;
+  runtime: AccessRuntimeData;
   adminUrl: string;
 };
 
@@ -116,6 +140,7 @@ export type SettingsData = {
     }>;
   };
   security: SecurityData;
+  runtime: AccessRuntimeData;
   settings: SettingData[];
   ui: Record<string, unknown>;
   themes: ThemeData[];
@@ -184,6 +209,39 @@ export type GameVariablesValidation = {
   }>;
   warnings: string[];
   message: string;
+};
+
+export type ManagedThemeBackground = {
+  id: number | null;
+  title: string;
+  url: string;
+  thumbnailUrl: string;
+};
+
+export type ManagedTheme = {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  isDefault: boolean;
+  order: number;
+  colors: Record<string, string>;
+  overlayOpacity: number;
+  panelOpacity: number;
+  backgroundPosition: string;
+  backgroundBlur: number;
+  backgrounds: Record<string, ManagedThemeBackground>;
+  isSeeded: boolean;
+  preview: ThemeData;
+};
+
+export type ManagedThemesData = {
+  themes: ManagedTheme[];
+  colorFields: Array<{ field: string; key: string; label: string; fallbackSetting: string }>;
+  backgroundFields: Array<{ field: string; key: string; label: string }>;
+  fallbacks: Record<string, string>;
+  activeCount: number;
 };
 
 export type DamageRules = {
@@ -267,6 +325,9 @@ export type DiceSet = {
 };
 
 export type DiceSetsData = { diceSets: DiceSet[]; defaultDiceSetId: number | null };
+
+export type DiceHistoryRoll = components["schemas"]["DiceHistoryRollSchema"];
+export type DiceHistoryData = components["schemas"]["DiceHistoryDataSchema"];
 
 export type DiceRoll = {
   diceSetId: number | null;

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import { useApp } from "../../App";
 import { ImagePickerModal } from "../../components/ImagePickerModal";
+import { ItemSpecialIconField } from "../../components/ItemSpecialIconField";
 import { ItemEditorModal } from "../character/ItemEditorModal";
 import { command, getData } from "../../lib/api";
 import type { Item, ItemCatalog } from "../../lib/types";
@@ -208,6 +209,7 @@ function ItemComparer({ catalog, onSaved }: { catalog: ItemCatalog; onSaved: (it
       <CompareRow label="Profilo crafting" left={left?.craftingProfile} wide><textarea className="code-input" rows={8} value={right.crafting_profile} onChange={(event) => update("crafting_profile", event.target.value)} spellCheck={false} /></CompareRow>
       <h3>Media e note</h3>
       <CompareRow label="Immagine" left={leftMedia}><button className="media-picker-trigger compact" type="button" onClick={() => setImagePickerOpen(true)}>{rightMedia ? <><img src={rightMedia.thumbnailUrl || rightMedia.url} alt="" /><span>{rightMedia.title}</span></> : "Scegli dall'archivio"}</button></CompareRow>
+      <CompareRow label="Icona dedicata" left={left?.imageUrl} wide><ItemSpecialIconField itemId={right.identityId} itemName={right.nome} imageUrl={catalog.items.find((item) => item.id === right.identityId)?.imageUrl || ""} /></CompareRow>
       <CompareRow label="Note" left={left?.notes} wide><textarea rows={5} value={right.notes} onChange={(event) => update("notes", event.target.value)} /></CompareRow>
     </div>
     <div className="sticky-actions"><button className="button primary" type="button" disabled={mutation.isPending || !right.nome.trim()} onClick={save}>{right.identityId && right.nome.toLocaleLowerCase("it") === right.identityName.toLocaleLowerCase("it") ? "Aggiorna destinazione" : "Crea nuovo oggetto"}</button></div>

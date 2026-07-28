@@ -7,11 +7,8 @@ const UI_SETTING_KEYS = new Set([
     "appearance.font_scale",
     "appearance.density",
     "accessibility.reduced_motion",
-    "dice.color",
     "dice.animation",
     "dice.sound",
-    "branding.app_name",
-    "branding.subtitle",
     "appearance.accent_color",
     "appearance.gold_color",
     "appearance.sidebar_color",
@@ -19,7 +16,6 @@ const UI_SETTING_KEYS = new Set([
 
 const VALID_FONTS = new Set(["system", "serif", "accessible"]);
 const VALID_DENSITIES = new Set(["comfortable", "compact"]);
-const VALID_DICE_COLORS = new Set(["crimson", "emerald", "sapphire", "obsidian"]);
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
 
@@ -74,14 +70,12 @@ export function applyUiSettings(ui = {}, themes = []) {
     const theme = selectedTheme?.slug || "parchment";
     const font = VALID_FONTS.has(ui["appearance.font_family"]) ? ui["appearance.font_family"] : "system";
     const density = VALID_DENSITIES.has(ui["appearance.density"]) ? ui["appearance.density"] : "comfortable";
-    const diceColor = VALID_DICE_COLORS.has(ui["dice.color"]) ? ui["dice.color"] : "crimson";
     const fontScale = Math.min(130, Math.max(85, Number(ui["appearance.font_scale"]) || 100));
 
     root.dataset.appTheme = theme;
     root.dataset.font = font;
     root.dataset.density = density;
     root.dataset.reducedMotion = ui["accessibility.reduced_motion"] ? "true" : "false";
-    root.dataset.diceColor = diceColor;
     root.dataset.diceAnimation = ui["dice.animation"] === false ? "false" : "true";
     root.dataset.diceSound = ui["dice.sound"] === false ? "false" : "true";
     root.style.fontSize = `${fontScale}%`;
@@ -108,13 +102,6 @@ export function applyUiSettings(ui = {}, themes = []) {
         }
     });
 
-    const appName = String(ui["branding.app_name"] || "ReDjango").slice(0, 120);
-    const subtitle = String(ui["branding.subtitle"] || "La rinascita di The Elder Django").slice(0, 180);
-    const title = document.querySelector("#brand-title");
-    const subtitleElement = document.querySelector("#brand-subtitle");
-    if (title) title.textContent = appName;
-    if (subtitleElement) subtitleElement.textContent = subtitle;
-    document.title = appName;
 }
 
 function renderRoleHierarchy(security) {

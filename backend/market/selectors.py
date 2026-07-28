@@ -21,7 +21,7 @@ def _image_url(image) -> str:
 def _shop_summary(shop: Negozio) -> dict:
     stock = normalize_stock(shop.lista_oggetti)
     entries = [entry for entry in stock["entries"] if isinstance(entry, dict)]
-    return {"id": shop.id, "name": shop.nome, "owner": shop.proprietario, "categoryKey": shop.categoria, "level": shop.livello, "locationKey": shop.location_key, "regionName": shop.regione_nome, "placeName": shop.citta_nome, "description": shop.descrizione, "backgroundUrl": _image_url(shop.immagine_sfondo), "stockCount": sum(max(0, int(entry.get("quantity", 0) or 0)) for entry in entries), "distinctStockCount": len(entries), "featured": shop.in_evidenza, "priceModifierPercent": shop.price_modifier_percent, "stockRevision": shop.stock_revision, "lastRestockedAt": shop.last_restocked_at.isoformat() if shop.last_restocked_at else None, "archived": bool(shop.archived_at)}
+    return {"id": shop.id, "name": shop.nome, "owner": shop.proprietario, "categoryKey": shop.categoria, "level": shop.livello, "locationKey": shop.location_key, "regionName": shop.regione_nome, "placeName": shop.citta_nome, "description": shop.descrizione, "backgroundUrl": _image_url(shop.immagine_sfondo), "stockCount": sum(max(0, int(entry.get("quantity", 0) or 0)) for entry in entries), "distinctStockCount": len(entries), "featured": shop.in_evidenza, "priceModifierPercent": shop.price_modifier_percent, "stockRevision": shop.stock_revision, "lastRestockedAt": shop.last_restocked_at.isoformat() if shop.last_restocked_at else None, "generationProfileKey": shop.generation_profile_key, "archived": bool(shop.archived_at)}
 
 
 def shop_detail(shop: Negozio) -> dict:
@@ -87,9 +87,10 @@ def market_overview(giocatore: Giocatore, *, selected_shop_id: int | None = None
             "locations": full_configuration["locations"],
             "shopTypes": full_configuration["shopTypes"],
             "generatorRules": full_configuration["generatorRules"] if is_admin else None,
+            "generationProfiles": full_configuration["generationProfiles"],
             "itemTypes": sorted(configured_types | catalog_types, key=str.casefold),
         })
-    return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canTuneGenerator": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
+    return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canTuneGenerator": is_admin, "canEditGenerationProfiles": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
 
 
 def management_overview(giocatore: Giocatore) -> dict:

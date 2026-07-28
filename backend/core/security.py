@@ -24,17 +24,33 @@ ROLE_HIERARCHY = [
 
 
 def get_or_create_giocatore_for_user(user) -> Giocatore:
+    if not getattr(user, "is_authenticated", False):
+        raise ValueError("Un profilo Giocatore richiede un account Django autenticato.")
+
     default_role = Giocatore.ROLE_MASTER if user.username == "local_master" else Giocatore.ROLE_USER
-    giocatore, _ = Giocatore.objects.get_or_create(
-        nome=user.username,
-        defaults={
-            "display_name": user.username.replace("_", " ").title(),
-            "role": default_role,
-            "active_campaign": DatiCampagna.objects.filter(
-                archived_at__isnull=True,
-                attiva=True,
-            ).first(),
-        },
+    giocatore = Giocatore.objects.filter(user=user).first()
+    if giocatore is not None:
+        return giocatore
+
+    giocatore = Giocatore.objects.filter(nome__iexact=user.username, user__isnull=True).first()
+    if giocatore is not None:
+        giocatore.user = user
+        giocatore.save(update_fields=["user", "updated_at"])
+        return giocatore
+
+    name = user.username[:120]
+    if Giocatore.objects.filter(nome__iexact=name).exists():
+        suffix = f"-{user.pk}"
+        name = f"{name[:120 - len(suffix)]}{suffix}"
+    giocatore = Giocatore.objects.create(
+        user=user,
+        nome=name,
+        display_name=user.username.replace("_", " ").title(),
+        role=default_role,
+        active_campaign=DatiCampagna.objects.filter(
+            archived_at__isnull=True,
+            attiva=True,
+        ).first(),
     )
     return giocatore
 

@@ -9,7 +9,7 @@ from backend.characters.models import Personaggio
 from backend.core.models import Giocatore
 from backend.media_library.models import UploadedImage
 
-from .models import DiceSet, DiceTexture
+from .models import DiceRollRecord, DiceSet, DiceTexture
 
 
 class QuickToolsApiTests(TestCase):
@@ -19,6 +19,7 @@ class QuickToolsApiTests(TestCase):
 
     def setUp(self):
         self.giocatore = Giocatore.objects.get(nome="local_master")
+        self.client.force_login(self.giocatore.user)
         self.character = Personaggio.objects.get(nome_interno="poc_darion_frondaluna")
         self.other_character = Personaggio.objects.get(nome_interno="poc_livia_occhiodoro")
 
@@ -33,6 +34,7 @@ class QuickToolsApiTests(TestCase):
         User = get_user_model()
         admin = User.objects.create_superuser(username="quick_tools_admin", password="test-pass")
         Giocatore.objects.create(
+            user=admin,
             nome=admin.username,
             display_name="Quick Tools Admin",
             role=Giocatore.ROLE_ADMIN,
@@ -111,10 +113,67 @@ class QuickToolsApiTests(TestCase):
         self.assertEqual(result["total"], 43)
         self.assertEqual(result["notation"], "2d20+3")
         self.assertEqual(randbelow.call_count, 2)
+        recorded = DiceRollRecord.objects.get()
+        self.assertEqual(recorded.giocatore, self.giocatore)
+        self.assertEqual(recorded.personaggio, self.character)
+        self.assertEqual(recorded.character_name, self.character.nome)
+        self.assertEqual(recorded.rolls, [20, 20])
+        self.assertEqual(recorded.total, 43)
 
         invalid = self.command("dice.roll", {"sides": 7, "count": 1, "modifier": 0})
         self.assertEqual(invalid.status_code, 400)
         self.assertEqual(invalid.json()["errors"][0]["code"], "dice.invalid_sides")
+
+    def test_group_history_is_master_only_and_includes_quick_and_competence_rolls(self):
+        quick = self.command("dice.roll", {
+            "sides": 20,
+            "count": 1,
+            "modifier": 2,
+            "characterId": self.character.id,
+        })
+        competence = self.command("competencies.roll", {
+            "characterId": self.other_character.id,
+            "competenceKey": "scalare",
+            "technique": "standard",
+        })
+        self.assertEqual(quick.status_code, 200, quick.content)
+        self.assertEqual(competence.status_code, 200, competence.content)
+
+        response = self.client.get("/api/v1/dice-history")
+        self.assertEqual(response.status_code, 200, response.content)
+        rolls = response.json()["data"]["rolls"]
+        self.assertEqual(len(rolls), 2)
+        self.assertEqual({roll["source"] for roll in rolls}, {"quick", "competence"})
+        self.assertEqual({roll["characterName"] for roll in rolls}, {self.character.nome, self.other_character.nome})
+        self.assertTrue(all(roll["playerName"] == self.giocatore.display_name for roll in rolls))
+        self.assertTrue(all(roll["rolledAt"] for roll in rolls))
+        self.assertEqual(response.json()["data"]["limit"], 100)
+
+        self.giocatore.role = Giocatore.ROLE_USER
+        self.giocatore.save(update_fields=["role", "updated_at"])
+        forbidden = self.client.get("/api/v1/dice-history")
+        self.assertEqual(forbidden.status_code, 403)
+        self.assertEqual(forbidden.json()["errors"][0]["code"], "dice_history.forbidden")
+
+    def test_group_history_returns_only_the_newest_100_rolls(self):
+        for index in range(105):
+            DiceRollRecord.objects.create(
+                giocatore=self.giocatore,
+                player_name=self.giocatore.display_name,
+                personaggio=self.character,
+                character_name=self.character.nome,
+                source=DiceRollRecord.SOURCE_QUICK,
+                label=f"Tiro {index}",
+                notation="1d6",
+                rolls=[1],
+                total=index,
+            )
+
+        rolls = self.client.get("/api/v1/dice-history").json()["data"]["rolls"]
+
+        self.assertEqual(len(rolls), 100)
+        self.assertEqual(rolls[0]["total"], 104)
+        self.assertEqual(rolls[-1]["total"], 5)
 
     def test_note_sections_are_shared_with_the_character_sheet_and_validate_input(self):
         initial = self.client.get(f"/api/v1/characters/{self.character.id}/notes")

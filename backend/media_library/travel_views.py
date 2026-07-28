@@ -2,7 +2,7 @@ from django.views.decorators.http import require_http_methods
 
 from backend.core.api import ApiError, api_error_response, api_response, multipart_payload, request_payload
 from backend.core.security import get_or_create_giocatore_for_user
-from backend.core.views import get_local_user
+from backend.core.views import get_authenticated_user
 
 from .travel_selectors import serialize_travel_map, travel_maps_payload
 from .travel_services import create_travel_map, get_travel_map, update_travel_map
@@ -10,7 +10,7 @@ from .travel_services import create_travel_map, get_travel_map, update_travel_ma
 
 @require_http_methods(["GET", "POST"])
 def travel_map_collection(request):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     if request.method == "GET":
         return api_response(request, travel_maps_payload(user, giocatore))
@@ -28,7 +28,7 @@ def travel_map_collection(request):
 
 @require_http_methods(["PATCH"])
 def travel_map_detail(request, map_id: int):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     try:
         travel_map = get_travel_map(giocatore, map_id)

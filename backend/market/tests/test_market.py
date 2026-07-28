@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -5,10 +7,10 @@ from backend.core.defaults import V2_SETTING_DEFAULTS
 from backend.characters.models import Personaggio, Zaino
 from backend.core.api import ApiError
 from backend.core.models import Giocatore, Negozio, Oggetto, SettingDefinition
-from backend.market.config import GENERATOR_RULES_KEY, SHOP_TYPES_KEY, get_generator_rules, get_market_locations, get_shop_type_definitions, validate_market_locations
+from backend.market.config import GENERATION_PROFILES_KEY, GENERATOR_RULES_KEY, SHOP_TYPES_KEY, get_generation_profiles, get_generator_rules, get_market_locations, get_shop_type_definitions, validate_generation_profiles, validate_market_locations
 from backend.market.generator import generate_stock, parse_loot_levels
 from backend.market.selectors import market_overview
-from backend.market.services import purchase, save_market_settings
+from backend.market.services import assign_generation_profile, purchase, save_market_settings
 
 
 class MarketConfigurationTests(TestCase):
@@ -33,6 +35,46 @@ class MarketConfigurationTests(TestCase):
         save_market_settings(None, master, {"locations": get_market_locations()})
         with self.assertRaisesMessage(Exception, "generatore"):
             save_market_settings(None, master, {"generatorRules": SettingDefinition.objects.get(key=GENERATOR_RULES_KEY).base_value})
+        with self.assertRaisesMessage(Exception, "profili"):
+            save_market_settings(None, master, {"generationProfiles": get_generation_profiles()})
+
+    def test_generation_profiles_require_an_enabled_existing_default(self):
+        profiles = deepcopy(get_generation_profiles())
+        for profile in profiles["profiles"]:
+            profile["enabled"] = profile["key"] != profiles["defaultProfileKey"]
+        with self.assertRaises(ValidationError):
+            validate_generation_profiles(profiles)
+
+    def test_location_label_changes_update_existing_shop_projection(self):
+        master = Giocatore.objects.create(nome="structure-master", role=Giocatore.ROLE_MASTER)
+        shop = Negozio.objects.create(nome="Bottega", location_key="skyrim/whiterun", categoria="generale")
+        locations = deepcopy(get_market_locations())
+        locations["regions"][0]["label"] = "Nord"
+        locations["regions"][0]["places"][0]["label"] = "Città Bianca"
+        save_market_settings(None, master, {"locations": locations})
+        shop.refresh_from_db()
+        self.assertEqual((shop.regione_nome, shop.citta_nome), ("Nord", "Città Bianca"))
+
+    def test_manager_can_assign_an_enabled_profile_to_a_shop(self):
+        master = Giocatore.objects.create(nome="profile-master", role=Giocatore.ROLE_MASTER)
+        shop = Negozio.objects.create(nome="Bottega", location_key="skyrim/whiterun", categoria="generale")
+        assign_generation_profile(None, master, shop.id, "ricco")
+        shop.refresh_from_db()
+        self.assertEqual(shop.generation_profile_key, "ricco")
+
+    def test_player_cannot_assign_a_generation_profile(self):
+        player = Giocatore.objects.create(nome="profile-player", role=Giocatore.ROLE_USER)
+        shop = Negozio.objects.create(nome="Bottega giocatore", location_key="skyrim/whiterun", categoria="generale")
+        with self.assertRaises(ApiError):
+            assign_generation_profile(None, player, shop.id, "ricco")
+
+    def test_admin_can_update_generation_profiles(self):
+        admin = Giocatore.objects.create(nome="profile-admin", role=Giocatore.ROLE_ADMIN)
+        profiles = deepcopy(get_generation_profiles())
+        profiles["profiles"][0]["label"] = "Povero personalizzato"
+        save_market_settings(None, admin, {"generationProfiles": profiles})
+        saved = SettingDefinition.objects.get(key=GENERATION_PROFILES_KEY).value
+        self.assertEqual(saved["profiles"][0]["label"], "Povero personalizzato")
 
     def test_manager_configuration_lists_catalog_item_types_without_admin_rules(self):
         master = Giocatore.objects.create(nome="catalog-master", role=Giocatore.ROLE_MASTER)
@@ -65,6 +107,16 @@ class MarketGeneratorTests(TestCase):
         generated = generate_stock(seed="alchemist", category=category, level=3, region_key="skyrim", rules=rules)
         self.assertIn(3, parse_loot_levels("1-4"))
         self.assertTrue(any(entry["itemId"] == item.id for entry in generated.entries))
+
+    def test_generation_profile_changes_quantity_rarity_source_and_price(self):
+        item = Oggetto.objects.create(nome="Pozione profilo", tipo_1="pozione", valore=100, rarita=1, lv_loot="1", modello=True)
+        category = {"key": "test", "inventoryMultiplier": 1, "itemTypeRanks": {"pozione": 0}}
+        rules = {"minLevel": 1, "maxLevel": 10, "baseCount": 4, "countPerLevel": 0, "countVariance": 0, "rarityProbabilities": {"1": 0, "2": 0, "3": 0, "4": 1}, "fallbackLevelDeltas": [0], "maximumCopies": 10, "priceBasePercent": 100, "priceLevelPercent": 0, "maximumNegotiationPercent": 0}
+        profile = {"key": "test-profile", "quantityMultiplier": .5, "priceMultiplier": 1.5, "rarityProbabilities": {"1": 1, "2": 0, "3": 0, "4": 0}}
+        generated = generate_stock(seed="profile", category=category, level=1, region_key="skyrim", rules=rules, candidates=[item], generation_profile=profile)
+        self.assertEqual(generated.entries[0]["quantity"], 2)
+        self.assertEqual(generated.entries[0]["unitPrice"], 150)
+        self.assertEqual(generated.diagnostics["generationProfileKey"], "test-profile")
 
 
 class MarketPurchaseTests(TestCase):

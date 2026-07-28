@@ -1,4 +1,8 @@
-from .models import DiceSet, DiceTexture
+from backend.core.api import ApiError
+from backend.core.models import Giocatore
+from backend.core.security import effective_role, has_minimum_role
+
+from .models import DiceRollRecord, DiceSet, DiceTexture
 
 
 def serialize_dice_texture(texture: DiceTexture) -> dict:
@@ -49,4 +53,41 @@ def dice_sets_payload(*, include_inactive: bool = False) -> dict:
     return {
         "diceSets": [serialize_dice_set(entry) for entry in sets],
         "defaultDiceSetId": selected_default.id if selected_default else None,
+    }
+
+
+def serialize_dice_roll_record(record: DiceRollRecord) -> dict:
+    metadata = record.metadata if isinstance(record.metadata, dict) else {}
+    return {
+        "id": record.id,
+        "source": record.source,
+        "sourceLabel": "Rilancio competenza" if metadata.get("reroll") else record.get_source_display(),
+        "playerName": record.player_name,
+        "characterId": record.personaggio_id,
+        "characterName": record.character_name,
+        "label": record.label,
+        "notation": record.notation,
+        "rolls": [int(value) for value in (record.rolls or [])],
+        "modifier": record.modifier,
+        "total": record.total,
+        "diceSetName": record.dice_set_name,
+        "rolledAt": record.created_at.isoformat(),
+    }
+
+
+def dice_history_payload(user, giocatore: Giocatore) -> dict:
+    if not has_minimum_role(effective_role(user, giocatore), Giocatore.ROLE_MASTER):
+        raise ApiError(
+            "dice_history.forbidden",
+            "Solo Master e Amministratori possono vedere i tiri del gruppo.",
+            status=403,
+        )
+    records = (
+        DiceRollRecord.objects.filter(archived_at__isnull=True)
+        .select_related("giocatore", "personaggio")
+        .order_by("-created_at", "-id")[:100]
+    )
+    return {
+        "rolls": [serialize_dice_roll_record(record) for record in records],
+        "limit": 100,
     }

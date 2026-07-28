@@ -41,7 +41,12 @@ from backend.characters.services.competencies import (
 from backend.characters.services.alchemy import brew_alchemy, extract_alchemy_reagent
 from backend.characters.services.combat_buttons import create_combat_button, delete_combat_button, update_combat_button
 from backend.core.api import ApiError
-from backend.core.campaigns import select_campaign, update_shared_campaign_notes
+from backend.core.campaigns import (
+    reroll_campaign_weather,
+    select_campaign,
+    update_campaign_clock,
+    update_shared_campaign_notes,
+)
 from backend.core.item_selectors import item_catalog_payload
 from backend.core.item_services import archive_item, create_item, save_compared_item, update_item
 from backend.core.management_selectors import character_management_detail, character_management_overview
@@ -58,6 +63,27 @@ from backend.core.game_variable_services import (
     validate_game_variables,
 )
 from backend.core.models import Giocatore, Skill, SkillMigrationReview
+from backend.core.theme_selectors import themes_management_payload
+from backend.core.theme_services import (
+    archive_theme,
+    create_theme,
+    require_theme_admin,
+    save_theme,
+    set_default_theme,
+)
+from backend.lore.selectors import lore_payload
+from backend.lore.services import (
+    archive_timeline_event as archive_lore_timeline_event,
+    delete_event as delete_lore_event,
+    delete_faction as delete_lore_faction,
+    delete_npc as delete_lore_npc,
+    record_event as record_lore_event,
+    save_faction as save_lore_faction,
+    save_npc as save_lore_npc,
+    save_relations as save_lore_relations,
+    save_timeline_event as save_lore_timeline_event,
+    update_event as update_lore_event,
+)
 from backend.core.skill_management_selectors import (
     managed_skill_detail,
     migration_review_detail,
@@ -91,9 +117,16 @@ from backend.core.skill_services import (
     update_skill,
 )
 from backend.core.spell_services import preview_spell_cast
-from backend.core.views import get_local_user
-from backend.dice_tools.selectors import dice_sets_payload, serialize_dice_set
-from backend.dice_tools.services import archive_dice_set, create_dice_set, roll_dice, update_dice_set
+from backend.core.views import get_authenticated_user
+from backend.dice_tools.selectors import dice_history_payload, dice_sets_payload, serialize_dice_set
+from backend.dice_tools.services import (
+    archive_dice_set,
+    create_dice_set,
+    record_competence_dice_roll,
+    record_quick_dice_roll,
+    roll_dice,
+    update_dice_set,
+)
 from backend.combat.unit_management_selectors import (
     serialize_managed_unit,
     unit_management_overview,
@@ -113,6 +146,7 @@ from backend.combat.damage_rule_management import (
 )
 from backend.market.selectors import management_overview as market_management_overview, market_overview
 from backend.market.services import (
+    assign_generation_profile as assign_market_generation_profile,
     create_batch as create_market_batch,
     preview_batch as preview_market_batch,
     preview_generation as preview_market_generation,
@@ -124,14 +158,14 @@ from backend.market.services import (
     set_shop_state as set_market_shop_state,
 )
 
-from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, SkillCatalogEnvelopeSchema
+from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, SkillCatalogEnvelopeSchema
 
 
-class LocalCookieAuth(APIKeyCookie):
+class SessionCookieAuth(APIKeyCookie):
     param_name = settings.SESSION_COOKIE_NAME
 
     def authenticate(self, request: HttpRequest, key: str | None):
-        return get_local_user(request)
+        return request.user if request.user.is_authenticated else None
 
 
 api = NinjaAPI(
@@ -139,7 +173,7 @@ api = NinjaAPI(
     version="1.0.0",
     description="Contratti tipizzati per la SPA ReDjango.",
     urls_namespace="api-v1",
-    auth=LocalCookieAuth(csrf=True),
+    auth=SessionCookieAuth(csrf=True),
 )
 
 
@@ -164,7 +198,7 @@ def api_error_handler(request: HttpRequest, error: ApiError):
 
 
 def _identity(request: HttpRequest):
-    user = get_local_user(request)
+    user = get_authenticated_user(request)
     return user, get_or_create_giocatore_for_user(user)
 
 
@@ -271,6 +305,12 @@ def market_shop(request: HttpRequest, shop_id: int, character_id: int | None = N
     if payload["selectedShop"] is None:
         raise ApiError("market.shop_not_found", "Negozio non trovato.", status=404)
     return _envelope(request, payload)
+
+
+@api.get("/lore", response={200: LoreEnvelopeSchema}, tags=["lore"])
+def lore(request: HttpRequest):
+    user, giocatore = _identity(request)
+    return _envelope(request, lore_payload(user, giocatore))
 
 
 @api.get("/management/shops", response={200: MarketEnvelopeSchema, 403: ErrorEnvelopeSchema}, tags=["management"])
@@ -409,6 +449,17 @@ def managed_game_variables(request: HttpRequest):
 
 
 @api.get(
+    "/management/themes",
+    response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
+    tags=["management"],
+)
+def managed_themes(request: HttpRequest):
+    user, giocatore = _identity(request)
+    require_theme_admin(user, giocatore)
+    return _envelope(request, themes_management_payload())
+
+
+@api.get(
     "/management/damage-rules",
     response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
     tags=["management"],
@@ -423,6 +474,16 @@ def managed_damage_rules(request: HttpRequest):
 def dice_sets(request: HttpRequest, include_inactive: bool = False):
     user, giocatore = _identity(request)
     return _envelope(request, dice_sets_payload(include_inactive=bool(include_inactive and _can_manage_dice_sets(user, giocatore))))
+
+
+@api.get(
+    "/dice-history",
+    response={200: DiceHistoryEnvelopeSchema, 403: ErrorEnvelopeSchema},
+    tags=["dice"],
+)
+def dice_history(request: HttpRequest):
+    user, giocatore = _identity(request)
+    return _envelope(request, dice_history_payload(user, giocatore))
 
 
 @api.get("/characters/{character_id}/notes", response={200: CharacterNotesEnvelopeSchema, 404: ErrorEnvelopeSchema}, tags=["notes"])
@@ -774,6 +835,18 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 }
             }
             message = "Anteprima Unit generata senza creare un personaggio."
+        elif action == "management.themes.save":
+            data = {"management": save_theme(user, giocatore, payload.get("themeId"), payload.get("theme", {}))}
+            message = "Tema salvato."
+        elif action == "management.themes.create":
+            data = {"management": create_theme(user, giocatore, payload.get("theme", {}))}
+            message = "Tema creato."
+        elif action == "management.themes.setDefault":
+            data = {"management": set_default_theme(user, giocatore, payload.get("themeId"))}
+            message = "Tema predefinito aggiornato."
+        elif action == "management.themes.archive":
+            data = {"management": archive_theme(user, giocatore, payload.get("themeId"))}
+            message = "Tema archiviato."
         elif action == "management.variables.validate":
             data = {
                 "management": {
@@ -822,6 +895,12 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             message = "Regole del danno salvate."
         elif action == "dice.roll":
             dice_roll = roll_dice(payload)
+            character = (
+                _allowed_character(user, giocatore, int(payload["characterId"]))
+                if payload.get("characterId")
+                else None
+            )
+            record_quick_dice_roll(giocatore, character, dice_roll)
             data = {"diceRoll": dice_roll}
             message = f"Tiro {dice_roll['notation']}: {dice_roll['total']}."
         elif action == "diceSets.create":
@@ -858,6 +937,28 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 )
             }
             message = "Note condivise salvate."
+        elif action == "campaign.clock.update":
+            campaigns, weather_reminder = update_campaign_clock(
+                user,
+                giocatore,
+                payload["campaignId"],
+                payload["field"],
+                payload["direction"],
+            )
+            data = {"campaigns": campaigns, "weatherReminder": weather_reminder}
+            message = "Ora della campagna aggiornata." if payload["field"] == "ora" else "Giorno della campagna aggiornato."
+        elif action == "campaign.weather.reroll":
+            campaigns, weather_entry, weather_prolonged = reroll_campaign_weather(
+                user,
+                giocatore,
+                payload["campaignId"],
+            )
+            data = {"campaigns": campaigns}
+            message = (
+                f"Il meteo resta {weather_entry.label}."
+                if weather_prolonged
+                else f"Nuovo meteo: {weather_entry.label}."
+            )
         elif action == "alchemy.brew":
             character, alchemy_result = brew_alchemy(
                 payload["characterId"],
@@ -902,6 +1003,7 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 payload.get("technique", "standard"),
                 payload.get("diceSetId"),
             )
+            record_competence_dice_roll(giocatore, competence_roll)
             roll_data = serialized_roll(competence_roll)
             data = {
                 "competencies": updated_competence_payload(character),
@@ -910,6 +1012,7 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             message = f"{roll_data['competenceName']}: risultato {roll_data['total']}."
         elif action == "competencies.reroll":
             competence_roll = reroll_competence(payload["characterId"], payload["rollId"])
+            record_competence_dice_roll(giocatore, competence_roll, reroll=True)
             roll_data = serialized_roll(competence_roll)
             data = {
                 "competencies": updated_competence_payload(competence_roll.personaggio),
@@ -1071,6 +1174,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             shop = set_market_shop_state(user, giocatore, payload["shopId"], payload["archived"])
             data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id}}
             message = f"Negozio {shop.nome} {'archiviato' if payload['archived'] else 'ripristinato'}."
+        elif action == "market.shop.profileAssign":
+            shop = assign_market_generation_profile(user, giocatore, payload["shopId"], payload.get("profileKey", ""))
+            data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id}}
+            message = f"Profilo di generazione aggiornato per {shop.nome}."
         elif action == "market.settings.save":
             save_market_settings(user, giocatore, payload.get("values", {}))
             data = {"market": market_management_overview(giocatore)}
@@ -1083,6 +1190,46 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             shop, character, quote = purchase_from_market(user, giocatore, payload)
             data = {"market": market_overview(giocatore, selected_shop_id=shop.id, character_id=character.id), "marketQuote": quote, "character": _character_sheet_payload(character, user, giocatore)}
             message = "Acquisto completato."
+        elif action == "lore.faction.save":
+            save_lore_faction(user, giocatore, payload["values"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Fazione salvata."
+        elif action == "lore.faction.delete":
+            delete_lore_faction(user, giocatore, payload["id"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Fazione archiviata. Gli eventi passati restano consultabili."
+        elif action == "lore.relations.save":
+            save_lore_relations(user, giocatore, payload["relations"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Matrice delle reazioni aggiornata."
+        elif action == "lore.event.record":
+            record_lore_event(user, giocatore, payload["values"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Evento registrato."
+        elif action == "lore.event.update":
+            update_lore_event(user, giocatore, payload["values"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Evento aggiornato."
+        elif action == "lore.event.delete":
+            delete_lore_event(user, giocatore, payload["id"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Evento rimosso e reputazioni ricalcolate."
+        elif action == "lore.character.save":
+            save_lore_npc(user, giocatore, payload["values"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Personaggio salvato."
+        elif action == "lore.character.delete":
+            delete_lore_npc(user, giocatore, payload["id"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Personaggio archiviato."
+        elif action == "lore.timeline.save":
+            save_lore_timeline_event(user, giocatore, payload["values"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Evento della Timeline salvato."
+        elif action == "lore.timeline.archive":
+            archive_lore_timeline_event(user, giocatore, payload["id"])
+            data = {"lore": lore_payload(user, giocatore)}
+            message = "Evento della Timeline archiviato."
         elif action == "skills.delete":
             skill_name = delete_skill(
                 user,

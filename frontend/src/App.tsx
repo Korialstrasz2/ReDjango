@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import { Modal } from "./components/Modal";
+import { LoginPage } from "./components/LoginPage";
 import { CharacterPage } from "./features/character/CharacterPage";
 import { CompetenciesPage } from "./features/competencies/CompetenciesPage";
 import { CreationPage } from "./features/creation/CreationPage";
@@ -12,8 +13,11 @@ import { DamageRulesPage } from "./features/management/DamageRulesPage";
 import { GameVariablesPage } from "./features/management/GameVariablesPage";
 import { ItemManagementPage } from "./features/management/ItemManagementPage";
 import { ManagementHub } from "./features/management/ManagementHub";
+import { ShopManagementPage } from "./features/management/ShopManagementPage";
 import { SkillManagementPage } from "./features/management/SkillManagementPage";
+import { ThemeManagementPage } from "./features/management/ThemeManagementPage";
 import { UnitManagementPage } from "./features/management/UnitManagementPage";
+import { LorePage } from "./features/lore/LorePage";
 import { MarketPage } from "./features/market/MarketPage";
 import { ContextNoteDock } from "./features/notes/ContextNoteDock";
 import { DiceSetManager } from "./features/quick-tools/DiceSetManager";
@@ -22,8 +26,8 @@ import { SkillsPage } from "./features/skills/SkillsPage";
 import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
-import { matchesShortcut, pageShortcutTargets, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
-import type { BootstrapData, Guide, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
+import { matchesShortcut, pageShortcutTargets, shortcutConflictKeys, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
+import type { AuthData, BootstrapData, Guide, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
   bootstrap: BootstrapData;
@@ -42,41 +46,121 @@ export const useApp = () => {
 };
 
 const VALID_FONTS = new Set(["system", "serif", "book", "humanist", "accessible"]);
-const VALID_DENSITIES = new Set(["comfortable", "compact"]);
+const VALID_DENSITIES = new Set(["spacious", "comfortable", "compact", "condensed"]);
+const VALID_TEXT_OUTLINES = new Set(["off", "soft", "strong"]);
+const TEXT_OUTLINE_COLOR_PROPERTY = "--text-aware-outline-color";
+const outlinedTextElements = new Set<HTMLElement>();
+let textOutlineObserver: MutationObserver | null = null;
+let textOutlineFrame = 0;
+
+// L'impostazione era un Sì/No: un valore booleano residuo va letto come bordo marcato.
+function textOutlineLevel(value: unknown): string {
+  if (typeof value === "boolean") return value ? "strong" : "off";
+  const level = String(value ?? "off");
+  return VALID_TEXT_OUTLINES.has(level) ? level : "off";
+}
+
+function rendersOwnText(element: HTMLElement): boolean {
+  return element.matches("input, select, textarea")
+    || Array.from(element.childNodes).some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+}
+
+function refreshTextAwareOutlines() {
+  textOutlineFrame = 0;
+  const root = document.documentElement;
+  if (root.dataset.textOutlineAware !== "true" || root.dataset.textOutline === "off") return;
+  document.body.querySelectorAll<HTMLElement>("*").forEach((element) => {
+    if (!rendersOwnText(element)) return;
+    const outlineColor = contrastingTextOutline(getComputedStyle(element).color);
+    if (element.style.getPropertyValue(TEXT_OUTLINE_COLOR_PROPERTY) !== outlineColor) {
+      element.style.setProperty(TEXT_OUTLINE_COLOR_PROPERTY, outlineColor);
+    }
+    outlinedTextElements.add(element);
+  });
+}
+
+function scheduleTextAwareOutlines() {
+  if (textOutlineFrame) cancelAnimationFrame(textOutlineFrame);
+  textOutlineFrame = requestAnimationFrame(refreshTextAwareOutlines);
+}
+
+function applyTextAwareOutlineMode(enabled: boolean) {
+  const root = document.documentElement;
+  root.dataset.textOutlineAware = enabled ? "true" : "false";
+  textOutlineObserver?.disconnect();
+  textOutlineObserver = null;
+  if (!enabled || root.dataset.textOutline === "off") {
+    if (textOutlineFrame) cancelAnimationFrame(textOutlineFrame);
+    textOutlineFrame = 0;
+    outlinedTextElements.forEach((element) => element.style.removeProperty(TEXT_OUTLINE_COLOR_PROPERTY));
+    outlinedTextElements.clear();
+    return;
+  }
+  textOutlineObserver = new MutationObserver(scheduleTextAwareOutlines);
+  textOutlineObserver.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["class"],
+    childList: true,
+    characterData: true,
+    subtree: true,
+  });
+  scheduleTextAwareOutlines();
+}
 const MIN_FONT_SCALE = 75;
 const MAX_FONT_SCALE = 175;
 
-function applyTheme(theme: ThemeData | null) {
+const THEME_COLOR_VARIABLES: Record<string, string> = {
+  background: "--background",
+  panel: "--panel",
+  panelStrong: "--panel-strong",
+  text: "--text",
+  mutedText: "--muted",
+  line: "--line",
+  accent: "--accent",
+  accentStrong: "--accent-strong",
+  gold: "--gold",
+  sidebar: "--sidebar",
+  health: "--resource-pf",
+  mana: "--resource-mana",
+  energy: "--resource-energia",
+  power: "--resource-potere",
+  validSlot: "--slot-valid",
+  invalidSlot: "--slot-invalid"
+};
+
+// I temi possono lasciare vuoti accento, oro e menu laterale: in quel caso valgono
+// i colori globali di riserva configurati in Impostazioni → Amministrazione.
+const THEME_COLOR_FALLBACK_KEYS: Record<string, string> = {
+  accent: "appearance.accent_color",
+  gold: "appearance.gold_color",
+  sidebar: "appearance.sidebar_color"
+};
+
+export function resolveThemeColors(theme: ThemeData, ui: Record<string, unknown> = {}): Record<string, string> {
+  return Object.fromEntries(Object.keys(THEME_COLOR_VARIABLES).map((key) => {
+    const fallbackKey = THEME_COLOR_FALLBACK_KEYS[key];
+    const fallback = fallbackKey ? String(ui[fallbackKey] || "") : "";
+    return [key, String(theme.colors[key] || "") || fallback];
+  }));
+}
+
+function applyTheme(theme: ThemeData | null, ui: Record<string, unknown> = {}) {
   if (!theme) return;
   const root = document.documentElement;
-  const colorMap: Record<string, string> = {
-    background: "--background",
-    panel: "--panel",
-    panelStrong: "--panel-strong",
-    text: "--text",
-    mutedText: "--muted",
-    line: "--line",
-    accent: "--accent",
-    accentStrong: "--accent-strong",
-    gold: "--gold",
-    sidebar: "--sidebar",
-    health: "--resource-pf",
-    mana: "--resource-mana",
-    energy: "--resource-energia",
-    power: "--resource-potere",
-    validSlot: "--slot-valid",
-    invalidSlot: "--slot-invalid"
-  };
-  Object.entries(theme.colors).forEach(([key, value]) => colorMap[key] && root.style.setProperty(colorMap[key], value));
+  const colors = resolveThemeColors(theme, ui);
+  Object.entries(THEME_COLOR_VARIABLES).forEach(([key, variable]) => {
+    if (colors[key]) root.style.setProperty(variable, colors[key]);
+    else root.style.removeProperty(variable);
+  });
   root.style.setProperty("--overlay-opacity", String(theme.overlayOpacity));
   root.style.setProperty("--panel-opacity", String(theme.panelOpacity));
   root.style.setProperty("--background-position", theme.backgroundPosition);
   root.style.setProperty("--background-blur", `${theme.backgroundBlur}px`);
   root.dataset.theme = theme.slug;
-  root.dataset.colorMode = colorLuminance(theme.colors.panelStrong || theme.colors.panel || "") > 0.42 ? "light" : "dark";
+  root.dataset.colorMode = colorLuminance(colors.panelStrong || colors.panel || "") > 0.42 ? "light" : "dark";
   root.style.colorScheme = root.dataset.colorMode;
-  root.style.setProperty("--accent-contrast", colorLuminance(theme.colors.accent || "") > 0.18 ? "#101820" : "#ffffff");
-  root.style.setProperty("--text-outline-color", contrastingTextOutline(theme.colors.text || ""));
+  root.style.setProperty("--accent-contrast", colorLuminance(colors.accent || "") > 0.18 ? "#101820" : "#ffffff");
+  root.style.setProperty("--text-outline-color", contrastingTextOutline(colors.text || ""));
 }
 
 export function applyUiPreferences(settings: SettingsData | undefined, preview: Record<string, unknown> = {}) {
@@ -92,10 +176,11 @@ export function applyUiPreferences(settings: SettingsData | undefined, preview: 
   root.dataset.fontScale = fontScale >= 150 ? "large" : fontScale <= 85 ? "small" : "normal";
   root.dataset.density = VALID_DENSITIES.has(density) ? density : "comfortable";
   root.dataset.reducedMotion = ui["accessibility.reduced_motion"] ? "true" : "false";
-  root.dataset.textOutline = ui["accessibility.contrast_outline"] ? "true" : "false";
+  root.dataset.textOutline = textOutlineLevel(ui["accessibility.contrast_outline"]);
+  const textOutlineAware = ui["accessibility.text_color_aware_outline"] === true;
   root.style.fontSize = `${fontScale}%`;
-  root.style.setProperty("--ui-scale", String(fontScale / 100));
-  applyTheme(settings.theme);
+  applyTheme(settings.theme, ui);
+  applyTextAwareOutlineMode(textOutlineAware);
 }
 
 function screenFromPath(path: string): string {
@@ -106,6 +191,7 @@ function screenFromPath(path: string): string {
   if (path.startsWith("/combat")) return "personaggio";
   // Reuse the campaign background until Theme has a dedicated Viaggio surface.
   if (path.startsWith("/travel")) return "dashboard";
+  if (path.startsWith("/lore")) return "lore";
   if (path.startsWith("/characters")) return "characters";
   if (path.startsWith("/media")) return "media";
   if (path.startsWith("/market")) return "market";
@@ -119,6 +205,15 @@ function Shell({ children }: { children: ReactNode }) {
   const { bootstrap, personaggi, settings, notify } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const logoutMutation = useMutation({
+    mutationFn: () => apiRequest<AuthData>("/api/auth/logout/", { method: "POST" }),
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.assign("/login/");
+    },
+    onError: (error: Error) => notify(error.message, "error"),
+  });
   const screen = screenFromPath(location.pathname);
   const background = settings.theme?.backgrounds?.[screen] || "";
   const characterPath = personaggi.giocatore.activePersonaggioId ? `/character/${personaggi.giocatore.activePersonaggioId}` : "/characters";
@@ -126,25 +221,29 @@ function Shell({ children }: { children: ReactNode }) {
     ["/", "Sala principale", "⌂", "dashboard"],
     ["/characters", "Personaggi", "♙", "characters"],
     [characterPath, "Scheda personaggio", "⚔", "character"],
-    ["/skills", "Abilità", "✦"],
-    ["/competencies", "Competenze", "✧"],
-    ["/creation", "Creazione", "⚗"],
+    ["/skills", "Abilità", "✦", "skills"],
+    ["/competencies", "Competenze", "✧", "competencies"],
+    ["/creation", "Creazione", "⚗", "creation"],
     ["/combat", "Combattimento", "✦", "combat"],
-    ["/travel", "Viaggio", "⌖"],
-    ["/market", "Mercato", "¤"],
+    ["/travel", "Viaggio", "⌖", "travel"],
+    ["/market", "Mercato", "¤", "market"],
+    ["/lore", "Lore", "◈", "lore"],
     ["/media", "Archivio immagini", "▧", "media"],
     ["/guides", "Guide", "☷", "guides"],
     ["/settings", "Impostazioni", "⚙", "settings"]
   ];
-  const managementLinks: Array<[string, string, string]> = [
-    ["/tools", "Strumenti", "◆"],
+  const managementLinks: Array<[string, string, string, PageShortcutTarget?]> = [
+    ["/tools", "Strumenti", "◆", "tools"],
     ["/tools/characters", "Gestione Personaggi", "♙"],
     ["/tools/items", "Gestione Oggetti", "◇"],
     ["/tools/skills", "Gestione Skill", "✦"],
     ["/tools/units", "Gestione Unit", "⚔"],
     ["/tools/shops", "Gestione Negozi", "¤"],
     ...(settings.security.canManageAdminSettings
-      ? [["/tools/variables", "Gestione Variabili", "ƒ"] as [string, string, string]]
+      ? [
+        ["/tools/themes", "Gestione Temi", "◐"] as [string, string, string, PageShortcutTarget?],
+        ["/tools/variables", "Gestione Variabili", "ƒ"] as [string, string, string, PageShortcutTarget?],
+      ]
       : []),
   ];
   const routeCharacterId = Number(location.pathname.match(/^\/character\/(\d+)/)?.[1] || 0) || null;
@@ -164,10 +263,17 @@ function Shell({ children }: { children: ReactNode }) {
       dashboard: "/",
       characters: "/characters",
       character: characterPath,
+      skills: "/skills",
+      competencies: "/competencies",
+      creation: "/creation",
       combat: "/combat",
+      travel: "/travel",
+      market: "/market",
+      lore: "/lore",
       media: "/media",
       guides: "/guides",
       settings: "/settings",
+      tools: "/tools",
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.repeat) return;
@@ -195,9 +301,12 @@ function Shell({ children }: { children: ReactNode }) {
           })}
           {settings.security.canManageGameData && <div className="nav-management-section">
             <small>Gestione</small>
-            {managementLinks.map(([href, label, icon]) => <Link key={href} to={href} title={label} className={location.pathname === href ? "active" : ""}>
-              <span aria-hidden="true">{icon}</span>{label}
-            </Link>)}
+            {managementLinks.map(([href, label, icon, shortcutTarget]) => {
+              const shortcut = shortcutTarget ? shortcutValue(settings.ui, shortcutTarget) : "";
+              return <Link key={href} to={href} aria-keyshortcuts={shortcut || undefined} title={shortcut ? `${label} (${shortcut.replace("+", " + ")})` : label} className={location.pathname === href ? "active" : ""}>
+                <span aria-hidden="true">{icon}</span>{label}
+              </Link>;
+            })}
           </div>}
         </nav>
         {contextualNoteSection && quickCharacterId && quickCharacter && <ContextNoteDock
@@ -207,7 +316,10 @@ function Shell({ children }: { children: ReactNode }) {
           section={contextualNoteSection}
           notify={notify}
         />}
-        {bootstrap.security.showAdminLink && <a className="admin-link" href={bootstrap.security.adminUrl}>Amministrazione Django</a>}
+        <div className="account-actions">
+          {bootstrap.security.showAdminLink && <a className="admin-link" href={bootstrap.security.adminUrl}>Amministrazione Django</a>}
+          <button type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>Esci</button>
+        </div>
       </aside>
       <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} notify={notify} />
       <main className="workspace" data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
@@ -465,9 +577,9 @@ function MediaPage() {
   </div>;
 }
 
-function SettingControl({ setting, value, onChange }: { setting: SettingData; value: unknown; onChange: (value: unknown) => void }) {
+function SettingControl({ setting, value, invalid = false, onChange }: { setting: SettingData; value: unknown; invalid?: boolean; onChange: (value: unknown) => void }) {
   if (setting.valueType === "boolean") return <input type="checkbox" checked={Boolean(value)} disabled={!setting.editable} onChange={(event) => onChange(event.target.checked)} />;
-  if (setting.valueType === "select") return <select value={String(value ?? "")} disabled={!setting.editable} onChange={(event) => onChange(event.target.value)}>{setting.choices.map((choice) => { const data = typeof choice === "string" ? { value: choice, label: choice } : choice; return <option key={data.value} value={data.value}>{data.label}</option>; })}</select>;
+  if (setting.valueType === "select") return <select value={String(value ?? "")} disabled={!setting.editable} aria-invalid={invalid || undefined} onChange={(event) => onChange(event.target.value)}>{setting.choices.map((choice) => { const data = typeof choice === "string" ? { value: choice, label: choice } : choice; return <option key={data.value} value={data.value}>{data.label}</option>; })}</select>;
   if (setting.valueType === "color") return <input type="color" value={String(value || "#000000")} disabled={!setting.editable} onChange={(event) => onChange(event.target.value)} />;
   if (setting.valueType === "integer" && setting.key === "appearance.font_scale") {
     const scale = Number(value ?? 100);
@@ -532,17 +644,49 @@ function PlayerSettingsPanel() {
   </section>;
 }
 
+type SettingsTabId = "profilo" | "aspetto" | "accessibilita" | "dadi" | "scorciatoie" | "sessione" | "amministrazione" | "altro";
+
+// Ordine deliberato: prima ciò che riguarda il giocatore, poi la sessione, infine l'amministrazione.
+// Le categorie non elencate qui confluiscono nella scheda "Altro", così nessuna impostazione resta invisibile.
+const SETTINGS_TABS: Array<{ id: SettingsTabId; label: string; categories: string[] }> = [
+  { id: "profilo", label: "Profilo", categories: [] },
+  { id: "aspetto", label: "Aspetto", categories: ["aspetto", "aspetto globale"] },
+  { id: "accessibilita", label: "Accessibilità", categories: ["accessibilità"] },
+  { id: "dadi", label: "Dadi", categories: ["dadi"] },
+  { id: "scorciatoie", label: "Scorciatoie", categories: ["scorciatoie da tastiera"] },
+  { id: "sessione", label: "Sessione", categories: ["sessione"] },
+  { id: "amministrazione", label: "Amministrazione", categories: ["identità", "navigazione", "sicurezza", "funzioni"] },
+  { id: "altro", label: "Altro", categories: [] },
+];
+const MAPPED_SETTING_CATEGORIES = new Set(SETTINGS_TABS.flatMap((tab) => tab.categories));
+
 function SettingsPage() {
   const { bootstrap, settings, notify } = useApp();
   const queryClient = useQueryClient();
   const [values, setValues] = useState<Record<string, unknown>>(() => Object.fromEntries(settings.settings.map((setting) => [setting.key, setting.value])));
   const [dirtyKeys, setDirtyKeys] = useState<Set<string>>(() => new Set());
+  const [restartConfirmation, setRestartConfirmation] = useState(false);
+  const [restartingMode, setRestartingMode] = useState<string | null>(null);
   useEffect(() => setValues((current) => Object.fromEntries(settings.settings.map((setting) => [setting.key, dirtyKeys.has(setting.key) ? current[setting.key] : setting.value]))), [settings, dirtyKeys]);
   useEffect(() => applyUiPreferences(settings, values), [settings, values]);
   useEffect(() => () => applyUiPreferences(settings), [settings]);
   const mutation = useMutation({
-    mutationFn: () => legacyAction<SettingsData>("/api/settings/", "settings.save", { settings: values }),
-    onSuccess: (result) => { setDirtyKeys(new Set()); queryClient.setQueryData(["settings"], result.data); notify("Impostazioni salvate."); },
+    mutationFn: ({ restart, modeChange }: { restart: boolean; modeChange: boolean }) => legacyAction<SettingsData>("/api/settings/", "settings.save", { settings: values }).then(async (result) => {
+      if (restart) await apiRequest<{ accepted: boolean }>("/api/system/restart/", { method: "POST" });
+      return { result, restart, modeChange };
+    }),
+    onSuccess: ({ result, restart, modeChange }) => {
+      setDirtyKeys(new Set());
+      setRestartConfirmation(false);
+      queryClient.setQueryData(["settings"], result.data);
+      if (restart) {
+        setRestartingMode(String(values["security.access_mode"] || "locked"));
+      } else if (modeChange) {
+        notify("Modalità salvata. Riavvia ReDjango manualmente per applicarla.", "info");
+      } else {
+        notify("Impostazioni salvate.");
+      }
+    },
     onError: (error: Error) => notify(error.message, "error")
   });
   const campaignMutation = useMutation({
@@ -558,8 +702,112 @@ function SettingsPage() {
     (result[setting.category] ||= []).push(setting);
     return result;
   }, {}), [settings.settings]);
+  const shortcutConflicts = useMemo(() => shortcutConflictKeys(values), [values]);
   const updateValue = (key: string, value: unknown) => { setDirtyKeys((current) => new Set(current).add(key)); setValues((current) => ({ ...current, [key]: value })); };
-  return <div className="page"><PageHeader eyebrow="Preferenze" title="Impostazioni" /><PlayerSettingsPanel />{settings.security.canManageMasterSettings && <section className="panel campaign-settings-panel" data-component-type="panel" data-theme="gold"><div><p className="eyebrow">Sessione</p><h2>Campagna attiva</h2><p>Scegli la campagna mostrata nella postazione. Il cambio può deselezionare il personaggio attivo.</p></div><label><span>Campagna</span><select value={bootstrap.activeCampaignId ?? ""} disabled={campaignMutation.isPending || !bootstrap.campaigns.length} onChange={(event) => campaignMutation.mutate(Number(event.target.value))}>{bootstrap.campaigns.map((campaign) => <option key={campaign.id} value={campaign.id}>{campaign.name}</option>)}</select></label></section>}<form onSubmit={(event) => { event.preventDefault(); mutation.mutate(); }}><div className="settings-grid">{Object.entries(groups).map(([category, entries]) => <section className="panel" key={category}><h2>{category}</h2>{entries.map((setting) => <label className="setting-row" key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small></span><SettingControl setting={setting} value={values[setting.key]} onChange={(value) => updateValue(setting.key, value)} /></label>)}</section>)}</div><div className="sticky-actions"><button className="button primary" disabled={mutation.isPending}>Salva impostazioni</button></div></form>{settings.security.canManageAdminSettings && <section className="panel settings-admin-tool"><DiceSetManager notify={notify} /></section>}</div>;
+  const accessModeChanged = dirtyKeys.has("security.access_mode")
+    && values["security.access_mode"] !== settings.runtime.configuredAccessMode;
+  const requestedAccessMode = String(values["security.access_mode"] || "locked");
+  const onlineConfigurationMissing = requestedAccessMode === "online" && !settings.runtime.onlineReady;
+  const saveSettings = () => {
+    if (accessModeChanged) {
+      setRestartConfirmation(true);
+      return;
+    }
+    mutation.mutate({ restart: false, modeChange: false });
+  };
+
+  const tabs = useMemo(() => {
+    const unmapped = Object.keys(groups).filter((category) => !MAPPED_SETTING_CATEGORIES.has(category)).sort((left, right) => left.localeCompare(right, "it"));
+    return SETTINGS_TABS.map((tab) => {
+      const categories = (tab.id === "altro" ? unmapped : tab.categories).filter((category) => groups[category]?.length);
+      const hasPanel = tab.id === "profilo"
+        || (tab.id === "sessione" && settings.security.canManageMasterSettings)
+        || (tab.id === "dadi" && settings.security.canManageAdminSettings);
+      const pending = categories.reduce((total, category) => total + groups[category].filter((setting) => dirtyKeys.has(setting.key)).length, 0);
+      return { ...tab, categories, pending, hasPanel };
+    }).filter((tab) => tab.hasPanel || tab.categories.length);
+  }, [groups, dirtyKeys, settings.security]);
+  const [activeTabId, setActiveTabId] = useState<SettingsTabId>("profilo");
+  const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0];
+
+  return <div className="page"><PageHeader eyebrow="Preferenze" title="Impostazioni" />
+    <nav className="settings-tabs" role="tablist" aria-label="Sezioni delle impostazioni">
+      {tabs.map((tab) => <button
+        key={tab.id}
+        type="button"
+        role="tab"
+        id={`settings-tab-${tab.id}`}
+        aria-controls={`settings-panel-${tab.id}`}
+        aria-selected={activeTab?.id === tab.id}
+        className={activeTab?.id === tab.id ? "active" : ""}
+        onClick={() => setActiveTabId(tab.id)}
+      >{tab.label}{tab.pending > 0 && <span title={`${tab.pending} modifiche non salvate`}>{tab.pending}</span>}</button>)}
+    </nav>
+    {activeTab && <div className="settings-tab-panel" role="tabpanel" id={`settings-panel-${activeTab.id}`} aria-labelledby={`settings-tab-${activeTab.id}`}>
+      {activeTab.id === "profilo" && <PlayerSettingsPanel />}
+      {activeTab.id === "sessione" && settings.security.canManageMasterSettings && <section className="panel campaign-settings-panel" data-component-type="panel" data-theme="gold"><div><p className="eyebrow">Sessione</p><h2>Campagna attiva</h2><p>Scegli la campagna mostrata nella postazione. Il cambio può deselezionare il personaggio attivo.</p></div><label><span>Campagna</span><select value={bootstrap.activeCampaignId ?? ""} disabled={campaignMutation.isPending || !bootstrap.campaigns.length} onChange={(event) => campaignMutation.mutate(Number(event.target.value))}>{bootstrap.campaigns.map((campaign) => <option key={campaign.id} value={campaign.id}>{campaign.name}</option>)}</select></label></section>}
+      {activeTab.categories.length > 0 && <form onSubmit={(event) => { event.preventDefault(); saveSettings(); }}>
+        <div className="settings-grid" data-columns={activeTab.categories.length === 1 ? "1" : "2"}>{activeTab.categories.map((category) => <section className="panel" key={category}><h2>{category}</h2>{groups[category].map((setting) => {
+          const shortcutConflict = shortcutConflicts.has(setting.key);
+          return <label className={`setting-row ${shortcutConflict ? "setting-row-conflict" : ""}`} key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small>{shortcutConflict && <small className="setting-inline-warning" role="alert">Questa combinazione è già assegnata a un'altra azione.</small>}</span><SettingControl setting={setting} value={values[setting.key]} invalid={shortcutConflict} onChange={(value) => updateValue(setting.key, value)} /></label>;
+        })}</section>)}</div>
+        <div className="sticky-actions">{shortcutConflicts.size > 0 ? <small className="setting-save-warning" role="alert">Risolvi i conflitti tra scorciatoie prima di salvare.</small> : dirtyKeys.size > 0 && <small>{dirtyKeys.size === 1 ? "1 modifica non salvata" : `${dirtyKeys.size} modifiche non salvate`}</small>}<button className="button primary" disabled={mutation.isPending || !dirtyKeys.size || shortcutConflicts.size > 0}>Salva impostazioni</button></div>
+      </form>}
+      {activeTab.id === "dadi" && settings.security.canManageAdminSettings && <section className="panel settings-admin-tool"><DiceSetManager notify={notify} /></section>}
+    </div>}
+    {restartConfirmation && <Modal
+      title="Riavvio necessario"
+      onClose={() => !mutation.isPending && setRestartConfirmation(false)}
+      footer={<>
+        <button type="button" className="button secondary" disabled={mutation.isPending} onClick={() => setRestartConfirmation(false)}>Annulla</button>
+        <button type="button" className="button primary" disabled={mutation.isPending || onlineConfigurationMissing} onClick={() => mutation.mutate({ restart: settings.runtime.restartAvailable, modeChange: true })}>
+          {settings.runtime.restartAvailable ? "Salva e riavvia" : "Salva; riavvierò manualmente"}
+        </button>
+      </>}
+    >
+      <p><strong>Cambiare questa impostazione richiede il riavvio del server. Riavviare?</strong></p>
+      <p>La sessione verrà conservata. Passando alla modalità bloccata, i dispositivi collegati dalla rete perderanno immediatamente l’accesso.</p>
+      {onlineConfigurationMissing && <p className="setting-inline-warning" role="alert">Prima di attivare il server online configura <code>REDJANGO_SECRET_KEY</code> e <code>REDJANGO_ALLOWED_HOSTS</code> nell'ambiente del launcher.</p>}
+      {!settings.runtime.restartAvailable && <p className="setting-inline-warning">Il server non è stato avviato con <code>start_server.bat</code>: dopo il salvataggio dovrai riavviarlo manualmente.</p>}
+    </Modal>}
+    {restartingMode && <ServerRestartScreen mode={restartingMode} />}
+  </div>;
+}
+
+function ServerRestartScreen({ mode }: { mode: string }) {
+  useEffect(() => {
+    let cancelled = false;
+    let sawOffline = false;
+    const startedAt = Date.now();
+    const poll = async () => {
+      try {
+        const response = await fetch("/api/auth/session/", { credentials: "same-origin", cache: "no-store" });
+        if (response.ok) {
+          const body = await response.json();
+          if (
+            body?.data?.runtime?.activeAccessMode === mode
+            && (sawOffline || Date.now() - startedAt > 3000)
+          ) {
+            window.location.reload();
+            return;
+          }
+        } else {
+          sawOffline = true;
+        }
+      } catch {
+        sawOffline = true;
+      }
+      if (!cancelled) window.setTimeout(poll, 900);
+    };
+    window.setTimeout(poll, 500);
+    return () => { cancelled = true; };
+  }, [mode]);
+  return <div className="restart-screen" role="status">
+    <span className="brand-rune">RD</span>
+    <h2>Riavvio di ReDjango…</h2>
+    <p>La pagina si riconnetterà automaticamente quando il server sarà pronto.</p>
+    {mode === "locked" && <small>Da un altro dispositivo la riconnessione non sarà possibile: la modalità bloccata accetta soltanto questo computer.</small>}
+  </div>;
 }
 
 function Loading() { return <div className="loading-screen"><span className="brand-rune">ED</span><p>Preparazione della postazione…</p></div>; }
@@ -576,17 +824,21 @@ function AdminOnly({ children }: { children: ReactNode }) {
 
 export function App() {
   const [toast, setToast] = useState<{ message: string; kind: "success" | "error" | "info" } | null>(null);
-  const bootstrap = useQuery({ queryKey: ["bootstrap"], queryFn: () => getData<BootstrapData>("/api/bootstrap/") });
-  const personaggi = useQuery({ queryKey: ["personaggi"], queryFn: () => getData<PersonaggiData>("/api/personaggi/") });
-  const settings = useQuery({ queryKey: ["settings"], queryFn: () => getData<SettingsData>("/api/settings/") });
-  const media = useQuery({ queryKey: ["media"], queryFn: () => getData<MediaLibraryData>("/api/media/") });
+  const auth = useQuery({ queryKey: ["auth"], queryFn: () => getData<AuthData>("/api/auth/session/"), retry: false, staleTime: 0 });
+  const authenticated = auth.data?.authenticated === true;
+  const bootstrap = useQuery({ queryKey: ["bootstrap"], queryFn: () => getData<BootstrapData>("/api/bootstrap/"), enabled: authenticated });
+  const personaggi = useQuery({ queryKey: ["personaggi"], queryFn: () => getData<PersonaggiData>("/api/personaggi/"), enabled: authenticated });
+  const settings = useQuery({ queryKey: ["settings"], queryFn: () => getData<SettingsData>("/api/settings/"), enabled: authenticated });
+  const media = useQuery({ queryKey: ["media"], queryFn: () => getData<MediaLibraryData>("/api/media/"), enabled: authenticated });
   const notify = (message: string, kind: "success" | "error" | "info" = "success") => { setToast({ message, kind }); window.setTimeout(() => setToast(null), 4200); };
 
   useEffect(() => applyUiPreferences(settings.data), [settings.data]);
-  const error = bootstrap.error || personaggi.error || settings.error || media.error;
+  const error = auth.error || bootstrap.error || personaggi.error || settings.error || media.error;
   if (error) return <div className="fatal-error"><h1>ReDjango non può avviarsi</h1><p>{(error as Error).message}</p><button onClick={() => window.location.reload()}>Riprova</button></div>;
+  if (!auth.data) return <Loading />;
+  if (!auth.data.authenticated) return <LoginPage auth={auth.data} />;
   if (!bootstrap.data || !personaggi.data || !settings.data || !media.data) return <Loading />;
 
   const context = { bootstrap: bootstrap.data, personaggi: personaggi.data, settings: settings.data, media: media.data.assets, mediaCategories: media.data.categories, notify };
-  return <AppContext.Provider value={context}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<CharactersPage />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><MarketPage /></GameManagerOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
+  return <AppContext.Provider value={context}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<CharactersPage />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
 }

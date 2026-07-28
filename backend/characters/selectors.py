@@ -49,6 +49,9 @@ from .race_rules import automatic_race_effects
 PRIMARY_TOTAL_KEYS = ("pf", "mana", "energia", "potere", "pa", "attacco", "difesa")
 CHARACTER_IMAGE_DIRECTORY = "frontend/images/characters"
 CHARACTER_IMAGE_PLACEHOLDER = f"{CHARACTER_IMAGE_DIRECTORY}/placeholder.svg"
+ITEM_ICON_DIRECTORY = "frontend/images/items"
+ITEM_ICON_SPECIAL_DIRECTORY = f"{ITEM_ICON_DIRECTORY}/speciali"
+ITEM_ICON_PLACEHOLDER = f"{ITEM_ICON_DIRECTORY}/default.webp"
 CHARACTERISTIC_KEYS = (
     "forza",
     "resistenza",
@@ -289,6 +292,26 @@ def _items_for(personaggio: Personaggio) -> dict[int, Oggetto]:
     return Oggetto.objects.filter(id__in=_related_item_ids(personaggio)).select_related("tipo_arma", "media").in_bulk()
 
 
+def item_special_icon_path(item_name: str) -> str:
+    """Static path of the per-item icon uploaded from the item editor."""
+    name_key = _appearance_key(item_name)
+    return f"{ITEM_ICON_SPECIAL_DIRECTORY}/{name_key}.webp" if name_key else ""
+
+
+def _item_image_url(item: Oggetto) -> str:
+    # Most specific first: an icon drawn for this exact item, then an image
+    # picked from the media library, then the shared icon for its category.
+    special = item_special_icon_path(item.nome)
+    if special and finders.find(special):
+        return static(special)
+    if item.media_id and item.media and item.media.file:
+        return item.media.file.url
+    tipo_key = _appearance_key(item.tipo_1)
+    candidate = f"{ITEM_ICON_DIRECTORY}/{tipo_key}.webp" if tipo_key else ""
+    selected = candidate if candidate and finders.find(candidate) else ITEM_ICON_PLACEHOLDER
+    return static(selected)
+
+
 def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | None:
     if item is None:
         return None
@@ -330,7 +353,7 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
         "weaponRules": item.tipo_arma.rules if item.tipo_arma_id and item.tipo_arma else {},
         "weaponProfile": weapon_profile,
         "actionPointCost": item.pa_per_attacco,
-        "imageUrl": item.media.file.url if item.media_id and item.media and item.media.file else "",
+        "imageUrl": _item_image_url(item),
         "archived": item.archiviato,
         "special": item.speciale,
         "isProjectile": bool(

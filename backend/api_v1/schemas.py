@@ -513,6 +513,19 @@ class ManagedVariablesSavePayloadSchema(ManagedVariablesValidatePayloadSchema):
     previewToken: str
 
 
+class ManagedThemeSavePayloadSchema(Schema):
+    themeId: int
+    theme: dict[str, Any]
+
+
+class ManagedThemeCreatePayloadSchema(Schema):
+    theme: dict[str, Any]
+
+
+class ManagedThemeIdPayloadSchema(Schema):
+    themeId: int
+
+
 class ManagedDamageRulesValidatePayloadSchema(Schema):
     rules: dict[str, Any]
 
@@ -574,6 +587,36 @@ class DiceRollSchema(Schema):
     subtotal: int
     total: int
     rolledAt: str
+
+
+class DiceHistoryRollSchema(Schema):
+    id: int
+    source: Literal["quick", "competence"]
+    sourceLabel: str
+    playerName: str
+    characterId: int | None = None
+    characterName: str = ""
+    label: str = ""
+    notation: str
+    rolls: list[int]
+    modifier: int
+    total: int
+    diceSetName: str = ""
+    rolledAt: str
+
+
+class DiceHistoryDataSchema(Schema):
+    rolls: list[DiceHistoryRollSchema]
+    limit: int = 100
+
+
+class DiceHistoryEnvelopeSchema(Schema):
+    ok: bool
+    requestId: str
+    data: DiceHistoryDataSchema
+    events: list[EventSchema] = []
+    warnings: list[dict[str, Any]] = []
+    errors: list[ErrorSchema] = []
 
 
 class CharacterNotesDataSchema(Schema):
@@ -1028,6 +1071,16 @@ class CampaignNotesUpdatePayloadSchema(Schema):
     content: str
 
 
+class CampaignClockUpdatePayloadSchema(Schema):
+    campaignId: int
+    field: Literal["ora", "giorno"]
+    direction: Literal["increase", "decrease"]
+
+
+class CampaignWeatherRerollPayloadSchema(Schema):
+    campaignId: int
+
+
 class AlchemyIngredientSelectionSchema(Schema):
     color: Literal["rosso", "verde", "blu"]
     level: int
@@ -1148,6 +1201,11 @@ class MarketBatchPayloadSchema(Schema):
 class MarketStatePayloadSchema(Schema):
     shopId: int
     archived: bool
+
+
+class MarketProfileAssignmentPayloadSchema(Schema):
+    shopId: int
+    profileKey: str = ""
 
 
 class MarketSettingsPayloadSchema(Schema):
@@ -1341,6 +1399,26 @@ class ManagedVariablesSaveActionSchema(ActionBaseSchema):
     payload: ManagedVariablesSavePayloadSchema
 
 
+class ManagedThemeSaveActionSchema(ActionBaseSchema):
+    action: Literal["management.themes.save"]
+    payload: ManagedThemeSavePayloadSchema
+
+
+class ManagedThemeCreateActionSchema(ActionBaseSchema):
+    action: Literal["management.themes.create"]
+    payload: ManagedThemeCreatePayloadSchema
+
+
+class ManagedThemeSetDefaultActionSchema(ActionBaseSchema):
+    action: Literal["management.themes.setDefault"]
+    payload: ManagedThemeIdPayloadSchema
+
+
+class ManagedThemeArchiveActionSchema(ActionBaseSchema):
+    action: Literal["management.themes.archive"]
+    payload: ManagedThemeIdPayloadSchema
+
+
 class ManagedDamageRulesValidateActionSchema(ActionBaseSchema):
     action: Literal["management.damageRules.validate"]
     payload: ManagedDamageRulesValidatePayloadSchema
@@ -1384,6 +1462,16 @@ class CampaignSelectActionSchema(ActionBaseSchema):
 class CampaignNotesUpdateActionSchema(ActionBaseSchema):
     action: Literal["campaign.notes.update"]
     payload: CampaignNotesUpdatePayloadSchema
+
+
+class CampaignClockUpdateActionSchema(ActionBaseSchema):
+    action: Literal["campaign.clock.update"]
+    payload: CampaignClockUpdatePayloadSchema
+
+
+class CampaignWeatherRerollActionSchema(ActionBaseSchema):
+    action: Literal["campaign.weather.reroll"]
+    payload: CampaignWeatherRerollPayloadSchema
 
 
 class AlchemyBrewActionSchema(ActionBaseSchema):
@@ -1506,6 +1594,11 @@ class MarketShopStateActionSchema(ActionBaseSchema):
     payload: MarketStatePayloadSchema
 
 
+class MarketProfileAssignmentActionSchema(ActionBaseSchema):
+    action: Literal["market.shop.profileAssign"]
+    payload: MarketProfileAssignmentPayloadSchema
+
+
 class MarketSettingsSaveActionSchema(ActionBaseSchema):
     action: Literal["market.settings.save"]
     payload: MarketSettingsPayloadSchema
@@ -1519,6 +1612,81 @@ class MarketQuoteActionSchema(ActionBaseSchema):
 class MarketPurchaseActionSchema(ActionBaseSchema):
     action: Literal["market.purchase"]
     payload: MarketPurchasePayloadSchema
+
+
+class LoreValuesPayloadSchema(Schema):
+    values: dict[str, Any]
+
+
+class LoreIdPayloadSchema(Schema):
+    id: int
+
+
+class LoreRelationsPayloadSchema(Schema):
+    relations: list[dict[str, Any]] = []
+
+
+class LoreFactionSaveActionSchema(ActionBaseSchema):
+    action: Literal["lore.faction.save"]
+    payload: LoreValuesPayloadSchema
+
+
+class LoreFactionDeleteActionSchema(ActionBaseSchema):
+    action: Literal["lore.faction.delete"]
+    payload: LoreIdPayloadSchema
+
+
+class LoreRelationsSaveActionSchema(ActionBaseSchema):
+    action: Literal["lore.relations.save"]
+    payload: LoreRelationsPayloadSchema
+
+
+class LoreEventRecordActionSchema(ActionBaseSchema):
+    action: Literal["lore.event.record"]
+    payload: LoreValuesPayloadSchema
+
+
+class LoreEventUpdateActionSchema(ActionBaseSchema):
+    action: Literal["lore.event.update"]
+    payload: LoreValuesPayloadSchema
+
+
+class LoreEventDeleteActionSchema(ActionBaseSchema):
+    action: Literal["lore.event.delete"]
+    payload: LoreIdPayloadSchema
+
+
+class LoreCharacterSaveActionSchema(ActionBaseSchema):
+    action: Literal["lore.character.save"]
+    payload: LoreValuesPayloadSchema
+
+
+class LoreCharacterDeleteActionSchema(ActionBaseSchema):
+    action: Literal["lore.character.delete"]
+    payload: LoreIdPayloadSchema
+
+
+class LoreTimelineValuesSchema(Schema):
+    id: int | None = None
+    title: str
+    year: int
+    description: str = ""
+    imageId: int | None = None
+    tags: list[str] = []
+
+
+class LoreTimelineSavePayloadSchema(Schema):
+    values: LoreTimelineValuesSchema
+
+
+class LoreTimelineSaveActionSchema(ActionBaseSchema):
+    action: Literal["lore.timeline.save"]
+    payload: LoreTimelineSavePayloadSchema
+
+
+class LoreTimelineArchiveActionSchema(ActionBaseSchema):
+    action: Literal["lore.timeline.archive"]
+    payload: LoreIdPayloadSchema
 
 
 ActionEnvelopeSchema = Annotated[
@@ -1556,6 +1724,10 @@ ActionEnvelopeSchema = Annotated[
     | ManagedUnitPreviewActionSchema
     | ManagedVariablesValidateActionSchema
     | ManagedVariablesSaveActionSchema
+    | ManagedThemeSaveActionSchema
+    | ManagedThemeCreateActionSchema
+    | ManagedThemeSetDefaultActionSchema
+    | ManagedThemeArchiveActionSchema
     | ManagedDamageRulesValidateActionSchema
     | ManagedDamageRulesSaveActionSchema
     | DiceRollActionSchema
@@ -1565,6 +1737,8 @@ ActionEnvelopeSchema = Annotated[
     | NoteUpdateActionSchema
     | CampaignSelectActionSchema
     | CampaignNotesUpdateActionSchema
+    | CampaignClockUpdateActionSchema
+    | CampaignWeatherRerollActionSchema
     | AlchemyBrewActionSchema
     | AlchemyExtractActionSchema
     | SkillPreviewActionSchema
@@ -1589,9 +1763,20 @@ ActionEnvelopeSchema = Annotated[
     | MarketShopRegenerateActionSchema
     | MarketShopBatchActionSchema
     | MarketShopStateActionSchema
+    | MarketProfileAssignmentActionSchema
     | MarketSettingsSaveActionSchema
     | MarketQuoteActionSchema
-    | MarketPurchaseActionSchema,
+    | MarketPurchaseActionSchema
+    | LoreFactionSaveActionSchema
+    | LoreFactionDeleteActionSchema
+    | LoreRelationsSaveActionSchema
+    | LoreEventRecordActionSchema
+    | LoreEventUpdateActionSchema
+    | LoreEventDeleteActionSchema
+    | LoreCharacterSaveActionSchema
+    | LoreCharacterDeleteActionSchema
+    | LoreTimelineSaveActionSchema
+    | LoreTimelineArchiveActionSchema,
     Field(discriminator="action"),
 ]
 
@@ -1604,6 +1789,7 @@ class ActionDataSchema(Schema):
     diceRoll: DiceRollSchema | None = None
     notes: CharacterNotesDataSchema | None = None
     campaigns: dict[str, Any] | None = None
+    weatherReminder: bool | None = None
     management: dict[str, Any] | None = None
     skills: SkillCatalogDataSchema | None = None
     skill: SkillSchema | None = None
@@ -1617,6 +1803,7 @@ class ActionDataSchema(Schema):
     extractedReagent: AlchemyCatalogReagentSchema | None = None
     market: dict[str, Any] | None = None
     marketQuote: dict[str, Any] | None = None
+    lore: dict[str, Any] | None = None
 
 
 class ActionEnvelopeResponseSchema(Schema):
@@ -1638,6 +1825,15 @@ class ErrorEnvelopeSchema(Schema):
 
 
 class MarketEnvelopeSchema(Schema):
+    ok: bool
+    requestId: str
+    data: dict[str, Any]
+    events: list[EventSchema] = []
+    warnings: list[dict[str, Any]] = []
+    errors: list[ErrorSchema] = []
+
+
+class LoreEnvelopeSchema(Schema):
     ok: bool
     requestId: str
     data: dict[str, Any]

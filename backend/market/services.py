@@ -14,7 +14,20 @@ from backend.core.management_services import require_game_manager
 from backend.core.models import Giocatore, Negozio, Oggetto, SettingDefinition
 from backend.core.security import effective_role
 
-from .config import GENERATOR_RULES_KEY, LOCATION_KEY, SHOP_TYPES_KEY, get_generator_rules, get_shop_type_definitions, resolve_location, validate_generator_rules, validate_market_locations, validate_shop_types
+from .config import (
+    GENERATION_PROFILES_KEY,
+    GENERATOR_RULES_KEY,
+    LOCATION_KEY,
+    SHOP_TYPES_KEY,
+    get_generator_rules,
+    get_shop_type_definitions,
+    resolve_generation_profile,
+    resolve_location,
+    validate_generation_profiles,
+    validate_generator_rules,
+    validate_market_locations,
+    validate_shop_types,
+)
 from .generator import generate_stock
 from .selectors import normalize_stock, shop_detail
 
@@ -35,11 +48,19 @@ def _location(key: str) -> dict:
         raise ApiError("market.location_invalid", str(exc.messages[0]), "locationKey") from exc
 
 
-def _stock(seed: str, category: dict, level: int, location: dict, price_modifier_percent: int = 0) -> tuple[dict, dict]:
+def _generation_profile(key: str = "", *, selectable: bool = False) -> dict:
+    try:
+        return resolve_generation_profile(key, selectable=selectable)
+    except ValidationError as exc:
+        raise ApiError("market.generation_profile_invalid", str(exc.messages[0]), "generationProfileKey") from exc
+
+
+def _stock(seed: str, category: dict, level: int, location: dict, price_modifier_percent: int = 0, generation_profile_key: str = "") -> tuple[dict, dict]:
     rules = get_generator_rules()
     if not rules["minLevel"] <= level <= rules["maxLevel"]:
         raise ApiError("market.level_invalid", f"Il livello deve essere tra {rules['minLevel']} e {rules['maxLevel']}.", "level")
-    generated = generate_stock(seed=seed, category=category, level=level, region_key=location["regionKey"], rules=rules, price_modifier_percent=price_modifier_percent)
+    profile = _generation_profile(generation_profile_key)
+    generated = generate_stock(seed=seed, category=category, level=level, region_key=location["regionKey"], rules=rules, price_modifier_percent=price_modifier_percent, generation_profile=profile)
     return {"version": 2, "seed": generated.seed, "generatedAt": timezone.now().isoformat(), "entries": generated.entries}, generated.diagnostics
 
 
@@ -48,7 +69,9 @@ def preview_generation(values: dict) -> dict:
     category = _category(str(values.get("categoryKey", "")))
     level = int(values.get("level", 1))
     seed = str(values.get("seed") or f"{location['key']}-{category['key']}-{level}")[:120]
-    stock, diagnostics = _stock(seed, category, level, location, int(values.get("priceModifierPercent", 0) or 0))
+    profile_key = str(values.get("generationProfileKey", "")).strip()
+    _generation_profile(profile_key, selectable=True)
+    stock, diagnostics = _stock(seed, category, level, location, int(values.get("priceModifierPercent", 0) or 0), profile_key)
     probe = Negozio(nome="Anteprima", categoria=category["key"], livello=level, location_key=location["key"], lista_oggetti=stock)
     detail = shop_detail(probe)
     return {"shop": detail, "diagnostics": diagnostics}
@@ -85,10 +108,14 @@ def save_shop(user, giocatore: Giocatore, values: dict) -> tuple[Negozio, bool]:
         raise ApiError("market.price_modifier_limit", f"Il modificatore può essere al massimo ±{rules['maximumNegotiationPercent']}%.", "priceModifierPercent")
     shop.price_modifier_percent = modifier
     shop.in_evidenza = bool(values.get("featured", values.get("inEvidenza", shop.in_evidenza)))
+    profile_key = str(values.get("generationProfileKey", shop.generation_profile_key if not creating else "") or "").strip()
+    profile_changed = creating or profile_key != shop.generation_profile_key
+    _generation_profile(profile_key, selectable=profile_changed)
+    shop.generation_profile_key = profile_key
     seed = str(values.get("seed") or shop.generation_seed or f"shop-{shop.pk or name}-{location['key']}")[:120]
     shop.generation_seed = seed
     if values.get("generateStock", creating):
-        shop.lista_oggetti, _diagnostics = _stock(seed, category, level, location, modifier)
+        shop.lista_oggetti, _diagnostics = _stock(seed, category, level, location, modifier, profile_key)
         shop.stock_revision = (shop.stock_revision or 0) + 1
         shop.last_restocked_at = timezone.now()
     shop.save()
@@ -103,7 +130,7 @@ def regenerate_shop(user, giocatore: Giocatore, shop_id: int, seed: str = "") ->
     location = _location(shop.location_key)
     category = _category(shop.categoria, selectable=False)
     actual_seed = str(seed or shop.generation_seed or f"shop-{shop.id}")[:120]
-    shop.lista_oggetti, diagnostics = _stock(actual_seed, category, shop.livello, location, shop.price_modifier_percent)
+    shop.lista_oggetti, diagnostics = _stock(actual_seed, category, shop.livello, location, shop.price_modifier_percent, shop.generation_profile_key)
     shop.generation_seed, shop.stock_revision, shop.last_restocked_at = actual_seed, F("stock_revision") + 1, timezone.now()
     shop.save(update_fields=["lista_oggetti", "generation_seed", "stock_revision", "last_restocked_at", "updated_at"])
     shop.refresh_from_db()
@@ -119,6 +146,20 @@ def set_shop_state(user, giocatore: Giocatore, shop_id: int, archived: bool) -> 
     except Negozio.DoesNotExist as exc: raise ApiError("market.shop_not_found", "Negozio non trovato.", "shopId", 404) from exc
     shop.archived_at = timezone.now() if archived else None
     shop.save(update_fields=["archived_at", "updated_at"])
+    return shop
+
+
+@transaction.atomic
+def assign_generation_profile(user, giocatore: Giocatore, shop_id: int, profile_key: str = "") -> Negozio:
+    require_game_manager(user, giocatore)
+    try:
+        shop = Negozio.objects.select_for_update().get(pk=shop_id)
+    except Negozio.DoesNotExist as exc:
+        raise ApiError("market.shop_not_found", "Negozio non trovato.", "shopId", 404) from exc
+    normalized_key = str(profile_key or "").strip()
+    _generation_profile(normalized_key, selectable=True)
+    shop.generation_profile_key = normalized_key
+    shop.save(update_fields=["generation_profile_key", "updated_at"])
     return shop
 
 
@@ -149,16 +190,48 @@ def create_batch(user, giocatore: Giocatore, values: dict) -> list[Negozio]:
 def save_market_settings(user, giocatore: Giocatore, values: dict) -> None:
     require_game_manager(user, giocatore)
     role = effective_role(user, giocatore)
-    validators = {LOCATION_KEY: validate_market_locations, SHOP_TYPES_KEY: validate_shop_types, GENERATOR_RULES_KEY: validate_generator_rules}
-    aliases = {"locations": LOCATION_KEY, "shopTypes": SHOP_TYPES_KEY, "generatorRules": GENERATOR_RULES_KEY}
+    validators = {LOCATION_KEY: validate_market_locations, SHOP_TYPES_KEY: validate_shop_types, GENERATOR_RULES_KEY: validate_generator_rules, GENERATION_PROFILES_KEY: validate_generation_profiles}
+    aliases = {"locations": LOCATION_KEY, "shopTypes": SHOP_TYPES_KEY, "generatorRules": GENERATOR_RULES_KEY, "generationProfiles": GENERATION_PROFILES_KEY}
     submitted = {aliases.get(key, key): value for key, value in values.items()}
+    normalized = {}
     for key, validator in validators.items():
         if key not in submitted: continue
-        if key == GENERATOR_RULES_KEY and role != Giocatore.ROLE_ADMIN:
-            raise ApiError("market.generator_admin_only", "Le regole del generatore sono riservate agli amministratori.", key, 403)
+        if key in {GENERATOR_RULES_KEY, GENERATION_PROFILES_KEY} and role != Giocatore.ROLE_ADMIN:
+            raise ApiError("market.generator_admin_only", "Le regole e i profili del generatore sono riservati agli amministratori.", key, 403)
         try: value = validator(submitted[key])
         except ValidationError as exc: raise ApiError("market.settings_invalid", exc.messages[0], key) from exc
+        normalized[key] = value
+
+    locations = normalized.get(LOCATION_KEY)
+    if locations:
+        location_labels = {
+            f"{region['key']}/{place['key']}": (region["label"], place["label"])
+            for region in locations["regions"]
+            for place in region["places"]
+        }
+        orphaned_shop = Negozio.objects.exclude(location_key="").exclude(location_key__in=location_labels).first()
+        if orphaned_shop:
+            raise ApiError("market.location_in_use", f"La località di {orphaned_shop.nome} non può essere rimossa finché il negozio la utilizza.", LOCATION_KEY)
+
+    shop_types = normalized.get(SHOP_TYPES_KEY)
+    if shop_types:
+        type_keys = {shop_type["key"] for shop_type in shop_types["types"]}
+        orphaned_type = Negozio.objects.exclude(categoria="").exclude(categoria__in=type_keys).first()
+        if orphaned_type:
+            raise ApiError("market.shop_type_in_use", f"Il tipo di {orphaned_type.nome} non può essere rimosso finché il negozio lo utilizza.", SHOP_TYPES_KEY)
+
+    profiles = normalized.get(GENERATION_PROFILES_KEY)
+    if profiles:
+        profile_keys = {profile["key"] for profile in profiles["profiles"]}
+        orphaned_profile = Negozio.objects.exclude(generation_profile_key="").exclude(generation_profile_key__in=profile_keys).first()
+        if orphaned_profile:
+            raise ApiError("market.generation_profile_in_use", f"Il profilo assegnato a {orphaned_profile.nome} non può essere rimosso.", GENERATION_PROFILES_KEY)
+
+    for key, value in normalized.items():
         SettingDefinition.objects.filter(key=key).update(value=value)
+    if locations:
+        for location_key, (region_label, place_label) in location_labels.items():
+            Negozio.objects.filter(location_key=location_key).update(regione_nome=region_label, citta_nome=place_label)
 
 
 def _lines(shop: Negozio, lines: object) -> tuple[list[dict], int]:

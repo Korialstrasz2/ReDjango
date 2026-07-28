@@ -21,6 +21,9 @@ ADMIN_MANAGED_SETTING_KEYS = frozenset({
     "mercato.shop_types",
     "mercato.generator_rules",
 })
+GLOBAL_EDITABLE_SETTING_KEYS = frozenset({
+    "security.access_mode",
+})
 
 
 def setting_base_value(setting: SettingDefinition):
@@ -82,6 +85,8 @@ def serialize_theme(theme: Theme) -> dict:
             "settings": _image_url(theme.settings_background),
             "dice": _image_url(theme.dice_background),
             "journal": _image_url(theme.journal_background),
+            "lore": _image_url(theme.lore_background),
+            "market": _image_url(theme.market_background),
         },
     }
 
@@ -98,6 +103,8 @@ def active_themes() -> list[Theme]:
             "settings_background",
             "dice_background",
             "journal_background",
+            "lore_background",
+            "market_background",
         )
         .order_by("order", "name")
     )
@@ -105,6 +112,8 @@ def active_themes() -> list[Theme]:
 
 def _setting_payload(setting: SettingDefinition, role: str, override: SettingOverride | None) -> dict:
     base_value = setting_base_value(setting)
+    if setting.key in GLOBAL_EDITABLE_SETTING_KEYS:
+        override = None
     value = override.value if override is not None else base_value
     metadata = setting.metadata if isinstance(setting.metadata, dict) else {}
     choices = setting.choices if isinstance(setting.choices, list) else []
@@ -145,6 +154,8 @@ def _setting_payload(setting: SettingDefinition, role: str, override: SettingOve
 
 
 def settings_payload(user, giocatore: Giocatore) -> dict:
+    from .access import runtime_access_payload
+
     role = effective_role(user, giocatore)
     definitions = list(
         SettingDefinition.objects.filter(active=True, archived_at__isnull=True).order_by("category", "order", "key")
@@ -164,7 +175,10 @@ def settings_payload(user, giocatore: Giocatore) -> dict:
         serialized = _setting_payload(setting, role, override)
         if role_can_see:
             visible_settings.append(serialized)
-        if setting.ui_token:
+        if setting.ui_token and (
+            role_can_see
+            or setting.minimum_role == Giocatore.ROLE_ADMIN
+        ):
             ui_values[setting.key] = serialized["value"]
 
     capabilities = security_payload(user, giocatore)
@@ -216,6 +230,7 @@ def settings_payload(user, giocatore: Giocatore) -> dict:
             ],
         },
         "security": capabilities,
+        "runtime": runtime_access_payload(),
         "settings": visible_settings,
         "ui": ui_values,
         "themes": [serialize_theme(theme) for theme in themes],

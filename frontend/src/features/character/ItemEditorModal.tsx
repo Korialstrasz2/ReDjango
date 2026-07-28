@@ -2,6 +2,7 @@ import { type FormEvent, useMemo, useState } from "react";
 
 import { Modal } from "../../components/Modal";
 import { ImagePickerModal } from "../../components/ImagePickerModal";
+import { ItemSpecialIconField } from "../../components/ItemSpecialIconField";
 import type { Item, ItemCatalog, MediaAsset } from "../../lib/types";
 
 type EffectDraft = { target: string; operation: string; value: string; source?: string };
@@ -195,7 +196,7 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
         <button type="button" className="button secondary small" onClick={() => setEffects((current) => [...current, { target: "", operation: "add", value: "0" }])}>Aggiungi effetto</button>
       </fieldset>
       <fieldset><legend>Profili strutturati</legend><div className="form-grid"><label>Profilo alchimia<textarea name="alchemy_profile" rows={6} defaultValue={defaults.alchemy_profile} spellCheck={false} /></label><label>Profilo crafting<textarea name="crafting_profile" rows={6} defaultValue={defaults.crafting_profile} spellCheck={false} /></label></div></fieldset>
-      <fieldset><legend>Media e note</legend><div className="selected-media-field"><div>{selectedMedia ? <><img src={selectedMedia.thumbnailUrl || selectedMedia.url} alt="" /><span><strong>{selectedMedia.title}</strong><small>{selectedMedia.category} · {selectedMedia.group}</small></span></> : <span><strong>Nessuna immagine</strong><small>Scegli o carica un'immagine dall'archivio.</small></span>}</div><button className="button secondary" type="button" onClick={() => setImagePickerOpen(true)}>Scegli dall'archivio</button></div><label>Note di progettazione<textarea name="notes" rows={4} defaultValue={defaults.notes} /></label>{item?.metadata && <details><summary>Provenienza tecnica</summary><pre>{JSON.stringify(item.metadata, null, 2)}</pre></details>}</fieldset>
+      <fieldset><legend>Media e note</legend><div className="selected-media-field"><div>{selectedMedia ? <><img src={selectedMedia.thumbnailUrl || selectedMedia.url} alt="" /><span><strong>{selectedMedia.title}</strong><small>{selectedMedia.category} · {selectedMedia.group}</small></span></> : <span><strong>Nessuna immagine</strong><small>Scegli o carica un'immagine dall'archivio.</small></span>}</div><button className="button secondary" type="button" onClick={() => setImagePickerOpen(true)}>Scegli dall'archivio</button></div><ItemSpecialIconField itemId={clone ? null : item?.id ?? null} itemName={itemName} imageUrl={clone ? "" : item?.imageUrl || ""} /><label>Note di progettazione<textarea name="notes" rows={4} defaultValue={defaults.notes} /></label>{item?.metadata && <details><summary>Provenienza tecnica</summary><pre>{JSON.stringify(item.metadata, null, 2)}</pre></details>}</fieldset>
     </form>
   </Modal>{imagePickerOpen && <ImagePickerModal selectedId={selectedMediaId} usageType="item_icon" defaultGroup="Oggetti" defaultTitle={itemName || "Nuovo oggetto"} onSelect={(asset) => setSelectedMediaId(asset?.id || null)} onClose={() => setImagePickerOpen(false)} />}</>;
 }

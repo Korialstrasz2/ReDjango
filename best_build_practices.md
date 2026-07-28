@@ -41,7 +41,10 @@ Rules for every future feature:
 - Add permission tests for user, master, and admin whenever a feature has privileged behavior.
 - Keep Settings reachable from the application shell at all times.
 - Treat role identifiers as backend security data. User and master interfaces show available controls without role tags, hierarchy diagrams, or role badges; only admin may receive and render the full hierarchy.
-- Before LAN or remote deployment becomes a supported mode, implement real authentication and enforce `security.require_login_for_remote` in middleware.
+- Every game page and API requires a real authenticated Django session in all access modes. Only the login surfaces, Django Admin authentication flow, and required static assets may be anonymous.
+- `security.access_mode` is a global admin-owned value with exactly `locked`, `lan`, and `online`. The active process mode is immutable: changing the configured value requires a launcher-managed or manual server restart.
+- `locked` must bind to loopback and independently reject non-loopback sockets in middleware. `lan` may bind to all local interfaces but never weakens authentication. `online` must fail closed without an explicit production secret and allowed-host list, use secure cookies/HTTPS hardening, and normally remain behind a reverse proxy.
+- Never restore an anonymous `local_master` fallback. A `Giocatore` must be linked to the authenticated Django user; Django staff permission and game role remain separate concerns.
 
 ## Project Origin And Direction
 
@@ -70,7 +73,7 @@ Acceptable exceptions:
 - Django admin.
 - Debug-only pages.
 - Download/export endpoints.
-- Authentication pages if login is later added.
+- Authentication pages.
 
 ## One Communication Contract
 
@@ -398,7 +401,7 @@ Themes should be data-driven and centralized.
 - `Theme.panel_opacity` controls normal panel surfaces; `Theme.overlay_opacity` controls both the background veil and overlay surfaces. New overlays must therefore use the shared tokens so the administrator's opacity setting works on every page.
 - Keep primary and secondary text at WCAG-readable contrast against both panel surfaces. Sidebar text must use the derived `--sidebar-text` and `--sidebar-muted` tokens because a light content theme may still use a dark navigation rail.
 - Every font choice must flow through `--font-body` and `--font-display`, including feature workspaces. Font scaling must remain usable across the full configured range in navigation, forms, modals, quick tools, and dense workspaces.
-- The optional global contrast outline is inherited from the document root and uses the active theme's primary text luminance to choose black or white. Keep it independent from `text-shadow`, glow, and feature-specific text effects so new pages receive the accessibility treatment without losing their visual identity.
+- The optional global contrast outline is inherited from the document root and uses the active theme's primary text luminance to choose black or white. Its color-aware mode may refine that choice from each rendered text color, but must remain independent from `text-shadow`, glow, and feature-specific text effects so new pages receive the accessibility treatment without losing their visual identity.
 - Active `Theme` rows are the source of truth for the theme selector. Backend validation must reject inactive or missing theme slugs.
 - Bundled placeholder art belongs under `frontend/static/frontend/images/themes/`; the seed may copy it into managed media without overwriting administrator replacements.
 
@@ -579,6 +582,8 @@ Recommended source format:
 ## Dice UX And Texture Contract
 
 - The backend generates and validates every result. Animation presents the outcome but never decides it.
+- Quick-dice rolls and competence rolls append immutable `DiceRollRecord` audit entries with player and character snapshots. The shared history selector is master/admin-only, returns at most the newest 100 entries, and is reused by both the Dadi drawer and the Competenze workspace.
+- `master.show_hidden_rolls` is the session preference that shows or hides the shared-history tabs; it does not weaken the backend role check.
 - The quick tool rolls one die at a time and shows modifiers as an explicit equation: die result, signed bonus, and final total.
 - Prefer lightweight CSS/SVG silhouettes and transforms over a 3D engine until physically simulated dice become a demonstrated requirement.
 - Each supported die must keep a recognizable physical silhouette; d100 uses a near-spherical Zocchihedron-style projection rather than reusing d10 geometry.
@@ -595,6 +600,7 @@ Recommended source format:
 - Contextual uploads send a stable `usageType`; the backend resolves its category from the administrator-configured `ImageCategory.usage_types`. Context tools may prefill a useful group and title, such as `Oggetti` plus the item name, without hard-coding the available category list.
 - The general image archive exposes a category picklist from the backend and a manual group field, then browses images by category and group with search and filters.
 - Item and other media-aware editors use the shared thumbnail picker. It must support category, group, and text filters, show visual thumbnails, and allow contextual upload without leaving the current workflow.
+- Picker results live in their own scrollable region and keep legible square thumbnails regardless of library size. Activating a thumbnail opens the shared `Apri`/`Seleziona` context menu: `Apri` previews the original image without leaving the picker, while `Seleziona` changes the draft and leaves final confirmation explicit.
 - Existing theme, dice, map, character, and imported images should be classified during safe reseeding when their category or group is missing. Reseeding must never overwrite an administrator's existing classification.
 - Moving and deleting archive images are Admin-only capabilities, enforced by the backend as well as hidden from every other role. Before either action, the archive fetches live reverse references and asks for explicit confirmation; used-image confirmations name the referencing records instead of showing the generic warning.
 - Deletion previews distinguish links that will be cleared from dependent records that will be cascade-deleted. File storage is removed only after the database deletion succeeds, so a protected relation cannot leave a broken image record.
@@ -611,6 +617,30 @@ Recommended source format:
 - Numeric description examples are narrative nuances, not hard rules. Parse them for readable presentation but never automatically highlight, select, or enforce the entry matching a rolled total.
 - Reuse curated original competence artwork as local static assets, but keep the composition, interaction, and responsive treatment native to ReDjango. Ambient motion and dice animation must honor reduced-motion and dice-animation preferences.
 
+## Campaign Lore And Faction Reputation Contract
+
+- `backend/lore` owns the campaign lore domain. Its records are normalized tables, never JSON blobs on a single per-campaign row; the Elder `LoreCampagna` shape is a source of domain knowledge, not a model to reproduce.
+- `PersonaggioLore` is a deliberately lightweight narrative record: name, role, description, portrait, optional faction, visibility. It has no relation to `characters.Personaggio` and must not grow sheet, stat, or inventory fields. A lore entry says who somebody is, not what they roll.
+- A faction stores only `reputazione_base`. The current standing towards the party is **never persisted**: it is replayed from that base through the ordered event log every time it is read. Deleting or re-dating an event therefore genuinely rewrites the present, and no cached score can drift from the log.
+- Replay order is `(giorno_campagna, created_at)`. `giorno_campagna` defaults to the campaign's current day, so a back-dated event is inserted where it belongs in the story. `ora_campagna` mirrors the campaign's free-text clock and is display only; it is never a sort key.
+- `EventoReputazione` keeps the narrative act (mode, reason, day, visibility) and `EffettoEventoReputazione` keeps one ordered row per touched faction. Reason is mandatory: an unexplained reputation change is not recordable.
+- `adjust` events spread through the reaction grid **one hop only**. A propagated effect never seeds further propagation, and a faction the master named explicitly in the event keeps its authored value: explicit intent always beats the grid.
+- `set` events are absolute anchors and never propagate. They exist to correct a standing, not to narrate a consequence.
+- Effects store the delta or absolute value that was authored, never a resolved score. Editing the grid changes future events only; it must not retroactively rewrite what already happened.
+- Editing an event rebuilds its effects only when the mode or an authored value actually changed. Correcting a reason, a title, a day, or a visibility flag leaves the recorded reactions untouched, so imported history whose propagation came from a grid that no longer exists survives an ordinary typo fix.
+- The `/lore` faction workspace keeps factions in the main column and the master tools in a right-hand rail with two tabs: `Aggiungi` records or re-authors an event, `Storico` lists the timeline with its edit and delete controls. Players receive the same rail with only the history.
+- Lore character cards expose a portrait and a name and nothing else. Description, faction, and the master's edit and archive controls appear only once a card is opened, so the gallery stays a gallery.
+- `core.TimelineEvent` belongs exclusively to the **Lore → Timeline** tab. Never reuse it for faction reputation, audit logs, quests, campaign clocks, static guide chronology, or Hall of Fame records; those domains keep their own models and invariants.
+- Timeline dates are authored as signed integer offsets from the fall of Dagoth Ur and sorted by `ordine_cronologico`, never lexicographically by their display label. `data_evento` remains the compatibility/display value, while the numeric field is the ordering source of truth.
+- Timeline authoring, editing, and soft-archiving are master/admin operations scoped to the active campaign. Every role may read active entries. Images are optional `UploadedImage` references and the no-image state is a first-class UI, not a validation failure.
+- Timeline is the third tab of `/lore`, not a separate route. Its horizontally navigable chronology, search, keyboard controls, focused detail, and responsive presentation use shared theme tokens and honor reduced-motion preferences.
+- `RelazioneFazione` is an asymmetric directed grid: origine→destinazione and destinazione→origine are independent rows, and a faction may not react to itself. A coefficient is how much the target moves per point the source gains.
+- Reputation is clamped to `-100…100` at every write and at every replay step.
+- The `/lore` route is readable by every role. Players see factions, current standings, the narrative tier, and the events that moved them. The reaction grid, the base values, and every authoring control are master/admin only, enforced by the backend and not merely hidden.
+- `visibile_ai_giocatori` on an event hides its story from players while still counting in the replay, so a secret pact moves a standing the whole table can see. The same flag on a lore character hides the record entirely.
+- Archiving a faction keeps its past events readable, drops its grid rows, and detaches its characters. Archived names are released, so the uniqueness constraints are conditional on `archived_at`.
+- Narrative tier labels are reading aids derived from the score. They never replace the number in a rule, a payload, or a validation.
+
 ## Character Notes UX Contract
 
 - Character notes are stable free-text sections, not titled records, cards, tasks, or dated journal entries.
@@ -622,10 +652,26 @@ Recommended source format:
 - Contextual pages must mount the existing editor inside the sidebar flyout instead of creating new note persistence.
 - Fantasy atmosphere comes from theme, typography, and the writing surface, not from extra form fields or content-management ceremony.
 
+## Campaign Clock And Weather Contract
+
+- The quick-tools bar carries the campaign state on its left: campaign name, `Meteo`, `Giorno`, `Ora`. It is the one place in the shell that answers "when and where are we", so no page duplicates that readout.
+- `backend/core/weather.py` owns the six-entry weather table ported from the Elder `tempo` events, with its d100 ranges. It is backend rule data, not editable content: a table row is a rule the roll depends on, so it does not become an admin-authored model without a deliberate decision.
+- `roll_weather` keeps the two Elder biases and must keep them together: a one-in-two chance prolongs the weather already in play, and a fresh roll is weighted towards `Soleggiato`, which alone covers `1-50`. Removing either bias changes how a session feels, not just its numbers.
+- The d100 is rolled on the backend. The client asks for a roll and never sends one, so the table stays a backend rule.
+- A stored weather is matched to its table row by name only. Hand-edited effect text still counts as the same weather when the roll prolongs it, and a name that left the table falls back to `Soleggiato`, as the Elder view did for an empty value.
+- `DatiCampagna.meteo` keeps the full `Nome - effetti` string. The API splits it into `weatherLabel` and `weatherEffects`; the SPA renders those fields and never splits the string itself.
+- The clock is a backend rule too: the hour wraps around midnight, the day stays inside `1…1000`, and `ora_corrente` holds the hour as a plain numeral. Free text already stored there reads as hour zero rather than raising.
+- `campaign.clock.update` answers with `weatherReminder`, true every six campaign hours (`0`, `6`, `12`, `18`) and on any day change. The cadence belongs to the backend; the bar only opens the reminder when it is told to.
+- Moving the clock and rolling the weather require master or above, enforced by `require_campaign_master` inside the service. Hiding the arrows is presentation, not authorization.
+- Both actions target the campaign the player is effectively on, resolved by `selected_campaign_id` so the top bar and the actions behind it never disagree about which campaign is open.
+- Overlays opened from the quick-tools bar must be portalled to `document.body`. The bar blurs its backdrop, which would otherwise trap a fixed overlay inside it.
+
 ## Keyboard Shortcut UX Contract
 
 - Persist personal shortcuts through `SettingDefinition` and `SettingOverride` keys under `shortcuts.*`; do not keep them only in browser storage.
 - Default shortcuts use unique `Alt + lettera` combinations that avoid common browser and operating-system commands. The selectable list excludes known browser conflicts such as `Alt+D`, `Alt+E`, and `Alt+F`.
+- Every main navigation destination, including role-gated Strumenti, has a shortcut definition. Conflict previews use only the settings visible to the current role, matching backend validation.
+- Show duplicate assignments inline while editing and prevent submission until every visible collision is resolved.
 - Reject duplicate effective assignments on the backend so one keystroke always has one application action.
 - Page shortcuts navigate through the SPA router. Quick-tool shortcuts open the same Diario and Dadi state used by their toolbar buttons.
 - Expose configured combinations through `aria-keyshortcuts` and a visible hover title on the corresponding navigation or toolbar control.
@@ -660,6 +706,16 @@ Recommended source format:
 ## Resource Efficiency
 
 ReDjango should stay light.
+
+### Market Management And Generation Profiles
+
+- `/market` is the operational commerce workspace: navigation, stock inspection, purchase, negotiation and contextual shop actions. It must not embed the global market-settings editor.
+- `/tools/shops` is the authoritative master/admin workspace for market structure, shop-type assortment, generation profiles, global generator rules and batch operations.
+- `mercato.locations`, `mercato.shop_types`, `mercato.generation_profiles` and `mercato.generator_rules` remain validated `SettingDefinition` values. Their arrays are ordered authoring contracts; player-facing market navigation preserves that order instead of sorting it again.
+- Region, location, shop-type and generation-profile keys are stable links. Their labels may be renamed and entries may be reordered or duplicated, but a key used by a shop may not disappear. Renaming a configured location must synchronize the denormalized shop display labels inside the same transaction.
+- `Negozio.generation_profile_key` stores only an explicit per-shop override. Blank means “inherit `defaultProfileKey`”; changing the global default therefore updates every inheriting shop without rewriting its row.
+- A generation profile owns a quantity multiplier, a price multiplier and a complete rarity distribution. Generation applies the global rules first, then the shop-type inventory multiplier, then the effective profile. Existing stock changes only when the shop is created or regenerated.
+- Master and admin may assign enabled profiles to shops. Only admin may author profiles or the global generator rules, enforced by market services as well as by the SPA.
 
 ### Combat Damage Rule Configuration
 

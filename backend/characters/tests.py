@@ -2,6 +2,7 @@ import json
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
 
@@ -11,6 +12,8 @@ from backend.core.models import Effetto, Giocatore, GlobalModifiers, Oggetto, Sk
 from .models import PERSONAGGIO_TOT_KEYS, EffettiPersonaggio, Equip, Personaggio
 from .selectors import _character_appearance
 from .selectors import _effects
+from .selectors import serialize_item
+from .services.item_icons import special_icon_directory
 from .race_rules import subraces_for
 from .services.refresh_personaggio import (
     apply_equipment_specializations,
@@ -659,6 +662,7 @@ class RefreshPersonaggioCalculationTests(TestCase):
 class PersonaggioPocApiTests(TestCase):
     def setUp(self):
         call_command("seed_minimum_data", verbosity=0)
+        self.client.force_login(Giocatore.objects.get(nome="local_master").user)
 
     def test_seed_creates_poc_content_and_personaggio_payload(self):
         self.assertEqual(Oggetto.objects.filter(metadata__seed_kind="poc_item").count(), 22)
@@ -835,3 +839,71 @@ class PersonaggioPocApiTests(TestCase):
             self.client.get(f"/api/v1/characters/{unassigned.id}/sheet").status_code,
             200,
         )
+
+
+class ItemSpecialIconTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_minimum_data", verbosity=0)
+
+    def setUp(self):
+        self.client.force_login(Giocatore.objects.get(nome="local_master").user)
+        self.item = Oggetto.objects.create(nome="Lama di Prova Icona", tipo_1="spadalunga")
+        self.target = special_icon_directory() / "lama_di_prova_icona.webp"
+        self.addCleanup(lambda: self.target.unlink() if self.target.exists() else None)
+
+    def _webp(self) -> bytes:
+        # Minimal lossless WebP container: "RIFF" <size> "WEBP" is all the view checks.
+        body = b"VP8L" + b"\x00" * 16
+        return b"RIFF" + len(body).to_bytes(4, "little") + b"WEBP" + body
+
+    def upload(self, payload: bytes, name="icona.webp", content_type="image/webp"):
+        return self.client.post(
+            f"/api/oggetti/{self.item.id}/icona/",
+            {"file": SimpleUploadedFile(name, payload, content_type=content_type)},
+        )
+
+    def test_upload_writes_icon_named_after_the_item(self):
+        response = self.upload(self._webp())
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["ok"])
+        self.assertTrue(self.target.is_file())
+        self.assertEqual(self.target.read_bytes(), self._webp())
+
+    def test_uploaded_icon_wins_over_the_category_icon(self):
+        self.assertTrue(serialize_item(self.item)["imageUrl"].endswith("/items/spadalunga.webp"))
+        self.upload(self._webp())
+        self.assertTrue(
+            serialize_item(self.item)["imageUrl"].endswith("/items/speciali/lama_di_prova_icona.webp")
+        )
+
+    def test_non_webp_uploads_are_rejected(self):
+        response = self.upload(b"\x89PNG\r\n\x1a\n" + b"0" * 40, name="icona.png", content_type="image/png")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["errors"][0]["code"], "item.icon_invalid_format")
+        self.assertFalse(self.target.exists())
+
+    def test_oversized_uploads_are_rejected(self):
+        response = self.upload(b"RIFF" + b"\x00" * 4 + b"WEBP" + b"0" * (512 * 1024))
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["errors"][0]["code"], "item.icon_too_large")
+        self.assertFalse(self.target.exists())
+
+    def test_delete_removes_the_icon_and_falls_back_to_the_category(self):
+        self.upload(self._webp())
+        response = self.client.delete(f"/api/oggetti/{self.item.id}/icona/")
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(self.target.exists())
+        self.assertTrue(serialize_item(self.item)["imageUrl"].endswith("/items/spadalunga.webp"))
+
+    def test_players_cannot_change_item_icons(self):
+        giocatore = Giocatore.objects.get(nome="local_master")
+        giocatore.role = Giocatore.ROLE_USER
+        giocatore.save(update_fields=["role", "updated_at"])
+        response = self.upload(self._webp())
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(self.target.exists())
+
+    def test_missing_item_returns_not_found(self):
+        response = self.client.post(f"/api/oggetti/{self.item.id + 99999}/icona/", {})
+        self.assertEqual(response.status_code, 404)

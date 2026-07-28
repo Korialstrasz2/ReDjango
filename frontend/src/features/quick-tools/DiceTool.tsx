@@ -1,8 +1,10 @@
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { command, getData } from "../../lib/api";
+import { playRollSound } from "../../lib/dice";
 import type { CharacterSheet, DiceRoll, DiceSetsData, SettingsData } from "../../lib/types";
+import { DiceHistory } from "./DiceHistory";
 import { DiceSetManager } from "./DiceSetManager";
 import { DiceVisual } from "./DiceVisual";
 
@@ -12,23 +14,6 @@ type Props = {
   notify: (message: string, kind?: "success" | "error" | "info") => void;
 };
 
-function playRollSound() {
-  const AudioContextClass = window.AudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  oscillator.type = "triangle";
-  oscillator.frequency.setValueAtTime(132, context.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(54, context.currentTime + .22);
-  gain.gain.setValueAtTime(.06, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + .24);
-  oscillator.connect(gain).connect(context.destination);
-  oscillator.start();
-  oscillator.stop(context.currentTime + .25);
-  oscillator.addEventListener("ended", () => context.close());
-}
-
 function equation(roll: DiceRoll) {
   const die = roll.rolls[0];
   if (!roll.modifier) return `${die}`;
@@ -36,6 +21,7 @@ function equation(roll: DiceRoll) {
 }
 
 export function DiceTool({ characterId, settings, notify }: Props) {
+  const queryClient = useQueryClient();
   const settleTimer = useRef<number | null>(null);
   const throwDurationRef = useRef(620);
   const throwStartedAtRef = useRef(0);
@@ -52,8 +38,10 @@ export function DiceTool({ characterId, settings, notify }: Props) {
   const [history, setHistory] = useState<DiceRoll[]>([]);
   const [rolling, setRolling] = useState(false);
   const [activeSides, setActiveSides] = useState(20);
+  const [activeTab, setActiveTab] = useState<"roll" | "history">("roll");
   const [rollingValue, setRollingValue] = useState(1);
   const [throwProfile, setThrowProfile] = useState({ bounces: 4, direction: 1, duration: 620 });
+  const showGroupHistory = settings.security.canManageGameData && settings.ui["master.show_hidden_rolls"] !== false;
 
   useEffect(() => {
     if (selected && !selected.dice.includes(activeSides)) setActiveSides(selected.dice.includes(20) ? 20 : selected.dice[0]);
@@ -66,6 +54,7 @@ export function DiceTool({ characterId, settings, notify }: Props) {
   }, [activeSides, rolling]);
 
   useEffect(() => () => { if (settleTimer.current) window.clearTimeout(settleTimer.current); }, []);
+  useEffect(() => { if (!showGroupHistory) setActiveTab("roll"); }, [showGroupHistory]);
 
   const roll = useMutation({
     mutationFn: ({ sides, rollModifier = 0 }: { sides: number; rollModifier?: number }) => command<{ diceRoll: DiceRoll }>("dice.roll", {
@@ -89,6 +78,7 @@ export function DiceTool({ characterId, settings, notify }: Props) {
     },
     onSuccess: (result) => {
       const value = result.data.diceRoll;
+      void queryClient.invalidateQueries({ queryKey: ["diceHistory"] });
       if (settings.ui["dice.sound"] !== false) playRollSound();
       const settle = () => {
         setRollingValue(value.rolls[0]);
@@ -125,6 +115,14 @@ export function DiceTool({ characterId, settings, notify }: Props) {
   if (setsQuery.isLoading) return <p className="empty-copy">Preparazione dei dadi…</p>;
   if (!selected) return <p className="form-error">Non ci sono set di dadi attivi. Un amministratore deve crearne uno.</p>;
   return <div className="dice-tool" style={palette}>
+    {showGroupHistory && <nav className="dice-tool-tabs" role="tablist" aria-label="Sezioni dei dadi" data-component-type="tabset" data-theme="gold">
+      <button type="button" role="tab" aria-selected={activeTab === "roll"} className={activeTab === "roll" ? "active" : ""} onClick={() => setActiveTab("roll")}>Tiro</button>
+      <button type="button" role="tab" aria-selected={activeTab === "history"} className={activeTab === "history" ? "active" : ""} onClick={() => setActiveTab("history")}>Tiri del gruppo</button>
+    </nav>}
+    {activeTab === "history" && showGroupHistory ? <section className="group-dice-history" role="tabpanel" data-component-type="panel" data-theme="default">
+      <header><div><p className="eyebrow">Cronaca condivisa</p><h3>Ultimi 100 tiri</h3></div><span>Giocatore · personaggio · orario</span></header>
+      <DiceHistory />
+    </section> : <>
     <section className={`dice-altar ${rolling ? "rolling" : "settled"}`} style={throwStyle} aria-live="polite">
       <div className="dice-altar-runes" aria-hidden="true">✦</div>
       <p>{rolling ? `Il d${activeSides} attraversa il fato…` : shownRoll ? `${shownRoll.notation} · ${shownRoll.diceSetName}` : selected.name}</p>
@@ -140,5 +138,6 @@ export function DiceTool({ characterId, settings, notify }: Props) {
     {characterQuery.data?.character.diceModifiers?.length ? <section className="modifier-throws"><header><h3>Tiri del personaggio</h3><span>d10 + bonus</span></header><div>{characterQuery.data.character.diceModifiers.map((entry) => <button type="button" key={entry.key} disabled={roll.isPending || rolling || !selected.dice.includes(10)} onClick={() => roll.mutate({ sides: 10, rollModifier: entry.value })}><strong>{entry.label}</strong><span>d10 {entry.value >= 0 ? "+" : "−"} {Math.abs(entry.value)}</span></button>)}</div></section> : null}
     <section className="dice-history"><header><h3>Ultimi tiri</h3>{history.length > 0 && <button type="button" onClick={() => setHistory([])}>Pulisci</button>}</header>{history.length ? <ol>{history.map((entry, index) => <li key={`${entry.rolledAt}-${index}`}><span>{entry.notation}</span><strong>{equation(entry)}</strong><time>{new Date(entry.rolledAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}</time></li>)}</ol> : <p className="empty-copy">La cronaca dei tiri di questa sessione apparirà qui.</p>}</section>
     {settings.security.canManageAdminSettings && <details className="inline-admin-tool"><summary>Gestisci i set di dadi</summary><DiceSetManager notify={notify} compact /></details>}
+    </>}
   </div>;
 }

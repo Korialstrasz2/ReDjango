@@ -20,6 +20,7 @@ from backend.core.models import (
     Theme,
     Unit,
 )
+from backend.core.weather import WEATHER_TABLE
 
 
 class CharacterWorkspaceApiTests(TestCase):
@@ -29,6 +30,7 @@ class CharacterWorkspaceApiTests(TestCase):
 
     def setUp(self):
         self.giocatore = Giocatore.objects.get(nome="local_master")
+        self.client.force_login(self.giocatore.user)
         self.character = Personaggio.objects.get(nome_interno="poc_darion_frondaluna")
         if self.character.id not in self.giocatore.character_ids:
             self.giocatore.character_ids = [*self.giocatore.character_ids, self.character.id]
@@ -848,6 +850,36 @@ class CharacterWorkspaceApiTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["errors"][0]["code"], "campaign.forbidden")
 
+    def test_campaign_clock_and_weather_are_master_only_and_answer_with_the_top_bar_state(self):
+        campaign = DatiCampagna.objects.filter(archived_at__isnull=True).order_by("-attiva", "nome").first()
+        campaign.ora_corrente = "5"
+        campaign.meteo = ""
+        campaign.save(update_fields=["ora_corrente", "meteo", "updated_at"])
+
+        response = self.command("campaign.clock.update", {"campaignId": campaign.id, "field": "ora", "direction": "increase"})
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()["data"]
+        self.assertTrue(body["weatherReminder"])
+        self.assertEqual(next(entry for entry in body["campaigns"]["campaigns"] if entry["id"] == campaign.id)["currentHour"], 6)
+
+        response = self.command("campaign.weather.reroll", {"campaignId": campaign.id})
+
+        self.assertEqual(response.status_code, 200)
+        campaign.refresh_from_db()
+        self.assertIn(campaign.meteo.split(" - ")[0], {entry.label for entry in WEATHER_TABLE})
+
+        self.giocatore.role = Giocatore.ROLE_USER
+        self.giocatore.save(update_fields=["role", "updated_at"])
+        for action, payload in (
+            ("campaign.clock.update", {"campaignId": campaign.id, "field": "giorno", "direction": "increase"}),
+            ("campaign.weather.reroll", {"campaignId": campaign.id}),
+        ):
+            with self.subTest(action=action):
+                forbidden = self.command(action, payload)
+                self.assertEqual(forbidden.status_code, 403)
+                self.assertEqual(forbidden.json()["errors"][0]["code"], "campaign.forbidden")
+
     def test_item_authoring_is_role_gated_and_round_trips_all_core_fields(self):
         OpzioneTipoOggetto.objects.get_or_create(posizione=1, valore="dardo", defaults={"etichetta": "Dardo"})
         OpzioneTipoOggetto.objects.get_or_create(posizione=2, valore="ferro", defaults={"etichetta": "Ferro"})
@@ -1254,6 +1286,7 @@ class UnifiedSkillsApiTests(TestCase):
 
     def setUp(self):
         self.giocatore = Giocatore.objects.get(nome="local_master")
+        self.client.force_login(self.giocatore.user)
         self.character = Personaggio.objects.get(nome_interno="poc_darion_frondaluna")
         self.giocatore.active_character = self.character
         if self.character.id not in self.giocatore.character_ids:

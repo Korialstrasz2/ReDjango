@@ -117,6 +117,48 @@ export async function convertImageToWebp(file: File, quality = .75): Promise<Fil
   return new File([blob], `${baseName}.webp`, { type: "image/webp", lastModified: file.lastModified });
 }
 
+export const ITEM_ICON_SIZE = 128;
+export const ITEM_ICON_QUALITY = .7;
+
+/** Centre-crops an image to a square, scales it to `size` and encodes it as WebP. */
+export async function prepareSquareIcon(file: File, size = ITEM_ICON_SIZE, quality = ITEM_ICON_QUALITY): Promise<File> {
+  const bitmap = await createImageBitmap(file);
+  const edge = Math.min(bitmap.width, bitmap.height);
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    bitmap.close();
+    throw new ApiClientError("Il browser non riesce a preparare l'icona.", "media.webp_canvas_failed");
+  }
+  context.imageSmoothingQuality = "high";
+  context.drawImage(bitmap, (bitmap.width - edge) / 2, (bitmap.height - edge) / 2, edge, edge, 0, 0, size, size);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", quality));
+  if (!blob) throw new ApiClientError("Conversione WebP non riuscita.", "media.webp_conversion_failed");
+  const baseName = file.name.replace(/\.[^.]+$/, "") || "icona";
+  return new File([blob], `${baseName}.webp`, { type: "image/webp", lastModified: file.lastModified });
+}
+
+export async function uploadItemSpecialIcon(itemId: number, file: File) {
+  const prepared = await prepareSquareIcon(file);
+  const form = new FormData();
+  form.set("file", prepared);
+  return apiRequest<{ item: import("./types").Item }>(`/api/oggetti/${itemId}/icona/`, {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "item.icon.upload" },
+    body: form,
+  });
+}
+
+export async function deleteItemSpecialIcon(itemId: number) {
+  return apiRequest<{ item: import("./types").Item }>(`/api/oggetti/${itemId}/icona/`, {
+    method: "DELETE",
+    headers: { "X-ReDjango-Action": "item.icon.delete" },
+  });
+}
+
 export async function uploadCombatMapImage(file: File, title: string, convertToWebp: boolean) {
   const prepared = convertToWebp ? await convertImageToWebp(file, .75) : file;
   return uploadMedia(

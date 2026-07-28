@@ -1,4 +1,4 @@
-import { type DragEvent as ReactDragEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type DragEvent as ReactDragEvent, type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -203,18 +203,22 @@ function CombatantRail({ map, busy, canManage, controlledCharacterId, onSelect, 
   </aside>;
 }
 
-function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDragChange, onSelect, onRemove, onContext, onPairSelect }: {
+function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDragChange, onSelect, onRemove, onContext, onPairSelect, toolbar }: {
   map: CombatMap; busy: boolean; canManage: boolean;
   draggedCharacterId: number | null; onDragChange: (id: number | null) => void;
   onSelect: (id: number) => void; onRemove: (id: number) => void; onContext?: (participant: MapParticipant) => void;
   onPairSelect: (attackerId: number, defenderId: number) => void;
+  toolbar: ReactNode;
 }) {
   const participant = map.participants.find((entry) => entry.character.id === map.activeCharacterId) || map.participants[0];
   const [dropTargetId, setDropTargetId] = useState<number | null>(null);
-  if (!participant) return <section className="combat-active-strip empty" data-component-type="list" data-theme="combat"><strong>Nessun personaggio attivo</strong><span>Apri Personaggi per aggiungerne uno alla mappa.</span></section>;
+  if (!participant) return <section className="combat-active-strip combat-active-strip-empty" data-component-type="list" data-theme="combat">
+    <header className="combat-active-strip-heading"><div className="combat-active-strip-summary"><span className="combat-live-dot" /><strong>Personaggi attivi</strong><small>0 disponibili · 0 sulla mappa</small></div>{toolbar}</header>
+    <div className="combat-active-empty-state"><strong>Nessun personaggio attivo</strong><span>Apri Personaggi per aggiungerne uno alla mappa.</span></div>
+  </section>;
   const visibleParticipants = map.participants.filter((entry) => entry.id !== participant.id);
   return <section className="combat-active-strip" data-component-type="list" data-theme="combat" aria-label="Personaggi attivi">
-    <header className="combat-active-strip-heading"><div><span className="combat-live-dot" /><strong>Personaggi attivi</strong><small>{visibleParticipants.length} disponibili · {map.participants.length} sulla mappa</small></div><span>Clic per le azioni · trascina su un ritratto per Attaccante → Difensore</span></header>
+    <header className="combat-active-strip-heading"><div className="combat-active-strip-summary"><span className="combat-live-dot" /><strong>Personaggi attivi</strong><small>{visibleParticipants.length} disponibili · {map.participants.length} sulla mappa</small></div>{toolbar}</header>
     <nav className={`combat-active-roster ${visibleParticipants.length ? "" : "empty"}`}>{visibleParticipants.length ? visibleParticipants.map((entry) => {
       const health = entry.character.resources.find((resource) => resource.key === "pf");
       const healthPercent = health?.maximum ? Math.max(0, Math.min(100, health.current / health.maximum * 100)) : 0;
@@ -1016,27 +1020,17 @@ export function CombatPage() {
   };
   if (query.isLoading) return <div className="page combat-page"><div className="panel">Preparo il tavolo di combattimento…</div></div>;
   if (!workspace) return <div className="page combat-page"><div className="panel">Impossibile caricare il combattimento.</div></div>;
+  const mapToolbar = <div className="combat-map-toolbar">
+    <button className="button secondary combat-map-manager-trigger" onClick={() => setMapManagerOpen(true)}><span>▧</span><span><small>Mappa attiva</small><strong>{map?.name || "Nessuna mappa"}</strong></span><b>Gestisci</b></button>
+    {workspace.permissions.canManageMaps && <button className="button primary combat-new-map-trigger" onClick={() => setMapEditorMode("create")}>Nuova Mappa</button>}
+    {map && workspace.permissions.canImportCharacters && <button className="button secondary" onClick={() => setCharacterManager(true)}>Personaggi</button>}
+    {map && <button className={pathMode ? "button primary" : "button secondary"} onClick={() => { const origin = map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.anchor || map.participants[0]?.anchor || null; setPathMode(true); setPathStart(origin); setPaths(null); setSelectedHex(origin); notify(origin ? "Scegli sulla mappa la destinazione del percorso." : "Seleziona prima un personaggio attivo.", "info"); }}>{pathMode ? "Scegli destinazione…" : "Percorso"}</button>}
+    {map && <button className={plannerOpen ? "button primary" : "button secondary"} onClick={() => { setPlannerOpen(true); setHexOpen(false); setAttackOpen(false); }}>Azioni rapide <span className="combat-toolbar-count">{map.plannedActions.filter((action) => !action.committedAt).length}</span></button>}
+    {map && <button className={attackOpen ? "button primary combat-attack-trigger" : "button secondary combat-attack-trigger"} onClick={() => { setAttackOpen((current) => !current); setHexOpen(false); }}>⚔ Attacco</button>}
+  </div>;
   return <div className="page combat-page">
-    <header className="combat-page-header">
-      <div><p className="eyebrow">Tavolo tattico sincronizzato</p><h1>Combattimento</h1><p className="combat-page-subtitle">Il tavolo degli scontri sta prendendo forma</p></div>
-      <div className="combat-map-toolbar">
-        <button className="button secondary combat-map-manager-trigger" onClick={() => setMapManagerOpen(true)}><span>▧</span><span><small>Mappa attiva</small><strong>{map?.name || "Nessuna mappa"}</strong></span><b>Gestisci</b></button>
-        {workspace.permissions.canManageMaps && <button className="button primary combat-new-map-trigger" onClick={() => setMapEditorMode("create")}>Nuova Mappa</button>}
-        {map && workspace.permissions.canImportCharacters && <button className="button secondary" onClick={() => setCharacterManager(true)}>Personaggi</button>}
-        {map && <button className={pathMode ? "button primary" : "button secondary"} onClick={() => { const origin = map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.anchor || map.participants[0]?.anchor || null; setPathMode(true); setPathStart(origin); setPaths(null); setSelectedHex(origin); notify(origin ? "Scegli sulla mappa la destinazione del percorso." : "Seleziona prima un personaggio attivo.", "info"); }}>{pathMode ? "Scegli destinazione…" : "Percorso"}</button>}
-        {map && <button className={plannerOpen ? "button primary" : "button secondary"} onClick={() => { setPlannerOpen(true); setHexOpen(false); setAttackOpen(false); }}>Azioni rapide <span className="combat-toolbar-count">{map.plannedActions.filter((action) => !action.committedAt).length}</span></button>}
-        {map && <button className={attackOpen ? "button primary combat-attack-trigger" : "button secondary combat-attack-trigger"} onClick={() => { setAttackOpen((current) => !current); setHexOpen(false); }}>⚔ Attacco</button>}
-      </div>
-      <div className="combat-map-toolbar combat-map-toolbar-legacy" aria-hidden="true">
-        <select value={map?.id || ""} onChange={(event) => { setMapId(Number(event.target.value)); setPaths(null); setSelectedHex(null); }}><option value="" disabled>Scegli mappa</option>{workspace.maps.map((entry) => <option key={entry.id} value={entry.id}>{entry.name} · {entry.mapType}</option>)}</select>
-        {workspace.permissions.canManageMaps && <button className="button secondary" onClick={() => setMapEditorMode(map ? "edit" : "create")}>{map ? "Modifica mappa" : "Crea mappa"}</button>}
-        {map && workspace.permissions.canManageMaps && <button className="button secondary" onClick={() => setVersionsOpen(true)}>Backup e copie</button>}
-        {map && workspace.permissions.canImportCharacters && <button className="button secondary" onClick={() => setCharacterManager(true)}>Gestisci personaggi</button>}
-        {map && <button className={pathMode ? "button primary" : "button secondary"} onClick={() => { setPathMode(true); setPathStart(null); setPaths(null); }}>Misura percorso</button>}
-      </div>
-    </header>
     {!map ? <section className="hero-panel"><div><p className="eyebrow">Nessuna mappa</p><h2>Crea il primo tavolo tattico</h2><p>L'editor salva immagine, orientamento, griglia e trasformazioni in un vero oggetto amministrabile.</p></div>{workspace.permissions.canManageMaps && <button className="button primary" onClick={() => setMapEditorMode("create")}>Apri il creator</button>}</section> : <>
-      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onSelect={(characterId) => act("combat.selectCharacter", { characterId })} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} />
+      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onSelect={(characterId) => act("combat.selectCharacter", { characterId })} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} toolbar={mapToolbar} />
       <div className="combat-stage-layout">
         <SelectedCharacterSidebar map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} controlledCharacterId={workspace.viewerCharacterId} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} onUpdateResource={(characterId, resource, current) => resource === "pa" ? setLocalActionPointValue(characterId, current) : act("combat.updateResource", { characterId, resource, current })} onSwitchPrimary={(characterId) => act("equipment.switchPrimaryWeapon", { characterId })} onRemoveQuiverItem={(characterId, slot) => act("combat.removeQuiverItem", { characterId, slot })} />
         <section className="combat-map-panel">

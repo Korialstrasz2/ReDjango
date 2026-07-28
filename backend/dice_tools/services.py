@@ -13,7 +13,7 @@ from backend.core.models import Giocatore
 from backend.core.security import effective_role, has_minimum_role
 from backend.media_library.models import UploadedImage
 
-from .models import ALLOWED_DICE_SIDES, DiceSet, DiceTexture
+from .models import ALLOWED_DICE_SIDES, DiceRollRecord, DiceSet, DiceTexture
 
 
 HEX_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -240,3 +240,53 @@ def roll_dice(payload: dict) -> dict:
         "total": subtotal + modifier,
         "rolledAt": timezone.now().isoformat(),
     }
+
+
+def record_quick_dice_roll(
+    giocatore: Giocatore,
+    personaggio,
+    roll: dict,
+) -> DiceRollRecord:
+    return DiceRollRecord.objects.create(
+        giocatore=giocatore,
+        player_name=giocatore.display_name or giocatore.nome,
+        personaggio=personaggio,
+        character_name=personaggio.nome if personaggio else "",
+        source=DiceRollRecord.SOURCE_QUICK,
+        label="Tiro rapido",
+        notation=str(roll["notation"]),
+        rolls=[int(value) for value in roll["rolls"]],
+        modifier=int(roll["modifier"]),
+        total=int(roll["total"]),
+        dice_set_name=str(roll.get("diceSetName", "")),
+    )
+
+
+def record_competence_dice_roll(
+    giocatore: Giocatore,
+    competence_roll,
+    *,
+    reroll: bool = False,
+) -> DiceRollRecord:
+    latest = list(competence_roll.rolls or [])[-1]
+    modifier = int(competence_roll.modifier) + int(competence_roll.focus_bonus)
+    notation = f"1d{competence_roll.die_sides}{modifier:+d}" if modifier else f"1d{competence_roll.die_sides}"
+    if int(competence_roll.multiplier) != 1:
+        notation = f"{notation}×{competence_roll.multiplier}"
+    return DiceRollRecord.objects.create(
+        giocatore=giocatore,
+        player_name=giocatore.display_name or giocatore.nome,
+        personaggio=competence_roll.personaggio,
+        character_name=competence_roll.personaggio.nome,
+        source=DiceRollRecord.SOURCE_COMPETENCE,
+        label=competence_roll.competenza.nome,
+        notation=notation,
+        rolls=[int(latest["value"])],
+        modifier=modifier,
+        total=int(latest["total"]),
+        metadata={
+            "competenceKey": competence_roll.competence_key,
+            "technique": competence_roll.technique,
+            "reroll": reroll,
+        },
+    )

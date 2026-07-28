@@ -4,13 +4,16 @@ import { Link } from "react-router-dom";
 
 import { useApp } from "../../App";
 import { command, getData } from "../../lib/api";
+import { playRollSound } from "../../lib/dice";
 import type { CompetenceCatalog, CompetenceEntry, CompetenceRoll, DiceSetsData } from "../../lib/types";
+import { DiceHistory } from "../quick-tools/DiceHistory";
 import { DiceVisual } from "../quick-tools/DiceVisual";
 import { latestDieValue, rollEquation, techniqueEnergyCost, techniqueUnlocked, type CompetenceTechnique } from "./mechanics";
 
 type CompetenceActionData = { competencies: CompetenceCatalog; competenceRoll?: CompetenceRoll | null };
 type EditableTrack = "base" | "mastery";
 type SummaryTab = "current" | "guidelines";
+type HistoryTab = "character" | "group";
 type MutationInput =
   | { action: "competencies.upgrade"; payload: { characterId: number; competenceKey: string; track: EditableTrack; targetRank: number } }
   | { action: "competencies.roll"; payload: { characterId: number; competenceKey: string; technique: CompetenceTechnique; diceSetId?: number } }
@@ -92,6 +95,7 @@ export function CompetenciesPage() {
   const settleTimer = useRef<number | null>(null);
   const [selectedKey, setSelectedKey] = useState("");
   const [summaryTab, setSummaryTab] = useState<SummaryTab>("current");
+  const [historyTab, setHistoryTab] = useState<HistoryTab>("character");
   const [technique, setTechnique] = useState<CompetenceTechnique>("standard");
   const [rolling, setRolling] = useState(false);
   const [rollingValue, setRollingValue] = useState(1);
@@ -101,11 +105,13 @@ export function CompetenciesPage() {
   const data = catalogQuery.data;
   const selected = data?.competencies.find((entry) => entry.key === selectedKey) || data?.competencies[0];
   const reducedMotion = settings.ui["accessibility.reduced_motion"] === true;
+  const showGroupHistory = settings.security.canManageGameData && settings.ui["master.show_hidden_rolls"] !== false;
 
   useEffect(() => { if (!selectedKey && data?.competencies[0]) setSelectedKey(data.competencies[0].key); }, [data, selectedKey]);
   useEffect(() => { if (!rolling || !selected) return; const interval = window.setInterval(() => setRollingValue(Math.floor(Math.random() * selected.dieSides) + 1), 46); return () => window.clearInterval(interval); }, [rolling, selected]);
   useEffect(() => () => { if (settleTimer.current) window.clearTimeout(settleTimer.current); }, []);
   useEffect(() => { if (selected && !techniqueUnlocked(selected.masteryRank, technique)) setTechnique("standard"); }, [selected, technique]);
+  useEffect(() => { if (!showGroupHistory) setHistoryTab("character"); }, [showGroupHistory]);
 
   const mutation = useMutation({
     mutationFn: (input: MutationInput) => command<CompetenceActionData>(input.action, input.payload, "competenze"),
@@ -114,6 +120,8 @@ export function CompetenciesPage() {
       queryClient.setQueryData(["competencies", characterId], result.data.competencies);
       if (result.data.competenceRoll) {
         const resolved = result.data.competenceRoll;
+        void queryClient.invalidateQueries({ queryKey: ["diceHistory"] });
+        if (settings.ui["dice.sound"] !== false) playRollSound();
         const settle = () => { setLastRoll(resolved); setRollingValue(latestDieValue(resolved) ?? 1); setRolling(false); };
         if (reducedMotion || settings.ui["dice.animation"] === false) settle(); else settleTimer.current = window.setTimeout(settle, 640);
       } else setRolling(false);
@@ -207,7 +215,10 @@ export function CompetenciesPage() {
           <ol>{selected.masteryFeatures.map((feature) => <li key={feature.key} className={feature.unlocked ? "unlocked" : "locked"}><strong>{feature.rank}</strong><span><b>{feature.title}</b><small>{feature.description}</small></span><i>{feature.unlocked ? "Attiva" : "Chiusa"}</i></li>)}</ol>
         </article>
 
-        <section className="competence-history" data-component-type="panel" data-theme="default"><header><div><p className="eyebrow">Cronaca recente</p><h2>Ultimi tiri</h2></div></header>{data.recentRolls.length ? <div>{data.recentRolls.map((roll) => <button key={roll.id} type="button" onClick={() => selectCompetence(roll.competenceKey)}><span>{roll.competenceName}<small>d{roll.dieSides} · {techniqueLabel(roll.technique as CompetenceTechnique)}</small></span><strong>{roll.total}</strong><time>{roll.rolledAt ? new Date(roll.rolledAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) : ""}</time></button>)}</div> : <p className="empty-copy">I tiri di competenza compariranno qui.</p>}</section>
+        <section className="competence-history" data-component-type="panel" data-theme="default">
+          <header><div><p className="eyebrow">Cronaca recente</p><h2>{historyTab === "group" ? "Tiri del gruppo" : "Ultimi tiri"}</h2></div>{showGroupHistory && <nav className="competence-history-tabs" role="tablist" aria-label="Cronologia dei tiri" data-component-type="tabset" data-theme="gold"><button type="button" role="tab" aria-selected={historyTab === "character"} className={historyTab === "character" ? "active" : ""} onClick={() => setHistoryTab("character")}>Personaggio</button><button type="button" role="tab" aria-selected={historyTab === "group"} className={historyTab === "group" ? "active" : ""} onClick={() => setHistoryTab("group")}>Tiri del gruppo</button></nav>}</header>
+          {historyTab === "group" && showGroupHistory ? <DiceHistory /> : data.recentRolls.length ? <div>{data.recentRolls.map((roll) => <button key={roll.id} type="button" onClick={() => selectCompetence(roll.competenceKey)}><span>{roll.competenceName}<small>d{roll.dieSides} · {techniqueLabel(roll.technique as CompetenceTechnique)}</small></span><strong>{roll.total}</strong><time>{roll.rolledAt ? new Date(roll.rolledAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) : ""}</time></button>)}</div> : <p className="empty-copy">I tiri di competenza compariranno qui.</p>}
+        </section>
       </main>
     </section>
   </div>;
