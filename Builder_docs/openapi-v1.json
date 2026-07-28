@@ -87,6 +87,88 @@
               "type": "integer"
             },
             "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_1",
+            "schema": {
+              "default": "",
+              "title": "Type 1",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_2",
+            "schema": {
+              "default": "",
+              "title": "Type 2",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_3",
+            "schema": {
+              "default": "",
+              "title": "Type 3",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "rarity",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rarity"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weapon_type_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Weapon Type Id"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "group",
+            "schema": {
+              "default": "",
+              "title": "Group",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "slot",
+            "schema": {
+              "default": "",
+              "title": "Slot",
+              "type": "string"
+            },
+            "required": false
           }
         ],
         "responses": {

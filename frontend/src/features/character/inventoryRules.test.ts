@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { CharacterSlot, Item } from "../../lib/types";
-import { canSwap, fits, shouldCloseSlotActions } from "./CharacterPage";
+import { canSwap, equipmentCandidates, firstFreeSlot, fits, resolveEquipTarget, shouldCloseSlotActions } from "./inventoryRules";
 
 const item = (overrides: Partial<Item>): Item => ({
   id: 1,
@@ -78,6 +78,59 @@ describe("regole visive dell'inventario", () => {
     expect(fits(reagent, utility)).toBe(true);
     expect(fits(reagent, slot({}))).toBe(false);
     expect(canSwap(slot({ item: potion }), utility)).toBe(false);
+  });
+
+  it("ignora gli slot extra quando cerca una destinazione automatica", () => {
+    const ring = item({ types: ["anello"], compatibleEquipmentSlots: ["anello_1", "anello_2", "extra_slot_1"] });
+    const slots = [
+      slot({ id: "equipment:anello_1", group: "equipment", slot: "anello_1" }),
+      slot({ id: "equipment:extra_slot_1", group: "equipment", slot: "extra_slot_1", isExtraSlot: true }),
+    ];
+    expect(equipmentCandidates(ring, slots).map((entry) => entry.slot)).toEqual(["anello_1"]);
+  });
+
+  it("equipaggia nel primo slot libero compatibile", () => {
+    const ring = item({ name: "Anello di ferro", types: ["anello"], compatibleEquipmentSlots: ["anello_1", "anello_2"] });
+    const worn = item({ id: 2, name: "Anello indossato", types: ["anello"], compatibleEquipmentSlots: ["anello_1", "anello_2"] });
+    const slots = [
+      slot({ id: "equipment:anello_1", group: "equipment", slot: "anello_1", item: worn }),
+      slot({ id: "equipment:anello_2", group: "equipment", slot: "anello_2" }),
+    ];
+    expect(resolveEquipTarget(ring, slots)).toEqual({ kind: "assign", slot: slots[1] });
+  });
+
+  it("chiede quale slot sostituire quando i candidati occupati sono più di uno", () => {
+    const ring = item({ name: "Anello nuovo", types: ["anello"], compatibleEquipmentSlots: ["anello_1", "anello_2"] });
+    const worn = item({ id: 2, name: "Anello indossato", types: ["anello"], compatibleEquipmentSlots: ["anello_1", "anello_2"] });
+    const slots = [
+      slot({ id: "equipment:anello_1", group: "equipment", slot: "anello_1", item: worn }),
+      slot({ id: "equipment:anello_2", group: "equipment", slot: "anello_2", item: worn }),
+      // anello_3 in poi non è conteggiato dal personaggio, quindi non è una scelta possibile.
+      slot({ id: "equipment:anello_3", group: "equipment", slot: "anello_3", isLocked: true }),
+    ];
+    const resolution = resolveEquipTarget(ring, slots);
+    expect(resolution.kind).toBe("choose");
+    expect(resolution.kind === "choose" && resolution.candidates.map((entry) => entry.slot)).toEqual(["anello_1", "anello_2"]);
+  });
+
+  it("sostituisce senza chiedere quando esiste un solo slot compatibile", () => {
+    const armour = item({ name: "Corazza", types: ["armatura"], compatibleEquipmentSlots: ["armatura"] });
+    const worn = item({ id: 2, name: "Cuoio", types: ["armatura"], compatibleEquipmentSlots: ["armatura"] });
+    const slots = [slot({ id: "equipment:armatura", group: "equipment", slot: "armatura", item: worn })];
+    expect(resolveEquipTarget(armour, slots)).toEqual({ kind: "assign", slot: slots[0] });
+  });
+
+  it("non propone destinazioni quando nessuno slot nominato accetta l'oggetto", () => {
+    const potion = item({ name: "Pozione", types: ["pozione"], compatibleEquipmentSlots: ["extra_slot_1"] });
+    const slots = [slot({ id: "equipment:extra_slot_1", group: "equipment", slot: "extra_slot_1", isExtraSlot: true })];
+    expect(resolveEquipTarget(potion, slots)).toEqual({ kind: "none" });
+  });
+
+  it("trova il primo spazio libero dello zaino saltando quelli occupati", () => {
+    const potion = item({ name: "Pozione" });
+    const slots = [slot({ id: "backpack:1", slot: "1", item: potion }), slot({ id: "backpack:2", slot: "2" })];
+    expect(firstFreeSlot(potion, slots)?.slot).toBe("2");
+    expect(firstFreeSlot(potion, [slots[0]])).toBeNull();
   });
 
   it("mantiene selezionato lo slot mentre si apre l'editor dell'oggetto", () => {

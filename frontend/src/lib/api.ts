@@ -220,6 +220,75 @@ export async function deleteMedia(assetId: number) {
   });
 }
 
+/** Un giro dell'agente. La cronologia torna al server così com'è arrivata. */
+export async function askAssistant(payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<import("./types").AIChatResult>("/api/ai/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.ask", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.ask", requestId: id, context: { screen: "ai" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+export async function generateAIImage(payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<{ asset: import("./types").MediaAsset }>("/api/ai/images/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.generateImage", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.generateImage", requestId: id, context: { screen: "ai" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+export async function saveAIProvider(payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<import("./types").AIManagementData>("/api/ai/providers/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.saveProvider", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.saveProvider", requestId: id, context: { screen: "ai" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+export async function uploadAudioTrack(file: File, title: string, tags: string[], durationSeconds: number | null) {
+  const id = requestId();
+  const form = new FormData();
+  form.set("file", file);
+  form.set("envelope", JSON.stringify({
+    action: "audio.uploadTrack",
+    requestId: id,
+    context: { screen: "audio" },
+    payload: { title, tags, durationSeconds },
+    meta: { clientVersion: "react-v1" }
+  }));
+  return apiRequest<import("./types").AudioLibraryData>("/api/audio/tracks/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "audio.uploadTrack", "X-ReDjango-Request-Id": id },
+    body: form,
+  });
+}
+
+export async function updateAudioTrack(trackId: number, payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<import("./types").AudioLibraryData>(`/api/audio/tracks/${trackId}/`, {
+    method: "PATCH",
+    headers: { "X-ReDjango-Action": "audio.updateTrack", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({
+      action: "audio.updateTrack",
+      requestId: id,
+      context: { screen: "audio" },
+      payload,
+      meta: { clientVersion: "react-v1" }
+    })
+  });
+}
+
+export async function deleteAudioTrack(trackId: number) {
+  const id = requestId();
+  return apiRequest<import("./types").AudioLibraryData>(`/api/audio/tracks/${trackId}/`, {
+    method: "DELETE",
+    headers: { "X-ReDjango-Action": "audio.deleteTrack", "X-ReDjango-Request-Id": id },
+  });
+}
+
 export async function uploadTravelMap(file: File, name: string, categoryId: number | null) {
   const id = requestId();
   const form = new FormData();

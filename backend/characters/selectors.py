@@ -1135,7 +1135,7 @@ def personaggio_detail(
         "encumbrance": weight,
         "permissions": {
             "canManageItems": can_manage_items,
-            "canShowLockedSlots": not can_manage_items,
+            "canShowLockedSlots": False,
         },
     }
 

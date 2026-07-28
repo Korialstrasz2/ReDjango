@@ -623,8 +623,8 @@ class HierarchicalSettingsTests(TestCase):
         self.assertEqual(
             {key: setting["value"] for key, setting in shortcuts.items()},
             {
+                "shortcuts.profile": "standard",
                 "shortcuts.dashboard": "Alt+S",
-                "shortcuts.characters": "Alt+P",
                 "shortcuts.character": "Alt+C",
                 "shortcuts.skills": "Alt+A",
                 "shortcuts.competencies": "Alt+N",
@@ -638,14 +638,16 @@ class HierarchicalSettingsTests(TestCase):
                 "shortcuts.settings": "Alt+I",
                 "shortcuts.journal": "Alt+J",
                 "shortcuts.dice": "Alt+R",
+                "shortcuts.audio": "Alt+U",
+                "shortcuts.ai": "Alt+H",
                 "shortcuts.tools": "Alt+T",
             },
         )
         self.assertNotIn("Alt+D", {choice["value"] for choice in shortcuts["shortcuts.journal"]["choices"]})
 
-        saved = self.post_settings({"shortcuts.journal": "Alt+H"})
+        saved = self.post_settings({"shortcuts.journal": "Alt+O"})
         self.assertEqual(saved.status_code, 200)
-        self.assertEqual(saved.json()["data"]["ui"]["shortcuts.journal"], "Alt+H")
+        self.assertEqual(saved.json()["data"]["ui"]["shortcuts.journal"], "Alt+O")
 
     def test_keyboard_shortcuts_reject_duplicate_assignments(self):
         response = self.post_settings({"shortcuts.journal": "Alt+R"})
@@ -723,6 +725,22 @@ class HierarchicalSettingsTests(TestCase):
 
         visible_shortcut = self.post_settings({"shortcuts.dashboard": "Alt+T"})
         self.assertEqual(visible_shortcut.status_code, 200)
+
+    def test_game_admin_sees_django_admin_link_without_django_permissions(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="game_admin", password="test-pass")
+        Giocatore.objects.create(
+            user=user,
+            nome="game-admin",
+            display_name="Game admin",
+            role=Giocatore.ROLE_ADMIN,
+        )
+        self.client.force_login(user)
+
+        security = self.client.get("/api/settings/").json()["data"]["security"]
+
+        self.assertTrue(security["showAdminLink"])
+        self.assertFalse(security["canUseDjangoAdmin"])
 
     def test_superuser_uses_selected_game_role_for_game_settings(self):
         User = get_user_model()

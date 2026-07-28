@@ -1,5 +1,5 @@
 import { type CSSProperties, type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, PointerSensor, useDraggable, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 
@@ -12,6 +12,8 @@ import { CharacterEquipment } from "./CharacterEquipment";
 import { CharacterSlot } from "./CharacterSlot";
 import { ItemEditorModal } from "./ItemEditorModal";
 import { CarriedCoinsControl, SharedCoinsCard } from "./CoinControls";
+import { SlotItemPicker } from "./SlotItemPicker";
+import { SLOT_ACTIONS_HIDE_DELAY, canSwap, firstFreeSlot, fits, resolveEquipTarget, shouldCloseSlotActions } from "./inventoryRules";
 
 type RaceConfiguration = {
   races: Array<{ value: string; label: string; subraces: Array<{ value: string; label: string }> }>;
@@ -19,31 +21,6 @@ type RaceConfiguration = {
 };
 type SheetData = { character: CharacterSheet; effectCatalog: unknown[]; effectConfiguration: EffectConfiguration; raceConfiguration: RaceConfiguration; storageCatalog: Item[] };
 type ActionData = { character?: CharacterSheet | null; item?: Item | null; catalog?: ItemCatalog | null };
-
-export function fits(item: Item | null | undefined, target: Slot): boolean {
-  if (!item) return true;
-  if (target.systemManaged) return false;
-  if (target.isLocked) return false;
-  const storageOnly = Boolean((item.metadata as Record<string, unknown> | undefined)?.storageOnly);
-  if (target.group === "utility" || target.group === "campaign") return true;
-  if (storageOnly) return false;
-  if (target.group === "backpack") return true;
-  if (target.group === "quiver") return Boolean(item.isProjectile);
-  return Boolean(item.compatibleEquipmentSlots?.includes(target.slot));
-}
-
-export function canSwap(source: Slot, target: Slot): boolean {
-  const sourceExtended = source.group === "utility" || source.group === "campaign";
-  const targetExtended = target.group === "utility" || target.group === "campaign";
-  if (sourceExtended !== targetExtended) return false;
-  return source.id !== target.id && fits(source.item, target) && fits(target.item, source);
-}
-
-export function shouldCloseSlotActions(target: EventTarget | null, selectedSlotId: string): boolean {
-  const element = target instanceof Element ? target : null;
-  if (element?.closest("[data-retain-slot-selection]")) return false;
-  return element?.closest<HTMLElement>("[data-slot-id]")?.dataset.slotId !== selectedSlotId;
-}
 
 type StatValue = CharacterSheet["characteristics"][number];
 type CharacterValuesView = "primary" | "advanced";
@@ -201,6 +178,36 @@ function OverviewModal({ character, raceConfiguration, saving, onClose, onSave }
   return <Modal title="Modifica panoramica" onClose={onClose} footer={<><button className="button secondary" onClick={onClose}>Annulla</button><button className="button primary" type="submit" form="overview-form" disabled={saving}>Salva</button></>}><form id="overview-form" className="stacked-form" onSubmit={submit}><div className="form-grid"><label>Nome<input name="name" defaultValue={character.name} required /></label><label>Livello<input name="level" type="number" min={1} defaultValue={character.level} /></label><label>Razza 1<select value={race1Choice} onChange={(event) => changeRace1(event.target.value)}>{raceConfiguration.races.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}<option value={raceConfiguration.extraValue}>Extra…</option></select>{race1Choice === raceConfiguration.extraValue && <input value={race1Extra} onChange={(event) => setRace1Extra(event.target.value)} placeholder="Razza speciale" required />}</label><label>Razza 2<select value={race2Choice} onChange={(event) => { setRace2Choice(event.target.value); if (event.target.value !== raceConfiguration.extraValue) setRace2Extra(""); }}><option value="">Nessuna</option>{subraces.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}<option value={raceConfiguration.extraValue}>Extra…</option></select>{race2Choice === raceConfiguration.extraValue && <input value={race2Extra} onChange={(event) => setRace2Extra(event.target.value)} placeholder="Sottorazza speciale" required />}</label><label>Razza 3<input name="race3" defaultValue={character.race3} /></label><label>Età<input name="age" type="number" min={0} defaultValue={character.age ?? ""} /></label><label>Sesso<input name="sex" defaultValue={character.sex} /></label><label>Monete<input name="coins" type="number" min={0} defaultValue={character.coins} /></label><label>Critico minore<input name="critMin" defaultValue={character.criticalThresholds.minor} /></label><label>Critico normale<input name="critNormal" defaultValue={character.criticalThresholds.normal} /></label><label>Critico maggiore<input name="critMajor" defaultValue={character.criticalThresholds.major} /></label></div><label>Dettagli<textarea name="details" rows={5} defaultValue={character.details} /></label></form></Modal>;
 }
 
+/** A catalogue row that can be clicked to arm an item or dragged straight onto a slot. */
+function CatalogSuggestion({ item, compatible, selected, keyboardActive, reason, onHover, onChoose }: {
+  item: Item;
+  compatible: boolean;
+  selected: boolean;
+  keyboardActive: boolean;
+  reason: string;
+  onHover: () => void;
+  onChoose: () => void;
+}) {
+  const draggable = useDraggable({ id: `catalog:${item.id}`, data: { catalogItem: item } });
+  return <button
+    id={`character-item-suggestion-${item.id}`}
+    ref={draggable.setNodeRef}
+    {...draggable.listeners}
+    {...draggable.attributes}
+    type="button"
+    role="option"
+    aria-selected={selected}
+    className={`${selected ? "active" : ""} ${keyboardActive ? "keyboard-active" : ""} ${compatible ? "" : "incompatible"} ${draggable.isDragging ? "dragging" : ""}`}
+    style={draggable.transform ? { transform: `translate3d(${draggable.transform.x}px, ${draggable.transform.y}px, 0)` } : undefined}
+    onMouseEnter={onHover}
+    onClick={onChoose}
+  >
+    {item.imageUrl ? <img src={item.imageUrl} alt="" loading="lazy" /> : <span className="suggestion-glyph" aria-hidden="true">◆</span>}
+    <strong>{item.name}</strong>
+    <span>{compatible ? `${item.types.join(" · ") || "Oggetto"} · peso ${item.weight ?? 0}` : reason}</span>
+  </button>;
+}
+
 export function CharacterPage() {
   const { characterId } = useParams();
   const { personaggi, media, notify } = useApp();
@@ -224,11 +231,12 @@ export function CharacterPage() {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [selectedCatalogItemId, setSelectedCatalogItemId] = useState<number | null>(null);
   const [moveSourceId, setMoveSourceId] = useState<string | null>(null);
-  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [dragLabel, setDragLabel] = useState<string | null>(null);
+  const [picker, setPicker] = useState<{ slot: Slot; anchor: { x: number; y: number } } | null>(null);
+  const [equipChoice, setEquipChoice] = useState<{ item: Item; candidateIds: string[] } | null>(null);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [containerView, setContainerView] = useState<"backpack" | "quiver" | "utility" | "campaign">("backpack");
-  const [showLocked, setShowLocked] = useState(false);
   const [storageQuantity, setStorageQuantity] = useState(1);
   const [characterValuesView, setCharacterValuesView] = useState<CharacterValuesView>("primary");
   const [overviewOpen, setOverviewOpen] = useState(false);
@@ -260,6 +268,14 @@ export function CharacterPage() {
   }, [deferredSearch, itemSearchQuery.data?.items, sheetQuery.data?.storageCatalog]);
   const selectedCatalogItem = searchableItems.find((item) => item.id === selectedCatalogItemId) || null;
   const selectedItem = selectedCatalogItem || selectedSlot?.item || null;
+  // With a slot selected the catalogue is scoped to it: what fits is listed first and the rest
+  // stays visible while saying, in words, why it cannot go there.
+  const scopedSuggestions = useMemo(() => {
+    const visible = searchableItems.slice(0, 40);
+    if (!selectedSlot) return visible.slice(0, 12).map((item) => ({ item, compatible: true }));
+    const decorated = visible.map((item) => ({ item, compatible: fits(item, selectedSlot) }));
+    return [...decorated.filter((entry) => entry.compatible), ...decorated.filter((entry) => !entry.compatible)].slice(0, 12);
+  }, [searchableItems, selectedSlot]);
 
   const cancelSlotActionsHide = () => {
     if (slotActionsHideTimer.current !== null) {
@@ -274,7 +290,7 @@ export function CharacterPage() {
     slotActionsHideTimer.current = window.setTimeout(() => {
       setSelectedSlotId((current) => current === slotId ? null : current);
       slotActionsHideTimer.current = null;
-    }, 4000);
+    }, SLOT_ACTIONS_HIDE_DELAY);
   };
 
   useEffect(() => () => {
@@ -344,11 +360,33 @@ export function CharacterPage() {
 
   const updateCharacter = (updated: CharacterSheet) => queryClient.setQueryData<SheetData>(["character-sheet", id], (current) => current ? { ...current, character: updated } : current);
   const slotCompatibility = (slot: Slot): "valid" | "invalid" | "neutral" => {
+    if (equipChoice) return equipChoice.candidateIds.includes(slot.id) ? "valid" : "invalid";
     if (moveSource) return canSwap(moveSource, slot) ? "valid" : "invalid";
     if (selectedCatalogItem) return fits(selectedCatalogItem, slot) ? "valid" : "invalid";
     return "neutral";
   };
+  const assignItemToSlot = (slot: Slot, item: Item) => {
+    const metadata = item.metadata as Record<string, unknown> | undefined;
+    const stockKey = typeof metadata?.storageStockKey === "string" ? metadata.storageStockKey : "";
+    actionMutation.mutate({
+      action: "inventory.assignItem",
+      payload: {
+        characterId: id,
+        target: { group: slot.group, slot: slot.slot },
+        itemId: stockKey ? null : item.id,
+        stockKey,
+        quantity: slot.stackable ? storageQuantity : 1,
+      },
+    });
+  };
   const selectSlot = (slot: Slot) => {
+    if (equipChoice) {
+      if (!equipChoice.candidateIds.includes(slot.id)) return;
+      const replaced = equipChoice.item;
+      setEquipChoice(null);
+      assignItemToSlot(slot, replaced);
+      return;
+    }
     if (moveSource) { if (slot.id === moveSource.id) { setMoveSourceId(null); return; } actionMutation.mutate({ action: "inventory.swapItems", payload: { characterId: id, source: { group: moveSource.group, slot: moveSource.slot }, target: { group: slot.group, slot: slot.slot } } }); return; }
     cancelSlotActionsHide();
     setSelectedSlotId((current) => current === slot.id ? null : slot.id);
@@ -358,18 +396,27 @@ export function CharacterPage() {
       notify("Seleziona prima un oggetto dalla ricerca.", "info");
       return;
     }
-    const metadata = selectedCatalogItem.metadata as Record<string, unknown> | undefined;
-    const stockKey = typeof metadata?.storageStockKey === "string" ? metadata.storageStockKey : "";
-    actionMutation.mutate({
-      action: "inventory.assignItem",
-      payload: {
-        characterId: id,
-        target: { group: slot.group, slot: slot.slot },
-        itemId: stockKey ? null : selectedCatalogItem.id,
-        stockKey,
-        quantity: slot.stackable ? storageQuantity : 1,
-      },
-    });
+    assignItemToSlot(slot, selectedCatalogItem);
+  };
+  /**
+   * "Equipaggia" resolves its own destination: the first free compatible slot wins, a single
+   * compatible slot is replaced outright, and only a real tie hands the choice back to the player.
+   */
+  const equipAutomatically = (item: Item) => {
+    const resolution = resolveEquipTarget(item, character.equipment.slots);
+    if (resolution.kind === "assign") { assignItemToSlot(resolution.slot, item); return; }
+    if (resolution.kind === "choose") {
+      setEquipChoice({ item, candidateIds: resolution.candidates.map((slot) => slot.id) });
+      cancelSlotActionsHide();
+      setSelectedSlotId(null);
+      return;
+    }
+    notify(`${item.name} non ha uno slot compatibile: usa uno Slot extra o lo zaino.`, "info");
+  };
+  const stashItem = (item: Item) => {
+    const target = firstFreeSlot(item, character.inventory.slots);
+    if (!target) { notify("Lo zaino è pieno: libera uno spazio prima di aggiungere altro.", "info"); return; }
+    assignItemToSlot(target, item);
   };
   const emptySlot = (slot: Slot) => actionMutation.mutate({
     action: "inventory.assignItem",
@@ -391,25 +438,39 @@ export function CharacterPage() {
     action: "inventory.setQuantity",
     payload: { characterId: id, target: { group: slot.group, slot: slot.slot }, quantity: Math.max(0, Math.min(9999, slot.quantity + delta)) },
   });
+  // Choosing arms the item without overwriting the query, so the same search can fill several
+  // slots: focusing the field again reopens the very same list.
   const chooseCatalogItem = (item: Item) => {
     setSelectedCatalogItemId(item.id);
-    setSearch(item.name);
     setAutocompleteOpen(false);
     setActiveSuggestionIndex(0);
   };
   const dragStart = (event: DragStartEvent) => {
+    const catalogItem = event.active.data.current?.catalogItem as Item | undefined;
+    if (catalogItem) {
+      setSelectedCatalogItemId(catalogItem.id);
+      setDragLabel(catalogItem.name);
+      return;
+    }
     const source = event.active.data.current?.slot as Slot | undefined;
-    setActiveDragId(source?.id || null);
+    setDragLabel(source?.item?.name || null);
     setMoveSourceId(source?.id || null);
   };
   const dragEnd = (event: DragEndEvent) => {
-    setActiveDragId(null);
+    setDragLabel(null);
     setMoveSourceId(null);
-    const source = event.active.data.current?.slot as Slot | undefined;
     const target = event.over?.data.current?.slot as Slot | undefined;
-    if (source && target && source.id !== target.id) actionMutation.mutate({ action: "inventory.swapItems", payload: { characterId: id, source: { group: source.group, slot: source.slot }, target: { group: target.group, slot: target.slot } } });
+    if (!target) return;
+    const catalogItem = event.active.data.current?.catalogItem as Item | undefined;
+    if (catalogItem) {
+      if (!fits(catalogItem, target)) { notify(`${catalogItem.name} non può essere messo in ${target.label}.`, "info"); return; }
+      assignItemToSlot(target, catalogItem);
+      return;
+    }
+    const source = event.active.data.current?.slot as Slot | undefined;
+    if (source && source.id !== target.id) actionMutation.mutate({ action: "inventory.swapItems", payload: { characterId: id, source: { group: source.group, slot: source.slot }, target: { group: target.group, slot: target.slot } } });
   };
-  const suggestions = searchableItems.slice(0, 12);
+  const suggestions = scopedSuggestions.map((entry) => entry.item);
   const visibleContainer = {
     backpack: character.inventory,
     quiver: character.quiver,
@@ -418,7 +479,7 @@ export function CharacterPage() {
   }[containerView];
   const containerSlots = visibleContainer.slots
     .map((slot) => pendingQuantities[slot.id] == null ? slot : { ...slot, quantity: pendingQuantities[slot.id] })
-    .filter((slot) => showLocked || !slot.isLocked)
+    .filter((slot) => !slot.isLocked)
     .sort((left, right) => Number(right.isMagical) - Number(left.isMagical) || Number(left.slot) - Number(right.slot));
   const characteristicModifiers = Object.fromEntries(character.diceModifiers.map((stat) => [stat.key.replace(/^mod_/, ""), stat.value]));
   const quickStats = character.combat.filter((stat) => stat.key === "stanchezza" || stat.key === "modificatore_generale");
@@ -426,7 +487,12 @@ export function CharacterPage() {
   const actionPointsMaximum = actionPoints?.value ?? 0;
   const actionPointsTooltipId = "action-points-maximum-calculation";
 
-  return <DndContext sensors={sensors} onDragStart={dragStart} onDragEnd={dragEnd} onDragCancel={() => { setActiveDragId(null); setMoveSourceId(null); }}>
+  const openPicker = (slot: Slot, anchor: { x: number; y: number }) => {
+    setEquipChoice(null);
+    setPicker({ slot, anchor });
+  };
+
+  return <DndContext sensors={sensors} onDragStart={dragStart} onDragEnd={dragEnd} onDragCancel={() => { setDragLabel(null); setMoveSourceId(null); }}>
     <div className="page character-page">
       <header className="character-hud" data-component-type="toolbar" data-theme="default">
         <div className="character-identity">
@@ -439,12 +505,13 @@ export function CharacterPage() {
         </section>
       </header>
       {moveSource && <div className="interaction-banner"><strong>{`Scegli la destinazione di ${moveSource.item?.name}`}</strong><span>Gli spazi compatibili sono evidenziati.</span><button onClick={() => setMoveSourceId(null)}>Annulla</button></div>}
+      {equipChoice && <div className="interaction-banner" data-theme="gold"><strong>{`Quale slot vuoi sostituire con ${equipChoice.item.name}?`}</strong><span>Sono tutti occupati: gli slot evidenziati sono compatibili e quello scelto manda il suo oggetto nello zaino.</span><button onClick={() => setEquipChoice(null)}>Annulla</button></div>}
 
       <div className={`items-effects-stage ${effectsOpen ? "effects-open" : ""}`} data-component-type="workspace" data-theme="dark">
       <div className="items-stage-object">
       <button className="objects-spine" type="button" onClick={() => setEffectsOpen(false)} aria-label="Torna a equipaggiamento e inventario"><span>OGGETTI</span></button>
       <section className="items-workspace panel"><header className="panel-header"><div><p className="eyebrow">Oggetti</p><h2>Equipaggiamento e inventario</h2></div><div className="button-row">{character.permissions.canManageItems && <button className="button secondary" onClick={() => setItemEditor({ item: null })}>Crea oggetto</button>}</div></header><div className="items-columns">
-        <section className="equipment-column"><CharacterEquipment character={character} selectedSlotId={selectedSlotId} moveSourceId={moveSourceId} equipItem={selectedCatalogItem} actionPending={actionMutation.isPending} compatibility={slotCompatibility} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onSwitchPrimary={() => actionMutation.mutate({ action: "equipment.switchPrimaryWeapon", payload: { characterId: id } })} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} coinsControl={<CarriedCoinsControl character={character} onUpdate={updateCharacter} />} /></section>
+        <section className="equipment-column"><CharacterEquipment character={character} selectedSlotId={selectedSlotId} moveSourceId={moveSourceId} equipItem={selectedCatalogItem} actionPending={actionMutation.isPending} compatibility={slotCompatibility} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onPick={openPicker} onSwitchPrimary={() => actionMutation.mutate({ action: "equipment.switchPrimaryWeapon", payload: { characterId: id } })} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} coinsControl={<CarriedCoinsControl character={character} onUpdate={updateCharacter} />} /></section>
         <section className="container-column">
           <div className="container-tabs">
             <button className={containerView === "backpack" ? "active" : ""} onClick={() => setContainerView("backpack")}>Zaino <span>{character.inventory.occupied}/{character.inventory.capacity}{character.inventory.magicalSlots > 0 ? ` (${character.inventory.magicalSlots} magici)` : ""}</span></button>
@@ -454,8 +521,7 @@ export function CharacterPage() {
           </div>
           {containerView === "quiver" && <div className="capacity-note"><strong>Capacità dai contenitori equipaggiati</strong><span>Solo frecce, dardi e proiettili.</span></div>}
           {(containerView === "utility" || containerView === "campaign") && <div className="capacity-note"><strong>{visibleContainer.shared ? "Condiviso con la campagna" : "Alchimia, pozioni e pergamene"}</strong><span>Le pile occupano uno spazio e il peso non viene conteggiato.</span></div>}
-          <div className="container-grid">{containerView === "campaign" && <SharedCoinsCard character={character} onUpdate={updateCharacter} />}{containerSlots.map((slot) => <CharacterSlot key={slot.id} slot={slot} selected={selectedSlotId === slot.id} moveSource={moveSourceId === slot.id} compatibility={slotCompatibility(slot)} equipItem={selectedCatalogItem} actionsVisible={selectedSlotId === slot.id} actionPending={actionMutation.isPending} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onQuantityChange={containerView === "utility" || containerView === "campaign" ? changeSlotQuantity : changeSlotQuantityImmediately} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} />)}</div>
-          {character.permissions.canShowLockedSlots && visibleContainer.slots.some((slot) => slot.isLocked) && <button className="locked-toggle" onClick={() => setShowLocked((value) => !value)}>{showLocked ? "Nascondi spazi bloccati" : `Mostra ${visibleContainer.slots.filter((slot) => slot.isLocked).length} spazi bloccati`}</button>}
+          <div className="container-grid">{containerView === "campaign" && <SharedCoinsCard character={character} onUpdate={updateCharacter} />}{containerSlots.map((slot) => <CharacterSlot key={slot.id} slot={slot} selected={selectedSlotId === slot.id} moveSource={moveSourceId === slot.id} compatibility={slotCompatibility(slot)} equipItem={selectedCatalogItem} actionsVisible={selectedSlotId === slot.id} actionPending={actionMutation.isPending} onSelect={selectSlot} onMoveStart={(entry) => setMoveSourceId((current) => current === entry.id ? null : entry.id)} onEquip={equipSelectedItem} onEmpty={emptySlot} onPick={openPicker} onQuantityChange={containerView === "utility" || containerView === "campaign" ? changeSlotQuantity : changeSlotQuantityImmediately} onActionsEnter={cancelSlotActionsHide} onActionsLeave={scheduleSlotActionsHide} />)}</div>
         </section>
         <aside className="item-inspector">
           <h3>Ricerca Oggetto</h3>
@@ -485,7 +551,6 @@ export function CharacterPage() {
                 setSearch(value);
                 setAutocompleteOpen(value.trim().length > 0);
                 setActiveSuggestionIndex(0);
-                if (selectedCatalogItem && value !== selectedCatalogItem.name) setSelectedCatalogItemId(null);
               }}
               onKeyDown={(event) => {
                 if (event.key === "Escape") {
@@ -519,21 +584,28 @@ export function CharacterPage() {
             </div>
             {(containerView === "utility" || containerView === "campaign") && <label className="storage-quantity">Quantità da inserire<input type="number" min={1} max={9999} value={storageQuantity} onChange={(event) => setStorageQuantity(Math.max(1, Math.min(9999, Number(event.target.value) || 1)))} /></label>}
             {autocompleteOpen && search.trim().length > 0 && <div id="character-item-suggestions" className="catalog-results autocomplete-results" role="listbox">
-              {suggestions.length > 0
-                ? suggestions.map((item, index) => <button
-                    id={`character-item-suggestion-${item.id}`}
-                    key={item.id}
-                    type="button"
-                    role="option"
-                    aria-selected={selectedCatalogItem?.id === item.id}
-                    className={`${selectedCatalogItem?.id === item.id ? "active" : ""} ${activeSuggestionIndex === index ? "keyboard-active" : ""}`}
-                    onMouseEnter={() => setActiveSuggestionIndex(index)}
-                    onClick={() => chooseCatalogItem(item)}
-                  ><strong>{item.name}</strong><span>{item.types.join(" · ") || "Oggetto"} · peso {item.weight ?? 0}</span></button>)
+              {scopedSuggestions.length > 0
+                ? scopedSuggestions.map((entry, index) => <CatalogSuggestion
+                    key={entry.item.id}
+                    item={entry.item}
+                    compatible={entry.compatible}
+                    selected={selectedCatalogItem?.id === entry.item.id}
+                    keyboardActive={activeSuggestionIndex === index}
+                    reason={selectedSlot ? `Non compatibile con ${selectedSlot.label}` : ""}
+                    onHover={() => setActiveSuggestionIndex(index)}
+                    onChoose={() => chooseCatalogItem(entry.item)}
+                  />)
                 : <p className="autocomplete-empty">Nessun oggetto trovato.</p>}
             </div>}
           </div>
-          {selectedCatalogItem && <p className="selected-item-hint"><strong>{selectedCatalogItem.name}</strong><span>Seleziona uno slot, poi usa Equip.</span></p>}
+          {selectedCatalogItem && <div className="selected-item-hint" data-retain-slot-selection="" onPointerEnter={cancelSlotActionsHide}>
+            <strong>{selectedCatalogItem.name}</strong>
+            <div className="selected-item-actions">
+              <button type="button" className="button primary small" disabled={actionMutation.isPending} onClick={() => equipAutomatically(selectedCatalogItem)}>Equipaggia</button>
+              <button type="button" className="button secondary small" disabled={actionMutation.isPending} onClick={() => stashItem(selectedCatalogItem)}>Nello zaino</button>
+            </div>
+            <span>Oppure trascinalo su uno slot, o apri il menu di uno slot col tasto destro.</span>
+          </div>}
           {selectedItem ? <div className="item-detail" data-retain-slot-selection="" onPointerEnter={cancelSlotActionsHide}><p className="eyebrow">{selectedItem.types.join(" / ")}</p><h3>{selectedItem.name}</h3>{selectedItem.imageUrl && <img src={selectedItem.imageUrl} alt={selectedItem.name} />}<p>{selectedItem.description || "Nessuna descrizione."}</p><dl><div><dt>Peso</dt><dd>{selectedItem.weight ?? 0}</dd></div><div><dt>Valore</dt><dd>{selectedItem.value ?? 0}</dd></div><div><dt>Rarità</dt><dd>{selectedItem.rarityLabel || "—"}</dd></div><div><dt>Loot</dt><dd>{selectedItem.lootLevel || "—"}</dd></div></dl>{selectedItem.effects.length > 0 && <div className="item-effects"><strong>Effetti</strong>{selectedItem.effects.map((effect, index) => <span key={index}>{String(effect.target)} {String(effect.operation)} {String(effect.value)}</span>)}</div>}<div className="inspector-actions">{character.permissions.canManageItems && <button className="button secondary small" data-retain-slot-selection="" onClick={() => setItemEditor({ item: selectedItem })}>Modifica oggetto</button>}</div></div> : <p className="empty-copy">Cerca un oggetto oppure seleziona uno slot.</p>}
         </aside>
       </div></section>
@@ -576,7 +648,17 @@ export function CharacterPage() {
       </section>
 
     </div>
-    <DragOverlay>{activeDragId ? <div className="drag-overlay">{allSlots.find((slot) => slot.id === activeDragId)?.item?.name}</div> : null}</DragOverlay>
+    <DragOverlay>{dragLabel ? <div className="drag-overlay">{dragLabel}</div> : null}</DragOverlay>
+    {picker && <SlotItemPicker
+      slot={picker.slot}
+      anchor={picker.anchor}
+      catalog={catalog}
+      storageCatalog={sheetQuery.data?.storageCatalog || []}
+      pending={actionMutation.isPending}
+      onPick={(item) => { assignItemToSlot(picker.slot, item); setPicker(null); }}
+      onEmpty={() => { emptySlot(picker.slot); setPicker(null); }}
+      onClose={() => setPicker(null)}
+    />}
     {overviewOpen && <OverviewModal character={character} raceConfiguration={sheetQuery.data!.raceConfiguration} saving={actionMutation.isPending} onClose={() => setOverviewOpen(false)} onSave={(values) => actionMutation.mutate({ action: "character.updateOverview", payload: { characterId: id, values } }, { onSuccess: () => setOverviewOpen(false) })} />}
     {restOpen && <Modal title="Riposa" onClose={() => setRestOpen(false)} footer={<><button className="button secondary" onClick={() => setRestOpen(false)}>Annulla</button><button className="button primary" type="submit" form="rest-form">Conferma riposo</button></>}><form id="rest-form" className="stacked-form" onSubmit={(event) => { event.preventDefault(); const recovery = Number(new FormData(event.currentTarget).get("recovery")); actionMutation.mutate({ action: "character.rest", payload: { characterId: id, fatigueRecovery: recovery } }, { onSuccess: () => setRestOpen(false) }); }}><p>Il riposo recupera PF, Mana e Potere. Recupera Stanchezza fino al numero scelto, partendo da quella accumulata e poi dagli effetti attivi; Energia torna al massimo solo se la Stanchezza ha raggiunto il minimo e resta recupero disponibile.</p><label>Recupero stanchezza<input name="recovery" type="number" min={0} max={5} defaultValue={1} /></label></form></Modal>}
     {itemEditor && <ItemEditorModal item={itemEditor.item} catalog={catalog} media={media} saving={actionMutation.isPending} onClose={() => setItemEditor(null)} onSave={(values) => actionMutation.mutate({ action: itemEditor.item ? "items.update" : "items.create", payload: { itemId: itemEditor.item?.id, values } })} onArchive={itemEditor.item ? () => { if (window.confirm(`Archiviare ${itemEditor.item!.name}? L'oggetto non apparirà più nel catalogo, ma resterà negli inventari esistenti.`)) actionMutation.mutate({ action: "items.archive", payload: { itemId: itemEditor.item!.id } }); } : undefined} />}

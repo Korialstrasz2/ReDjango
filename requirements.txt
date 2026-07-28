@@ -4,3 +4,4 @@ waitress>=3.0,<4
 whitenoise>=6.9,<7
 uvicorn>=0.51,<0.52
 cryptography>=49,<50
+anthropic>=0.116,<1

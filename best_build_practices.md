@@ -562,6 +562,12 @@ Recommended source format:
 - Magical backpack slots are rendered before normal slots and keep a mana-blue border highlight except while movement-validity feedback is active.
 - Quiver capacity comes from equipped quiver containers and quiver contents are restricted to projectiles.
 - Never reduce a container's capacity while occupied slots would become inaccessible.
+- Filling a slot is slot-first. Right-clicking a slot, or its `Scegli` command, opens the contextual picker anchored to that slot: it is a `context-menu` component portalled to `document.body`, opens already scoped to what the slot accepts, and closes on pick, on outside click, or on `Escape`. The search field keeps the caret while filters are used, so filter controls must suppress focus stealing rather than restore focus afterwards.
+- The picker filters are Tipo 1, Tipo 2, Tipo 3, Rarità and Tipo arma. Their options come from the catalog payload the page already holds; never hard-code a type, rarity or weapon list in frontend code.
+- `/api/v1/items` owns catalogue narrowing: `type_1`/`type_2`/`type_3`, `rarity`, `weapon_type_id` are database filters, while `group`+`slot` apply the same compatibility rule the mutation enforces. Compatibility depends on `metadata` type aliases, so it is evaluated in Python over a streamed queryset that stops at the first `limit` matches; do not turn it into an approximate database filter and do not serialize the whole catalogue to filter it afterwards.
+- `Equipaggia` resolves its own destination: the first free compatible named slot wins, a single compatible slot is replaced outright, and only a genuine tie between occupied slots asks the player to pick which one to replace. Extra slots are never chosen automatically because they accept everything and are scarce.
+- The catalogue search arms an item without overwriting the query, so one search can fill several slots. Catalogue rows are draggable onto slots and every drag keeps its click-based equivalent.
+- Slot actions stay reachable long enough to reach the search column and come back; `SLOT_ACTIONS_HIDE_DELAY` is the single source of that timing.
 - Inventory mutations save immediately. Resource controls keep local draft values until the user explicitly saves, then return the refreshed character projection.
 - Theme-specific character visuals use shared tokens (`health`, `mana`, `energy`, `power`, `validSlot`, `invalidSlot`) and the character background relation.
 - Dragging must have a click-based alternative and invalid targets must be communicated by text as well as color.
@@ -592,6 +598,37 @@ Recommended source format:
 - Texture positioning data is limited to validated offset, scale, and rotation values. The editor must preview the exact shared die renderer used during a roll.
 - Keep face numbers above artwork and use the set's validated number color so textured dice remain readable.
 - Dice animation and ambient motion must honor both the dice animation preference and reduced-motion accessibility settings.
+
+## AI Assistant Contract
+
+- `backend/ai` owns the assistant. It is a domain agent, not a coding agent: a bounded loop in `agent.py` over the project's own selectors. No agent framework is used — with two adapter shapes to support (Anthropic Messages, and one OpenAI-compatible adapter that reaches OpenAI, DeepSeek and any local server by base URL alone), a framework would add a dependency and an abstraction without removing a line of that loop. `opencode serve` and similar coding agents are deliberately excluded: they expose a shell endpoint, which is the wrong tool for answering questions about a campaign.
+- **The agent runs as the requesting user.** Every tool in `tools.py` calls an existing role-aware selector rather than the ORM, so `visibilita_limitata`, `visibile_ai_giocatori` and character assignment are enforced once, where they already work. A player must never be able to extract through the chat what their own page hides. Add a permission test per tool.
+- Version one is **read-only plus images**. No tool writes. When write tools arrive they must use the existing validate → preview → confirm pattern, never a direct mutation from a model's tool call.
+- A tool never raises into the loop: a failure is returned to the model as an error result so it can correct itself. Arguments outside a tool's declared schema are dropped before the call.
+- The loop is bounded by `MAXIMUM_ITERATIONS`. A model that keeps calling tools returns a friendly Italian error, never an unbounded server-side loop.
+- The assistant turn carries the provider's raw content blocks back verbatim. Reconstructing them would break the correspondence with the previous round's tool calls, so a conversation always stays on one provider.
+- **Credentials never leave the server.** The secret lives only in `AIProvider.secret_ciphertext`, encrypted at rest with a key derived from `SECRET_KEY`, is `editable=False`, and is never serialized — the SPA receives `hasSecret`, a boolean. The write path is one-way: an empty string means "leave it alone", the sentinel `__clear__` removes it. Failed decryption returns empty rather than raising, so rotating `SECRET_KEY` asks for the key again instead of breaking the page.
+- `auth_strategy` exists so a future device-code flow is a new strategy rather than a rewrite. Today API keys are the only practical option: subscription login (OpenAI Codex via OpenCode's community plugin, Claude Code) is offered by vendors for their own agent products and its terms exclude multi-user applications, which is exactly what ReDjango is. Do not add a ChatGPT-session workaround.
+- A provider is *usable* only when it has the credential its strategy requires. `ready` and the chat provider list are filtered on that, so the tool tells the master to configure a key instead of offering a chat box that fails on the first message.
+- The assistant is a **quick-tools modal**, so it can be asked about the character sheet while the sheet is on screen. Its configuration is a **separate master/admin workspace at `/tools/ai`** — the two are deliberately not the same surface.
+- Image generation is master/admin only and has its own provider slot: chat and images are configured independently because Anthropic does not generate images. Both a cloud API and a local Stable Diffusion endpoint are selectable, and every field — provider, model, size, quality, base URL — is configurable. Output lands in the existing archive with `UploadedImage.prompt` recorded and `source` set to `ai_generated`; no new model for generated art.
+- Model identifiers are configurable strings with a suggested default, never hard-coded constants — provider model names change faster than this repository does.
+
+## Campaign Soundtrack Contract
+
+- `media_library.AudioFile` is the campaign soundtrack. `tags` is the source of truth for its multi-select picklist; `primary_tag` is kept in sync with the first tag because the storage folder, the default ordering and the database index are built on it. `secondary_tags` remains an earlier V2 compatibility column and is never read.
+- `backend/media_library/audio_defaults.py` owns the tag vocabulary. Like the weather table it is backend rule data, not admin-authored content: the API rejects any tag outside the catalog, so filters stay predictable and near-duplicate labels cannot accumulate. Adding a tag means adding an entry there.
+- Every player may list and play. Uploading, renaming, retagging and deleting require master or above, enforced by `audio_services`; hiding the controls is presentation, not authorization.
+- Uploads are validated by extension first. A browser that declares no content type for `.flac`, `.opus` or `.m4a` is still accepted, but a declared type must match its container. Tracks are capped at 50 MB and stored as files with metadata in SQLite, never as base64 in JSON.
+- The browser is the only place that knows a track's real length. It measures the duration once and sends it with the upload; the backend clamps it but never invents it.
+- `protected_media` answers `Range` requests with `206` for audio containers only, and advertises `Accept-Ranges` on them. Seeking inside a long ambient track must not depend on downloading it whole, and the range branch must send exactly the requested bytes so `Content-Length` stays truthful.
+- The audio element lives in `AudioPlayerProvider`, mounted above the router. Moving between Combattimento and a character sheet must never interrupt playback, so no route, drawer or panel may own an `<audio>` element of its own.
+- The provider passes `children` through as a prop: only context consumers re-render on each time update, never the whole application shell.
+- The queue is whatever the drawer currently shows. Filtering the library therefore also changes what `Precedente` and `Successiva` reach, and skipping wraps around at both ends.
+- `Interrompi` clears the current track and the miniature player but deliberately leaves the media source in place; clearing it makes browsers raise a spurious media error.
+- The miniature player belongs to the quick-tools bar and exists only while a track is loaded, so the campaign readout keeps its room whenever the soundtrack is silent.
+- `audio.volume` and `audio.autoplay_next` are ordinary personal settings. The slider stays instant and the preference is written once the hand stops; a save in flight must never be overwritten by the value it is replacing.
+- The Audio drawer deliberately reuses the dice drawer background until a dedicated theme slot is approved.
 
 ## Image Library Taxonomy And Picker Contract
 

@@ -4,10 +4,12 @@ import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-r
 
 import { Modal } from "./components/Modal";
 import { LoginPage } from "./components/LoginPage";
+import { AudioPlayerProvider } from "./features/audio/AudioPlayerProvider";
 import { CharacterPage } from "./features/character/CharacterPage";
 import { CompetenciesPage } from "./features/competencies/CompetenciesPage";
 import { CreationPage } from "./features/creation/CreationPage";
 import { CombatPage } from "./features/combat/CombatPage";
+import { AIManagementPage } from "./features/management/AIManagementPage";
 import { CharacterManagementPage } from "./features/management/CharacterManagementPage";
 import { DamageRulesPage } from "./features/management/DamageRulesPage";
 import { GameVariablesPage } from "./features/management/GameVariablesPage";
@@ -27,7 +29,7 @@ import { SkillsPage } from "./features/skills/SkillsPage";
 import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
-import { matchesShortcut, pageShortcutTargets, shortcutConflictKeys, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
+import { matchesShortcut, pageShortcutTargets, shortcutConflictKeys, shortcutProfile, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
 import type { AuthData, BootstrapData, Guide, GuideEntry, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
@@ -206,21 +208,11 @@ function Shell({ children }: { children: ReactNode }) {
   const { bootstrap, personaggi, settings, notify } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const logoutMutation = useMutation({
-    mutationFn: () => apiRequest<AuthData>("/api/auth/logout/", { method: "POST" }),
-    onSuccess: () => {
-      queryClient.clear();
-      window.location.assign("/login/");
-    },
-    onError: (error: Error) => notify(error.message, "error"),
-  });
   const screen = screenFromPath(location.pathname);
   const background = settings.theme?.backgrounds?.[screen] || "";
   const characterPath = personaggi.giocatore.activePersonaggioId ? `/character/${personaggi.giocatore.activePersonaggioId}` : "/characters";
   const links: Array<[string, string, string, PageShortcutTarget?]> = [
     ["/", "Sala principale", "⌂", "dashboard"],
-    ["/characters", "Personaggi", "♙", "characters"],
     [characterPath, "Scheda personaggio", "⚔", "character"],
     ["/skills", "Abilità", "✦", "skills"],
     ["/competencies", "Competenze", "✧", "competencies"],
@@ -240,6 +232,7 @@ function Shell({ children }: { children: ReactNode }) {
     ["/tools/skills", "Gestione Skill", "✦"],
     ["/tools/units", "Gestione Unit", "⚔"],
     ["/tools/shops", "Gestione Negozi", "¤"],
+    ["/tools/ai", "Gestione AI", "✳"],
     ...(settings.security.canManageAdminSettings
       ? [
         ["/tools/themes", "Gestione Temi", "◐"] as [string, string, string, PageShortcutTarget?],
@@ -262,7 +255,6 @@ function Shell({ children }: { children: ReactNode }) {
   useEffect(() => {
     const paths: Record<PageShortcutTarget, string> = {
       dashboard: "/",
-      characters: "/characters",
       character: characterPath,
       skills: "/skills",
       competencies: "/competencies",
@@ -283,8 +275,8 @@ function Shell({ children }: { children: ReactNode }) {
       event.preventDefault();
       navigate(paths[target]);
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
   }, [characterPath, navigate, settings.ui]);
   return (
     <div className="app-shell" data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>
@@ -317,10 +309,9 @@ function Shell({ children }: { children: ReactNode }) {
           section={contextualNoteSection}
           notify={notify}
         />}
-        <div className="account-actions">
-          {bootstrap.security.showAdminLink && <a className="admin-link" href={bootstrap.security.adminUrl}>Amministrazione Django</a>}
-          <button type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>Esci</button>
-        </div>
+        {bootstrap.security.showAdminLink && <div className="account-actions">
+          <a className="admin-link" href={bootstrap.security.adminUrl}>Amministrazione Django</a>
+        </div>}
       </aside>
       <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} notify={notify} />
       <main className="workspace" data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
@@ -331,33 +322,18 @@ function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-function PageHeader({ eyebrow, title, actions }: { eyebrow: string; title: string; actions?: ReactNode }) {
-  return <header className="page-header"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1></div>{actions}</header>;
+function PageHeader({ eyebrow, title, actions }: { eyebrow?: string; title: string; actions?: ReactNode }) {
+  return <header className="page-header"><div>{eyebrow && <p className="eyebrow">{eyebrow}</p>}<h1>{title}</h1></div>{actions}</header>;
 }
 
 function Dashboard() {
-  const { personaggi, media } = useApp();
-  const active = personaggi.activePersonaggio;
-  return <div className="page"><PageHeader eyebrow="La rinascita di The Elder Django" title="Sala principale" />
-    <section className="hero-panel" data-component-type="panel" data-theme="parchment">
-      <div><p className="eyebrow">Un'unica postazione viva</p><h2>Il tavolo, senza pagine sparse</h2><p>Personaggi, inventario, effetti, ambientazione e strumenti di sessione in una SPA rapida e coerente.</p></div>
-      <div className="button-row"><Link className="button primary" to={active ? `/character/${active.id}` : "/characters"}>Apri la scheda</Link><Link className="button secondary" to="/characters">Scegli personaggio</Link></div>
-    </section>
-    <section className="metric-grid">
-      <article><span>Personaggi</span><strong>{personaggi.personaggi.length}</strong></article>
-      <article><span>Immagini</span><strong>{media.length}</strong></article>
-      <article><span>Personaggio attivo</span><strong>{active?.name || "Nessuno"}</strong></article>
-    </section>
-  </div>;
-}
-
-function CharactersPage() {
   const { personaggi, notify } = useApp();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const active = personaggi.activePersonaggio;
   const [selected, setSelected] = useState(personaggi.giocatore.activePersonaggioId || personaggi.personaggi[0]?.id);
   const character = personaggi.personaggi.find((entry) => entry.id === selected);
-  const mutation = useMutation({
+  const selectMutation = useMutation({
     mutationFn: (id: number) => legacyAction<PersonaggiData>("/api/personaggi/select/", "personaggi.select", { personaggioId: id }),
     onSuccess: async (result) => {
       queryClient.setQueryData(["personaggi"], result.data);
@@ -366,12 +342,37 @@ function CharactersPage() {
     },
     onError: (error: Error) => notify(error.message, "error")
   });
-  return <div className="page"><PageHeader eyebrow="Compagnia" title="Scegli personaggio" />
-    <div className="selection-layout">
+  const logoutMutation = useMutation({
+    mutationFn: () => apiRequest<AuthData>("/api/auth/logout/", { method: "POST" }),
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.assign("/login/");
+    },
+    onError: (error: Error) => notify(error.message, "error"),
+  });
+  return <div className="page dashboard-page">
+    <PageHeader
+      title={personaggi.giocatore.displayName}
+      actions={<button className="button secondary dashboard-logout" type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>{logoutMutation.isPending ? "Uscita…" : "Esci"}</button>}
+    />
+    <section className="panel dashboard-active-character" data-component-type="panel" data-theme="parchment">
+      <div>
+        <p className="eyebrow">Personaggio attivo</p>
+        <h2>{active?.name || "Nessun personaggio selezionato"}</h2>
+        <p>{active ? `${active.races.join(" / ") || "Razza sconosciuta"} · livello ${active.level}` : "Scegli un personaggio dalla compagnia per preparare la tua postazione di gioco."}</p>
+      </div>
+      {active && <div className="dashboard-shortcuts" aria-label="Azioni del personaggio attivo">
+        <Link className="button primary" to={`/character/${active.id}`}>Apri la scheda</Link>
+        <Link className="button secondary" to="/skills">Abilità</Link>
+        <Link className="button secondary" to="/competencies">Competenze</Link>
+        <Link className="button secondary" to="/creation">Creazione</Link>
+      </div>}
+    </section>
+    <div className="selection-layout dashboard-character-selection">
       <section className="panel list-panel"><h2>Personaggi disponibili</h2><div className="character-list">
         {personaggi.personaggi.map((entry) => <button key={entry.id} className={entry.id === selected ? "active" : ""} onClick={() => setSelected(entry.id)}><strong>{entry.name}</strong><span>{entry.races.join(" / ") || "Razza sconosciuta"} · livello {entry.level}</span></button>)}
       </div></section>
-      <section className="panel character-preview">{character ? <><p className="eyebrow">{character.type}</p><h2>{character.name}</h2><p>{character.races.join(" / ")} · livello {character.level}</p><p className="long-copy">{character.details}</p><div className="stat-chip-row">{character.primaryTotals.map((stat) => <span key={stat.key}><small>{stat.label}</small><strong>{stat.value}</strong></span>)}</div><div className="button-row"><button className="button primary" disabled={mutation.isPending} onClick={() => mutation.mutate(character.id)}>Imposta e apri</button><Link className="button secondary" to={`/character/${character.id}`}>Apri senza cambiare</Link></div></> : <p>Nessun personaggio disponibile.</p>}</section>
+      <section className="panel character-preview">{character ? <><p className="eyebrow">{character.type}</p><h2>{character.name}</h2><p>{character.races.join(" / ")} · livello {character.level}</p><p className="long-copy">{character.details}</p><div className="stat-chip-row">{character.primaryTotals.map((stat) => <span key={stat.key}><small>{stat.label}</small><strong>{stat.value}</strong></span>)}</div><div className="button-row"><button className="button primary" disabled={selectMutation.isPending} onClick={() => selectMutation.mutate(character.id)}>Imposta e apri</button><Link className="button secondary" to={`/character/${character.id}`}>Apri senza cambiare</Link></div></> : <p>Nessun personaggio disponibile.</p>}</section>
     </div>
   </div>;
 }
@@ -579,9 +580,9 @@ function MediaPage() {
   </div>;
 }
 
-function SettingControl({ setting, value, invalid = false, onChange }: { setting: SettingData; value: unknown; invalid?: boolean; onChange: (value: unknown) => void }) {
-  if (setting.valueType === "boolean") return <input type="checkbox" checked={Boolean(value)} disabled={!setting.editable} onChange={(event) => onChange(event.target.checked)} />;
-  if (setting.valueType === "select") return <select value={String(value ?? "")} disabled={!setting.editable} aria-invalid={invalid || undefined} onChange={(event) => onChange(event.target.value)}>{setting.choices.map((choice) => { const data = typeof choice === "string" ? { value: choice, label: choice } : choice; return <option key={data.value} value={data.value}>{data.label}</option>; })}</select>;
+function SettingControl({ setting, value, invalid = false, disabled = false, onChange }: { setting: SettingData; value: unknown; invalid?: boolean; disabled?: boolean; onChange: (value: unknown) => void }) {
+  if (setting.valueType === "boolean") return <input type="checkbox" checked={Boolean(value)} disabled={!setting.editable || disabled} onChange={(event) => onChange(event.target.checked)} />;
+  if (setting.valueType === "select") return <select value={String(value ?? "")} disabled={!setting.editable || disabled} aria-invalid={invalid || undefined} onChange={(event) => onChange(event.target.value)}>{setting.choices.map((choice) => { const data = typeof choice === "string" ? { value: choice, label: choice } : choice; return <option key={data.value} value={data.value}>{data.label}</option>; })}</select>;
   if (setting.valueType === "color") return <input type="color" value={String(value || "#000000")} disabled={!setting.editable} onChange={(event) => onChange(event.target.value)} />;
   if (setting.valueType === "integer" && setting.key === "appearance.font_scale") {
     const scale = Number(value ?? 100);
@@ -646,7 +647,7 @@ function PlayerSettingsPanel() {
   </section>;
 }
 
-type SettingsTabId = "profilo" | "aspetto" | "accessibilita" | "dadi" | "scorciatoie" | "sessione" | "amministrazione" | "altro";
+type SettingsTabId = "profilo" | "aspetto" | "accessibilita" | "dadi" | "audio" | "scorciatoie" | "sessione" | "amministrazione" | "altro";
 
 // Ordine deliberato: prima ciò che riguarda il giocatore, poi la sessione, infine l'amministrazione.
 // Le categorie non elencate qui confluiscono nella scheda "Altro", così nessuna impostazione resta invisibile.
@@ -655,6 +656,7 @@ const SETTINGS_TABS: Array<{ id: SettingsTabId; label: string; categories: strin
   { id: "aspetto", label: "Aspetto", categories: ["aspetto", "aspetto globale"] },
   { id: "accessibilita", label: "Accessibilità", categories: ["accessibilità"] },
   { id: "dadi", label: "Dadi", categories: ["dadi"] },
+  { id: "audio", label: "Audio", categories: ["audio"] },
   { id: "scorciatoie", label: "Scorciatoie", categories: ["scorciatoie da tastiera"] },
   { id: "sessione", label: "Sessione", categories: ["sessione"] },
   { id: "amministrazione", label: "Amministrazione", categories: ["identità", "navigazione", "sicurezza", "funzioni"] },
@@ -705,6 +707,7 @@ function SettingsPage() {
     return result;
   }, {}), [settings.settings]);
   const shortcutConflicts = useMemo(() => shortcutConflictKeys(values), [values]);
+  const selectedShortcutProfile = shortcutProfile(values);
   const updateValue = (key: string, value: unknown) => { setDirtyKeys((current) => new Set(current).add(key)); setValues((current) => ({ ...current, [key]: value })); };
   const accessModeChanged = dirtyKeys.has("security.access_mode")
     && values["security.access_mode"] !== settings.runtime.configuredAccessMode;
@@ -751,7 +754,8 @@ function SettingsPage() {
       {activeTab.categories.length > 0 && <form onSubmit={(event) => { event.preventDefault(); saveSettings(); }}>
         <div className="settings-grid" data-columns={activeTab.categories.length === 1 ? "1" : "2"}>{activeTab.categories.map((category) => <section className="panel" key={category}><h2>{category}</h2>{groups[category].map((setting) => {
           const shortcutConflict = shortcutConflicts.has(setting.key);
-          return <label className={`setting-row ${shortcutConflict ? "setting-row-conflict" : ""}`} key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small>{shortcutConflict && <small className="setting-inline-warning" role="alert">Questa combinazione è già assegnata a un'altra azione.</small>}</span><SettingControl setting={setting} value={values[setting.key]} invalid={shortcutConflict} onChange={(value) => updateValue(setting.key, value)} /></label>;
+          const profileLocked = setting.key.startsWith("shortcuts.") && setting.key !== "shortcuts.profile" && selectedShortcutProfile !== "custom";
+          return <label className={`setting-row ${shortcutConflict ? "setting-row-conflict" : ""}`} key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small>{shortcutConflict && <small className="setting-inline-warning" role="alert">Questa combinazione è già assegnata a un'altra azione.</small>}</span><SettingControl setting={setting} value={values[setting.key]} invalid={shortcutConflict} disabled={profileLocked} onChange={(value) => updateValue(setting.key, value)} /></label>;
         })}</section>)}</div>
         <div className="sticky-actions">{shortcutConflicts.size > 0 ? <small className="setting-save-warning" role="alert">Risolvi i conflitti tra scorciatoie prima di salvare.</small> : dirtyKeys.size > 0 && <small>{dirtyKeys.size === 1 ? "1 modifica non salvata" : `${dirtyKeys.size} modifiche non salvate`}</small>}<button className="button primary" disabled={mutation.isPending || !dirtyKeys.size || shortcutConflicts.size > 0}>Salva impostazioni</button></div>
       </form>}
@@ -842,5 +846,6 @@ export function App() {
   if (!bootstrap.data || !personaggi.data || !settings.data || !media.data) return <Loading />;
 
   const context = { bootstrap: bootstrap.data, personaggi: personaggi.data, settings: settings.data, media: media.data.assets, mediaCategories: media.data.categories, notify };
-  return <AppContext.Provider value={context}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<CharactersPage />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
+  // The player sits above the router: changing page must never cut the soundtrack.
+  return <AppContext.Provider value={context}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
 }

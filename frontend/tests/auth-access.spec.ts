@@ -15,6 +15,25 @@ test("un visitatore anonimo vede soltanto il login e può accedere", async ({ co
   await expect(page.getByRole("navigation", { name: "Menu principale" })).toBeVisible();
 });
 
+test("la pagina iniziale mostra l'alias del giocatore e ospita personaggi e uscita", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "local_master" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Personaggi disponibili" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Esci", exact: true })).toBeVisible();
+
+  const navigation = page.getByRole("navigation", { name: "Menu principale" });
+  await expect(navigation.getByRole("link", { name: "Personaggi", exact: true })).toHaveCount(0);
+  await expect(navigation.getByRole("button", { name: "Esci", exact: true })).toHaveCount(0);
+
+  await page.goto("/settings");
+  await expect(page.getByRole("button", { name: "Esci", exact: true })).toHaveCount(0);
+
+  await page.goto("/characters");
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("heading", { name: "Personaggi disponibili" })).toBeVisible();
+});
+
 
 test("il cambio della modalità di accesso chiede il riavvio prima di salvare", async ({ page }) => {
   await page.goto("/settings");

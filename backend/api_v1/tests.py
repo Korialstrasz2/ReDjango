@@ -184,7 +184,13 @@ class CharacterWorkspaceApiTests(TestCase):
             f"/api/v1/characters/{self.character.id}/sheet"
         ).json()["data"]["character"]
         initial_weight = initial_sheet["encumbrance"]["total"]
-        item = Oggetto.objects.filter(archiviato=False, archived_at__isnull=True).first()
+        # Le monete sono il primo oggetto del catalogo ma sono gestite dal sistema: un
+        # inserimento manuale viene giustamente rifiutato, quindi qui serve un oggetto normale.
+        item = next(
+            candidate
+            for candidate in Oggetto.objects.filter(archiviato=False, archived_at__isnull=True)[:20]
+            if not (candidate.metadata if isinstance(candidate.metadata, dict) else {}).get("systemManaged")
+        )
 
         personal_response = self.command("inventory.assignItem", {
             "characterId": self.character.id,
@@ -242,13 +248,13 @@ class CharacterWorkspaceApiTests(TestCase):
         self.assertEqual(other_sheet["campaignContainer"]["slots"][0]["item"]["id"], item.id)
         self.assertEqual(other_sheet["campaignContainer"]["slots"][0]["quantity"], 2)
 
-    def test_only_player_role_can_reveal_locked_character_slots(self):
+    def test_no_role_can_reveal_locked_character_slots(self):
         self.giocatore.role = Giocatore.ROLE_USER
         self.giocatore.save(update_fields=["role", "updated_at"])
         player_sheet = self.client.get(
             f"/api/v1/characters/{self.character.id}/sheet"
         ).json()["data"]["character"]
-        self.assertTrue(player_sheet["permissions"]["canShowLockedSlots"])
+        self.assertFalse(player_sheet["permissions"]["canShowLockedSlots"])
         self.assertFalse(player_sheet["permissions"]["canManageItems"])
 
     def test_combat_button_actions_return_the_updated_character_configuration(self):
@@ -954,6 +960,37 @@ class CharacterWorkspaceApiTests(TestCase):
         )
         self.assertEqual(invalid_rarity.status_code, 400)
         self.assertEqual(invalid_rarity.json()["errors"][0]["code"], "items.rarity_invalid")
+
+    def test_item_catalog_scopes_results_by_destination_slot_and_filters(self):
+        ring = Oggetto.objects.create(nome="Anello di verifica catalogo", tipo_1="anello", rarita=2)
+        Oggetto.objects.create(nome="Pozione di verifica catalogo", tipo_1="pozione", rarita=2)
+
+        def catalog(url):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            return response.json()["data"]["items"]
+
+        ring_slot = catalog("/api/v1/items?group=equipment&slot=anello_1&limit=200")
+        self.assertIn(ring.nome, {item["name"] for item in ring_slot})
+        self.assertNotIn("Pozione di verifica catalogo", {item["name"] for item in ring_slot})
+
+        quiver = catalog("/api/v1/items?group=quiver&slot=1&limit=200")
+        self.assertTrue(quiver)
+        self.assertTrue(all(item["isProjectile"] for item in quiver))
+
+        typed = catalog("/api/v1/items?type_1=pozione&limit=200")
+        self.assertTrue(typed)
+        self.assertEqual({item["typeValues"][0] for item in typed}, {"pozione"})
+
+        rare_rings = catalog("/api/v1/items?type_1=anello&rarity=2&limit=200")
+        self.assertIn(ring.nome, {item["name"] for item in rare_rings})
+        self.assertTrue(all(item["rarity"] == 2 for item in rare_rings))
+
+        self.assertEqual(len(catalog("/api/v1/items?group=equipment&slot=anello_1&limit=1")), 1)
+
+        invalid_group = self.client.get("/api/v1/items?group=inesistente")
+        self.assertEqual(invalid_group.status_code, 400)
+        self.assertEqual(invalid_group.json()["errors"][0]["code"], "items.group_not_found")
 
     def test_management_character_editor_lists_orphans_and_updates_related_records(self):
         orphan = Faretra.objects.create(nome="Faretra senza proprietario")

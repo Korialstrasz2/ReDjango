@@ -17,6 +17,7 @@ urlpatterns = [
     path("api/", include("backend.core.urls")),
     path("api/", include("backend.characters.urls")),
     path("api/", include("backend.media_library.urls")),
+    path("api/", include("backend.ai.urls")),
     path("api/combat/", include("backend.combat.urls")),
     path("api/v1/", api_v1.urls),
     re_path(r"^(?!api/|admin/|media/|static/).*$", index, name="spa-fallback"),

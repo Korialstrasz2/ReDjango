@@ -5803,6 +5803,13 @@ export interface operations {
                 query?: string;
                 include_archived?: boolean;
                 limit?: number;
+                type_1?: string;
+                type_2?: string;
+                type_3?: string;
+                rarity?: number | null;
+                weapon_type_id?: number | null;
+                group?: string;
+                slot?: string;
             };
             header?: never;
             path?: never;

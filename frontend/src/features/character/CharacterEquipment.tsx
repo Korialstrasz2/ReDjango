@@ -16,6 +16,7 @@ type Props = {
   onMoveStart: (slot: Slot) => void;
   onEquip: (slot: Slot) => void;
   onEmpty: (slot: Slot) => void;
+  onPick: (slot: Slot, anchor: { x: number; y: number }) => void;
   onSwitchPrimary: () => void;
   onActionsEnter: () => void;
   onActionsLeave: () => void;
@@ -53,6 +54,7 @@ export function CharacterEquipment({
   onMoveStart,
   onEquip,
   onEmpty,
+  onPick,
   onSwitchPrimary,
   onActionsEnter,
   onActionsLeave,
@@ -96,6 +98,7 @@ export function CharacterEquipment({
     onMoveStart={onMoveStart}
     onEquip={onEquip}
     onEmpty={onEmpty}
+    onPick={onPick}
     onActionsEnter={onActionsEnter}
     onActionsLeave={onActionsLeave}
   />;

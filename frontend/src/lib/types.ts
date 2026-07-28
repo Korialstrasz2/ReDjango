@@ -410,6 +410,95 @@ export type MediaLibraryData = {
   categories: ImageCategory[];
 };
 
+export type AIProviderSummary = {
+  id: number;
+  slug: string;
+  name: string;
+  purpose: "chat" | "image";
+  kind: string;
+  model: string;
+  isEnabled: boolean;
+  isDefault: boolean;
+  description: string;
+};
+
+export type AIManagedProvider = AIProviderSummary & {
+  authStrategy: string;
+  baseUrl: string;
+  hasSecret: boolean;
+  suggestedModels: string[];
+  maxTokens: number | null;
+  effort: string;
+  disableTools: boolean;
+  order: number;
+};
+
+export type AIToolSummary = { name: string; description: string };
+
+export type AIWorkspaceData = {
+  chatProviders: AIProviderSummary[];
+  imageProviders: AIProviderSummary[];
+  tools: AIToolSummary[];
+  imageSizes: Array<{ value: string; label: string }>;
+  imageQualities: Array<{ value: string; label: string }>;
+  canManage: boolean;
+  ready: boolean;
+};
+
+export type AIManagementData = {
+  providers: AIManagedProvider[];
+  kinds: Array<{ value: string; label: string }>;
+  purposes: Array<{ value: string; label: string }>;
+  authStrategies: Array<{ value: string; label: string }>;
+  tools: AIToolSummary[];
+  canManage: boolean;
+  test?: { ok: boolean; message: string };
+};
+
+/** Una voce della conversazione nella forma neutra che il backend rimanda indietro. */
+export type AIHistoryEntry = {
+  role: "user" | "assistant" | "tool";
+  content: string;
+  toolCalls?: Array<{ id: string; name: string; arguments: Record<string, unknown> }>;
+  toolCallId?: string;
+  name?: string;
+  isError?: boolean;
+  raw?: unknown;
+};
+
+export type AIToolTraceEntry = { name: string; arguments: Record<string, unknown>; isError: boolean };
+
+export type AIChatResult = {
+  reply: string;
+  history: AIHistoryEntry[];
+  toolTrace: AIToolTraceEntry[];
+  usage: { inputTokens: number; outputTokens: number };
+  stopReason: string;
+  provider: { id: number; name: string; model: string };
+};
+
+export type AudioTag = { value: string; label: string };
+
+export type AudioTrack = {
+  id: number;
+  title: string;
+  tags: string[];
+  tagLabels: string[];
+  url: string;
+  originalName: string;
+  mimeType: string;
+  sizeBytes: number;
+  durationSeconds: number | null;
+  notes: string;
+  createdAt: string | null;
+};
+
+export type AudioLibraryData = {
+  tracks: AudioTrack[];
+  tags: AudioTag[];
+  canManage: boolean;
+};
+
 export type TravelGrid = {
   orientation: "pointy" | "flat";
   cols: number;

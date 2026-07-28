@@ -229,6 +229,7 @@ test("le scorciatoie configurate aprono pagine, Diario e Dadi", async ({ page })
   await expect(loreShortcut).toHaveValue("Alt+L");
   await expect(page.locator('.setting-row:has-text("Strumenti") select')).toHaveValue("Alt+T");
 
+  await page.locator('.setting-row:has-text("Profilo scorciatoie") select').selectOption("custom");
   await loreShortcut.selectOption("Alt+A");
   await expect(page.locator(".setting-row-conflict")).toHaveCount(2);
   await expect(page.getByRole("button", { name: "Salva impostazioni" })).toBeDisabled();

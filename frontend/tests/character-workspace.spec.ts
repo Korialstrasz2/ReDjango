@@ -172,6 +172,8 @@ test("la scheda personaggio completa funziona dal bundle di produzione", async (
 });
 
 test("la ricerca oggetti completa il nome e i comandi dello slot equipaggiano e si chiudono", async ({ page, request }) => {
+  // I comandi dello slot restano raggiungibili a lungo, quindi l'attesa finale è deliberata.
+  test.setTimeout(75000);
   const characters = await (await request.get("/api/personaggi/")).json();
   const characterId = characters.data.giocatore.activePersonaggioId;
   const sheet = await (await request.get(`/api/v1/characters/${characterId}/sheet`)).json();
@@ -225,7 +227,71 @@ test("la ricerca oggetti completa il nome e i comandi dello slot equipaggiano e 
   await expect(slot.locator(".slot-inline-actions")).toBeVisible();
   await slot.hover();
   await page.mouse.move(1, 1);
-  await expect(slot.locator(".slot-inline-actions")).toBeHidden({ timeout: 5500 });
+  await expect(slot.locator(".slot-inline-actions")).toBeHidden({ timeout: 15000 });
+});
+
+type SheetSlot = { id: string; slot: string; isLocked: boolean; isExtraSlot: boolean; item: unknown };
+
+test("il menu contestuale dello slot cerca, filtra senza perdere il fuoco e riempie lo spazio", async ({ page, request }) => {
+  const characters = await (await request.get("/api/personaggi/")).json();
+  const characterId = characters.data.giocatore.activePersonaggioId;
+  const sheet = await (await request.get(`/api/v1/characters/${characterId}/sheet`)).json();
+  const emptySlot = sheet.data.character.inventory.slots.find((entry: SheetSlot) => !entry.isLocked && !entry.item);
+  expect(emptySlot).toBeTruthy();
+
+  await page.goto(`/character/${characterId}`);
+  await page.locator(`[data-slot-id="${emptySlot.id}"]`).click({ button: "right" });
+
+  const picker = page.locator(".slot-item-picker");
+  await expect(picker).toBeVisible();
+  const search = picker.getByRole("textbox");
+  await expect(search).toBeFocused();
+
+  const filter = picker.locator(".slot-item-picker-filter > button").first();
+  await filter.click();
+  await expect(search).toBeFocused();
+  const options = picker.locator(".slot-item-picker-options button");
+  await expect(options.first()).toBeVisible();
+  await options.first().click();
+  await expect(search).toBeFocused();
+  await expect(picker.locator(".slot-item-picker-filter > button.active")).toHaveCount(1);
+
+  await picker.getByRole("button", { name: "Azzera filtri" }).click();
+  await expect(search).toBeFocused();
+  await expect(picker.locator(".slot-item-picker-filter > button.active")).toHaveCount(0);
+
+  const results = picker.locator(".slot-item-picker-results button");
+  await expect(results.first()).toBeVisible();
+  const chosen = await results.first().locator(".slot-item-picker-name").innerText();
+  await results.first().click();
+
+  await expect(picker).toHaveCount(0);
+  await expect(page.locator(".container-grid .character-slot").filter({ hasText: chosen })).toHaveCount(1);
+});
+
+test("Equipaggia sceglie da solo il primo slot libero compatibile", async ({ page, request }) => {
+  const characters = await (await request.get("/api/personaggi/")).json();
+  const characterId = characters.data.giocatore.activePersonaggioId;
+  const sheet = await (await request.get(`/api/v1/characters/${characterId}/sheet`)).json();
+  const freeSlots: SheetSlot[] = sheet.data.character.equipment.slots
+    .filter((entry: SheetSlot) => !entry.isExtraSlot && !entry.isLocked && !entry.item);
+
+  let item: { name: string; compatibleEquipmentSlots: string[] } | null = null;
+  for (const candidate of freeSlots) {
+    const found = await (await request.get(`/api/v1/items?group=equipment&slot=${candidate.slot}&limit=1`)).json();
+    if (found.data.items.length > 0) { item = found.data.items[0]; break; }
+  }
+  expect(item).toBeTruthy();
+  // La stessa regola del client: vince il primo slot nominato, libero e compatibile.
+  const expected = freeSlots.find((entry) => item!.compatibleEquipmentSlots.includes(entry.slot));
+  expect(expected).toBeTruthy();
+
+  await page.goto(`/character/${characterId}`);
+  await page.getByLabel("Ricerca Oggetto").fill(item!.name);
+  await page.getByRole("option", { name: item!.name, exact: false }).first().click();
+  await page.locator(".selected-item-hint").getByRole("button", { name: "Equipaggia" }).click();
+
+  await expect(page.locator(`[data-slot-id="${expected!.id}"]`)).toContainText(item!.name);
 });
 
 test("gli effetti personali si configurano nella scheda e aggiornano subito il PG", async ({ page, request }) => {

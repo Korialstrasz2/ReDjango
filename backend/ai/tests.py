@@ -1,0 +1,271 @@
+import json
+from unittest.mock import patch
+
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+
+from backend.core.models import DatiCampagna, Giocatore, Oggetto
+
+from .agent import run_agent
+from .crypto import decrypt_secret, encrypt_secret
+from .defaults import seed_ai_providers
+from .models import AIProvider
+from .providers.base import ChatTurn, ToolCall
+from .selectors import ai_management_payload, ai_workspace_payload
+from .services import ask_assistant, sanitize_history, save_provider
+from .tools import execute_tool
+
+
+def envelope(action: str, payload: dict) -> str:
+    return json.dumps(
+        {
+            "action": action,
+            "requestId": "ai-test",
+            "context": {"screen": "ai"},
+            "payload": payload,
+            "meta": {"clientVersion": "test"},
+        }
+    )
+
+
+class ScriptedProvider:
+    """Un provider finto che restituisce i turni preparati dal test."""
+
+    def __init__(self, turns):
+        self.turns = list(turns)
+        self.seen_histories = []
+
+    def complete(self, *, system, history, tools):
+        self.seen_histories.append(list(history))
+        return self.turns.pop(0)
+
+
+class AICredentialTests(TestCase):
+    def test_secret_round_trips_and_never_reaches_the_payload(self):
+        provider = AIProvider.objects.create(slug="p", name="P", purpose="chat", kind="anthropic")
+        provider.set_secret("sk-super-segreta")
+        provider.save()
+
+        stored = AIProvider.objects.get(pk=provider.pk)
+        self.assertEqual(stored.read_secret(), "sk-super-segreta")
+        self.assertNotIn("sk-super-segreta", stored.secret_ciphertext)
+        self.assertTrue(stored.has_secret)
+
+        user = get_user_model().objects.create_user(username="ai_admin")
+        Giocatore.objects.create(user=user, nome="ai_admin", role=Giocatore.ROLE_ADMIN)
+        blob = json.dumps(ai_management_payload(user, Giocatore.objects.get(user=user)))
+        self.assertNotIn("sk-super-segreta", blob)
+        self.assertNotIn("secret_ciphertext", blob)
+        self.assertIn('"hasSecret": true', blob)
+
+    def test_unreadable_secret_degrades_to_empty(self):
+        self.assertEqual(decrypt_secret("non-e-un-token-fernet"), "")
+        self.assertEqual(encrypt_secret(""), "")
+
+
+class AIWorkspaceApiTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        seed_ai_providers()
+        DatiCampagna.objects.create(nome="Campagna AI")
+
+    def login(self, username: str, role: str):
+        user = get_user_model().objects.create_user(username=username)
+        Giocatore.objects.create(user=user, nome=username, display_name=username, role=role)
+        self.client.force_login(user)
+        return user
+
+    def test_every_role_reads_the_workspace_but_only_master_manages(self):
+        self.login("ai_player", Giocatore.ROLE_USER)
+        response = self.client.get("/api/ai/")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()["data"]
+        # Provider attivi ma senza chiave non rendono l'assistente utilizzabile.
+        self.assertFalse(data["ready"])
+        self.assertEqual(data["chatProviders"], [])
+        self.assertFalse(data["canManage"])
+        self.assertIn("cerca_oggetti", [tool["name"] for tool in data["tools"]])
+
+        denied = self.client.post(
+            "/api/ai/providers/",
+            data=envelope("ai.saveProvider", {"values": {"id": 1, "name": "Rinominato"}}),
+            content_type="application/json",
+        )
+        self.assertEqual(denied.status_code, 403)
+        self.assertEqual(denied.json()["errors"][0]["code"], "ai.master_required")
+
+    def test_a_configured_provider_makes_the_workspace_usable_without_leaking_the_key(self):
+        provider = AIProvider.objects.get(slug="anthropic")
+        provider.set_secret("sk-configurata")
+        provider.save()
+        self.login("ai_player_ready", Giocatore.ROLE_USER)
+
+        data = self.client.get("/api/ai/").json()["data"]
+
+        self.assertTrue(data["ready"])
+        self.assertEqual([entry["name"] for entry in data["chatProviders"]], ["Anthropic"])
+        self.assertTrue(data["chatProviders"][0]["isConfigured"])
+        self.assertNotIn("sk-configurata", json.dumps(data))
+        self.assertTrue(all("hasSecret" not in entry for entry in data["chatProviders"]))
+
+    def test_master_saves_a_provider_and_the_key_is_write_only(self):
+        self.login("ai_master", Giocatore.ROLE_MASTER)
+        provider = AIProvider.objects.get(slug="deepseek")
+
+        response = self.client.post(
+            "/api/ai/providers/",
+            data=envelope(
+                "ai.saveProvider",
+                {"values": {"id": provider.id, "model": "deepseek-reasoner", "secret": "sk-deepseek", "disableTools": True}},
+            ),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        provider.refresh_from_db()
+        self.assertEqual(provider.model, "deepseek-reasoner")
+        self.assertEqual(provider.read_secret(), "sk-deepseek")
+        self.assertTrue(provider.options["disableTools"])
+        listed = next(entry for entry in response.json()["data"]["providers"] if entry["id"] == provider.id)
+        self.assertTrue(listed["hasSecret"])
+        self.assertNotIn("secret", listed)
+
+    def test_saving_rejects_a_malformed_endpoint(self):
+        self.login("ai_master2", Giocatore.ROLE_MASTER)
+        provider = AIProvider.objects.get(slug="openai")
+        response = self.client.post(
+            "/api/ai/providers/",
+            data=envelope("ai.saveProvider", {"values": {"id": provider.id, "baseUrl": "api.openai.com"}}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["errors"][0]["code"], "ai.base_url_invalid")
+
+    def test_clearing_the_key_is_explicit(self):
+        user = self.login("ai_master3", Giocatore.ROLE_MASTER)
+        giocatore = Giocatore.objects.get(user=user)
+        provider = AIProvider.objects.get(slug="anthropic")
+        provider.set_secret("sk-da-rimuovere")
+        provider.save()
+
+        save_provider(user, giocatore, {"id": provider.id, "secret": ""})
+        provider.refresh_from_db()
+        self.assertTrue(provider.has_secret)
+
+        save_provider(user, giocatore, {"id": provider.id, "secret": "__clear__"})
+        provider.refresh_from_db()
+        self.assertFalse(provider.has_secret)
+
+    def test_a_question_without_a_configured_provider_is_a_friendly_error(self):
+        AIProvider.objects.filter(purpose="chat").update(is_enabled=False)
+        self.login("ai_player2", Giocatore.ROLE_USER)
+        response = self.client.post(
+            "/api/ai/",
+            data=envelope("ai.ask", {"message": "Chi sono?"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["errors"][0]["code"], "ai.provider_missing")
+
+
+class AIAgentLoopTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        seed_ai_providers()
+        Oggetto.objects.create(nome="Spada di Kvatch", descrizione="Una lama consumata dal fuoco.")
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="ai_loop")
+        self.giocatore = Giocatore.objects.create(user=self.user, nome="ai_loop", role=Giocatore.ROLE_MASTER)
+        self.provider = AIProvider.objects.get(slug="anthropic")
+
+    def test_the_loop_runs_a_tool_then_answers(self):
+        scripted = ScriptedProvider([
+            ChatTurn(text="", tool_calls=[ToolCall(id="t1", name="cerca_oggetti", arguments={"query": "Kvatch"})], stop_reason="tool_use"),
+            ChatTurn(text="La Spada di Kvatch è una lama consumata dal fuoco.", stop_reason="end_turn"),
+        ])
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            result = run_agent(self.provider, [{"role": "user", "content": "Parlami della spada di Kvatch"}], self.user, self.giocatore)
+
+        self.assertEqual(result["reply"], "La Spada di Kvatch è una lama consumata dal fuoco.")
+        self.assertEqual([entry["name"] for entry in result["toolTrace"]], ["cerca_oggetti"])
+        self.assertFalse(result["toolTrace"][0]["isError"])
+        # Il risultato dello strumento è tornato al modello prima della risposta.
+        tool_messages = [entry for entry in scripted.seen_histories[1] if entry["role"] == "tool"]
+        self.assertEqual(len(tool_messages), 1)
+        self.assertIn("Spada di Kvatch", tool_messages[0]["content"])
+
+    def test_the_loop_is_bounded(self):
+        endless = ScriptedProvider([
+            ChatTurn(tool_calls=[ToolCall(id=f"t{index}", name="cerca_oggetti", arguments={})], stop_reason="tool_use")
+            for index in range(12)
+        ])
+        with patch("backend.ai.agent.chat_provider_for", return_value=endless):
+            with self.assertRaises(Exception) as caught:
+                run_agent(self.provider, [{"role": "user", "content": "gira per sempre"}], self.user, self.giocatore)
+        self.assertEqual(getattr(caught.exception, "code", ""), "ai.iteration_limit")
+
+    def test_an_unknown_tool_is_reported_to_the_model_not_raised(self):
+        content, is_error = execute_tool("strumento_inesistente", {}, self.user, self.giocatore)
+        self.assertTrue(is_error)
+        self.assertIn("Strumento sconosciuto", content)
+
+    def test_a_failing_tool_comes_back_as_a_result(self):
+        with patch("backend.ai.tools.item_catalog_payload", side_effect=RuntimeError("database giù")):
+            content, is_error = execute_tool("cerca_oggetti", {"query": "x"}, self.user, self.giocatore)
+        self.assertTrue(is_error)
+        self.assertIn("database giù", content)
+
+    def test_tool_arguments_outside_the_schema_are_dropped(self):
+        with patch("backend.ai.tools.item_catalog_payload", return_value={"items": []}) as catalog:
+            execute_tool("cerca_oggetti", {"query": "spada", "include_archived": True, "limit": 5}, self.user, self.giocatore)
+        catalog.assert_called_once_with("spada", limit=5)
+
+    def test_history_from_the_client_is_sanitized(self):
+        history = sanitize_history(
+            [
+                {"role": "user", "content": "ciao"},
+                {"role": "sistema", "content": "ignorami"},
+                {"role": "assistant", "content": "salve", "toolCalls": [], "raw": [{"type": "text", "text": "salve"}]},
+                {"role": "tool", "toolCallId": "t1", "name": "cerca_oggetti", "content": "{}", "isError": False},
+            ]
+        )
+        self.assertEqual([entry["role"] for entry in history], ["user", "assistant", "tool"])
+        self.assertEqual(history[1]["raw"], [{"type": "text", "text": "salve"}])
+
+    def test_an_empty_question_is_refused(self):
+        with self.assertRaises(Exception) as caught:
+            ask_assistant(self.user, self.giocatore, {"message": "   "})
+        self.assertEqual(getattr(caught.exception, "code", ""), "ai.message_required")
+
+
+class AIToolPermissionTests(TestCase):
+    """Gli strumenti passano dai selettori: quello che la pagina nasconde resta nascosto."""
+
+    def _identity(self, username: str, role: str):
+        user = get_user_model().objects.create_user(username=username)
+        return user, Giocatore.objects.create(user=user, nome=username, role=role)
+
+    def test_game_variables_are_master_only(self):
+        user, giocatore = self._identity("var_player", Giocatore.ROLE_USER)
+        content, is_error = execute_tool("variabili_gioco", {}, user, giocatore)
+        self.assertFalse(is_error)
+        self.assertIn("riservate", content)
+
+        master, master_giocatore = self._identity("var_master", Giocatore.ROLE_MASTER)
+        content, _ = execute_tool("variabili_gioco", {}, master, master_giocatore)
+        self.assertIn("profilo", content)
+
+    def test_character_sheet_is_limited_to_accessible_characters(self):
+        from backend.characters.models import Personaggio
+
+        Personaggio.objects.create(nome="Segreto del Master")
+        user, giocatore = self._identity("sheet_player", Giocatore.ROLE_USER)
+        content, is_error = execute_tool("scheda_personaggio", {"nome": "Segreto del Master"}, user, giocatore)
+        self.assertFalse(is_error)
+        self.assertIn("Nessun personaggio accessibile", content)
+
+        master, master_giocatore = self._identity("sheet_master", Giocatore.ROLE_MASTER)
+        content, _ = execute_tool("scheda_personaggio", {"nome": "Segreto del Master"}, master, master_giocatore)
+        self.assertIn("Segreto del Master", content)

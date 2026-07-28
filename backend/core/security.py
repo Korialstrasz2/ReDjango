@@ -73,14 +73,15 @@ def security_payload(user, giocatore: Giocatore) -> dict:
     role = effective_role(user, giocatore)
     # Django staff permissions and game permissions are intentionally separate.
     # A Django administrator may use the game as a Giocatore or Master.
-    show_admin_link = bool(user.is_staff or user.is_superuser)
+    can_use_django_admin = bool(user.is_staff or user.is_superuser)
+    show_admin_link = can_use_django_admin or role == Giocatore.ROLE_ADMIN
     return {
         "role": role,
         "roleRank": role_rank(role),
         "hierarchy": ROLE_HIERARCHY if role == Giocatore.ROLE_ADMIN else [],
         "showRoleLabels": role == Giocatore.ROLE_ADMIN,
         "showAdminLink": show_admin_link,
-        "canUseDjangoAdmin": show_admin_link,
+        "canUseDjangoAdmin": can_use_django_admin,
         "canManageMasterSettings": has_minimum_role(role, Giocatore.ROLE_MASTER),
         "canManageGameData": has_minimum_role(role, Giocatore.ROLE_MASTER),
         "canManageAdminSettings": has_minimum_role(role, Giocatore.ROLE_ADMIN),

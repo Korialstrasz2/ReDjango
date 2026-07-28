@@ -9,6 +9,16 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 mimetypes.add_type("image/webp", ".webp")
+# The Windows registry rarely knows these containers, and a wrong guess would make
+# the protected media view offer a download instead of a playable stream.
+mimetypes.add_type("audio/mpeg", ".mp3")
+mimetypes.add_type("audio/ogg", ".ogg")
+mimetypes.add_type("audio/ogg", ".oga")
+mimetypes.add_type("audio/opus", ".opus")
+mimetypes.add_type("audio/wav", ".wav")
+mimetypes.add_type("audio/mp4", ".m4a")
+mimetypes.add_type("audio/flac", ".flac")
+mimetypes.add_type("audio/webm", ".webm")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -116,6 +126,7 @@ INSTALLED_APPS = [
     "backend.dice_tools",
     "backend.combat",
     "backend.lore",
+    "backend.ai",
 ]
 
 MIDDLEWARE = [

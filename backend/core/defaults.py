@@ -6,7 +6,7 @@ from backend.combat.damage_rules import (
 
 LOCAL_PLAYER_NAME = "local_master"
 DEFAULT_CAMPAIGN_NAME = "Campagna principale"
-V2_SETTINGS_SEED_VERSION = "14"
+V2_SETTINGS_SEED_VERSION = "16"
 V2_THEME_SEED_VERSION = "3"
 
 
@@ -18,6 +18,7 @@ V2_RETIRED_SETTING_KEYS = (
     "branding.subtitle",
     "security.require_login_for_remote",
     "features.experimental_tools",
+    "shortcuts.characters",
 )
 
 
@@ -200,6 +201,53 @@ V2_SETTING_DEFAULTS = [
         "order": 30,
     },
     {
+        "key": "audio.volume",
+        "label": "Volume della colonna sonora",
+        "category": "audio",
+        "description": "Volume iniziale del lettore audio, da 0 a 100. Il cursore del lettore aggiorna questo valore.",
+        "minimum_role": "user",
+        "value_type": "int",
+        "default_value": 60,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "audio-volume",
+        "order": 10,
+        "validation": {"minimum": 0, "maximum": 100, "step": 1},
+    },
+    {
+        "key": "audio.autoplay_next",
+        "label": "Continua con la traccia successiva",
+        "category": "audio",
+        "description": "Quando una traccia finisce passa automaticamente alla successiva della selezione corrente.",
+        "minimum_role": "user",
+        "value_type": "bool",
+        "default_value": True,
+        "choices": [],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "audio-autoplay-next",
+        "order": 20,
+    },
+    {
+        "key": "shortcuts.profile",
+        "label": "Profilo scorciatoie",
+        "category": "scorciatoie da tastiera",
+        "description": "Standard e Veloce usano assegnazioni fisse; Personalizzato conserva le tue modifiche.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "standard",
+        "choices": [
+            {"value": "standard", "label": "Standard"},
+            {"value": "fast", "label": "Veloce"},
+            {"value": "custom", "label": "Personalizzato"},
+        ],
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-profile",
+        "order": 1,
+    },
+    {
         "key": "shortcuts.dashboard",
         "label": "Sala principale",
         "category": "scorciatoie da tastiera",
@@ -212,20 +260,6 @@ V2_SETTING_DEFAULTS = [
         "master_customizable": True,
         "ui_token": "shortcut-dashboard",
         "order": 10,
-    },
-    {
-        "key": "shortcuts.characters",
-        "label": "Elenco personaggi",
-        "category": "scorciatoie da tastiera",
-        "description": "Apre la scelta del personaggio.",
-        "minimum_role": "user",
-        "value_type": "select",
-        "default_value": "Alt+P",
-        "choices": SAFE_ALT_SHORTCUT_CHOICES,
-        "user_customizable": True,
-        "master_customizable": True,
-        "ui_token": "shortcut-characters",
-        "order": 20,
     },
     {
         "key": "shortcuts.character",
@@ -324,6 +358,34 @@ V2_SETTING_DEFAULTS = [
         "master_customizable": True,
         "ui_token": "shortcut-dice",
         "order": 90,
+    },
+    {
+        "key": "shortcuts.audio",
+        "label": "Audio rapido",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre il lettore della colonna sonora.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+U",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-audio",
+        "order": 95,
+    },
+    {
+        "key": "shortcuts.ai",
+        "label": "Assistente AI",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre l'assistente AI.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+H",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-ai",
+        "order": 97,
     },
     {
         "key": "shortcuts.skills",

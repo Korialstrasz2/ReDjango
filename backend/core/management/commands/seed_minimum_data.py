@@ -44,6 +44,7 @@ from backend.core.defaults import (
     V2_THEME_SEED_VERSION,
 )
 from backend.core.guides_it import V2_GUIDE_DEFAULTS, V2_GUIDE_DEFAULT_VERSION
+from backend.ai.defaults import seed_ai_providers
 from backend.combat.defaults import ensure_combat_defaults
 from backend.core.models import (
     DatiCampagna,
@@ -1086,6 +1087,7 @@ class Command(BaseCommand):
         touched += self._seed_dice_sets()
         touched += self._seed_settings()
         touched += ensure_combat_defaults()
+        touched += seed_ai_providers()
         touched += self._seed_competencies()
         touched += self._seed_alchemy_reagents()
         touched += self._seed_skill_families()

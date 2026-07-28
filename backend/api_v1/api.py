@@ -15,6 +15,7 @@ from backend.characters.alchemy_selectors import alchemy_creation_payload
 from backend.characters.note_selectors import character_notes_payload
 from backend.characters.selectors import effect_catalog_payload, ordered_personaggi_for, personaggio_detail, serialize_item
 from backend.characters.services.commands import adjust_quick_stat, apply_effect, assign_item, rest_character, swap_items, switch_primary_weapon, update_overview, update_resource
+from backend.characters.services.inventory_rules import INVENTORY_GROUPS
 from backend.characters.services.coins import update_carried_coins, update_shared_coins
 from backend.characters.services.extended_inventory import (
     EXTENDED_INVENTORY_GROUPS,
@@ -283,10 +284,35 @@ def character_sheet(request: HttpRequest, character_id: int):
 
 
 @api.get("/items", response={200: ItemCatalogEnvelopeSchema}, tags=["items"])
-def items(request: HttpRequest, query: str = "", include_archived: bool = False, limit: int = 100):
+def items(
+    request: HttpRequest,
+    query: str = "",
+    include_archived: bool = False,
+    limit: int = 100,
+    type_1: str = "",
+    type_2: str = "",
+    type_3: str = "",
+    rarity: int | None = None,
+    weapon_type_id: int | None = None,
+    group: str = "",
+    slot: str = "",
+):
     user, giocatore = _identity(request)
     include_archived = bool(include_archived and _can_manage_items(user, giocatore))
-    return _envelope(request, item_catalog_payload(query.strip(), include_archived=include_archived, limit=limit))
+    if group and group not in INVENTORY_GROUPS:
+        raise ApiError("items.group_not_found", "Il contenitore scelto non esiste.", status=400)
+    return _envelope(request, item_catalog_payload(
+        query.strip(),
+        include_archived=include_archived,
+        limit=limit,
+        type_1=type_1.strip(),
+        type_2=type_2.strip(),
+        type_3=type_3.strip(),
+        rarity=rarity,
+        weapon_type_id=weapon_type_id,
+        group=group,
+        slot=slot.strip(),
+    ))
 
 
 @api.get("/market", response={200: MarketEnvelopeSchema}, tags=["market"])

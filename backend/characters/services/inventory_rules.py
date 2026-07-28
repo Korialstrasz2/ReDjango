@@ -255,6 +255,20 @@ def item_compatible_with_equipment_slot(item: Oggetto | None, slot: str) -> bool
     return bool(normalize_item_types(item) & SLOT_ACCEPTS.get(kind, {kind}))
 
 
+INVENTORY_GROUPS = frozenset({"equipment", "backpack", "quiver", "utility", "campaign"})
+
+
+def item_fits_container(item: Oggetto | None, group: str, slot: str) -> bool:
+    """Compatibility rule used to scope a catalogue search to one destination slot."""
+    if item is None:
+        return True
+    if group == "equipment":
+        return item_compatible_with_equipment_slot(item, slot)
+    if group == "quiver":
+        return item_is_projectile(item)
+    return group in {"backpack", "utility", "campaign"}
+
+
 def compatibility_message(item: Oggetto, reference: SlotReference) -> str:
     if reference.group == "quiver":
         return f"{item.nome} non è un proiettile e non può essere riposto nella faretra."

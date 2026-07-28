@@ -2,6 +2,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from django.db import models
+from django.utils.text import slugify
 
 from backend.core.models import V2Model
 
@@ -20,7 +21,7 @@ def v2_image_upload_path(instance, filename: str) -> str:
 def v2_audio_upload_path(instance, filename: str) -> str:
     safe_name = Path(filename).name.replace(" ", "_")
     tag = getattr(instance, "primary_tag", "") or "general"
-    return f"v2/audio/{tag}/{uuid4().hex}_{safe_name}"
+    return f"v2/audio/{slugify(tag) or 'general'}/{uuid4().hex}_{safe_name}"
 
 
 class ImageCategory(V2Model):
@@ -145,8 +146,17 @@ class DatiMappa(V2Model):
 
 
 class AudioFile(V2Model):
+    """One playable track of the shared campaign soundtrack.
+
+    ``tags`` is the source of truth for the multi-select picklist. ``primary_tag``
+    is kept in sync with its first entry because the storage folder, the default
+    ordering and the database index are built on it; ``secondary_tags`` remains
+    the earlier V2 compatibility column and is never read by the audio library.
+    """
+
     title = models.CharField(max_length=180)
     file = models.FileField(upload_to=v2_audio_upload_path)
+    tags = models.JSONField(default=list, blank=True)
     primary_tag = models.CharField(max_length=80, blank=True)
     secondary_tags = models.JSONField(default=list, blank=True)
     source = models.CharField(max_length=80, blank=True)

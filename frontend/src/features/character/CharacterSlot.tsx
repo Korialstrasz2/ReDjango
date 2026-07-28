@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, MouseEvent as ReactMouseEvent } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 
 import type { CharacterSlot as Slot, Item } from "../../lib/types";
@@ -17,9 +17,17 @@ type Props = {
   onEquip: (slot: Slot) => void;
   onEmpty: (slot: Slot) => void;
   onQuantityChange?: (slot: Slot, delta: -1 | 1) => void;
+  onPick?: (slot: Slot, anchor: { x: number; y: number }) => void;
   onActionsEnter: () => void;
   onActionsLeave: () => void;
 };
+
+/** Keyboard-triggered context menus report no pointer position, so fall back to the slot itself. */
+function menuAnchor(event: ReactMouseEvent<HTMLElement>): { x: number; y: number } {
+  if (event.clientX > 0 || event.clientY > 0) return { x: event.clientX, y: event.clientY };
+  const rect = event.currentTarget.getBoundingClientRect();
+  return { x: rect.left, y: rect.bottom };
+}
 
 export function CharacterSlot({
   slot,
@@ -35,6 +43,7 @@ export function CharacterSlot({
   onEquip,
   onEmpty,
   onQuantityChange,
+  onPick,
   onActionsEnter,
   onActionsLeave,
 }: Props) {
@@ -55,6 +64,11 @@ export function CharacterSlot({
     data-magical={slot.isMagical ? "true" : undefined}
     style={style}
     onClick={() => !unavailable && onSelect(slot)}
+    onContextMenu={(event) => {
+      if (unavailable || !onPick) return;
+      event.preventDefault();
+      onPick(slot, menuAnchor(event));
+    }}
     onPointerEnter={() => selected && onActionsEnter()}
     onPointerLeave={() => selected && onActionsLeave()}
     {...draggable.listeners}
@@ -81,6 +95,13 @@ export function CharacterSlot({
         ? <div className="slot-item"><strong>{slot.item.name}{slot.stackable && slot.quantity > 1 ? ` × ${slot.quantity}` : ""}</strong>{variant !== "figure" && <>{!showItemHeading && <small>{slot.item.types.join(" · ")}</small>}<span>{slot.weightless ? "peso non conteggiato" : `${slot.item.weight ?? 0} peso`}</span></>}</div>
         : <div className="slot-empty">Vuoto</div>}
     {actionsVisible && !unavailable && <div className="slot-inline-actions" data-component-type="toolbar" data-theme="dark" onPointerDown={(event) => event.stopPropagation()}>
+      {onPick && <button
+        type="button"
+        disabled={actionPending}
+        title={`Scegli un oggetto per ${slot.label}`}
+        aria-label={`Scegli un oggetto per ${slot.label}`}
+        onClick={(event) => { event.stopPropagation(); onPick(slot, menuAnchor(event)); }}
+      >Scegli</button>}
       <button
         type="button"
         disabled={actionPending || !equipItem}
