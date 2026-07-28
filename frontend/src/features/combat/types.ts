@@ -18,6 +18,12 @@ export type CombatAttackButton = {
   modifiers: { attackBonus: number; damageBonus: number; damageTierBonus: number; penetrationFlat: number; penetrationPercent: number };
   public: boolean; active: boolean; keepActiveInCombat: boolean; order: number; canEdit: boolean;
 };
+/** Conversioni Elder del personaggio usate per il costo degli incantesimi. */
+export type SpellEconomy = {
+  manaDiscountPerPower: number; actionPointDiscountPerPower: number;
+  manaPerEnergy: number; manaPerActionPoint: number;
+};
+export type CombatActionSettings = { tags: Record<string, string[]>; tagFilters: string[] };
 export type CombatCharacter = {
   id: number; name: string; internalName: string; type: string; level: number; races: string[]; portrait: string;
   resources: CombatResource[]; combat: Record<string, number>; resistances: Record<string, number>;
@@ -25,6 +31,7 @@ export type CombatCharacter = {
   equipment: { slots: CombatSlot[]; dualWield: boolean; primaryWeaponSlot: "arma" | "scudo"; primaryWeaponId: number | null; inactiveWeaponId: number | null; weaponState: Record<string, { loaded?: number }> }; quiver: { capacity: number; occupied: number; slots: CombatSlot[] };
   effects: CombatEffect[];
   skills: Array<Record<string, unknown>>; abilities: Array<Record<string, unknown>>; combatButtons: CombatAttackButton[];
+  spellEconomy: SpellEconomy; actionSettings: CombatActionSettings;
 };
 export type MapParticipant = {
   id: number; character: CombatCharacter; anchor: Axial; footprint: Axial[]; tokenColor: string; order: number;

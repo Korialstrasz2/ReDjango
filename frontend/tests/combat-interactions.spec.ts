@@ -49,15 +49,17 @@ test("Azioni rapide è una finestra ridimensionabile senza ombra scura", async (
   await expect(dialog.locator(".rd-modal-resize-handle")).toHaveCount(4);
   await expect(dialog).toHaveCSS("box-shadow", "none");
   await expect(page.locator(".modal-backdrop:has(.combat-quick-actions-modal)")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  // Niente intestazione: restano soltanto corpo e piè di pagina.
+  await expect(dialog.locator(".modal-header")).toHaveCount(0);
 
   const original = await dialog.boundingBox();
   expect(original).not.toBeNull();
-  const header = dialog.locator(".modal-header");
-  const headerBox = await header.boundingBox();
-  expect(headerBox).not.toBeNull();
-  await page.mouse.move(headerBox!.x + 180, headerBox!.y + 25);
+  const grip = dialog.locator(".modal-drag-grip");
+  const gripBox = await grip.boundingBox();
+  expect(gripBox).not.toBeNull();
+  await page.mouse.move(gripBox!.x + gripBox!.width / 2, gripBox!.y + gripBox!.height / 2);
   await page.mouse.down();
-  await page.mouse.move(headerBox!.x + 220, headerBox!.y + 40, { steps: 5 });
+  await page.mouse.move(gripBox!.x + 60, gripBox!.y + 15, { steps: 5 });
   await page.mouse.up();
   const moved = await dialog.boundingBox();
   expect(moved).not.toBeNull();
@@ -107,7 +109,7 @@ test("Azioni rapide seleziona il tipo e converte l'effetto in Mana", async ({ pa
   await trigger.click();
 
   const dialog = page.locator(".combat-quick-actions-modal");
-  const ordinaryAction = dialog.locator(".combat-quick-catalog > div > button.power").first();
+  const ordinaryAction = dialog.locator(".combat-quick-option-list > button.power").first();
   test.skip(await ordinaryAction.count() === 0, "Serve un'azione rapida non magica.");
   await ordinaryAction.click();
   await expect(dialog.getByLabel("Tipo")).toHaveValue("power");

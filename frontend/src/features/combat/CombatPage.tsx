@@ -1,4 +1,4 @@
-import { type DragEvent as ReactDragEvent, type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, type DragEvent as ReactDragEvent, type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -13,10 +13,17 @@ import { AttackPanel as CompactAttackPanel } from "./AttackPanel";
 import { cellKey, offsetToAxial } from "./hex";
 import { MapCalibrationPreview, type MapCalibrationDraft } from "./MapCalibrationPreview";
 import { NoteSectionEditor } from "../notes/NoteSectionEditor";
-import type { AttackResult, Axial, CombatMap, CombatResource, CombatWorkspace, MapParticipant, PathResult } from "./types";
+import type { AttackResult, Axial, CombatMap, CombatResource, CombatWorkspace, MapParticipant, PathResult, SpellEconomy } from "./types";
 
 const HEX_COLOR_PRESETS = ["#c96e3f", "#d7a63d", "#779447", "#3f8c78", "#397fa9", "#545bb2", "#8755a5", "#b64f78", "#8b6550", "#d8d1b8"] as const;
 const EMPTY_COSTS = { pf: 0, mana: 0, energia: 0, potere: 0, pa: 0, stanchezza: 0 };
+const EMPTY_SPELL_ECONOMY: SpellEconomy = { manaDiscountPerPower: 0, actionPointDiscountPerPower: 0, manaPerEnergy: 0, manaPerActionPoint: 0 };
+
+/** "no tag" non viene mai salvato: appartiene a ogni azione rimasta senza etichette. */
+export const UNTAGGED_ACTION_TAG = "no tag";
+export const ACTION_TAGS = ["preferito", "incantesimo", "utility", "combat", "non combat", "distanza", "melee", "modalità", UNTAGGED_ACTION_TAG] as const;
+export const STORABLE_ACTION_TAGS = ACTION_TAGS.filter((tag) => tag !== UNTAGGED_ACTION_TAG);
+export const DEFAULT_ACTION_TAG_FILTERS = ["preferito", "combat", UNTAGGED_ACTION_TAG];
 
 type SpellFormula = {
   baseMana: number; effectPerMana: number; minimumMana: number; effectUnit: string; formula: string;
@@ -71,6 +78,52 @@ export function manaForEffect(effect: number, spell?: SpellFormula) {
   const normalizedEffect = Math.max(0, Math.round(effect || 0));
   if (!spell) return normalizedEffect;
   return Math.ceil(Math.max(spell.minimumMana, spell.baseMana + normalizedEffect / spell.effectPerMana));
+}
+
+/** Etichette mostrate per un'azione: senza etichette salvate vale "no tag". */
+export function actionTagsFor(stored: Record<string, string[]> | undefined, key: string): string[] {
+  const saved = stored?.[key];
+  const cleaned = Array.isArray(saved) ? STORABLE_ACTION_TAGS.filter((tag) => saved.includes(tag)) : [];
+  return cleaned.length ? cleaned : [UNTAGGED_ACTION_TAG];
+}
+
+/** Aggiunge o toglie un'etichetta; svuotandola l'azione torna automaticamente "no tag". */
+export function toggledActionTags(current: string[], tag: string): string[] {
+  const assigned = current.filter((entry) => entry !== UNTAGGED_ACTION_TAG);
+  const next = assigned.includes(tag) ? assigned.filter((entry) => entry !== tag) : [...assigned, tag];
+  return STORABLE_ACTION_TAGS.filter((entry) => next.includes(entry));
+}
+
+export function actionMatchesTagFilters(tags: string[], filters: string[]): boolean {
+  return tags.some((tag) => filters.includes(tag));
+}
+
+/**
+ * Costi di un incantesimo secondo il regolamento originario: Mana, Energia e PA
+ * si pagano insieme. Energia e PA nascono dal Mana richiesto prima degli sconti,
+ * il Potere totale (usato più gratuito) sconta soltanto Mana e PA, e solo il
+ * Potere usato viene speso davvero.
+ */
+export function spellCastCosts(
+  baseCosts: Record<string, number>,
+  requiredMana: number,
+  powerUsed: number,
+  freePower: number,
+  economy: SpellEconomy,
+): Record<string, number> {
+  const mana = Math.max(0, Math.round(requiredMana || 0));
+  const spentPower = Math.max(0, Math.round(powerUsed || 0));
+  const totalPower = spentPower + Math.max(0, Math.round(freePower || 0));
+  const actionPoints = economy.manaPerActionPoint > 0
+    ? Math.ceil(Math.max(0, mana / economy.manaPerActionPoint - totalPower * economy.actionPointDiscountPerPower))
+    : 0;
+  return {
+    ...baseCosts,
+    mana: Math.ceil(Math.max(0, mana - totalPower * economy.manaDiscountPerPower)),
+    energia: economy.manaPerEnergy > 0 ? Math.ceil(mana / economy.manaPerEnergy) : 0,
+    potere: spentPower,
+    pa: actionPoints,
+  };
 }
 
 export function persistentCombatButtonIds(
@@ -763,14 +816,18 @@ function MapManagerModal({ workspace, busy, onClose, onSelect, onEdit, onVersion
   </Modal>;
 }
 
-function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDelete }: {
+function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDelete, onSaveActionSettings }: {
   map: CombatMap; paths: PathResult | null; busy: boolean;
   notify: (message: string, kind?: "success" | "error" | "info") => void;
   onCreate: (payload: Record<string, unknown>) => void; onCommit: (id: number) => void; onDelete: (id: number) => void;
+  onSaveActionSettings: (characterId: number, settings: { tags?: Record<string, string[]>; tagFilters?: string[] }) => void;
 }) {
   const characterId = map.activeCharacterId || map.participants[0]?.character.id || 0;
   const character = map.participants.find((entry) => entry.character.id === characterId)?.character;
   const options = useMemo(() => characterActiveOptions(character), [character]);
+  const economy = character?.spellEconomy || EMPTY_SPELL_ECONOMY;
+  const storedTags = character?.actionSettings?.tags || {};
+  const savedFilters = character?.actionSettings?.tagFilters;
   const [costs, setCosts] = useState<Record<string, number>>(EMPTY_COSTS);
   const [actionType, setActionType] = useState("movement");
   const [name, setName] = useState("Movimento");
@@ -780,7 +837,14 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
   const [spellIntensity, setSpellIntensity] = useState(0);
   const [powerUsed, setPowerUsed] = useState(0);
   const [freePower, setFreePower] = useState(0);
+  const [tagsExpanded, setTagsExpanded] = useState(false);
   const selectedOption = options.find((entry) => entry.key === selectedKey);
+  const activeFilters = savedFilters ?? DEFAULT_ACTION_TAG_FILTERS;
+  const requiredMana = manaForEffect(spellIntensity, selectedOption?.spell);
+  // I costi mostrati e inviati derivano dall'economia Elder solo per gli incantesimi.
+  const resolvedCosts = actionType === "cast"
+    ? spellCastCosts(costs, requiredMana, powerUsed, freePower, economy)
+    : costs;
   const updateEffect = (next: number, spell = selectedOption?.spell) => {
     const normalized = Math.max(0, Math.min(500, Math.round(next || 0)));
     setSpellIntensity(normalized);
@@ -796,32 +860,70 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
     setCosts({ ...EMPTY_COSTS, ...option.costs, mana: manaForEffect(initialEffect, option.spell) });
     setSourceSkillId(option.sourceSkillId); setSpellIntensity(initialEffect); setPowerUsed(0); setFreePower(0);
   };
+  const toggleFilter = (tag: string) => {
+    const next = activeFilters.includes(tag) ? activeFilters.filter((entry) => entry !== tag) : [...activeFilters, tag];
+    onSaveActionSettings(characterId, { tagFilters: ACTION_TAGS.filter((entry) => next.includes(entry)) });
+  };
+  const toggleOptionTag = (key: string, tag: string) => {
+    const next = toggledActionTags(actionTagsFor(storedTags, key), tag);
+    const tags = { ...storedTags };
+    if (next.length) tags[key] = next; else delete tags[key];
+    onSaveActionSettings(characterId, { tags });
+  };
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const effectNote = selectedKey === "movement" ? "" : `Effetto ${spellIntensity}${selectedOption?.spell?.effectUnit ? ` ${selectedOption.spell.effectUnit}` : ""} · Mana calcolato ${costs.mana || 0}`;
+    const effectNote = selectedKey === "movement" ? "" : `Effetto ${spellIntensity}${selectedOption?.spell?.effectUnit ? ` ${selectedOption.spell.effectUnit}` : ""} · Mana richiesto ${requiredMana}`;
     const powerNote = actionType === "cast" ? `Potere usato ${powerUsed} · Potere gratis ${freePower}` : "";
-    onCreate({ characterId, actionType, name, description: [description, effectNote, powerNote].filter(Boolean).join(" · "), costs, sourceSkillId, path: actionType === "movement" ? paths?.fastest.path || [] : [] });
+    onCreate({ characterId, actionType, name, description: [description, effectNote, powerNote].filter(Boolean).join(" · "), costs: resolvedCosts, sourceSkillId, path: actionType === "movement" ? paths?.fastest.path || [] : [] });
   };
   const actions = map.plannedActions.filter((entry) => entry.characterId === characterId);
-  const projectedResources = character?.resources.filter((resource) => resource.key in costs).map((resource) => ({ ...resource, after: Math.max(0, resource.current - (costs[resource.key] || 0)) })) || [];
-  const availableOptions = [
-    { key: "movement", name: "Movimento", description: paths?.fastest.actionPoints != null ? `${paths.fastest.distance ?? 0} esagoni · ${paths.fastest.actionPoints} PA suggeriti` : "Scegli liberamente i PA usati.", kind: "movement" as const },
-    ...options,
-  ];
+  const projectedResources = character?.resources.filter((resource) => resource.key in resolvedCosts).map((resource) => ({ ...resource, after: Math.max(0, resource.current - (resolvedCosts[resource.key] || 0)) })) || [];
+  const movementOption = { key: "movement", name: "Movimento", description: paths?.fastest.actionPoints != null ? `${paths.fastest.distance ?? 0} esagoni · ${paths.fastest.actionPoints} PA suggeriti` : "Scegli liberamente i PA usati.", kind: "movement" as const };
+  // Il Movimento non è un'azione etichettabile: resta sempre in cima all'elenco.
+  const visibleOptions = options.filter((option) => actionMatchesTagFilters(actionTagsFor(storedTags, option.key), activeFilters));
+  const availableOptions = [movementOption, ...visibleOptions];
   return <div className="combat-quick-actions">
     <aside className="combat-quick-catalog">
-      <header><strong>Azioni disponibili</strong><span>{character?.name || "Nessun personaggio"}</span></header>
-      <div>{availableOptions.map((option) => <button type="button" key={option.key} className={`${selectedKey === option.key ? "active" : ""} ${option.kind}`} onClick={() => chooseOption(option.key)}><span className={`action-glyph ${option.kind}`}>{option.kind === "cast" ? "✦" : option.key === "movement" ? "↝" : "◆"}</span><span><strong>{option.name}</strong><small>{option.description || "Promemoria attivo"}</small></span></button>)}</div>
+      <header>
+        <button type="button" className="combat-quick-catalog-title" aria-expanded={tagsExpanded} onClick={() => setTagsExpanded((current) => !current)} title="Mostra o nascondi i filtri per etichetta">Azioni disponibili</button>
+        <span>{character?.name || "Nessun personaggio"}</span>
+      </header>
+      <div className={`combat-quick-tag-filters ${tagsExpanded ? "expanded" : ""}`} role="group" aria-label="Filtri per etichetta">
+        {ACTION_TAGS.map((tag) => {
+          const on = activeFilters.includes(tag);
+          return <button
+            key={tag}
+            type="button"
+            className={on ? "on" : "off"}
+            disabled={!tagsExpanded || busy || !characterId}
+            aria-pressed={on}
+            onClick={() => toggleFilter(tag)}
+          >{tag}</button>;
+        })}
+      </div>
+      <div className="combat-quick-option-list">{availableOptions.map((option) => <Fragment key={option.key}>
+        <button type="button" className={`${selectedKey === option.key ? "active" : ""} ${option.kind}`} onClick={() => chooseOption(option.key)}><span className={`action-glyph ${option.kind}`}>{option.kind === "cast" ? "✦" : option.key === "movement" ? "↝" : "◆"}</span><span><strong>{option.name}</strong><small>{option.description || "Promemoria attivo"}</small></span></button>
+        {tagsExpanded && option.key !== "movement" && <div className="combat-quick-action-tags" role="group" aria-label={`Etichette di ${option.name}`}>
+          {((assigned) => STORABLE_ACTION_TAGS.map((tag) => <button key={tag} type="button" className={assigned.includes(tag) ? "on" : "off"} aria-pressed={assigned.includes(tag)} disabled={busy || !characterId} onClick={() => toggleOptionTag(option.key, tag)}>{tag}</button>))(actionTagsFor(storedTags, option.key))}
+        </div>}
+      </Fragment>)}
+      {!visibleOptions.length && <p className="combat-quick-empty">{options.length ? "Nessuna azione corrisponde ai filtri attivi." : "Nessuna azione sbloccata."}</p>}</div>
     </aside>
     <main className="combat-quick-compose">
-      <section className="combat-quick-resource-preview"><header><strong>Risorse dopo l'azione</strong><small>Anteprima: nulla viene sottratto ora.</small></header><div>{projectedResources.map((resource) => { const percent = resource.maximum ? resource.after / resource.maximum * 100 : 0; return <article key={resource.key} className={resource.after < resource.current ? "spending" : ""}><span><b>{RESOURCE_SHORT_LABELS[resource.key] || resource.label}</b><em>{resource.current} → {resource.after}</em></span><i><b style={{ width: `${percent}%`, background: `var(${resource.colorToken}, var(--gold))` }} /></i></article>; })}</div></section>
+      <section className="combat-quick-resource-preview"><header><strong>Risorse dopo l'azione</strong><small>Anteprima: nulla viene sottratto ora.</small></header><div>{projectedResources.map((resource) => { const percent = resource.maximum ? resource.after / resource.maximum * 100 : 0; return <article key={resource.key} data-resource={resource.key} className={resource.after < resource.current ? "spending" : ""}><span><b>{resource.label}</b><em>{resource.current} → {resource.after}</em></span><i><b style={{ width: `${percent}%`, background: `var(${resource.colorToken}, var(--gold))` }} /></i></article>; })}</div></section>
       <form className="combat-quick-form" onSubmit={submit}>
         <header><div><p className="eyebrow">Preparazione rapida</p><h3>{selectedKey === "movement" ? "Movimento" : selectedOption?.name || name}</h3></div>{selectedKey !== "movement" && <label>Tipo<select value={actionType} onChange={(event) => setActionType(event.target.value)}><option value="attack">Attacco</option><option value="cast">Incantesimo</option><option value="power">Potere</option><option value="other">Altro</option></select></label>}</header>
         {selectedKey === "movement" ? <section className="combat-movement-cost"><label>PA utilizzati<input type="range" min="0" max={Math.max(20, character?.resources.find((resource) => resource.key === "pa")?.current || 0)} value={costs.pa || 0} onChange={(event) => setCosts({ ...EMPTY_COSTS, pa: Number(event.target.value) })} /><input type="number" min="0" value={costs.pa || 0} onChange={(event) => setCosts({ ...EMPTY_COSTS, pa: Math.max(0, Number(event.target.value)) })} /></label>{paths?.fastest.actionPoints != null && <button type="button" onClick={() => setCosts({ ...EMPTY_COSTS, pa: paths.fastest.actionPoints || 0 })}>Usa il percorso calcolato: {paths.fastest.actionPoints} PA</button>}<p>Scegli soltanto i Punti Azione consumati. Il percorso viene allegato automaticamente quando lo hai calcolato sulla mappa.</p></section> : <>
           <label>Nome azione<input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Nome breve e riconoscibile" /></label>
           <label>Promemoria<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} placeholder="Bersaglio, formula, bonus o note…" /></label>
-          <fieldset className="combat-spell-controls"><legend>{selectedOption?.spell ? "Controlli incantesimo" : "Controlli effetto"}</legend><div className="combat-effect-control" role="group" aria-label="Regola effetto"><span>Effetto{selectedOption?.spell?.effectUnit ? ` · ${selectedOption.spell.effectUnit}` : ""}</span><button type="button" disabled={spellIntensity <= 0} onClick={() => updateEffect(spellIntensity - 1)} aria-label="Riduci effetto">−</button><input aria-label="Effetto" type="range" min="0" max="500" value={spellIntensity} onChange={(event) => updateEffect(Number(event.target.value))} /><button type="button" disabled={spellIntensity >= 500} onClick={() => updateEffect(spellIntensity + 1)} aria-label="Aumenta effetto">+</button><output>{spellIntensity}</output></div>{actionType === "cast" && <><label>Potere usato<input type="range" min="0" max={Math.max(0, character?.resources.find((resource) => resource.key === "potere")?.current || 0)} value={powerUsed} onChange={(event) => { const value = Number(event.target.value); setPowerUsed(value); setCosts((current) => ({ ...current, potere: value })); }} /><output>{powerUsed}</output></label><label>Potere gratis<input type="number" min="0" max="50" value={freePower} onChange={(event) => setFreePower(Math.max(0, Number(event.target.value)))} /></label></>}<small>{selectedOption?.spell ? `${selectedOption.spell.formula || "Formula dell'incantesimo"}. Mana richiesto: ${costs.mana || 0}.` : `Conversione generica: 1 effetto = 1 Mana. Mana richiesto: ${costs.mana || 0}.`}</small></fieldset>
-          <fieldset><legend>Costi</legend><div className="planner-costs">{Object.entries(costs).map(([key, value]) => <label key={key}>{key}<input type="number" min="0" value={value} onChange={(event) => setCosts({ ...costs, [key]: Math.max(0, Number(event.target.value)) })} /></label>)}</div></fieldset>
+          <fieldset className="combat-spell-controls"><legend>{selectedOption?.spell ? "Controlli incantesimo" : "Controlli effetto"}</legend><div className="combat-effect-control" role="group" aria-label="Regola effetto"><span>Effetto{selectedOption?.spell?.effectUnit ? ` · ${selectedOption.spell.effectUnit}` : ""}</span><button type="button" disabled={spellIntensity <= 0} onClick={() => updateEffect(spellIntensity - 1)} aria-label="Riduci effetto">−</button><input aria-label="Effetto" type="range" min="0" max="500" value={spellIntensity} onChange={(event) => updateEffect(Number(event.target.value))} /><button type="button" disabled={spellIntensity >= 500} onClick={() => updateEffect(spellIntensity + 1)} aria-label="Aumenta effetto">+</button><output>{spellIntensity}</output></div>{actionType === "cast" && <><label>Potere usato<input type="range" min="0" max={Math.max(0, character?.resources.find((resource) => resource.key === "potere")?.current || 0)} value={powerUsed} onChange={(event) => setPowerUsed(Number(event.target.value))} /><output>{powerUsed}</output></label><label>Potere gratis<input type="number" min="0" max="50" value={freePower} onChange={(event) => setFreePower(Math.max(0, Number(event.target.value)))} /></label></>}<small>{selectedOption?.spell ? `${selectedOption.spell.formula || "Formula dell'incantesimo"}. Mana richiesto: ${requiredMana}.` : `Conversione generica: 1 effetto = 1 Mana. Mana richiesto: ${requiredMana}.`}</small>
+            {actionType === "cast" && <p className="combat-spell-economy">{[
+              `Mana ${requiredMana} − ${powerUsed + freePower} Potere × ${economy.manaDiscountPerPower} = ${resolvedCosts.mana} Mana`,
+              economy.manaPerEnergy > 0 ? `Energia ${requiredMana} / ${economy.manaPerEnergy} = ${resolvedCosts.energia}` : "Energia: conversione non disponibile",
+              economy.manaPerActionPoint > 0 ? `PA ${requiredMana} / ${economy.manaPerActionPoint} − ${powerUsed + freePower} × ${economy.actionPointDiscountPerPower} = ${resolvedCosts.pa}` : "PA: conversione non disponibile",
+              `Potere speso ${resolvedCosts.potere}`,
+            ].join(" · ")}</p>}</fieldset>
+          <fieldset><legend>Costi{actionType === "cast" ? " calcolati" : ""}</legend><div className="planner-costs">{Object.entries(resolvedCosts).map(([key, value]) => <label key={key}>{key}<input type="number" min="0" value={value} readOnly={actionType === "cast"} onChange={(event) => setCosts({ ...costs, [key]: Math.max(0, Number(event.target.value)) })} /></label>)}</div>{actionType === "cast" && <small>Mana, Energia e PA si pagano insieme; il Potere gratuito sconta senza essere speso.</small>}</fieldset>
         </>}
         <button className="button primary" disabled={busy || !characterId}>Aggiungi {selectedKey === "movement" ? "Movimento" : "alla coda"}</button>
       </form>
@@ -921,6 +1023,33 @@ export function CombatPage() {
     })),
   } : rawMap, [localActionPoints, rawMap]);
   useEffect(() => { if (!mapId && map?.id) setMapId(map.id); }, [map?.id, mapId]);
+  useEffect(() => {
+    // Scorciatoia fissa della pagina Combattimento: Ctrl + Alt apre e chiude le Azioni rapide.
+    // Si attiva al rilascio e solo se nessun altro tasto è stato premuto nel frattempo,
+    // così AltGr (che su Windows equivale a Ctrl + Alt) non apre la finestra mentre si scrive.
+    let armed = false;
+    const isModifier = (key: string) => key === "Control" || key === "Alt";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!isModifier(event.key)) { armed = false; return; }
+      if (event.ctrlKey && event.altKey && !event.shiftKey && !event.metaKey) armed = true;
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (!isModifier(event.key) || !armed) return;
+      armed = false;
+      setPlannerOpen((current) => !current);
+      setHexOpen(false);
+      setAttackOpen(false);
+    };
+    const disarm = () => { armed = false; };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", disarm);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", disarm);
+    };
+  }, []);
   useEffect(() => {
     if (!map) return;
     const after = map.events[0]?.id || 0;
@@ -1091,7 +1220,7 @@ export function CombatPage() {
         </aside>
       </div>
     </>}
-    {plannerOpen && map && <Modal title={`Azioni rapide · ${map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.character.name || "Combattimento"}`} onClose={() => setPlannerOpen(false)} wide resizable className="combat-quick-actions-modal" footer={<><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 8).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details><button className="button secondary" onClick={() => setPlannerOpen(false)}>Chiudi</button></>}><QuickActionsPanel map={map} paths={paths} busy={mutation.isPending} notify={notify} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} /></Modal>}
+    {plannerOpen && map && <Modal title={`Azioni rapide · ${map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.character.name || "Combattimento"}`} onClose={() => setPlannerOpen(false)} wide resizable hideHeader className="combat-quick-actions-modal" footer={<><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 8).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details><button className="button secondary" onClick={() => setPlannerOpen(false)}>Chiudi</button></>}><QuickActionsPanel map={map} paths={paths} busy={mutation.isPending} notify={notify} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} onSaveActionSettings={(targetCharacterId, settings) => act("combat.updateActionSettings", { characterId: targetCharacterId, ...settings })} /></Modal>}
     {mapManagerOpen && <MapManagerModal workspace={workspace} busy={mutation.isPending} onClose={() => setMapManagerOpen(false)} onSelect={(id) => { setMapId(id); setPaths(null); setSelectedHex(null); setSelectedHexes([]); setMapManagerOpen(false); }} onEdit={() => { setMapManagerOpen(false); setMapEditorMode("edit"); }} onVersions={() => { setMapManagerOpen(false); setVersionsOpen(true); }} onCharacters={() => { setMapManagerOpen(false); setCharacterManager(true); }} />}
     {mapEditorMode && <UnifiedMapEditorModal workspace={workspace} createNew={mapEditorMode === "create"} busy={mutation.isPending} onClose={() => setMapEditorMode(null)} onSave={async (draft, file, convertToWebp) => {
       let imageId = draft.imageId;

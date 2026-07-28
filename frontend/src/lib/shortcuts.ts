@@ -42,6 +42,19 @@ export const PROFILE_SHORTCUTS: Record<Exclude<ShortcutProfile, "custom">, Recor
   fast: FAST_SHORTCUTS,
 };
 
+export const SHORTCUT_CATEGORY = "scorciatoie da tastiera";
+
+// Combinazioni gestite direttamente dalla schermata che le usa: restano visibili
+// in Impostazioni ma non hanno una riga salvata, quindi non sono modificabili né rimuovibili.
+export const FIXED_SHORTCUTS: Array<{ id: string; label: string; description: string; chord: string }> = [
+  {
+    id: "combat.quickActions",
+    label: "Azioni rapide (Combattimento)",
+    description: "Apre e chiude la finestra Azioni rapide dalla pagina Combattimento. Combinazione fissa, non modificabile.",
+    chord: "Ctrl + Alt",
+  },
+];
+
 /** Valore mostrato in Impostazioni: i profili fissi vincono sui valori personalizzati salvati. */
 export function shortcutSettingValue(profile: ShortcutProfile, key: string, customValue: unknown): unknown {
   if (profile === "custom" || !key.startsWith("shortcuts.") || key === "shortcuts.profile") return customValue;

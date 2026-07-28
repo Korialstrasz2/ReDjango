@@ -29,7 +29,7 @@ import { SkillsPage } from "./features/skills/SkillsPage";
 import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
-import { pageShortcutTargets, quickToolShortcutTargets, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
+import { FIXED_SHORTCUTS, pageShortcutTargets, quickToolShortcutTargets, SHORTCUT_CATEGORY, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
 import type { AuthData, BootstrapData, Guide, GuideEntry, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
@@ -782,7 +782,10 @@ function SettingsPage() {
           return <label className={`setting-row ${shortcutConflict ? "setting-row-conflict" : ""}`} key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small>{shortcutConflict && <small className="setting-inline-warning" role="alert">Questa combinazione è già assegnata a un'altra azione.</small>}</span>{profileLocked
             ? <output className="setting-fixed-value" title={`Assegnazione del profilo ${selectedShortcutProfile === "fast" ? "Veloce" : "Standard"}`}>{String(displayed ?? "").replace("+", " + ")}</output>
             : <SettingControl setting={setting} value={displayed} invalid={shortcutConflict} onChange={(value) => updateValue(setting.key, value)} />}</label>;
-        })}</section>)}</div>
+        })}{category === SHORTCUT_CATEGORY && FIXED_SHORTCUTS.map((entry) => <div className="setting-row setting-row-fixed" key={entry.id}>
+          <span><strong>{entry.label}</strong><small>{entry.description}</small></span>
+          <output className="setting-fixed-value" title="Scorciatoia di sistema: non modificabile">{entry.chord}</output>
+        </div>)}</section>)}</div>
         <div className="sticky-actions">{shortcutConflicts.size > 0 ? <small className="setting-save-warning" role="alert">Risolvi i conflitti tra scorciatoie prima di salvare.</small> : dirtyKeys.size > 0 && <small>{dirtyKeys.size === 1 ? "1 modifica non salvata" : `${dirtyKeys.size} modifiche non salvate`}</small>}<button className="button primary" disabled={mutation.isPending || !dirtyKeys.size || shortcutConflicts.size > 0}>Salva impostazioni</button></div>
       </form>}
     </div>}

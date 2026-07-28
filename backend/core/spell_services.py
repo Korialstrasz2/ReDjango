@@ -162,6 +162,8 @@ def preview_spell_cast(
         definition.minimum_mana,
         definition.base_mana + (effect / definition.effect_per_mana),
     ).to_integral_value(rounding=ROUND_CEILING)
+    # Regolamento Elder: Energia e PA si convertono dal Mana richiesto prima degli
+    # sconti, mentre il Potere sconta solo Mana e PA. Le tre voci si pagano insieme.
     mana_discount = power * _tot_value(character, "sconto_mana_per_potere")
     projected_mana = max(Decimal("0"), required_mana - mana_discount).to_integral_value(
         rounding=ROUND_CEILING
@@ -170,12 +172,12 @@ def preview_spell_cast(
     action_rate = _tot_value(character, "ogni_pa_x_mana")
     action_discount = power * _tot_value(character, "sconto_pa_per_potere")
     energy_cost = (
-        (projected_mana / energy_rate).to_integral_value(rounding=ROUND_CEILING)
+        (required_mana / energy_rate).to_integral_value(rounding=ROUND_CEILING)
         if energy_rate > 0
         else None
     )
     action_cost = (
-        max(Decimal("0"), (projected_mana / action_rate) - action_discount).to_integral_value(
+        max(Decimal("0"), (required_mana / action_rate) - action_discount).to_integral_value(
             rounding=ROUND_CEILING
         )
         if action_rate > 0
@@ -203,6 +205,7 @@ def preview_spell_cast(
         "spendsResources": False,
         "combatReady": False,
         "note": (
-            "Anteprima soltanto: il combattimento deciderà quale risorsa usare e quando applicare la spesa."
+            "Anteprima soltanto: in combattimento Mana, Energia e PA si pagano insieme, "
+            "mentre il Potere usato riduce Mana e PA."
         ),
     }

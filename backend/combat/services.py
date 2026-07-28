@@ -46,6 +46,7 @@ from .models import (
     TurnPlanAction,
     TurnPlanStep,
 )
+from .selectors import normalized_action_tags, normalized_tag_filters
 from .rules import (
     axial_to_offset,
     direct_hex_line,
@@ -783,6 +784,43 @@ def update_combat_resource(user, giocatore, payload):
         actor=character,
         payload={"resource": resource, "current": current, "maximum": maximum},
     )
+    return participant.map
+
+
+@transaction.atomic
+def update_action_settings(user, giocatore, payload):
+    """Salva sul personaggio le etichette delle azioni e i filtri delle Azioni rapide."""
+    participant = (
+        MapParticipant.objects.select_related("map", "character")
+        .get(map_id=payload["mapId"], character_id=payload["characterId"], active=True)
+    )
+    character = Personaggio.objects.select_for_update().get(pk=participant.character_id)
+    can_manage = has_minimum_role(effective_role(user, giocatore), Giocatore.ROLE_MASTER)
+    if not can_manage and participant.character_id != giocatore.active_character_id:
+        raise ApiError(
+            "combat.character_not_controlled",
+            "Puoi configurare soltanto le azioni del personaggio che controlli.",
+            status=403,
+        )
+
+    stored = dict(character.impostazioni_combat) if isinstance(character.impostazioni_combat, dict) else {}
+    if "tags" in payload:
+        raw_tags = payload["tags"]
+        if not isinstance(raw_tags, Mapping):
+            raise ApiError("combat.action_tags_invalid", "Le etichette delle azioni non sono valide.", "tags")
+        # Un'azione senza etichette memorizzate vale "no tag": non la salviamo.
+        stored["actionTags"] = {
+            str(key): normalized
+            for key, raw in raw_tags.items()
+            if (normalized := normalized_action_tags(raw))
+        }
+    if "tagFilters" in payload:
+        raw_filters = payload["tagFilters"]
+        if not isinstance(raw_filters, (list, tuple)):
+            raise ApiError("combat.tag_filters_invalid", "I filtri delle etichette non sono validi.", "tagFilters")
+        stored["tagFilters"] = normalized_tag_filters(raw_filters)
+    character.impostazioni_combat = stored
+    character.save(update_fields=["impostazioni_combat", "updated_at"])
     return participant.map
 
 

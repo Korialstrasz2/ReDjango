@@ -42,6 +42,7 @@ from .services import (
     switch_combat_primary_weapon,
     take_control,
     toggle_modifier,
+    update_action_settings,
     update_combat_resource,
     update_fog,
     update_hex,
@@ -192,6 +193,10 @@ def actions(request: HttpRequest):
         elif action == "combat.updateResource":
             map_obj = update_combat_resource(user, giocatore, payload)
             selected_map_id, message = map_obj.id, "Risorsa del combattente aggiornata."
+        elif action == "combat.updateActionSettings":
+            # Configurazione personale: nessun messaggio, si salva a ogni clic sui tag.
+            map_obj = update_action_settings(user, giocatore, payload)
+            selected_map_id, message = map_obj.id, ""
         elif action == "combat.planAction":
             map_obj = create_plan_action(payload)
             selected_map_id, message = map_obj.id, "Azione aggiunta al piano."

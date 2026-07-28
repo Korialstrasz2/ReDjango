@@ -35,6 +35,30 @@ RESOURCE_LABELS = {
     "pa": "Punti Azione",
 }
 
+# Etichette con cui il giocatore filtra le azioni rapide. "no tag" non viene mai
+# memorizzato: appartiene automaticamente a ogni azione rimasta senza etichette.
+ACTION_TAGS = (
+    "preferito",
+    "incantesimo",
+    "utility",
+    "combat",
+    "non combat",
+    "distanza",
+    "melee",
+    "modalità",
+    "no tag",
+)
+UNTAGGED_ACTION_TAG = "no tag"
+STORABLE_ACTION_TAGS = tuple(tag for tag in ACTION_TAGS if tag != UNTAGGED_ACTION_TAG)
+DEFAULT_ACTION_TAG_FILTERS = ("preferito", "combat", UNTAGGED_ACTION_TAG)
+# Conversioni Elder lette dai totali del personaggio per il costo degli incantesimi.
+SPELL_ECONOMY_KEYS = {
+    "manaDiscountPerPower": "sconto_mana_per_potere",
+    "actionPointDiscountPerPower": "sconto_pa_per_potere",
+    "manaPerEnergy": "ogni_en_x_mana",
+    "manaPerActionPoint": "ogni_pa_x_mana",
+}
+
 
 def _number(value):
     try:
@@ -69,6 +93,40 @@ def _combat_resources(character: Personaggio) -> list[dict]:
             }
         )
     return resources
+
+
+def normalized_action_tags(raw) -> list[str]:
+    """Etichette memorizzabili, senza duplicati e nell'ordine canonico."""
+    if not isinstance(raw, (list, tuple)):
+        return []
+    chosen = {str(tag).strip().lower() for tag in raw}
+    return [tag for tag in STORABLE_ACTION_TAGS if tag in chosen]
+
+
+def normalized_tag_filters(raw) -> list[str]:
+    if not isinstance(raw, (list, tuple)):
+        return list(DEFAULT_ACTION_TAG_FILTERS)
+    chosen = {str(tag).strip().lower() for tag in raw}
+    return [tag for tag in ACTION_TAGS if tag in chosen]
+
+
+def _combat_action_settings(character: Personaggio) -> dict:
+    stored = character.impostazioni_combat if isinstance(character.impostazioni_combat, dict) else {}
+    raw_tags = stored.get("actionTags")
+    tags = {}
+    if isinstance(raw_tags, Mapping):
+        for key, values in raw_tags.items():
+            normalized = normalized_action_tags(values)
+            if normalized:
+                tags[str(key)] = normalized
+    return {
+        "tags": tags,
+        "tagFilters": normalized_tag_filters(stored.get("tagFilters")),
+    }
+
+
+def _spell_economy(totals: Mapping) -> dict:
+    return {name: _number(totals.get(key)) for name, key in SPELL_ECONOMY_KEYS.items()}
 
 
 def _combat_skill_ownerships(character: Personaggio) -> list[SkillPersonaggio]:
@@ -340,6 +398,8 @@ def _character_payload(
             if isinstance(ability, dict)
         ],
         "combatButtons": _combat_buttons(character),
+        "spellEconomy": _spell_economy(totals),
+        "actionSettings": _combat_action_settings(character),
     }
 
 

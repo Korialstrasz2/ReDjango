@@ -147,7 +147,7 @@ export function CompetenciesPage() {
         setRolling(true);
       }
     },
-    onSuccess: async (result) => {
+    onSuccess: async (result, input) => {
       queryClient.setQueryData(["competencies", characterId], result.data.competencies);
       if (result.data.competenceRoll) {
         const resolved = result.data.competenceRoll;
@@ -157,7 +157,7 @@ export function CompetenciesPage() {
         completeResolvedRoll();
       } else setRolling(false);
       await Promise.all([queryClient.invalidateQueries({ queryKey: ["character-sheet", characterId] }), queryClient.invalidateQueries({ queryKey: ["personaggi"] })]);
-      notify(result.events[0]?.message || "Competenza aggiornata.");
+      if (input.action !== "competencies.roll") notify(result.events[0]?.message || "Competenza aggiornata.");
     },
     onError: (error: Error) => {
       resolvedRollRef.current = null;

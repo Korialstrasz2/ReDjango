@@ -478,6 +478,7 @@ class Personaggio(V2Model):
     crit_nor = models.CharField(max_length=40, blank=True)
     crit_mag = models.CharField(max_length=40, blank=True)
     custom_overrides = models.JSONField(default=dict, blank=True)
+    impostazioni_combat = models.JSONField(default=dict, blank=True)
     tot = models.JSONField(default=default_personaggio_tot, blank=True)
 
     class Meta:

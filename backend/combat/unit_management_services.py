@@ -814,6 +814,8 @@ def save_managed_unit(
     giocatore: Giocatore,
     values: Mapping[str, Any],
     unit_id: int | None = None,
+    *,
+    source_metadata: Mapping[str, Any] | None = None,
 ) -> tuple[Unit, bool]:
     require_unit_manager(user, giocatore)
     cleaned = _clean_unit_values(values)
@@ -837,7 +839,12 @@ def save_managed_unit(
             raise ApiError("management.units.not_found", "Unit non trovata.", status=404) from exc
     for field, value in cleaned.items():
         setattr(unit, field, value)
-    if created:
+    if source_metadata is not None:
+        unit.metadata = {
+            **(_mapping(unit.metadata)),
+            **_mapping(source_metadata),
+        }
+    elif created:
         unit.metadata = {"sourceProject": "redjango", "authoring": "unit-management"}
     try:
         unit.full_clean()

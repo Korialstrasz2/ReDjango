@@ -43,6 +43,7 @@ from .services import (
     duplicate_map,
     generate_unit,
     take_control,
+    update_action_settings,
     update_combat_resource,
     update_fog,
 )
@@ -740,6 +741,80 @@ class FogBackupAndControlTests(CombatTestCase):
                 "current": 1,
             })
         self.assertEqual(resource_error.exception.status, 403)
+
+
+class QuickActionSettingsTests(CombatTestCase):
+    def setUp(self):
+        super().setUp()
+        self.fighter = self.character(
+            "Etichettatrice",
+            sconto_mana_per_potere=2,
+            sconto_pa_per_potere=1,
+            ogni_en_x_mana=4,
+            ogni_pa_x_mana=5,
+        )
+        activate_character(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": self.fighter.id,
+            "footprint": [{"q": 0, "r": 0}],
+        })
+
+    def _payload_character(self):
+        workspace = combat_workspace_payload(self.user, self.giocatore, self.map.id)
+        return next(
+            entry["character"]
+            for entry in workspace["map"]["participants"]
+            if entry["character"]["id"] == self.fighter.id
+        )
+
+    def test_conversions_and_default_filters_reach_the_quick_actions_payload(self):
+        character = self._payload_character()
+
+        self.assertEqual(character["spellEconomy"], {
+            "manaDiscountPerPower": 2,
+            "actionPointDiscountPerPower": 1,
+            "manaPerEnergy": 4,
+            "manaPerActionPoint": 5,
+        })
+        self.assertEqual(character["actionSettings"]["tags"], {})
+        self.assertEqual(character["actionSettings"]["tagFilters"], ["preferito", "combat", "no tag"])
+
+    def test_tags_and_filters_are_stored_on_the_character_without_no_tag(self):
+        update_action_settings(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": self.fighter.id,
+            "tags": {
+                "skill:1:colpo": ["melee", "combat", "inventata"],
+                # "no tag" resta implicito: un'azione senza etichette non viene salvata.
+                "skill:1:vuota": ["no tag"],
+            },
+            "tagFilters": ["utility", "melee", "inventata"],
+        })
+        character = self._payload_character()
+
+        self.assertEqual(character["actionSettings"]["tags"], {"skill:1:colpo": ["combat", "melee"]})
+        self.assertEqual(character["actionSettings"]["tagFilters"], ["utility", "melee"])
+
+    def test_an_empty_filter_list_is_kept_instead_of_falling_back_to_the_default(self):
+        update_action_settings(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": self.fighter.id,
+            "tagFilters": [],
+        })
+
+        self.assertEqual(self._payload_character()["actionSettings"]["tagFilters"], [])
+
+    def test_a_player_cannot_configure_a_character_they_do_not_control(self):
+        player = Giocatore.objects.create(nome="giocatore-tag", role=Giocatore.ROLE_USER)
+        other = get_user_model().objects.create(username="giocatore-tag")
+
+        with self.assertRaises(ApiError) as raised:
+            update_action_settings(other, player, {
+                "mapId": self.map.id,
+                "characterId": self.fighter.id,
+                "tagFilters": ["combat"],
+            })
+        self.assertEqual(raised.exception.status, 403)
 
 
 class CharacterCloneAndPlannerTests(CombatTestCase):

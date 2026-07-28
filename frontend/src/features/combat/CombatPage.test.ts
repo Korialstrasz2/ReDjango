@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  actionMatchesTagFilters,
+  actionTagsFor,
   combatEventNeedsRefresh,
   manaForEffect,
   persistentCombatButtonIds,
+  spellCastCosts,
+  toggledActionTags,
 } from "./CombatPage";
 import {
   adjustedAttackDamage,
@@ -11,6 +15,8 @@ import {
   combatButtonTotalsSummary,
   selectedCombatButtonTotals,
 } from "./AttackPanel";
+
+const EMPTY = { pf: 0, mana: 0, energia: 0, potere: 0, pa: 0, stanchezza: 0 };
 
 describe("combat quick-action effect conversion", () => {
   it("uses one Mana for each effect point on ordinary actions", () => {
@@ -25,6 +31,48 @@ describe("combat quick-action effect conversion", () => {
       effectUnit: "danni",
       formula: "Danni = max(0, (Mana - 5) × 2)",
     })).toBe(10);
+  });
+});
+
+describe("quick-action tags", () => {
+  it("treats an action without stored labels as “no tag”", () => {
+    expect(actionTagsFor(undefined, "skill:1:a")).toEqual(["no tag"]);
+    expect(actionTagsFor({ "skill:1:a": [] }, "skill:1:a")).toEqual(["no tag"]);
+  });
+
+  it("drops “no tag” as soon as a real label is added and restores it when the last one goes", () => {
+    expect(toggledActionTags(["no tag"], "melee")).toEqual(["melee"]);
+    expect(toggledActionTags(["melee"], "combat")).toEqual(["combat", "melee"]);
+    expect(toggledActionTags(["melee"], "melee")).toEqual([]);
+    expect(actionTagsFor({ "skill:1:a": toggledActionTags(["melee"], "melee") }, "skill:1:a")).toEqual(["no tag"]);
+  });
+
+  it("keeps an action visible when at least one of its labels is filtered in", () => {
+    expect(actionMatchesTagFilters(["combat", "melee"], ["preferito", "combat", "no tag"])).toBe(true);
+    expect(actionMatchesTagFilters(["utility"], ["preferito", "combat", "no tag"])).toBe(false);
+    expect(actionMatchesTagFilters(["no tag"], ["preferito", "combat", "no tag"])).toBe(true);
+  });
+});
+
+describe("spell costs of the original rules", () => {
+  const economy = { manaDiscountPerPower: 2, actionPointDiscountPerPower: 1, manaPerEnergy: 4, manaPerActionPoint: 5 };
+
+  it("charges Mana, Energia and PA together and converts them from the undiscounted Mana", () => {
+    expect(spellCastCosts({ ...EMPTY, mana: 0 }, 20, 0, 0, economy)).toMatchObject({ mana: 20, energia: 5, pa: 4, potere: 0 });
+  });
+
+  it("lets Potere discount Mana and PA while only the spent Potere leaves the pool", () => {
+    expect(spellCastCosts({ ...EMPTY, mana: 0 }, 20, 3, 2, economy)).toMatchObject({
+      mana: 10, // 20 − (3 + 2) × 2
+      energia: 5, // 20 / 4, senza sconto
+      pa: 0, // ceil(20 / 5) − 5 × 1, mai sotto zero
+      potere: 3, // il Potere gratis non viene speso
+    });
+  });
+
+  it("skips a conversion the character cannot perform", () => {
+    expect(spellCastCosts({ ...EMPTY }, 12, 0, 0, { ...economy, manaPerEnergy: 0, manaPerActionPoint: 0 }))
+      .toMatchObject({ mana: 12, energia: 0, pa: 0 });
   });
 });
 

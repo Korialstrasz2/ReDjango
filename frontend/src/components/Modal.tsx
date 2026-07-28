@@ -1,4 +1,5 @@
 import { type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Props = {
   title: string;
@@ -8,6 +9,8 @@ type Props = {
   wide?: boolean;
   className?: string;
   resizable?: boolean;
+  /** Nasconde intestazione e pulsante di chiusura: il piè di pagina diventa la maniglia di trascinamento. */
+  hideHeader?: boolean;
 };
 
 type ResizeEdge = "top" | "right" | "bottom" | "left";
@@ -15,7 +18,7 @@ type ResizeEdge = "top" | "right" | "bottom" | "left";
 const MIN_MODAL_WIDTH = 360;
 const MIN_MODAL_HEIGHT = 240;
 
-export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false }: Props) {
+export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false, hideHeader = false }: Props) {
   const modalRef = useRef<HTMLElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
@@ -41,7 +44,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   }, [onClose]);
 
   const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
-    if ((event.target as HTMLElement).closest("button")) return;
+    if ((event.target as HTMLElement).closest("button, a, input, select, textarea, summary, label")) return;
     drag.current = { x: position.x, y: position.y, startX: event.clientX, startY: event.clientY };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -106,11 +109,14 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   };
   const stopResize = () => { resize.current = null; };
 
-  return (
+  const dragHandlers = { onPointerDown: startDrag, onPointerMove: moveDrag, onPointerUp: stopDrag, onPointerCancel: stopDrag };
+  // Il portale su body tiene la finestra sopra la barra laterale e la barra superiore,
+  // che altrimenti coprirebbero il contesto di impilamento dell'area di lavoro.
+  return createPortal(
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section
         ref={modalRef}
-        className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${className}`.trim()}
+        className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${hideHeader ? "rd-modal-headless" : ""} ${className}`.trim()}
         data-component-type="modal"
         data-theme="parchment"
         role="dialog"
@@ -118,12 +124,15 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
         aria-label={title}
         style={{ transform: `translate(${position.x}px, ${position.y}px)`, width: size?.width, height: size?.height } as CSSProperties}
       >
-        <header className="modal-header" onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
+        {!hideHeader && <header className="modal-header" {...dragHandlers}>
           <h2>{title}</h2>
           <button className="icon-button" type="button" onClick={onClose} aria-label="Chiudi">×</button>
-        </header>
+        </header>}
         <div className="modal-body">{children}</div>
-        {footer && <footer className="modal-footer">{footer}</footer>}
+        {footer && <footer className="modal-footer" {...(hideHeader ? dragHandlers : {})}>
+          {hideHeader && <span className="modal-drag-grip" aria-hidden="true" title="Trascina per spostare la finestra">⠿</span>}
+          {footer}
+        </footer>}
         {resizable && (["top", "right", "bottom", "left"] as const).map((edge) => <span
           key={edge}
           className={`rd-modal-resize-handle ${edge}`}
@@ -135,6 +144,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
           onPointerCancel={stopResize}
         />)}
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }
