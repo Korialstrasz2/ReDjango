@@ -15,7 +15,7 @@ if defined REQUESTED_MODE set "REDJANGO_ACCESS_MODE=%REQUESTED_MODE%"
 if exist "venv\Scripts\python.exe" set "PYTHON=venv\Scripts\python.exe"
 if exist ".venv\Scripts\python.exe" set "PYTHON=.venv\Scripts\python.exe"
 
-%PYTHON% -c "import cryptography, django, uvicorn, waitress, whitenoise" >nul 2>nul
+%PYTHON% -c "import cryptography, django, uvicorn, whitenoise" >nul 2>nul
 if errorlevel 1 (
     echo Preparazione dell'ambiente virtuale locale...
     if not exist ".venv\Scripts\python.exe" python -m venv .venv
@@ -101,11 +101,9 @@ if /I "%ACCESS_MODE%"=="lan" (
 echo Apri o usa Ctrl+clic sull'indirizzo della pagina principale indicato sopra.
 echo.
 
-if /I "%ACCESS_MODE%"=="lan" (
-    %PYTHON% -m uvicorn redjango.asgi:application --host 0.0.0.0 --port 8003 --ssl-keyfile .redjango\tls\lan-key.pem --ssl-certfile .redjango\tls\lan-cert.pem
-) else (
-    %PYTHON% -m waitress --listen=%BIND_ADDRESS% redjango.wsgi:application
-)
+set "SERVER_TLS_ARGS="
+if /I "%ACCESS_MODE%"=="lan" set "SERVER_TLS_ARGS=--ssl-keyfile .redjango\tls\lan-key.pem --ssl-certfile .redjango\tls\lan-cert.pem"
+%PYTHON% -m redjango.runtime_server --bind "%BIND_ADDRESS%" %SERVER_TLS_ARGS%
 set "SERVER_EXIT=%ERRORLEVEL%"
 if exist ".redjango-restart-requested" (
     del /q ".redjango-restart-requested"

@@ -45,6 +45,10 @@ Lo script installa le dipendenze mancanti, costruisce il frontend, applica le mi
 http://127.0.0.1:8003/
 ```
 
+Il launcher usa Uvicorn/ASGI in tutte le modalità. Gli aggiornamenti live del
+Combattimento restano quindi connessioni asincrone e non occupano un worker per
+giocatore mentre attendono un evento.
+
 Al primo avvio il launcher richiede la creazione di un account amministratore se non ne esiste già uno. ReDjango non espone contenuti di gioco agli utenti anonimi: sono pubbliche soltanto la pagina di accesso, l'accesso Django Admin e le risorse statiche necessarie. Ogni account Django autenticato riceve un profilo Giocatore collegato; i permessi Django Admin e il ruolo di gioco restano separati.
 
 La modalità globale si sceglie in **Impostazioni → Amministrazione → Sicurezza**:

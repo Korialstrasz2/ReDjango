@@ -36,6 +36,11 @@ export function ManagementHub() {
         <span><small>In lavorazione</small><strong>Aiuto Dungeon</strong><p>Trappole, stanze, ritmo e complicazioni da consultare al tavolo. Strumento del Master, non una guida da leggere.</p></span>
         <b aria-hidden="true">Apri →</b>
       </Link>
+      {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/dice" data-component-type="card" data-theme="arcane">
+        <span className="management-tool-icon" aria-hidden="true">◆</span>
+        <span><small>Set, texture e colori</small><strong>Gestisci Dadi</strong><p>Crea set di dadi personalizzati, assegna texture a ogni dado e imposta il set predefinito per la compagnia.</p></span>
+        <b aria-hidden="true">Apri →</b>
+      </Link>}
       {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/themes" data-component-type="card" data-theme="parchment">
         <span className="management-tool-icon" aria-hidden="true">◐</span>
         <span><small>Colori, sfondi e trasparenze</small><strong>Gestione Temi</strong><p>Modifica i temi con anteprima dal vivo, assegna gli sfondi a ogni schermata e scegli il tema predefinito.</p></span>

@@ -23,13 +23,13 @@ import { UnitManagementPage } from "./features/management/UnitManagementPage";
 import { LorePage } from "./features/lore/LorePage";
 import { MarketPage } from "./features/market/MarketPage";
 import { ContextNoteDock } from "./features/notes/ContextNoteDock";
-import { DiceSetManager } from "./features/quick-tools/DiceSetManager";
+import { DiceManagementPage } from "./features/management/DiceManagementPage";
 import { QuickTools } from "./features/quick-tools/QuickTools";
 import { SkillsPage } from "./features/skills/SkillsPage";
 import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
-import { matchesShortcut, pageShortcutTargets, shortcutConflictKeys, shortcutProfile, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
+import { pageShortcutTargets, quickToolShortcutTargets, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
 import type { AuthData, BootstrapData, Guide, GuideEntry, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
@@ -235,6 +235,7 @@ function Shell({ children }: { children: ReactNode }) {
     ["/tools/ai", "Gestione AI", "✳"],
     ...(settings.security.canManageAdminSettings
       ? [
+        ["/tools/dice", "Gestisci Dadi", "◆"] as [string, string, string, PageShortcutTarget?],
         ["/tools/themes", "Gestione Temi", "◐"] as [string, string, string, PageShortcutTarget?],
         ["/tools/variables", "Gestione Variabili", "ƒ"] as [string, string, string, PageShortcutTarget?],
       ]
@@ -268,15 +269,30 @@ function Shell({ children }: { children: ReactNode }) {
       settings: "/settings",
       tools: "/tools",
     };
+    // Tutte le combinazioni assegnate (anche quelle degli strumenti rapidi) vengono bloccate qui,
+    // così Chrome/Edge non eseguono la loro azione nativa (Alt+D sulla barra indirizzi, menu su Alt).
+    const assigned = new Set([...pageShortcutTargets, ...quickToolShortcutTargets].map((entry) => shortcutValue(settings.ui, entry)).filter(Boolean));
+    let altChordHandled = false;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || event.repeat) return;
-      const target = pageShortcutTargets.find((entry) => matchesShortcut(event, shortcutValue(settings.ui, entry)));
-      if (!target) return;
+      if (event.repeat) return;
+      const chord = shortcutFromKeyboardEvent(event);
+      if (!chord || !assigned.has(chord)) return;
+      altChordHandled = true;
       event.preventDefault();
-      navigate(paths[target]);
+      const target = pageShortcutTargets.find((entry) => shortcutValue(settings.ui, entry) === chord);
+      if (target) navigate(paths[target]);
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.key !== "Alt") return;
+      if (altChordHandled) event.preventDefault();
+      altChordHandled = false;
     };
     window.addEventListener("keydown", onKeyDown, true);
-    return () => window.removeEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keyup", onKeyUp, true);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("keyup", onKeyUp, true);
+    };
   }, [characterPath, navigate, settings.ui]);
   return (
     <div className="app-shell" data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>
@@ -580,9 +596,9 @@ function MediaPage() {
   </div>;
 }
 
-function SettingControl({ setting, value, invalid = false, disabled = false, onChange }: { setting: SettingData; value: unknown; invalid?: boolean; disabled?: boolean; onChange: (value: unknown) => void }) {
-  if (setting.valueType === "boolean") return <input type="checkbox" checked={Boolean(value)} disabled={!setting.editable || disabled} onChange={(event) => onChange(event.target.checked)} />;
-  if (setting.valueType === "select") return <select value={String(value ?? "")} disabled={!setting.editable || disabled} aria-invalid={invalid || undefined} onChange={(event) => onChange(event.target.value)}>{setting.choices.map((choice) => { const data = typeof choice === "string" ? { value: choice, label: choice } : choice; return <option key={data.value} value={data.value}>{data.label}</option>; })}</select>;
+function SettingControl({ setting, value, invalid = false, onChange }: { setting: SettingData; value: unknown; invalid?: boolean; onChange: (value: unknown) => void }) {
+  if (setting.valueType === "boolean") return <input type="checkbox" checked={Boolean(value)} disabled={!setting.editable} onChange={(event) => onChange(event.target.checked)} />;
+  if (setting.valueType === "select") return <select value={String(value ?? "")} disabled={!setting.editable} aria-invalid={invalid || undefined} onChange={(event) => onChange(event.target.value)}>{setting.choices.map((choice) => { const data = typeof choice === "string" ? { value: choice, label: choice } : choice; return <option key={data.value} value={data.value}>{data.label}</option>; })}</select>;
   if (setting.valueType === "color") return <input type="color" value={String(value || "#000000")} disabled={!setting.editable} onChange={(event) => onChange(event.target.value)} />;
   if (setting.valueType === "integer" && setting.key === "appearance.font_scale") {
     const scale = Number(value ?? 100);
@@ -706,8 +722,15 @@ function SettingsPage() {
     (result[setting.category] ||= []).push(setting);
     return result;
   }, {}), [settings.settings]);
-  const shortcutConflicts = useMemo(() => shortcutConflictKeys(values), [values]);
   const selectedShortcutProfile = shortcutProfile(values);
+  // Con i profili fissi il modulo mostra le assegnazioni del profilo, non i valori personalizzati salvati.
+  const displayedValues = useMemo(
+    () => (selectedShortcutProfile === "custom"
+      ? values
+      : Object.fromEntries(Object.entries(values).map(([key, value]) => [key, shortcutSettingValue(selectedShortcutProfile, key, value)]))),
+    [values, selectedShortcutProfile],
+  );
+  const shortcutConflicts = useMemo(() => shortcutConflictKeys(displayedValues), [displayedValues]);
   const updateValue = (key: string, value: unknown) => { setDirtyKeys((current) => new Set(current).add(key)); setValues((current) => ({ ...current, [key]: value })); };
   const accessModeChanged = dirtyKeys.has("security.access_mode")
     && values["security.access_mode"] !== settings.runtime.configuredAccessMode;
@@ -755,11 +778,13 @@ function SettingsPage() {
         <div className="settings-grid" data-columns={activeTab.categories.length === 1 ? "1" : "2"}>{activeTab.categories.map((category) => <section className="panel" key={category}><h2>{category}</h2>{groups[category].map((setting) => {
           const shortcutConflict = shortcutConflicts.has(setting.key);
           const profileLocked = setting.key.startsWith("shortcuts.") && setting.key !== "shortcuts.profile" && selectedShortcutProfile !== "custom";
-          return <label className={`setting-row ${shortcutConflict ? "setting-row-conflict" : ""}`} key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small>{shortcutConflict && <small className="setting-inline-warning" role="alert">Questa combinazione è già assegnata a un'altra azione.</small>}</span><SettingControl setting={setting} value={values[setting.key]} invalid={shortcutConflict} disabled={profileLocked} onChange={(value) => updateValue(setting.key, value)} /></label>;
+          const displayed = displayedValues[setting.key];
+          return <label className={`setting-row ${shortcutConflict ? "setting-row-conflict" : ""}`} key={setting.key}><span><strong>{setting.label}</strong><small>{setting.description}</small>{shortcutConflict && <small className="setting-inline-warning" role="alert">Questa combinazione è già assegnata a un'altra azione.</small>}</span>{profileLocked
+            ? <output className="setting-fixed-value" title={`Assegnazione del profilo ${selectedShortcutProfile === "fast" ? "Veloce" : "Standard"}`}>{String(displayed ?? "").replace("+", " + ")}</output>
+            : <SettingControl setting={setting} value={displayed} invalid={shortcutConflict} onChange={(value) => updateValue(setting.key, value)} />}</label>;
         })}</section>)}</div>
         <div className="sticky-actions">{shortcutConflicts.size > 0 ? <small className="setting-save-warning" role="alert">Risolvi i conflitti tra scorciatoie prima di salvare.</small> : dirtyKeys.size > 0 && <small>{dirtyKeys.size === 1 ? "1 modifica non salvata" : `${dirtyKeys.size} modifiche non salvate`}</small>}<button className="button primary" disabled={mutation.isPending || !dirtyKeys.size || shortcutConflicts.size > 0}>Salva impostazioni</button></div>
       </form>}
-      {activeTab.id === "dadi" && settings.security.canManageAdminSettings && <section className="panel settings-admin-tool"><DiceSetManager notify={notify} /></section>}
     </div>}
     {restartConfirmation && <Modal
       title="Riavvio necessario"
@@ -847,5 +872,5 @@ export function App() {
 
   const context = { bootstrap: bootstrap.data, personaggi: personaggi.data, settings: settings.data, media: media.data.assets, mediaCategories: media.data.categories, notify };
   // The player sits above the router: changing page must never cut the soundtrack.
-  return <AppContext.Provider value={context}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
+  return <AppContext.Provider value={context}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/dice" element={<AdminOnly><DiceManagementPage /></AdminOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
 }

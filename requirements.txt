@@ -1,6 +1,5 @@
 Django>=5.2,<5.3
 django-ninja>=1.6.2,<2
-waitress>=3.0,<4
 whitenoise>=6.9,<7
 uvicorn>=0.51,<0.52
 cryptography>=49,<50

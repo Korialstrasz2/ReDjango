@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { forwardRef, type CSSProperties } from "react";
 
 import type { DiceTexture } from "../../lib/types";
 
@@ -29,13 +29,14 @@ function DiceGeometry({ sides }: { sides: number }) {
   </svg>;
 }
 
-export function DiceVisual({ sides, value, texture, rolling = false, className = "", label }: DiceVisualProps) {
+export const DiceVisual = forwardRef<HTMLDivElement, DiceVisualProps>(function DiceVisual({ sides, value, texture, rolling = false, className = "", label }, ref) {
   const textureStyle = texture ? ({
     backgroundImage: `url("${texture.imageUrl}")`,
     transform: `translate(${texture.offsetX}%, ${texture.offsetY}%) rotate(${texture.rotation}deg) scale(${texture.scale / 100})`
   } as CSSProperties) : undefined;
 
   return <div
+    ref={ref}
     className={`dice-visual dice-shape-${sides} ${rolling ? "is-rolling" : ""} ${className}`}
     data-sides={sides}
     aria-label={label || `Dado a ${sides} facce`}
@@ -44,4 +45,4 @@ export function DiceVisual({ sides, value, texture, rolling = false, className =
     <DiceGeometry sides={sides} />
     <strong className="dice-face-value">{value ?? `d${sides}`}</strong>
   </div>;
-}
+});

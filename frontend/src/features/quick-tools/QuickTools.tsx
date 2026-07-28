@@ -28,11 +28,12 @@ export function QuickTools({ characterId, characterName, campaign, settings, not
   const aiShortcut = shortcutValue(settings.ui, "ai");
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || event.repeat) return;
+      if (event.repeat) return;
       const target = quickToolShortcutTargets.find((entry) => matchesShortcut(event, shortcutValue(settings.ui, entry)));
       if (!target) return;
       event.preventDefault();
-      setTool(target);
+      // La stessa combinazione apre e richiude lo strumento.
+      setTool((current) => (current === target ? null : target));
     };
     window.addEventListener("keydown", onKeyDown, true);
     return () => window.removeEventListener("keydown", onKeyDown, true);

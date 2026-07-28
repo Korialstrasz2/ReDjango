@@ -22,9 +22,11 @@ V2_RETIRED_SETTING_KEYS = (
 )
 
 
+# Il client blocca l'azione nativa del browser sulle combinazioni assegnate (Alt+D, Alt+E, Alt+F
+# comprese), quindi l'intera riga centrale della tastiera italiana è selezionabile.
 SAFE_ALT_SHORTCUT_CHOICES = [
     {"value": f"Alt+{letter}", "label": f"Alt + {letter}"}
-    for letter in "ABCGHIJKLMNOPQRSTUVWXYZ"
+    for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZÒÀÙ"
 ]
 
 

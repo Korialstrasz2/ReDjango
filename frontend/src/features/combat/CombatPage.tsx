@@ -925,13 +925,52 @@ export function CombatPage() {
     if (!map) return;
     const after = map.events[0]?.id || 0;
     const stream = new EventSource(`/api/combat/maps/${map.id}/events/?after=${after}`);
+    let refreshTimer: number | null = null;
+    let refreshRunning = false;
+    let newestRemoteEventId = after;
+    let lastAttemptedEventId = after;
+
+    const refreshRemoteEvents = async () => {
+      refreshTimer = null;
+      if (refreshRunning) return;
+      refreshRunning = true;
+      try {
+        // A server read can include every event received during that read. At
+        // most one follow-up is needed if a newer event landed just after it.
+        for (let attempt = 0; attempt < 2; attempt += 1) {
+          const cached = queryClient.getQueryData<CombatWorkspace>(["combat", map.id]);
+          if (!combatEventNeedsRefresh(newestRemoteEventId, cached?.map?.events || [])) break;
+          lastAttemptedEventId = newestRemoteEventId;
+          await queryClient.invalidateQueries(
+            { queryKey: ["combat", map.id] },
+            { cancelRefetch: false },
+          );
+        }
+      } finally {
+        refreshRunning = false;
+        const cached = queryClient.getQueryData<CombatWorkspace>(["combat", map.id]);
+        if (
+          newestRemoteEventId > lastAttemptedEventId
+          && combatEventNeedsRefresh(newestRemoteEventId, cached?.map?.events || [])
+          && refreshTimer === null
+        ) {
+          refreshTimer = window.setTimeout(() => { void refreshRemoteEvents(); }, 100);
+        }
+      }
+    };
     stream.addEventListener("combat", (event) => {
       const eventId = Number((event as MessageEvent).lastEventId || 0);
+      newestRemoteEventId = Math.max(newestRemoteEventId, eventId);
       const cached = queryClient.getQueryData<CombatWorkspace>(["combat", map.id]);
       if (!combatEventNeedsRefresh(eventId, cached?.map?.events || [])) return;
-      queryClient.invalidateQueries({ queryKey: ["combat", map.id] });
+      if (refreshTimer === null && !refreshRunning) {
+        refreshTimer = window.setTimeout(() => { void refreshRemoteEvents(); }, 100);
+      }
     });
-    return () => stream.close();
+    return () => {
+      stream.close();
+      if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+    };
   }, [map?.id, queryClient]);
   const mutation = useMutation({
     mutationFn: ({ action, payload }: { action: string; payload: Record<string, unknown> }) => combatAction(action, payload),

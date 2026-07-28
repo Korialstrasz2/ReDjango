@@ -130,7 +130,12 @@ export function CharacterEquipment({
       </div>
     </div>
 
-    {character.equipment.dualWield && <section className="dual-wield-control" data-component-type="toolbar" data-theme="gold"><div><strong>Doppia impugnatura</strong><p><span className={character.equipment.primaryWeaponSlot === "arma" ? "primary" : ""}>{mainWeapon?.name}</span><b>⇄</b><span className={character.equipment.primaryWeaponSlot === "scudo" ? "primary" : ""}>{offhandWeapon?.name}</span></p><small>Conta soltanto l'arma primaria. Il cambio è gratuito.</small></div><button type="button" className="button primary small" disabled={actionPending} onClick={onSwitchPrimary}>Cambia primaria · 0 PA</button></section>}
+    {character.equipment.dualWield && <section
+      className="dual-wield-control"
+      data-component-type="toolbar"
+      data-theme="gold"
+      title="Doppia impugnatura: conta soltanto l'arma primaria (evidenziata). Il cambio è gratuito."
+    ><strong aria-label="Doppia impugnatura">⚔ Doppia</strong><p><span className={character.equipment.primaryWeaponSlot === "arma" ? "primary" : ""}>{mainWeapon?.name || "—"}</span><b aria-hidden="true">⇄</b><span className={character.equipment.primaryWeaponSlot === "scudo" ? "primary" : ""}>{offhandWeapon?.name || "—"}</span></p><button type="button" className="button primary" disabled={actionPending} onClick={onSwitchPrimary} title="Cambia arma primaria · 0 PA">Cambia · 0 PA</button></section>}
 
     {view === "figure" ? <div className="figure-equipment" data-equipment-view="figure">
       <figure className="character-figure" data-component-type="panel" data-theme="arcane" data-placeholder={isPlaceholder ? "true" : "false"}>

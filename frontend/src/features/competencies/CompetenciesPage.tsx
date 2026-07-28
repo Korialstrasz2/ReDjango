@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useApp } from "../../App";
 import { command, getData } from "../../lib/api";
 import { playRollSound } from "../../lib/dice";
+import { useDiceThrow } from "../../lib/diceThrow";
 import type { CompetenceCatalog, CompetenceEntry, CompetenceRoll, DiceSetsData } from "../../lib/types";
 import { DiceHistory } from "../quick-tools/DiceHistory";
 import { DiceVisual } from "../quick-tools/DiceVisual";
@@ -92,7 +93,10 @@ export function CompetenciesPage() {
   const { personaggi, settings, notify } = useApp();
   const queryClient = useQueryClient();
   const characterId = personaggi.giocatore.activePersonaggioId;
-  const settleTimer = useRef<number | null>(null);
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const dieRef = useRef<HTMLDivElement | null>(null);
+  const resolvedRollRef = useRef<CompetenceRoll | null>(null);
+  const physicsSettledRef = useRef(false);
   const [selectedKey, setSelectedKey] = useState("");
   const [summaryTab, setSummaryTab] = useState<SummaryTab>("current");
   const [historyTab, setHistoryTab] = useState<HistoryTab>("character");
@@ -108,27 +112,58 @@ export function CompetenciesPage() {
   const showGroupHistory = settings.security.canManageGameData && settings.ui["master.show_hidden_rolls"] !== false;
 
   useEffect(() => { if (!selectedKey && data?.competencies[0]) setSelectedKey(data.competencies[0].key); }, [data, selectedKey]);
-  useEffect(() => { if (!rolling || !selected) return; const interval = window.setInterval(() => setRollingValue(Math.floor(Math.random() * selected.dieSides) + 1), 46); return () => window.clearInterval(interval); }, [rolling, selected]);
-  useEffect(() => () => { if (settleTimer.current) window.clearTimeout(settleTimer.current); }, []);
   useEffect(() => { if (selected && !techniqueUnlocked(selected.masteryRank, technique)) setTechnique("standard"); }, [selected, technique]);
   useEffect(() => { if (!showGroupHistory) setHistoryTab("character"); }, [showGroupHistory]);
 
+  const completeResolvedRoll = () => {
+    const resolved = resolvedRollRef.current;
+    if (!physicsSettledRef.current || !resolved) return;
+    resolvedRollRef.current = null;
+    setLastRoll(resolved);
+    setRollingValue(latestDieValue(resolved) ?? 1);
+    setRolling(false);
+  };
+
+  useDiceThrow({
+    enabled: rolling,
+    boardRef,
+    dieRef,
+    sides: selected?.dieSides ?? 20,
+    animationDisabled: reducedMotion || settings.ui["dice.animation"] === false,
+    onFaceChange: setRollingValue,
+    onSettle: () => {
+      physicsSettledRef.current = true;
+      completeResolvedRoll();
+    },
+  });
+
   const mutation = useMutation({
     mutationFn: (input: MutationInput) => command<CompetenceActionData>(input.action, input.payload, "competenze"),
-    onMutate: (input) => { if (input.action === "competencies.roll" || input.action === "competencies.reroll") { if (settleTimer.current) window.clearTimeout(settleTimer.current); setRolling(true); } },
+    onMutate: (input) => {
+      if (input.action === "competencies.roll" || input.action === "competencies.reroll") {
+        resolvedRollRef.current = null;
+        physicsSettledRef.current = false;
+        setRollingValue(Math.floor(Math.random() * (selected?.dieSides ?? 20)) + 1);
+        setRolling(true);
+      }
+    },
     onSuccess: async (result) => {
       queryClient.setQueryData(["competencies", characterId], result.data.competencies);
       if (result.data.competenceRoll) {
         const resolved = result.data.competenceRoll;
         void queryClient.invalidateQueries({ queryKey: ["diceHistory"] });
         if (settings.ui["dice.sound"] !== false) playRollSound();
-        const settle = () => { setLastRoll(resolved); setRollingValue(latestDieValue(resolved) ?? 1); setRolling(false); };
-        if (reducedMotion || settings.ui["dice.animation"] === false) settle(); else settleTimer.current = window.setTimeout(settle, 640);
+        resolvedRollRef.current = resolved;
+        completeResolvedRoll();
       } else setRolling(false);
       await Promise.all([queryClient.invalidateQueries({ queryKey: ["character-sheet", characterId] }), queryClient.invalidateQueries({ queryKey: ["personaggi"] })]);
       notify(result.events[0]?.message || "Competenza aggiornata.");
     },
-    onError: (error: Error) => { setRolling(false); notify(error.message, "error"); },
+    onError: (error: Error) => {
+      resolvedRollRef.current = null;
+      setRolling(false);
+      notify(error.message, "error");
+    },
   });
 
   const diceSet = useMemo(() => {
@@ -202,8 +237,12 @@ export function CompetenciesPage() {
 
         <section className="competence-understage">
           <aside className="competence-roll-workspace" style={dicePalette} data-component-type="panel" data-theme="arcane">
-            <header><h2>{selected.name}</h2><p>{rollEquation(selected, technique)}</p></header>
-            <div className={`competence-dice-stage ${rolling ? "rolling" : ""}`} aria-live="polite"><span className="competence-rune-ring" aria-hidden="true">✦　✧　✦　✧</span><DiceVisual sides={selected.dieSides} value={dieValue} texture={diceSet?.textures.find((entry) => entry.sides === selected.dieSides)} rolling={rolling} className="competence-die" />{!rolling && shownRoll && <div className="competence-roll-result"><small>Ultimo risultato</small><strong>{shownRoll.total}</strong><span>{latestDieValue(shownRoll)} al dado · {signed(shownRoll.modifier)} mod.</span></div>}</div>
+            <div ref={boardRef} className={`competence-dice-stage ${rolling ? "rolling" : ""}`} aria-live="polite">
+              <header><h2>{selected.name}</h2><p>{rollEquation(selected, technique)}</p></header>
+              <span className="competence-rune-ring" aria-hidden="true">✦　✧　✦　✧</span>
+              <DiceVisual ref={dieRef} sides={selected.dieSides} value={dieValue} texture={diceSet?.textures.find((entry) => entry.sides === selected.dieSides)} rolling={rolling} className="competence-die" />
+              {!rolling && shownRoll && <div className="competence-roll-result"><small>Ultimo risultato</small><strong>{shownRoll.total}</strong><span>{latestDieValue(shownRoll)} al dado · {signed(shownRoll.modifier)} mod.</span></div>}
+            </div>
             <div className="competence-techniques">{([["standard", "Tiro normale", "Nessun costo"], ["focus", "Impulso +1", `${techniqueEnergyCost(selected.masteryRank, "focus")} Energia`], ["amplify", "Impulso maggiore +2", `${techniqueEnergyCost(selected.masteryRank, "amplify")} Energia`]] as Array<[CompetenceTechnique, string, string]>).map(([key, label, cost]) => <button key={key} type="button" className={technique === key ? "active" : ""} disabled={!techniqueUnlocked(selected.masteryRank, key)} onClick={() => setTechnique(key)}><strong>{label}</strong><span>{techniqueUnlocked(selected.masteryRank, key) ? cost : `Maestria ${key === "focus" ? 1 : 3}`}</span></button>)}</div>
             <button type="button" className="button primary competence-roll-button" data-energy-overdraw={energyCost > data.character.energyCurrent ? "true" : "false"} disabled={rollDisabled} onClick={rollSelectedCompetence}>{rolling ? "Il dado è in volo…" : `Tira d${selected.dieSides}`}</button>
             {shownRoll?.canReroll && <button type="button" className="button secondary competence-reroll-button" disabled={mutation.isPending || rolling} onClick={() => mutation.mutate({ action: "competencies.reroll", payload: { characterId, rollId: shownRoll.id } })}>Rilancia gratis · {shownRoll.rerollsRemaining} rimasti</button>}

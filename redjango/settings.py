@@ -190,7 +190,10 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "frontend" / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# Local/LAN modes serve source assets through the finders. Giving WhiteNoise a
+# non-existent collection directory in those modes only produces a misleading
+# startup warning. The directory is required solely by online collectstatic.
+STATIC_ROOT = BASE_DIR / "staticfiles" if REDJANGO_ACCESS_MODE == "online" else None
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {

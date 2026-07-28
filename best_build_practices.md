@@ -763,6 +763,7 @@ ReDjango should stay light.
 - Reseeding may add a missing `combat_damage_rules` object but must never overwrite an administrator's saved table.
 - The combat workspace uses a compact combat-specific character projection. Do not replace it with the full character-sheet selector: owned-skill pricing and unlock analysis make that an N×M query path.
 - A successful combat mutation already returns the updated workspace. Put that response directly in the query cache; only remote SSE event IDs absent from the cache should trigger a refetch.
+- Combat SSE must run as an asynchronous iterator on the ASGI server used by the managed launcher. A waiting player must not reserve a synchronous request worker; reconnects prefer `Last-Event-ID` over the initial query cursor.
 - Character-sheet and character-mutation responses call `personaggio_detail(..., include_skills=False)`. Skill cards, calculated prices, prerequisites and unlock analysis belong exclusively to the dedicated Skills endpoints.
 - The character page loads item-editor configuration with `limit=0` and performs a bounded item query only after the user starts searching. Do not restore the eager full-catalog download to the sheet's critical path.
 

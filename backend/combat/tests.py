@@ -2,6 +2,7 @@ import importlib
 import random
 from unittest.mock import patch
 
+from asgiref.sync import async_to_sync
 from django.apps import apps as django_apps
 from django.contrib.auth import get_user_model
 from django.db import connection
@@ -17,7 +18,7 @@ from backend.core.management_services import delete_managed_character
 from backend.core.models import DatiCampagna, Effetto, FamigliaSkill, Giocatore, GlobalModifiers, GruppoFamiglieSkill, Oggetto, SettingDefinition, Skill, Unit
 
 from .damage_rules import DAMAGE_RULES_CONFIG_KEY, default_damage_rules
-from .models import HexType, MapHex, MapMetadata, MapParticipant, MapParticipantFootprint, MapSnapshot, MapType
+from .models import CombatEvent, HexType, MapHex, MapMetadata, MapParticipant, MapParticipantFootprint, MapSnapshot, MapType
 from .rules import direct_hex_line, hex_distance, resolve_attack_values
 from .selectors import combat_workspace_payload
 from .services import (
@@ -68,6 +69,47 @@ class CombatTestCase(TestCase):
             note=Note.objects.create(nome=f"{name} note"),
             tot=tot,
         )
+
+
+class EventStreamTests(CombatTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.user)
+
+    def test_stream_is_async_and_reconnect_prefers_last_event_id(self):
+        already_seen = CombatEvent.objects.create(
+            map=self.map,
+            event_type="combat.first",
+            message="Evento già ricevuto.",
+        )
+        newest = CombatEvent.objects.create(
+            map=self.map,
+            event_type="combat.second",
+            message="Evento nuovo.",
+        )
+
+        response = self.client.get(
+            f"/api/combat/maps/{self.map.id}/events/?after=0",
+            HTTP_LAST_EVENT_ID=str(already_seen.id),
+        )
+
+        async def first_two_chunks():
+            iterator = response.streaming_content.__aiter__()
+            try:
+                return [await anext(iterator), await anext(iterator)]
+            finally:
+                await iterator.aclose()
+
+        chunks = async_to_sync(first_two_chunks)()
+        event_chunk = chunks[1].decode("utf-8")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.is_async)
+        self.assertEqual(response.headers["Cache-Control"], "no-cache, no-transform")
+        self.assertIn("retry: 2000", chunks[0].decode("utf-8"))
+        self.assertIn(f"id: {newest.id}", event_chunk)
+        self.assertIn("Evento nuovo.", event_chunk)
+        self.assertNotIn(f"id: {already_seen.id}", event_chunk)
 
 
 class PathRulesTests(CombatTestCase):

@@ -1,5 +1,6 @@
 import { type CSSProperties, type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { DndContext, DragOverlay, PointerSensor, useDraggable, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, PointerSensor, pointerWithin, useDraggable, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { createPortal } from "react-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 
@@ -232,6 +233,10 @@ export function CharacterPage() {
   const [selectedCatalogItemId, setSelectedCatalogItemId] = useState<number | null>(null);
   const [moveSourceId, setMoveSourceId] = useState<string | null>(null);
   const [dragLabel, setDragLabel] = useState<string | null>(null);
+  // The drop target follows the cursor hotspot, so drags render their own arrow at that
+  // exact point: without it the browser cursor and the highlighted slot look unrelated.
+  const [dragging, setDragging] = useState(false);
+  const [dragPointer, setDragPointer] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [picker, setPicker] = useState<{ slot: Slot; anchor: { x: number; y: number } } | null>(null);
   const [equipChoice, setEquipChoice] = useState<{ item: Item; candidateIds: string[] } | null>(null);
   const [autocompleteOpen, setAutocompleteOpen] = useState(false);
@@ -351,6 +356,13 @@ export function CharacterPage() {
     },
   });
 
+  useEffect(() => {
+    if (!dragging) return;
+    const track = (event: PointerEvent) => setDragPointer({ x: event.clientX, y: event.clientY });
+    window.addEventListener("pointermove", track);
+    return () => window.removeEventListener("pointermove", track);
+  }, [dragging]);
+
   if (!Number.isFinite(id)) return <div className="page"><p>Nessun personaggio selezionato.</p><Link to="/characters">Scegli personaggio</Link></div>;
   if (sheetQuery.isLoading || catalogQuery.isLoading) return <div className="page character-loading">Caricamento della scheda…</div>;
   if (sheetQuery.error || catalogQuery.error || !character || !catalog) {
@@ -446,6 +458,9 @@ export function CharacterPage() {
     setActiveSuggestionIndex(0);
   };
   const dragStart = (event: DragStartEvent) => {
+    const activator = event.activatorEvent as PointerEvent | undefined;
+    if (activator && "clientX" in activator) setDragPointer({ x: activator.clientX, y: activator.clientY });
+    setDragging(true);
     const catalogItem = event.active.data.current?.catalogItem as Item | undefined;
     if (catalogItem) {
       setSelectedCatalogItemId(catalogItem.id);
@@ -457,6 +472,7 @@ export function CharacterPage() {
     setMoveSourceId(source?.id || null);
   };
   const dragEnd = (event: DragEndEvent) => {
+    setDragging(false);
     setDragLabel(null);
     setMoveSourceId(null);
     const target = event.over?.data.current?.slot as Slot | undefined;
@@ -492,7 +508,9 @@ export function CharacterPage() {
     setPicker({ slot, anchor });
   };
 
-  return <DndContext sensors={sensors} onDragStart={dragStart} onDragEnd={dragEnd} onDragCancel={() => { setDragLabel(null); setMoveSourceId(null); }}>
+  // pointerWithin resolves the drop by the cursor hotspot alone, matching the arrow the drag
+  // renders: overlapping figure slots no longer steal a drop from the slot under the tip.
+  return <DndContext sensors={sensors} collisionDetection={pointerWithin} onDragStart={dragStart} onDragEnd={dragEnd} onDragCancel={() => { setDragging(false); setDragLabel(null); setMoveSourceId(null); }}>
     <div className="page character-page">
       <header className="character-hud" data-component-type="toolbar" data-theme="default">
         <div className="character-identity">
@@ -649,6 +667,9 @@ export function CharacterPage() {
 
     </div>
     <DragOverlay>{dragLabel ? <div className="drag-overlay">{dragLabel}</div> : null}</DragOverlay>
+    {dragging && createPortal(<div className="drag-cursor" style={{ left: dragPointer.x, top: dragPointer.y }} aria-hidden="true">
+      <svg viewBox="0 0 14 22" width={22} height={34}><path d="M14 0 L14 18 L9 13.6 L6 20.6 L2.6 19 L5.7 12.3 L0 12.3 Z" /></svg>
+    </div>, document.body)}
     {picker && <SlotItemPicker
       slot={picker.slot}
       anchor={picker.anchor}

@@ -29,12 +29,25 @@ export const STANDARD_SHORTCUTS: Record<ShortcutTarget, string> = {
   settings: "Alt+I", tools: "Alt+T", journal: "Alt+J", dice: "Alt+R", audio: "Alt+U", ai: "Alt+H",
 };
 
-// The physical bottom row of an Italian keyboard mirrors the main sidebar order.
+// La riga centrale di una tastiera italiana (A…Ù) segue l'ordine del menu principale,
+// la riga inferiore (Z…V) copre gli strumenti rapidi.
 export const FAST_SHORTCUTS: Record<ShortcutTarget, string> = {
-  dashboard: "Alt+<", character: "Alt+Z", skills: "Alt+X", competencies: "Alt+C", creation: "Alt+V",
-  combat: "Alt+B", travel: "Alt+N", market: "Alt+M", lore: 'Alt+,', media: "Alt+.", guides: "Alt+-",
-  settings: "Alt+W", tools: "Alt+Y", journal: "Alt+A", dice: "Alt+H", audio: "Alt+J", ai: "Alt+K",
+  dashboard: "Alt+A", character: "Alt+S", skills: "Alt+D", competencies: "Alt+F", creation: "Alt+G",
+  combat: "Alt+H", travel: "Alt+J", market: "Alt+K", lore: "Alt+L", media: "Alt+Ò", guides: "Alt+À",
+  settings: "Alt+Ù", tools: "Alt+T", journal: "Alt+Z", dice: "Alt+X", audio: "Alt+C", ai: "Alt+V",
 };
+
+export const PROFILE_SHORTCUTS: Record<Exclude<ShortcutProfile, "custom">, Record<ShortcutTarget, string>> = {
+  standard: STANDARD_SHORTCUTS,
+  fast: FAST_SHORTCUTS,
+};
+
+/** Valore mostrato in Impostazioni: i profili fissi vincono sui valori personalizzati salvati. */
+export function shortcutSettingValue(profile: ShortcutProfile, key: string, customValue: unknown): unknown {
+  if (profile === "custom" || !key.startsWith("shortcuts.") || key === "shortcuts.profile") return customValue;
+  const target = key.slice("shortcuts.".length) as ShortcutTarget;
+  return PROFILE_SHORTCUTS[profile][target] ?? customValue;
+}
 
 export function shortcutProfile(ui: Record<string, unknown>): ShortcutProfile {
   const profile = ui["shortcuts.profile"];
@@ -49,12 +62,25 @@ export function shortcutValue(ui: Record<string, unknown>, target: ShortcutTarge
   return typeof value === "string" ? value : STANDARD_SHORTCUTS[target];
 }
 
-export function shortcutFromKeyboardEvent(event: Pick<KeyboardEvent, "altKey" | "ctrlKey" | "metaKey" | "shiftKey" | "key">): string | null {
-  if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || !/^[a-z<,.-]$/i.test(event.key)) return null;
-  return `Alt+${event.key.toLocaleUpperCase("it")}`;
+const SHORTCUT_KEY_PATTERN = /^[a-z<,.\-òàù]$/i;
+// Con Alt premuto alcune tastiere non producono il carattere: ricadiamo sulla posizione fisica del tasto.
+const SHORTCUT_KEY_BY_CODE: Record<string, string> = {
+  Semicolon: "ò", Quote: "à", Backslash: "ù", IntlBackslash: "<", Comma: ",", Period: ".", Minus: "-",
+};
+
+type ShortcutKeyboardEvent = Pick<KeyboardEvent, "altKey" | "ctrlKey" | "metaKey" | "shiftKey" | "key"> & { code?: string };
+
+export function shortcutFromKeyboardEvent(event: ShortcutKeyboardEvent): string | null {
+  if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return null;
+  const code = event.code || "";
+  const key = SHORTCUT_KEY_PATTERN.test(event.key)
+    ? event.key
+    : /^Key[A-Z]$/.test(code) ? code.slice(3) : SHORTCUT_KEY_BY_CODE[code] || "";
+  if (!key) return null;
+  return `Alt+${key.toLocaleUpperCase("it")}`;
 }
 
-export function matchesShortcut(event: Pick<KeyboardEvent, "altKey" | "ctrlKey" | "metaKey" | "shiftKey" | "key">, shortcut: string): boolean {
+export function matchesShortcut(event: ShortcutKeyboardEvent, shortcut: string): boolean {
   return Boolean(shortcut) && shortcutFromKeyboardEvent(event) === shortcut;
 }
 

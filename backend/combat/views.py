@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 
+from asgiref.sync import sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import close_old_connections
 from django.http import HttpRequest, JsonResponse, StreamingHttpResponse
@@ -44,6 +46,10 @@ from .services import (
     update_fog,
     update_hex,
 )
+
+EVENT_STREAM_POLL_SECONDS = 1.0
+EVENT_STREAM_KEEPALIVE_SECONDS = 15.0
+EVENT_STREAM_MAX_SECONDS = 300.0
 
 
 def _request_id(request, fallback=""):
@@ -212,26 +218,49 @@ def actions(request: HttpRequest):
 def event_stream(request: HttpRequest, map_id: int):
     _identity(request)
     try:
-        cursor = int(request.GET.get("after") or request.headers.get("Last-Event-ID") or 0)
+        # EventSource keeps the original query string when it reconnects and
+        # reports its newer cursor in Last-Event-ID. Prefer that header so a
+        # reconnect never replays the whole page session.
+        cursor = int(request.headers.get("Last-Event-ID") or request.GET.get("after") or 0)
     except ValueError:
         cursor = 0
 
-    def stream():
-        nonlocal cursor
-        deadline = time.monotonic() + 25
-        while time.monotonic() < deadline:
+    def pending_events(after: int):
+        close_old_connections()
+        try:
+            return list(
+                CombatEvent.objects
+                .filter(map_id=map_id, id__gt=after)
+                .order_by("id")
+                .values("id", "event_type", "message", "payload")[:100]
+            )
+        finally:
             close_old_connections()
-            rows = list(CombatEvent.objects.filter(map_id=map_id, id__gt=cursor).order_by("id")[:100])
+
+    async def stream():
+        nonlocal cursor
+        deadline = time.monotonic() + EVENT_STREAM_MAX_SECONDS
+        next_keepalive = time.monotonic() + EVENT_STREAM_KEEPALIVE_SECONDS
+        yield "retry: 2000\n\n"
+        while time.monotonic() < deadline:
+            rows = await sync_to_async(pending_events, thread_sensitive=True)(cursor)
             if rows:
                 for row in rows:
-                    cursor = row.id
-                    payload = json.dumps({"id": row.id, "type": row.event_type, "message": row.message, "payload": row.payload}, ensure_ascii=False)
-                    yield f"id: {row.id}\nevent: combat\ndata: {payload}\n\n"
-            else:
+                    cursor = row["id"]
+                    payload = json.dumps({
+                        "id": row["id"],
+                        "type": row["event_type"],
+                        "message": row["message"],
+                        "payload": row["payload"],
+                    }, ensure_ascii=False)
+                    yield f"id: {row['id']}\nevent: combat\ndata: {payload}\n\n"
+                next_keepalive = time.monotonic() + EVENT_STREAM_KEEPALIVE_SECONDS
+            elif time.monotonic() >= next_keepalive:
                 yield ": keepalive\n\n"
-            time.sleep(1)
+                next_keepalive = time.monotonic() + EVENT_STREAM_KEEPALIVE_SECONDS
+            await asyncio.sleep(EVENT_STREAM_POLL_SECONDS)
 
     response = StreamingHttpResponse(stream(), content_type="text/event-stream")
-    response["Cache-Control"] = "no-cache"
+    response["Cache-Control"] = "no-cache, no-transform"
     response["X-Accel-Buffering"] = "no"
     return response
