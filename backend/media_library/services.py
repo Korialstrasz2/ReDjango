@@ -1,4 +1,5 @@
 import hashlib
+from pathlib import Path
 
 from django.db import transaction
 from django.db.models.deletion import ProtectedError, RestrictedError
@@ -8,6 +9,18 @@ from backend.core.api import ApiError
 from .defaults import DEFAULT_IMAGE_GROUPS
 from .models import ImageCategory, UploadedImage
 from .selectors import USER_IMAGE_FOLDER
+
+
+MAXIMUM_IMAGE_BYTES = 10 * 1024 * 1024
+ALLOWED_IMAGE_TYPES = {
+    ".avif": {"image/avif"},
+    ".bmp": {"image/bmp"},
+    ".gif": {"image/gif"},
+    ".jpeg": {"image/jpeg"},
+    ".jpg": {"image/jpeg"},
+    ".png": {"image/png"},
+    ".webp": {"image/webp"},
+}
 
 
 def _checksum(uploaded_file) -> str:
@@ -52,8 +65,15 @@ def create_uploaded_image(owner, uploaded_file, payload: dict) -> UploadedImage:
         raise ApiError("media.file_required", "Seleziona un'immagine da caricare.", "file")
 
     mime_type = (uploaded_file.content_type or "").lower()
-    if not mime_type.startswith("image/"):
+    extension = Path(uploaded_file.name).suffix.casefold()
+    if mime_type not in ALLOWED_IMAGE_TYPES.get(extension, set()):
         raise ApiError("media.image_required", "L'archivio multimediale accetta soltanto file immagine.", "file")
+    if uploaded_file.size > MAXIMUM_IMAGE_BYTES:
+        raise ApiError(
+            "media.image_too_large",
+            "L'immagine non può superare 10 MB.",
+            "file",
+        )
 
     title = str(payload.get("title") or uploaded_file.name).strip()[:180] or uploaded_file.name[:180]
     usage_type = str(payload.get("usageType") or "generic")[:80]

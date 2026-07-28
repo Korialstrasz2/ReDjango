@@ -49,7 +49,7 @@ Al primo avvio il launcher richiede la creazione di un account amministratore se
 La modalità globale si sceglie in **Impostazioni → Amministrazione → Sicurezza**:
 
 - **Bloccata · solo questo computer** è il valore sicuro predefinito: il server ascolta su `127.0.0.1` e rifiuta anche a livello middleware ogni socket non locale.
-- **Rete locale LAN** ascolta su tutte le interfacce (`0.0.0.0`), ma continua a richiedere il login per ogni pagina e API.
+- **Rete locale LAN** ascolta su tutte le interfacce (`0.0.0.0`) tramite HTTPS e continua a richiedere il login per ogni pagina, file multimediale e API.
 - **Server online** ascolta su `127.0.0.1` per impostazione predefinita ed è pensata per un reverse proxy HTTPS. Richiede una chiave segreta e host espliciti.
 
 Il cambio dalla UI mostra la conferma «Cambiare questa impostazione richiede il riavvio del server. Riavviare?». Quando l'app è stata avviata con `start_server.bat`, **Salva e riavvia** arresta il processo in modo controllato, il launcher lo riavvia nella nuova modalità e la pagina si riconnette automaticamente. Con un avvio manuale la modalità viene salvata, ma il riavvio deve essere eseguito manualmente.
@@ -61,16 +61,43 @@ start_server.bat locked
 start_server.bat lan
 ```
 
+Al primo avvio LAN, ReDjango genera in `.redjango\tls\` un'autorità di
+certificazione locale e un certificato HTTPS con i nomi e gli indirizzi IP
+correnti del computer. Copiare sui dispositivi client soltanto `lan-ca.pem`,
+verificarne l'impronta SHA-256 stampata dal server e aggiungerlo all'archivio
+delle autorità attendibili prima di inserire una password. `lan-ca-key.pem` e
+`lan-key.pem` devono restare privati sul server. Se cambia l'indirizzo LAN,
+il launcher rinnova il certificato server sotto la stessa CA, quindi i client
+già configurati non devono importare un nuovo certificato.
+
 Per la pubblicazione online, configurare almeno:
 
 ```bat
-set REDJANGO_SECRET_KEY=una-chiave-lunga-casuale
+set REDJANGO_SECRET_KEY=una-chiave-casuale-di-almeno-50-caratteri
 set REDJANGO_ALLOWED_HOSTS=gioco.example.it
 set REDJANGO_CSRF_TRUSTED_ORIGINS=https://gioco.example.it
+set REDJANGO_TRUSTED_PROXIES=127.0.0.1
 start_server.bat online
 ```
 
-La modalità online abilita cookie sicuri, redirect HTTPS e HSTS. Il launcher rifiuta il passaggio a `online` se `REDJANGO_SECRET_KEY` o `REDJANGO_ALLOWED_HOSTS` mancano. La terminazione TLS, gli aggiornamenti di sicurezza, il firewall e i backup restano responsabilità del server/reverse proxy.
+`REDJANGO_TRUSTED_PROXIES` accetta indirizzi o reti CIDR separati da virgola
+e deve contenere soltanto i reverse proxy che si collegano direttamente a
+ReDjango; se viene omesso in modalità online sono attendibili soltanto gli
+indirizzi di loopback. Gli header `X-Forwarded-*` provenienti da altri
+indirizzi vengono eliminati. Il reverse proxy deve inoltrare anche
+`/media/` a Django: non deve esporre direttamente la cartella `media`, perché
+i file sono protetti dalla sessione e le immagini riservate dal ruolo di
+gioco.
+
+La modalità online abilita cookie sicuri, redirect HTTPS e HSTS. Il launcher
+rifiuta il passaggio a `online` se `REDJANGO_SECRET_KEY` o
+`REDJANGO_ALLOWED_HOSTS` mancano. `DEBUG` è disattivato per impostazione
+predefinita in tutte le modalità; `REDJANGO_DEBUG=1` va usato soltanto
+durante lo sviluppo locale. Nelle modalità bloccata e LAN viene generata
+anche una chiave Django privata persistente; online la chiave deve sempre
+arrivare da `REDJANGO_SECRET_KEY`. La terminazione TLS online, gli aggiornamenti di
+sicurezza, il firewall e i backup restano responsabilità del
+server/reverse proxy.
 
 ## Sviluppo frontend
 

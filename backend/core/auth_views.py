@@ -1,21 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
-from django.core.cache import cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 
 from .access import runtime_access_payload
 from .api import ApiError, api_error_response, api_response, request_payload
+from .login_throttle import (
+    clear_login_failures,
+    register_login_failure,
+    throttle_state,
+)
 from .security import get_or_create_giocatore_for_user, security_payload
-
-
-LOGIN_FAILURE_LIMIT = 5
-LOGIN_FAILURE_WINDOW_SECONDS = 300
-
-
-def _login_attempt_key(request, username: str) -> str:
-    remote = str(request.META.get("REMOTE_ADDR") or "unknown")
-    normalized = username.strip().casefold()
-    return f"redjango-login:{remote}:{normalized}"
 
 
 def _session_payload(request) -> dict:
@@ -45,6 +39,7 @@ def session_status(request):
 
 @require_POST
 def login_session(request):
+    retry_after = 0
     try:
         payload = request_payload(request)
         username = str(payload.get("username") or "").strip()
@@ -56,9 +51,9 @@ def login_session(request):
                 "username",
             )
 
-        attempt_key = _login_attempt_key(request, username)
-        failures = int(cache.get(attempt_key, 0) or 0)
-        if failures >= LOGIN_FAILURE_LIMIT:
+        state = throttle_state(request, username)
+        if state.limited:
+            retry_after = state.retry_after
             raise ApiError(
                 "auth.too_many_attempts",
                 "Troppi tentativi non riusciti. Attendi cinque minuti e riprova.",
@@ -67,14 +62,14 @@ def login_session(request):
 
         user = authenticate(request, username=username, password=password)
         if user is None or not user.is_active:
-            cache.set(attempt_key, failures + 1, LOGIN_FAILURE_WINDOW_SECONDS)
+            register_login_failure(request, username)
             raise ApiError(
                 "auth.invalid_credentials",
                 "Nome utente o password non validi.",
                 status=401,
             )
 
-        cache.delete(attempt_key)
+        clear_login_failures(request, username)
         login(request, user)
         get_or_create_giocatore_for_user(user)
         return api_response(
@@ -83,7 +78,11 @@ def login_session(request):
             events=[{"type": "auth.logged_in", "message": "Accesso effettuato."}],
         )
     except ApiError as error:
-        return api_error_response(request, error)
+        response = api_error_response(request, error)
+        if error.status == 429:
+            response.headers["Retry-After"] = str(max(1, retry_after))
+            response.headers["Cache-Control"] = "no-store"
+        return response
 
 
 @require_POST

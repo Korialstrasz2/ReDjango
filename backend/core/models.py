@@ -109,6 +109,25 @@ class Giocatore(V2Model):
         return self.ROLE_RANKS.get(self.role, 0) >= self.ROLE_RANKS.get(required_role, 0)
 
 
+class LoginThrottle(models.Model):
+    """Cross-process login failure counter without storing usernames or IPs."""
+
+    key = models.CharField(max_length=64, primary_key=True)
+    failures = models.PositiveSmallIntegerField(default=0)
+    window_started_at = models.DateTimeField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "limite tentativi di accesso"
+        verbose_name_plural = "limiti tentativi di accesso"
+        indexes = [
+            models.Index(
+                fields=["updated_at"],
+                name="core_logint_updated_744393_idx",
+            )
+        ]
+
+
 class CharacterAssignmentRequest(V2Model):
     STATUS_PENDING = "pending"
     STATUS_APPROVED = "approved"

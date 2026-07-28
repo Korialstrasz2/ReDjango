@@ -6,6 +6,8 @@ __pycache__/
 venv/
 .env
 .redjango-access-mode
+.redjango-restart-requested
+.redjango/
 
 # Django/runtime
 media/

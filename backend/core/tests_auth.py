@@ -1,13 +1,17 @@
 import json
+import os
+from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
-from django.core.cache import cache
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from .models import Giocatore, SettingDefinition, SettingOverride
+from .access import schedule_managed_restart
+from .models import Giocatore, LoginThrottle, SettingDefinition, SettingOverride
+from .request_security import client_ip
 
 
 def create_access_mode_setting(value="locked"):
@@ -31,7 +35,6 @@ def create_access_mode_setting(value="locked"):
 @override_settings(REDJANGO_ACCESS_MODE="locked")
 class AuthenticationBoundaryTests(TestCase):
     def setUp(self):
-        cache.clear()
         create_access_mode_setting()
         self.user = get_user_model().objects.create_user(
             username="player-one",
@@ -90,6 +93,48 @@ class AuthenticationBoundaryTests(TestCase):
         limited = self.login(password="wrong-password")
         self.assertEqual(limited.status_code, 429)
         self.assertEqual(limited.json()["errors"][0]["code"], "auth.too_many_attempts")
+        self.assertEqual(LoginThrottle.objects.count(), 1)
+
+    def test_django_admin_login_uses_the_same_shared_throttle(self):
+        get_user_model().objects.create_superuser(
+            username="admin-throttle",
+            password="correct-horse-battery",
+        )
+        for _ in range(2):
+            response = self.login(
+                username="admin-throttle",
+                password="wrong-password",
+            )
+            self.assertEqual(response.status_code, 401)
+        for _ in range(3):
+            response = self.client.post(
+                "/admin/login/",
+                {"username": "admin-throttle", "password": "wrong-password"},
+            )
+            self.assertEqual(response.status_code, 200)
+
+        limited = self.client.post(
+            "/admin/login/",
+            {"username": "admin-throttle", "password": "wrong-password"},
+        )
+        self.assertEqual(limited.status_code, 429)
+        self.assertIn("Retry-After", limited.headers)
+
+    @override_settings(REDJANGO_TRUSTED_PROXIES=["10.0.0.0/8"])
+    def test_client_ip_uses_forwarding_only_from_a_trusted_proxy(self):
+        trusted_request = self.client.request().wsgi_request
+        trusted_request.META.update({
+            "REMOTE_ADDR": "10.0.0.5",
+            "HTTP_X_FORWARDED_FOR": "198.51.100.25, 10.0.0.4",
+        })
+        self.assertEqual(client_ip(trusted_request), "198.51.100.25")
+
+        direct_request = self.client.request().wsgi_request
+        direct_request.META.update({
+            "REMOTE_ADDR": "198.51.100.30",
+            "HTTP_X_FORWARDED_FOR": "198.51.100.25",
+        })
+        self.assertEqual(client_ip(direct_request), "198.51.100.30")
 
     def test_locked_mode_rejects_even_the_login_surface_from_remote_addresses(self):
         page = self.client.get("/login/", REMOTE_ADDR="192.168.1.50")
@@ -101,6 +146,15 @@ class AuthenticationBoundaryTests(TestCase):
         )
         self.assertEqual(api.status_code, 403)
         self.assertEqual(api.json()["errors"][0]["code"], "security.locked_mode_remote")
+
+    def test_spoofed_forwarded_headers_cannot_bypass_locked_mode(self):
+        response = self.client.get(
+            "/login/",
+            REMOTE_ADDR="192.168.1.50",
+            HTTP_X_FORWARDED_FOR="127.0.0.1",
+            HTTP_X_FORWARDED_PROTO="https",
+        )
+        self.assertEqual(response.status_code, 403)
 
     @override_settings(REDJANGO_ACCESS_MODE="lan")
     def test_lan_mode_exposes_only_login_until_the_remote_user_authenticates(self):
@@ -190,3 +244,38 @@ class AccessModeAdministrationTests(TestCase):
             response.json()["errors"][0]["code"],
             "security.online_configuration_incomplete",
         )
+
+
+class ManagedDeploymentTests(TestCase):
+    def test_lan_certificate_is_generated_and_reused(self):
+        with TemporaryDirectory() as temporary_directory, override_settings(
+            BASE_DIR=Path(temporary_directory),
+        ):
+            output = StringIO()
+            call_command("ensure_lan_certificate", stdout=output)
+            ca_certificate = Path(temporary_directory) / ".redjango" / "tls" / "lan-ca.pem"
+            certificate = Path(temporary_directory) / ".redjango" / "tls" / "lan-cert.pem"
+            private_key = Path(temporary_directory) / ".redjango" / "tls" / "lan-key.pem"
+            first_ca_certificate = ca_certificate.read_bytes()
+            first_certificate = certificate.read_bytes()
+
+            self.assertTrue(first_ca_certificate.startswith(b"-----BEGIN CERTIFICATE-----"))
+            self.assertTrue(first_certificate.startswith(b"-----BEGIN CERTIFICATE-----"))
+            self.assertTrue(private_key.read_bytes().startswith(b"-----BEGIN PRIVATE KEY-----"))
+            self.assertIn("CA SHA-256:", output.getvalue())
+
+            call_command("ensure_lan_certificate", stdout=StringIO())
+            self.assertEqual(ca_certificate.read_bytes(), first_ca_certificate)
+            self.assertEqual(certificate.read_bytes(), first_certificate)
+
+    def test_managed_restart_writes_a_marker_before_interrupting_main(self):
+        with TemporaryDirectory() as temporary_directory, override_settings(
+            BASE_DIR=Path(temporary_directory),
+        ), patch.dict(os.environ, {"REDJANGO_MANAGED_LAUNCHER": "1"}), patch(
+            "backend.core.access.threading.Timer"
+        ) as timer:
+            self.assertTrue(schedule_managed_restart(delay_seconds=0.1))
+            marker = Path(temporary_directory) / ".redjango-restart-requested"
+            self.assertEqual(marker.read_text(encoding="utf-8"), "restart\n")
+            timer.assert_called_once()
+            timer.return_value.start.assert_called_once_with()

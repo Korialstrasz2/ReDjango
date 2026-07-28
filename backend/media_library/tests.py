@@ -192,6 +192,49 @@ class MediaApiContractTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["errors"][0]["code"], "media.image_required")
 
+    def test_image_mime_with_an_unsafe_extension_is_rejected(self):
+        uploaded = SimpleUploadedFile("page.html", b"<script>alert(1)</script>", content_type="image/png")
+        response = self.client.post(
+            "/api/media/",
+            data={"envelope": media_envelope("media-extension-1"), "file": uploaded},
+            HTTP_X_REDJANGO_REQUEST_ID="media-extension-1",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["errors"][0]["code"], "media.image_required")
+
+    def test_media_files_require_login_and_enforce_limited_visibility(self):
+        public = UploadedImage.objects.create(
+            title="Pubblica diretta",
+            folder="seed_assets",
+            file=SimpleUploadedFile("direct-public.png", b"public-direct", content_type="image/png"),
+            category=self.generic_category,
+        )
+        limited = UploadedImage.objects.create(
+            title="Segreta diretta",
+            folder="seed_assets",
+            file=SimpleUploadedFile("direct-secret.png", b"secret-direct", content_type="image/png"),
+            category=self.generic_category,
+            visibilita_limitata=True,
+        )
+
+        self.client.logout()
+        anonymous = self.client.get(public.file.url)
+        self.assertEqual(anonymous.status_code, 302)
+        self.assertTrue(anonymous.headers["Location"].startswith("/login/"))
+
+        player = get_user_model().objects.create_user(username="direct-player")
+        Giocatore.objects.create(user=player, nome=player.username, role=Giocatore.ROLE_USER)
+        self.client.force_login(player)
+        self.assertEqual(self.client.get(limited.file.url).status_code, 404)
+
+        self.client.force_login(get_user_model().objects.get(username="media_master"))
+        visible = self.client.get(limited.file.url)
+        self.assertEqual(visible.status_code, 200)
+        self.assertEqual(visible.headers["Cache-Control"], "private, no-store")
+        self.assertEqual(visible.headers["X-Content-Type-Options"], "nosniff")
+        self.assertEqual(visible.headers["Cross-Origin-Resource-Policy"], "same-origin")
+
     def test_context_upload_uses_admin_configured_category_and_default_group(self):
         uploaded = SimpleUploadedFile("die.png", b"not-a-rendered-image", content_type="image/png")
         response = self.client.post(

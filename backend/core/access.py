@@ -1,3 +1,4 @@
+import _thread
 import os
 import threading
 from pathlib import Path
@@ -11,7 +12,7 @@ ACCESS_MODE_LAN = "lan"
 ACCESS_MODE_ONLINE = "online"
 ACCESS_MODES = (ACCESS_MODE_LOCKED, ACCESS_MODE_LAN, ACCESS_MODE_ONLINE)
 ACCESS_MODE_SETTING_KEY = "security.access_mode"
-RESTART_EXIT_CODE = 75
+RESTART_MARKER_NAME = ".redjango-restart-requested"
 
 
 def normalize_access_mode(value: object, fallback: str = ACCESS_MODE_LOCKED) -> str:
@@ -55,7 +56,7 @@ def persist_access_mode(value: object) -> str:
 def online_configuration_errors() -> list[str]:
     missing = []
     secret_key = os.environ.get("REDJANGO_SECRET_KEY", "").strip()
-    if not secret_key or secret_key == "dev-only-redjango-secret-key":
+    if len(secret_key) < 50 or secret_key == "dev-only-redjango-secret-key":
         missing.append("REDJANGO_SECRET_KEY")
     if not os.environ.get("REDJANGO_ALLOWED_HOSTS", "").strip():
         missing.append("REDJANGO_ALLOWED_HOSTS")
@@ -78,7 +79,9 @@ def schedule_managed_restart(delay_seconds: float = 0.8) -> bool:
     if not restart_available():
         return False
 
-    timer = threading.Timer(delay_seconds, lambda: os._exit(RESTART_EXIT_CODE))
+    marker_path = Path(settings.BASE_DIR) / RESTART_MARKER_NAME
+    marker_path.write_text("restart\n", encoding="utf-8")
+    timer = threading.Timer(delay_seconds, _thread.interrupt_main)
     timer.daemon = True
     timer.start()
     return True
