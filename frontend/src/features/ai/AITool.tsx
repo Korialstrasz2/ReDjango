@@ -20,10 +20,11 @@ export function AITool({ notify }: Props) {
   // La memoria resta client-side e provider-neutral; il backend non conserva conversazioni.
   const [history, setHistory] = useState<AIHistoryEntry[]>([]);
   const [agentId, setAgentId] = useState<number | "">("");
+  const [activeProvider, setActiveProvider] = useState<AIChatResult["provider"] | null>(null);
   const [prompt, setPrompt] = useState("");
   const [imageProviderId, setImageProviderId] = useState<number | "">("");
-  const [size, setSize] = useState("1024x1024");
-  const [quality, setQuality] = useState("medium");
+  const [size, setSize] = useState("");
+  const [quality, setQuality] = useState("");
   const [generated, setGenerated] = useState<MediaAsset | null>(null);
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export function AITool({ notify }: Props) {
     onSuccess: (result) => {
       const data: AIChatResult = result.data;
       setHistory(data.history);
+      setActiveProvider(data.provider);
       setBubbles((current) => [...current, { id: bubbleId(), role: "assistant", text: data.reply, tools: data.toolTrace }]);
     },
     onError: (error: Error) => {
@@ -45,7 +47,7 @@ export function AITool({ notify }: Props) {
   });
 
   const draw = useMutation({
-    mutationFn: () => generateAIImage({ prompt, providerId: imageProviderId || undefined, size, quality }),
+    mutationFn: () => generateAIImage({ prompt, providerId: imageProviderId || undefined, size: selectedSize, quality: selectedQuality }),
     onSuccess: (result) => {
       setGenerated(result.data.asset);
       notify(result.events[0]?.message || "Immagine generata.");
@@ -65,6 +67,7 @@ export function AITool({ notify }: Props) {
   const reset = () => {
     setHistory([]);
     setBubbles([]);
+    setActiveProvider(null);
   };
 
   if (workspace.isLoading) return <p className="empty-copy">Risveglio dell'assistente…</p>;
@@ -72,6 +75,19 @@ export function AITool({ notify }: Props) {
 
   const data = workspace.data!;
   const selectedAgent = data.agents.find((entry) => entry.id === agentId) || data.agents[0] || null;
+  const defaultProvider = data.chatProviders.find((entry) => entry.isDefault) || data.chatProviders[0] || null;
+  const defaultImageProvider = data.imageProviders.find((entry) => entry.isDefault) || data.imageProviders[0] || null;
+  const selectedImageProvider = data.imageProviders.find((entry) => entry.id === imageProviderId) || defaultImageProvider;
+  const imageGeneration = selectedImageProvider?.imageGeneration;
+  const selectedSize = imageGeneration?.sizes.some((entry) => entry.value === size) ? size : (imageGeneration?.defaultSize || "");
+  const selectedQuality = imageGeneration?.qualities.some((entry) => entry.value === quality) ? quality : (imageGeneration?.defaultQuality || "");
+  const providerLabel = activeProvider
+    ? `${activeProvider.name}${activeProvider.model ? ` · ${activeProvider.model}` : ""}`
+    : selectedAgent?.providerName
+      ? `${selectedAgent.providerName}${selectedAgent.model ? ` · ${selectedAgent.model}` : ""}`
+      : defaultProvider
+        ? `${defaultProvider.name}${defaultProvider.model ? ` · ${defaultProvider.model}` : ""}`
+        : "non disponibile";
   if (!data.ready) {
     return <div className="ai-empty" data-component-type="panel" data-theme="parchment">
       <h3>Nessun provider configurato</h3>
@@ -124,6 +140,7 @@ export function AITool({ notify }: Props) {
           }}
         />
         <div className="ai-composer-actions">
+          <small className="muted-copy" title="Provider e modello risolti per questa conversazione">Provider: {providerLabel}</small>
           <label className="ai-provider-picker">
             <span className="sr-only">Agente</span>
             <select value={agentId} onChange={(event) => {
@@ -141,15 +158,21 @@ export function AITool({ notify }: Props) {
     </section> : <section className="ai-image" role="tabpanel" aria-label="Generazione immagini">
       <label>Descrizione<textarea rows={3} value={prompt} maxLength={2000} placeholder="Un portale daedrico nella nebbia, luce ambrata…" onChange={(event) => setPrompt(event.target.value)} /></label>
       <div className="ai-image-options">
-        <label>Provider<select value={imageProviderId} onChange={(event) => setImageProviderId(event.target.value ? Number(event.target.value) : "")}>
+        <label>Provider<select value={imageProviderId} onChange={(event) => {
+          const providerId = event.target.value ? Number(event.target.value) : "";
+          const provider = data.imageProviders.find((entry) => entry.id === providerId) || defaultImageProvider;
+          setImageProviderId(providerId);
+          setSize(provider?.imageGeneration?.defaultSize || "");
+          setQuality(provider?.imageGeneration?.defaultQuality || "");
+        }}>
           <option value="">Predefinito</option>
           {data.imageProviders.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
         </select></label>
-        <label>Formato<select value={size} onChange={(event) => setSize(event.target.value)}>
-          {data.imageSizes.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
+        <label>Formato<select value={selectedSize} onChange={(event) => setSize(event.target.value)} disabled={!imageGeneration}>
+          {imageGeneration?.sizes.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
         </select></label>
-        <label>Qualità<select value={quality} onChange={(event) => setQuality(event.target.value)}>
-          {data.imageQualities.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
+        <label>Qualità<select value={selectedQuality} onChange={(event) => setQuality(event.target.value)} disabled={!imageGeneration}>
+          {imageGeneration?.qualities.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
         </select></label>
       </div>
       <p className="muted-copy">L'immagine entra nell'Archivio immagini con il prompt registrato.</p>

@@ -44,7 +44,7 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
   const [ingredients, setIngredients] = useState<AlchemySelection[]>([]);
   const [potionColor, setPotionColor] = useState<AlchemyColor>("rosso");
   const [effect, setEffect] = useState("");
-  const [setBonus, setSetBonus] = useState(Number(data.rules.defaultSetBonus));
+  const [setItemId, setSetItemId] = useState<number | null>(data.rules.defaultSetId ?? null);
   const [lastBrew, setLastBrew] = useState<AlchemyBrewResult | null>(null);
   const [lastExtraction, setLastExtraction] = useState<AlchemyCatalogReagent | null>(null);
 
@@ -52,6 +52,16 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
   useEffect(() => {
     if (!family?.effects.includes(effect)) setEffect(family?.effects[0] || "");
   }, [effect, family]);
+
+  const baseSetBonus = Number(data.rules.baseSetBonus ?? 1);
+  const selectedSet = data.sets.find((entry) => entry.id === setItemId) || null;
+  const setBonus = selectedSet ? selectedSet.bonus : baseSetBonus;
+  // A set can leave the bag between two refreshes: fall back to the auto-selected one.
+  useEffect(() => {
+    if (setItemId !== null && !data.sets.some((entry) => entry.id === setItemId)) {
+      setSetItemId(data.rules.defaultSetId ?? null);
+    }
+  }, [data.rules.defaultSetId, data.sets, setItemId]);
 
   const estimate = useMemo(
     () => projectedBrew(data.multipliers, ingredients, potionColor, setBonus),
@@ -65,7 +75,7 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
       ingredients,
       potionColor,
       effect,
-      setBonus,
+      setItemId,
     }, "creation"),
     onSuccess: (response) => {
       queryClient.setQueryData(["creation", data.character.id], response.data.creation);
@@ -170,10 +180,22 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
         <label>Effetto
           <select value={effect} onChange={(event) => setEffect(event.target.value)}>{family?.effects.map((name) => <option key={name}>{name}</option>)}</select>
         </label>
-        <label>Bonus del set
-          <input type="number" min="0" max="20" step="0.1" value={setBonus} onChange={(event) => setSetBonus(Number(event.target.value))} />
+        <label>Set alchemico
+          <select value={setItemId ?? ""} onChange={(event) => setSetItemId(event.target.value ? Number(event.target.value) : null)}>
+            <option value="">Nessun set · ×{formatNumber(baseSetBonus)}</option>
+            {data.sets.map((entry) => <option key={entry.id} value={entry.id}>
+              {entry.name} · {entry.bonusPercent > 0 ? `+${formatNumber(entry.bonusPercent)}%` : "nessun bonus"} · {entry.sourceLabel}
+            </option>)}
+          </select>
         </label>
       </div>
+      <p className="alchemy-inline-hint">
+        {data.sets.length === 0
+          ? "Nessun set alchemico nello zaino, nei contenitori o fra le risorse del gruppo: si distilla a mani nude."
+          : selectedSet
+            ? `${selectedSet.name} · bonus ×${formatNumber(selectedSet.bonus)} · ${selectedSet.shared ? "condiviso con il gruppo" : selectedSet.sourceLabel}${selectedSet.id === data.rules.defaultSetId ? " · selezionato in automatico (qualità migliore)" : ""}`
+          : "Stai distillando senza set: il bonus resta quello base."}
+      </p>
       <div className="alchemy-formula-card">
         <div><span>Somma livelli</span><strong>{formatNumber(estimate.levelTotal)}</strong></div>
         <span aria-hidden="true">×</span>

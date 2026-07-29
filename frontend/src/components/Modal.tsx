@@ -47,7 +47,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
 
   const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
     if (event.button !== 0) return;
-    if ((event.target as HTMLElement).closest("button, a, input, select, textarea, summary, label, [contenteditable]")) return;
+    if ((event.target as HTMLElement).closest("button, a, input, select, textarea, summary, label, [contenteditable], [role='button']")) return;
     // Un pointerdown sulla barra di scorrimento non deve trascinare la finestra.
     if (event.target === event.currentTarget) {
       const host = event.currentTarget;

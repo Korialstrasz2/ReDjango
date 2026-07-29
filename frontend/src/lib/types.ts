@@ -9,6 +9,7 @@ export type ItemSpecialReason = components["schemas"]["ItemSpecialReasonSchema"]
 export type Effect = components["schemas"]["EffectSchema"];
 export type EffectConfiguration = components["schemas"]["EffectConfigurationSchema"];
 export type EffectOperation = components["schemas"]["EffectOperationSchema"];
+export type EffectPreset = components["schemas"]["EffectPresetSchema"];
 export type ItemCatalog = components["schemas"]["ItemCatalogDataSchema"];
 export type SkillFamily = components["schemas"]["SkillFamilySchema"];
 export type Skill = components["schemas"]["SkillSchema"];
@@ -431,6 +432,12 @@ export type AIProviderSummary = {
     images: boolean;
     imageEditing: boolean;
   };
+  imageGeneration?: {
+    sizes: Array<{ value: string; label: string }>;
+    qualities: Array<{ value: string; label: string }>;
+    defaultSize: string;
+    defaultQuality: string;
+  };
 };
 
 export type AIManagedProvider = AIProviderSummary & {
@@ -479,8 +486,6 @@ export type AIWorkspaceData = {
   chatProviders: AIProviderSummary[];
   imageProviders: AIProviderSummary[];
   tools: AIToolSummary[];
-  imageSizes: Array<{ value: string; label: string }>;
-  imageQualities: Array<{ value: string; label: string }>;
   canManage: boolean;
   ready: boolean;
 };

@@ -5,6 +5,7 @@ from .models import (
     ContenitoreInventario,
     EffettiPersonaggio,
     EffettoPersonalizzato,
+    EffettoPreset,
     Equip,
     Faretra,
     Note,
@@ -57,3 +58,39 @@ class EffettoPersonalizzatoAdmin(admin.ModelAdmin):
     list_filter = ("temporaneo", "icona")
     search_fields = ("nome", "personaggio__nome", "origine", "descrizione")
     inlines = (OperazioneEffettoInline,)
+
+
+@admin.register(EffettoPreset)
+class EffettoPresetAdmin(admin.ModelAdmin):
+    list_display = ("nome", "categoria", "icona", "temporaneo", "modifiche", "ordine")
+    list_filter = ("categoria", "temporaneo", "icona")
+    search_fields = ("nome", "descrizione", "origine")
+    list_editable = ("categoria", "ordine")
+
+    @admin.display(description="Modifiche")
+    def modifiche(self, preset: EffettoPreset) -> int:
+        return len(preset.operazioni or [])
+
+    def save_model(self, request, obj, form, change):
+        """Blocca i preset non validi: l'editor li copia direttamente in un effetto."""
+        from django.core.exceptions import ValidationError
+
+        from backend.core.api import ApiError
+
+        from .services.effect_presets import validate_preset_values
+
+        try:
+            validate_preset_values(
+                {
+                    "name": obj.nome,
+                    "description": obj.descrizione,
+                    "origin": obj.origine,
+                    "icon": obj.icona,
+                    "temporary": obj.temporaneo,
+                    "category": obj.categoria,
+                    "operations": obj.operazioni or [],
+                }
+            )
+        except ApiError as exc:
+            raise ValidationError(exc.message) from exc
+        super().save_model(request, obj, form, change)

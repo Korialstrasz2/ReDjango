@@ -5,6 +5,7 @@ import { effectIconAssetUrl, filterEffects } from "./CharacterEffectsWorkspace";
 
 const configuration = {
   targets: [],
+  presets: [],
   operations: [],
   operationOrderNote: "",
   formulaGuide: [],

@@ -234,6 +234,42 @@ async function combatAction(action: string, payload: Record<string, unknown>) {
 
 const RESOURCE_SHORT_LABELS: Record<string, string> = { pf: "PF", mana: "MA", energia: "EN", potere: "PO", pa: "PA", stanchezza: "ST" };
 
+/**
+ * I giocatori non leggono i PF esatti degli altri combattenti: vedono solo una
+ * barra a scaglioni, lunga quanto il limite superiore della fascia raggiunta.
+ * Master e admin continuano a vedere barra proporzionale e numeri.
+ */
+export const HEALTH_BANDS = [
+  { key: "empty", width: 0, label: "Nessun PF" },
+  { key: "very-low", width: 15, label: "PF molto bassi" },
+  { key: "low", width: 40, label: "PF bassi" },
+  { key: "ok", width: 70, label: "PF discreti" },
+  { key: "high", width: 95, label: "PF alti" },
+  { key: "full", width: 100, label: "PF pieni" },
+] as const;
+
+export function healthBand(percent: number) {
+  const value = Number(percent) || 0;
+  if (value <= 0) return HEALTH_BANDS[0];
+  if (value < 15) return HEALTH_BANDS[1];
+  if (value < 40) return HEALTH_BANDS[2];
+  if (value < 70) return HEALTH_BANDS[3];
+  if (value < 95) return HEALTH_BANDS[4];
+  return HEALTH_BANDS[5];
+}
+
+/** Slot sempre leggibili a colpo d'occhio: il resto si scopre solo a 0 PF. */
+export const PUBLIC_EQUIPMENT_SLOTS = ["arma", "scudo", "armatura", "chainmail", "veste"];
+
+export function publicEquipmentValue(slot: { slot: string; item: { name: string } | null }, revealAll: boolean) {
+  if (!revealAll && !PUBLIC_EQUIPMENT_SLOTS.includes(slot.slot)) return "Vedi a 0 PF";
+  return slot.item?.name || "VUOTO";
+}
+
+function characterHealth(character: MapParticipant["character"]) {
+  return character.resources.find((resource) => resource.key === "pf");
+}
+
 function activeCombatWeapon(character: MapParticipant["character"] | undefined) {
   if (!character) return undefined;
   const slot = character.equipment.primaryWeaponSlot || "arma";
@@ -324,8 +360,9 @@ function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDrag
   return <section className="combat-active-strip" data-component-type="list" data-theme="combat" aria-label="Personaggi attivi">
     <header className="combat-active-strip-heading"><div className="combat-active-strip-summary"><span className="combat-live-dot" /><strong>Personaggi attivi</strong><small>{visibleParticipants.length} disponibili · {map.participants.length} sulla mappa</small></div>{toolbar}</header>
     <nav className={`combat-active-roster ${visibleParticipants.length ? "" : "empty"}`}>{visibleParticipants.length ? visibleParticipants.map((entry) => {
-      const health = entry.character.resources.find((resource) => resource.key === "pf");
+      const health = characterHealth(entry.character);
       const healthPercent = health?.maximum ? Math.max(0, Math.min(100, health.current / health.maximum * 100)) : 0;
+      const band = healthBand(healthPercent);
       const isDropTarget = dropTargetId === entry.character.id && draggedCharacterId !== entry.character.id;
       return <div
         key={entry.id}
@@ -349,11 +386,16 @@ function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDrag
           onDragStart={(event) => startCombatantDrag(event, entry.character.id, onDragChange)}
           onDragEnd={() => { setDropTargetId(null); onDragChange(null); }}
           onClick={() => onContext ? onContext(entry) : onSelect(entry.character.id)}
-          onDoubleClick={() => onSelect(entry.character.id)}
+          onDoubleClick={() => { if (canManage) onSelect(entry.character.id); }}
           title={`${entry.character.name} · clic per le azioni, trascina per preparare un attacco`}
         >
           {entry.character.portrait ? <img src={entry.character.portrait} alt="" /> : <span className="combat-active-avatar">{entry.character.name.slice(0, 2).toUpperCase()}</span>}
-          <span className="combat-active-copy"><strong>{entry.character.name}</strong>{canManage && <><small>{entry.character.type || "Personaggio"} · lv {entry.character.level}</small><i><b style={{ width: `${healthPercent}%` }} /></i><em>PF {health?.current ?? 0}/{health?.maximum ?? 0}</em></>}</span>
+          <span className="combat-active-copy">
+            <strong>{entry.character.name}</strong>
+            {canManage && <small>{entry.character.type || "Personaggio"} · lv {entry.character.level}</small>}
+            <i className={canManage ? "" : `combat-health-band ${band.key}`} title={canManage ? undefined : band.label} aria-label={canManage ? undefined : `${entry.character.name}: ${band.label}`}><b style={{ width: `${canManage ? healthPercent : band.width}%` }} /></i>
+            {canManage && <em>PF {health?.current ?? 0}/{health?.maximum ?? 0}</em>}
+          </span>
         </button>
         {canManage && <button type="button" className="combat-active-remove" disabled={busy} onClick={() => onRemove(entry.id)} title={`Rimuovi ${entry.character.name}`}>×</button>}
       </div>;
@@ -839,11 +881,30 @@ function MapVersionsModal({ map, busy, onClose, onCreate, onRestore, onDuplicate
   </Modal>;
 }
 
-function CharacterContextModal({ participant, busy, onClose, onSelect, onDetails, onTakeControl }: {
-  participant: MapParticipant; busy: boolean; onClose: () => void; onSelect: () => void; onDetails: () => void; onTakeControl: () => void;
+function CharacterContextModal({ participant, busy, canManage, onClose, onSelect, onDetails, onTakeControl }: {
+  participant: MapParticipant; busy: boolean; canManage: boolean;
+  onClose: () => void; onSelect: () => void; onDetails: () => void; onTakeControl: () => void;
 }) {
   const character = participant.character;
   const weapon = activeCombatWeapon(character);
+  const health = characterHealth(character);
+  const band = healthBand(health?.maximum ? Math.max(0, Math.min(100, health.current / health.maximum * 100)) : 0);
+  // Il giocatore non comanda gli altri: legge solo cosa impugnano e cosa indossano.
+  // Il resto dell'equipaggiamento si scopre quando il personaggio è a 0 PF o meno.
+  if (!canManage) {
+    const revealAll = (health?.current ?? 0) <= 0;
+    const slots = character.equipment.slots.filter((slot) => !slot.isLocked || PUBLIC_EQUIPMENT_SLOTS.includes(slot.slot));
+    return <Modal title={character.name} onClose={onClose} footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
+      <div className="combat-context-character" data-component-type="card" data-theme="combat">{character.portrait && <img src={character.portrait} alt="" />}<div><p>Livello {character.level} · {character.type || "Personaggio"}</p><strong>{band.label}</strong><span>{revealAll ? "Equipaggiamento completo visibile." : "Solo l'equipaggiamento in vista."}</span></div></div>
+      <dl className="combat-context-equipment">{slots.map((slot) => {
+        const value = publicEquipmentValue(slot, revealAll);
+        return <Fragment key={slot.id}>
+          <dt>{slot.label}</dt>
+          <dd className={value === "Vedi a 0 PF" ? "hidden-slot" : value === "VUOTO" ? "empty-slot" : ""}>{value}</dd>
+        </Fragment>;
+      })}</dl>
+    </Modal>;
+  }
   return <Modal title={character.name} onClose={onClose} footer={<><button className="button secondary" onClick={onClose}>Chiudi</button><button className="button secondary" onClick={onDetails}>Vedi dettagli</button><button className="button secondary" disabled={busy} onClick={onSelect}>Metti in primo piano</button><button className="button primary" disabled={busy} onClick={onTakeControl}>Prendi il controllo</button></>}>
     <div className="combat-context-character" data-component-type="card" data-theme="combat">{character.portrait && <img src={character.portrait} alt="" />}<div><p>Livello {character.level} · {character.type || "Personaggio"}</p><strong>{weapon?.name || "Mani nude"}</strong><span>{character.effects.length} effetti · {character.quiver.occupied}/{character.quiver.capacity} faretra · sagoma {participant.footprint.length} esa.</span></div></div>
   </Modal>;
@@ -1227,6 +1288,10 @@ export function CombatPage() {
   };
   if (query.isLoading) return <div className="page combat-page"><div className="panel">Preparo il tavolo di combattimento…</div></div>;
   if (!workspace) return <div className="page combat-page"><div className="panel">Impossibile caricare il combattimento.</div></div>;
+  // La modale legge i PF correnti: va riagganciata al partecipante aggiornato dal server.
+  const openParticipant = contextParticipant
+    ? map?.participants.find((entry) => entry.id === contextParticipant.id) || contextParticipant
+    : null;
   const mapToolbar = <div className="combat-map-toolbar">
     <button className="button secondary combat-map-manager-trigger" onClick={() => setMapManagerOpen(true)}><span>▧</span><span><small>Mappa attiva</small><strong>{map?.name || "Nessuna mappa"}</strong></span><b>Gestisci</b></button>
     {workspace.permissions.canManageMaps && <button className="button primary combat-new-map-trigger" onClick={() => setMapEditorMode("create")}>Nuova Mappa</button>}
@@ -1237,7 +1302,7 @@ export function CombatPage() {
   </div>;
   return <div className="page combat-page">
     {!map ? <section className="hero-panel"><div><p className="eyebrow">Nessuna mappa</p><h2>Crea il primo tavolo tattico</h2><p>L'editor salva immagine, orientamento, griglia e trasformazioni in un vero oggetto amministrabile.</p></div>{workspace.permissions.canManageMaps && <button className="button primary" onClick={() => setMapEditorMode("create")}>Apri il creator</button>}</section> : <>
-      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onSelect={(characterId) => act("combat.selectCharacter", { characterId })} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} toolbar={mapToolbar} />
+      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onSelect={(characterId) => act("combat.selectCharacter", { characterId })} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={setContextParticipant} onPairSelect={selectAttackPair} toolbar={mapToolbar} />
       <div className="combat-stage-layout">
         <SelectedCharacterSidebar map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} controlledCharacterId={workspace.viewerCharacterId} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} onUpdateResource={(characterId, resource, current) => resource === "pa" ? setLocalActionPointValue(characterId, current) : act("combat.updateResource", { characterId, resource, current })} onSwitchPrimary={(characterId) => act("equipment.switchPrimaryWeapon", { characterId })} onRemoveQuiverItem={(characterId, slot) => act("combat.removeQuiverItem", { characterId, slot })} />
         <section className="combat-map-panel">
@@ -1277,11 +1342,11 @@ export function CombatPage() {
       await mutation.mutateAsync({ action: "combat.deactivateParticipant", payload: { mapId: map.id, participantId } });
     }} />}
     {versionsOpen && map && <MapVersionsModal map={map} busy={mutation.isPending} onClose={() => setVersionsOpen(false)} onCreate={(label) => act("maps.createSnapshot", { label })} onRestore={(snapshotId) => act("maps.restoreSnapshot", { snapshotId })} onDuplicate={(name) => act("maps.duplicate", { name })} />}
-    {contextParticipant && workspace.permissions.canControlCharacters && <CharacterContextModal participant={contextParticipant} busy={mutation.isPending} onClose={() => setContextParticipant(null)} onSelect={async () => {
-      await mutation.mutateAsync({ action: "combat.selectCharacter", payload: { mapId: map?.id, characterId: contextParticipant.character.id } });
+    {openParticipant && <CharacterContextModal participant={openParticipant} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} onClose={() => setContextParticipant(null)} onSelect={async () => {
+      await mutation.mutateAsync({ action: "combat.selectCharacter", payload: { mapId: map?.id, characterId: openParticipant.character.id } });
       setContextParticipant(null);
-    }} onDetails={() => { navigate(`/character/${contextParticipant.character.id}`); setContextParticipant(null); }} onTakeControl={async () => {
-      await mutation.mutateAsync({ action: "combat.takeControl", payload: { mapId: map?.id, characterId: contextParticipant.character.id } });
+    }} onDetails={() => { navigate(`/character/${openParticipant.character.id}`); setContextParticipant(null); }} onTakeControl={async () => {
+      await mutation.mutateAsync({ action: "combat.takeControl", payload: { mapId: map?.id, characterId: openParticipant.character.id } });
       await queryClient.invalidateQueries({ queryKey: ["personaggi"] });
       setContextParticipant(null);
     }} />}

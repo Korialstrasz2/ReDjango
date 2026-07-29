@@ -94,7 +94,6 @@ class AlchemyCreationApiTests(TestCase):
                 ],
                 "potionColor": "rosso",
                 "effect": "Cura",
-                "setBonus": 1,
             },
         )
 
@@ -119,7 +118,6 @@ class AlchemyCreationApiTests(TestCase):
                 ],
                 "potionColor": "rosso",
                 "effect": "Cura",
-                "setBonus": 1,
             },
         )
 
@@ -141,6 +139,84 @@ class AlchemyCreationApiTests(TestCase):
         stock = self.stock()
         self.assertEqual(sum(stock.values()), 1)
         self.assertEqual(stock[extracted["stockKey"]], 1)
+
+    def make_set(self, nome, descrizione):
+        return Oggetto.objects.create(nome=nome, tipo_1="setalchemico", descrizione=descrizione)
+
+    def store_item(self, container, item, slot):
+        return VoceContenitoreInventario.objects.create(
+            contenitore=container,
+            slot=slot,
+            oggetto=item,
+            quantita=1,
+        )
+
+    def campaign_container(self):
+        return ContenitoreInventario.objects.get_or_create(
+            scope=ContenitoreInventario.SCOPE_CAMPAIGN,
+            campagna=self.character.campagna,
+            defaults={"nome": "Risorse gruppo · test", "capacita": 30},
+        )[0]
+
+    def test_creation_lists_reachable_sets_and_preselects_the_best_one(self):
+        self.store_item(self.container, self.make_set("Set base test", "+ 10% effetto"), 10)
+        self.store_item(self.campaign_container(), self.make_set("Set maestro test", "+ 40% effetto"), 1)
+
+        response = self.client.get(f"/api/v1/characters/{self.character.id}/creation")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()["data"]
+        self.assertEqual(
+            [(entry["name"], entry["bonus"], entry["source"]) for entry in data["sets"]],
+            [("Set maestro test", 1.4, "campaign"), ("Set base test", 1.1, "utility")],
+        )
+        self.assertEqual(data["rules"]["defaultSetId"], data["sets"][0]["id"])
+        self.assertEqual(data["rules"]["defaultSetBonus"], 1.4)
+
+    def test_brew_uses_the_server_side_bonus_of_the_selected_set(self):
+        self.set_stock({"r1": 1})
+        alchemy_set = self.make_set("Set qualificato test", "+ 25% effetto")
+        self.store_item(self.container, alchemy_set, 10)
+        totals = dict(self.character.tot)
+        totals.update({"moltiplicatore_reagenti_livello_1": 2, "moltiplicatore_reagenti_rossi": 0})
+        self.character.tot = totals
+        self.character.save(update_fields=["tot", "updated_at"])
+
+        response = self.command(
+            "alchemy.brew",
+            {
+                "characterId": self.character.id,
+                "ingredients": [{"color": "rosso", "level": 1}],
+                "potionColor": "rosso",
+                "effect": "Cura",
+                "setItemId": alchemy_set.id,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()["data"]["alchemyResult"]
+        self.assertEqual(result["setBonus"], 1.25)
+        self.assertEqual(result["setName"], "Set qualificato test")
+        self.assertEqual(result["potency"], 2.5)
+
+    def test_brew_rejects_a_set_the_character_cannot_reach(self):
+        self.set_stock({"r1": 1})
+        unreachable = self.make_set("Set irraggiungibile", "+ 40% effetto")
+
+        response = self.command(
+            "alchemy.brew",
+            {
+                "characterId": self.character.id,
+                "ingredients": [{"color": "rosso", "level": 1}],
+                "potionColor": "rosso",
+                "effect": "Cura",
+                "setItemId": unreachable.id,
+            },
+        )
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["errors"][0]["code"], "alchemy.set_not_available")
+        self.assertEqual(self.stock(), {"r1": 1})
 
     def test_legacy_reagent_item_is_normalized_into_container_stock(self):
         self.set_stock({})

@@ -5,12 +5,14 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from backend.core.models import DatiCampagna, Giocatore, Oggetto
+from backend.lore.models import Fazione
 
 from .agent import run_agent
 from .crypto import decrypt_secret, encrypt_secret
 from .defaults import seed_ai_providers
 from .models import AIAgentProfile, AIProvider
 from .providers.openai_provider import OpenAIResponsesChatProvider
+from .providers.images import OpenAIImageProvider
 from .providers.base import ChatTurn, ToolCall
 from .selectors import ai_management_payload, ai_workspace_payload
 from .services import ask_assistant, sanitize_history, save_agent, save_provider
@@ -171,6 +173,53 @@ class AIWorkspaceApiTests(TestCase):
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json()["errors"][0]["code"], "ai.provider_missing")
 
+    def test_openrouter_is_seeded_as_a_configurable_compatible_provider(self):
+        provider = AIProvider.objects.get(slug="openrouter")
+        self.assertEqual(provider.kind, AIProvider.KIND_OPENAI_COMPATIBLE)
+        self.assertEqual(provider.base_url, "https://openrouter.ai/api/v1")
+        self.assertEqual(provider.model, "~openai/gpt-latest")
+        self.assertFalse(provider.is_enabled)
+
+    def test_image_provider_exposes_only_its_compatible_generation_controls(self):
+        provider = AIProvider.objects.get(slug="openai-immagini")
+        provider.set_secret("sk-images")
+        provider.save()
+        self.login("ai_image_manager", Giocatore.ROLE_MASTER)
+
+        data = self.client.get("/api/ai/").json()["data"]
+        image_provider = next(entry for entry in data["imageProviders"] if entry["slug"] == "openai-immagini")
+
+        self.assertEqual(image_provider["model"], "gpt-image-2")
+        self.assertEqual(image_provider["imageGeneration"]["defaultSize"], "1024x1024")
+        self.assertEqual(image_provider["imageGeneration"]["defaultQuality"], "medium")
+        self.assertEqual(
+            [entry["value"] for entry in image_provider["imageGeneration"]["sizes"]],
+            ["1024x1024", "1024x1536", "1536x1024"],
+        )
+
+    def test_seeded_provider_catalogues_offer_models_for_each_runtime(self):
+        catalogues = {
+            "anthropic": {"claude-opus-4-1-20250805", "claude-sonnet-4-20250514", "claude-3-5-haiku-20241022"},
+            "openai": {"gpt-5.1", "gpt-5-mini", "gpt-4.1", "o3"},
+            "deepseek": {"deepseek-v4-flash", "deepseek-v4-pro"},
+            "openrouter": {"openrouter/auto", "~openai/gpt-latest", "openai/gpt-5.1"},
+            "locale": {"llama3.3", "qwen3", "deepseek-r1"},
+            "openai-immagini": {"gpt-image-2", "gpt-image-2-2026-04-21"},
+        }
+        for slug, expected_models in catalogues.items():
+            provider = AIProvider.objects.get(slug=slug)
+            self.assertTrue(expected_models.issubset(set(provider.options["suggestedModels"])), slug)
+
+    def test_reseeding_updates_only_the_retired_seed_default_not_a_custom_model(self):
+        provider = AIProvider.objects.get(slug="deepseek")
+        provider.model = "my-deepseek-deployment"
+        provider.save(update_fields=["model"])
+
+        seed_ai_providers()
+
+        provider.refresh_from_db()
+        self.assertEqual(provider.model, "my-deepseek-deployment")
+
 
 class AIAgentLoopTests(TestCase):
     @classmethod
@@ -273,6 +322,24 @@ class AIToolPermissionTests(TestCase):
         content, _ = execute_tool("scheda_personaggio", {"nome": "Segreto del Master"}, master, master_giocatore)
         self.assertIn("Segreto del Master", content)
 
+    def test_reputation_is_a_broad_lore_query_not_a_literal_filter(self):
+        campaign = DatiCampagna.objects.create(nome="Reputazioni", attiva=True)
+        Fazione.objects.create(campagna=campaign, nome="Gilda", reputazione_base=42)
+        user, giocatore = self._identity("lore_player", Giocatore.ROLE_USER)
+        giocatore.active_campaign = campaign
+        giocatore.save(update_fields=["active_campaign"])
+
+        content, is_error = execute_tool("lore_campagna", {"argomento": "reputazione"}, user, giocatore)
+        payload = json.loads(content)
+
+        self.assertFalse(is_error)
+        self.assertEqual(payload["stato"], "ok")
+        self.assertEqual(payload["fazioniTotali"], 1)
+        self.assertEqual(payload["fazioni"][0]["nome"], "Gilda")
+        self.assertEqual(payload["fazioni"][0]["reputazione"], 42)
+        self.assertEqual(payload["personaggi"], [])
+        self.assertEqual(payload["eventi"], [])
+
 
 class AIAgentProfileTests(TestCase):
     def setUp(self):
@@ -351,3 +418,22 @@ class OpenAIResponsesProviderTests(TestCase):
         self.assertEqual(payload["tools"][0]["type"], "function")
         self.assertNotIn("max_tokens", payload)
         self.assertEqual(turn.text, "Pronto")
+
+
+class OpenAIImageProviderTests(TestCase):
+    def test_blank_model_uses_the_supported_gpt_image_default(self):
+        provider = AIProvider.objects.create(
+            slug="images-test",
+            name="Images",
+            purpose="image",
+            kind=AIProvider.KIND_OPENAI_IMAGE,
+            base_url="https://api.openai.com/v1",
+        )
+        provider.set_secret("sk-test")
+        provider.save()
+
+        with patch("backend.ai.providers.images.post_json", return_value={"data": [{"b64_json": "aW1hZ2U="}]}) as post:
+            OpenAIImageProvider(provider).generate(prompt="Una torre", size="1024x1024", quality="medium")
+
+        _url, payload, _headers = post.call_args.args
+        self.assertEqual(payload["model"], "gpt-image-2")

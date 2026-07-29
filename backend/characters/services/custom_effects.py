@@ -336,8 +336,12 @@ def _effect_icon_image_url(value: str, label: str) -> str:
 
 
 def effect_configuration_payload() -> dict[str, Any]:
+    # Import ritardato: effect_presets importa questo modulo per la validazione.
+    from .effect_presets import effect_preset_payload
+
     return {
         "targets": effect_target_options(),
+        "presets": effect_preset_payload(),
         "operations": [
             {"value": value, **details}
             for value, details in EFFECT_OPERATIONS.items()
@@ -408,7 +412,18 @@ def _validate_expression(value: str, *, condition: bool = False) -> None:
         ) from exc
 
 
-def validate_effect_values(values: Mapping[str, Any]) -> dict[str, Any]:
+def validate_effect_values(
+    values: Mapping[str, Any],
+    *,
+    allow_empty_operations: bool = False,
+) -> dict[str, Any]:
+    """Normalizza i valori di un effetto strutturato.
+
+    ``allow_empty_operations`` serve agli effetti di personaggio, che possono
+    essere puramente descrittivi (una condizione narrata, senza matematica).
+    Le passive delle skill restano obbligate ad avere almeno una modifica:
+    senza operazioni non avrebbero alcun effetto.
+    """
     name = str(values.get("name") or "").strip()
     if not name:
         raise ApiError("effects.name_required", "Il nome dell'effetto è obbligatorio.", "name")
@@ -427,7 +442,9 @@ def validate_effect_values(values: Mapping[str, Any]) -> dict[str, Any]:
         raise ApiError("effects.icon_invalid", "Scegli un'icona disponibile.", "icon")
 
     operations_input = values.get("operations")
-    if not isinstance(operations_input, list) or not operations_input:
+    if not isinstance(operations_input, list):
+        operations_input = []
+    if not operations_input and not allow_empty_operations:
         raise ApiError("effects.operations_required", "Aggiungi almeno una modifica all'effetto.", "operations")
     if len(operations_input) > MAX_OPERATIONS:
         raise ApiError(
@@ -521,7 +538,7 @@ def _replace_operations(effect: EffettoPersonalizzato, operations: list[dict[str
 @transaction.atomic
 def create_custom_effect(personaggio_id: int, values: Mapping[str, Any]) -> Personaggio:
     personaggio = _locked_character(personaggio_id)
-    validated = validate_effect_values(values)
+    validated = validate_effect_values(values, allow_empty_operations=True)
     _assert_name_available(personaggio, validated["nome"])
     next_order = (
         EffettoPersonalizzato.objects.filter(personaggio=personaggio).aggregate(value=Max("ordine"))["value"] or 0
@@ -555,7 +572,7 @@ def update_custom_effect(
     legacy_slot: int | None = None,
 ) -> Personaggio:
     personaggio = _locked_character(personaggio_id)
-    validated = validate_effect_values(values)
+    validated = validate_effect_values(values, allow_empty_operations=True)
 
     if effect_id is not None:
         try:

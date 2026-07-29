@@ -7,35 +7,54 @@ from .tools import AI_TOOLS
 AI_PROVIDER_PRESETS = [
     {
         "slug": "anthropic", "name": "Anthropic", "purpose": "chat", "kind": AIProvider.KIND_ANTHROPIC,
-        "base_url": "", "model": "claude-opus-5",
-        "models": ["claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5"],
+        "base_url": "", "model": "claude-opus-4-1-20250805",
+        "models": [
+            "claude-opus-4-1-20250805", "claude-opus-4-20250514", "claude-sonnet-4-20250514",
+            "claude-3-7-sonnet-20250219", "claude-3-5-haiku-20241022",
+        ],
         "description": "API Messages di Anthropic, con uso nativo degli strumenti.",
         "order": 10, "is_default": True,
     },
     {
         "slug": "openai", "name": "OpenAI", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_RESPONSES,
-        "base_url": "https://api.openai.com/v1", "model": "gpt-5.6-sol",
-        "models": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
+        "base_url": "https://api.openai.com/v1", "model": "gpt-5.1",
+        "models": [
+            "gpt-5.1", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1",
+            "gpt-4.1-mini", "gpt-4.1-nano", "o3", "o4-mini",
+        ],
         "description": "OpenAI Responses API, adatta a ragionamento, strumenti e flussi agentici.",
         "order": 20, "is_default": False,
     },
     {
         "slug": "deepseek", "name": "DeepSeek", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
-        "base_url": "https://api.deepseek.com/v1", "model": "deepseek-chat",
-        "models": ["deepseek-chat", "deepseek-reasoner"],
+        "base_url": "https://api.deepseek.com/v1", "model": "deepseek-v4-flash",
+        "models": ["deepseek-v4-flash", "deepseek-v4-pro"],
         "description": "Chat Completions compatibile OpenAI; le capacità dipendono dal modello.",
         "order": 30, "is_default": False,
     },
     {
+        "slug": "openrouter", "name": "OpenRouter", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
+        "base_url": "https://openrouter.ai/api/v1", "model": "~openai/gpt-latest",
+        "models": [
+            "openrouter/auto", "~openai/gpt-latest", "anthropic/claude-opus-4.5",
+            "anthropic/claude-sonnet-4.5", "openai/gpt-5.1",
+            "google/gemini-3.1-pro-preview", "deepseek/deepseek-v3.2",
+            "meta-llama/llama-4-maverick", "mistralai/mistral-large-3",
+        ],
+        "description": "Catalogo multi-provider OpenRouter tramite Chat Completions compatibile OpenAI. Inserisci qualsiasi model slug OpenRouter.",
+        "order": 40, "is_default": False, "is_enabled": False,
+    },
+    {
         "slug": "locale", "name": "Modello locale", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
         "auth_strategy": AIProvider.AUTH_NONE, "base_url": "http://127.0.0.1:11434/v1", "model": "",
-        "models": [], "description": "Endpoint locale compatibile OpenAI, per esempio Ollama o LM Studio.",
-        "order": 40, "is_default": False, "is_enabled": False,
+        "models": ["llama3.3", "qwen3", "qwen2.5", "gemma3", "mistral", "mixtral", "deepseek-r1", "phi4", "gpt-oss"],
+        "description": "Endpoint locale compatibile OpenAI, per esempio Ollama o LM Studio.",
+        "order": 50, "is_default": False, "is_enabled": False,
     },
     {
         "slug": "openai-immagini", "name": "Immagini OpenAI", "purpose": "image", "kind": AIProvider.KIND_OPENAI_IMAGE,
         "base_url": "https://api.openai.com/v1", "model": "gpt-image-2",
-        "models": ["gpt-image-2", "gpt-image-1"],
+        "models": ["gpt-image-2", "gpt-image-2-2026-04-21"],
         "description": "Generazione immagini OpenAI. La modifica da immagine resta in lavorazione.",
         "order": 10, "is_default": True,
     },
@@ -58,6 +77,30 @@ AI_IMAGE_QUALITIES = [
     {"value": "medium", "label": "Media"},
     {"value": "high", "label": "Alta"},
 ]
+
+
+def image_generation_options(provider: AIProvider) -> dict[str, object]:
+    """Return only the resolution and quality options accepted by this tool."""
+
+    options = provider.options if isinstance(provider.options, dict) else {}
+    configured = options.get("imageGeneration")
+    if isinstance(configured, dict):
+        sizes = configured.get("sizes")
+        qualities = configured.get("qualities")
+        if isinstance(sizes, list) and isinstance(qualities, list) and sizes and qualities:
+            return {
+                "sizes": sizes,
+                "qualities": qualities,
+                "defaultSize": configured.get("defaultSize") or sizes[0]["value"],
+                "defaultQuality": configured.get("defaultQuality") or qualities[0]["value"],
+            }
+
+    return {
+        "sizes": AI_IMAGE_SIZES,
+        "qualities": AI_IMAGE_QUALITIES,
+        "defaultSize": "1024x1024",
+        "defaultQuality": "medium",
+    }
 
 
 def seed_ai_providers() -> int:
@@ -83,10 +126,16 @@ def seed_ai_providers() -> int:
         fields = ["options", "updated_at"]
         if preset["slug"] == "openai" and provider.kind == AIProvider.KIND_OPENAI_COMPATIBLE and provider.model == "gpt-5.2":
             provider.kind = AIProvider.KIND_OPENAI_RESPONSES
-            provider.model = "gpt-5.6-sol"
+            provider.model = preset["model"]
             fields.extend(["kind", "model"])
-        if preset["slug"] == "openai-immagini" and provider.model == "gpt-image-1":
-            provider.model = "gpt-image-2"
+        legacy_defaults = {
+            "anthropic": {"claude-opus-5"},
+            "openai": {"gpt-5.6-sol"},
+            "deepseek": {"deepseek-chat", "deepseek-reasoner"},
+            "openai-immagini": {"gpt-image-1"},
+        }
+        if provider.model in legacy_defaults.get(preset["slug"], set()):
+            provider.model = preset["model"]
             fields.append("model")
         provider.save(update_fields=fields)
 

@@ -72,6 +72,7 @@ def calculate_brew(
     potion_color: str,
     effect: str,
     set_bonus: float,
+    alchemy_set: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not 1 <= len(selections) <= MAX_BREW_INGREDIENTS:
         raise ApiError(
@@ -136,6 +137,8 @@ def calculate_brew(
         "ingredients": level_contributions,
         "levelTotal": round(level_total, 2),
         "setBonus": round(set_bonus, 2),
+        "setId": alchemy_set["id"] if alchemy_set else None,
+        "setName": alchemy_set["name"] if alchemy_set else "",
         "abilityBonus": round(ability_bonus, 2),
         "potency": potency,
         "potionLevel": potion_level,
@@ -150,10 +153,13 @@ def brew_alchemy(
     selections: list[dict[str, Any]],
     potion_color: str,
     effect: str,
-    set_bonus: float,
+    set_item_id: Any = None,
 ) -> tuple[Personaggio, dict[str, Any]]:
     character, container = _locked_character_and_container(character_id)
-    result = calculate_brew(character, selections, potion_color, effect, set_bonus)
+    from .alchemy_sets import resolve_alchemy_set
+
+    alchemy_set, set_bonus = resolve_alchemy_set(character, set_item_id)
+    result = calculate_brew(character, selections, potion_color, effect, set_bonus, alchemy_set)
     from .extended_inventory import reagent_stock_for_container
 
     stock = reagent_stock_for_container(container)

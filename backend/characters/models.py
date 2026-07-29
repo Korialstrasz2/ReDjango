@@ -662,3 +662,31 @@ class OperazioneEffettoPersonalizzato(models.Model):
 
     def __str__(self) -> str:
         return f"{self.bersaglio} {self.operazione} {self.valore}"
+
+
+class EffettoPreset(models.Model):
+    """Modello di effetto riutilizzabile che precompila l'editor "Nuovo effetto".
+
+    Le operazioni restano un elenco JSON perché un preset è un modello e non un
+    effetto applicato: viene copiato in ``EffettoPersonalizzato`` al momento
+    dell'uso. Un preset senza operazioni è puramente descrittivo, come le
+    condizioni ereditate da Elder Django che il tavolo arbitra a voce.
+    """
+
+    nome = models.CharField(max_length=180, unique=True)
+    descrizione = models.TextField(blank=True)
+    origine = models.CharField(max_length=180, blank=True, default="Preset")
+    icona = models.CharField(max_length=80, default="effetto")
+    temporaneo = models.BooleanField(default=True)
+    categoria = models.CharField(max_length=80, blank=True)
+    ordine = models.PositiveIntegerField(default=0)
+    operazioni = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        ordering = ["ordine", "nome", "id"]
+        indexes = [models.Index(fields=["categoria", "ordine"])]
+        verbose_name = "Preset effetto"
+        verbose_name_plural = "Preset effetto"
+
+    def __str__(self) -> str:
+        return self.nome

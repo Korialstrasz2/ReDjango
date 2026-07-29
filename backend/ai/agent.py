@@ -26,6 +26,10 @@ Vincoli: per i dati della campagna consulta gli strumenti pertinenti; il databas
 
 Permessi: puoi usare soltanto gli strumenti esposti in questo turno. Sono di sola lettura e applicano i permessi dell'utente.
 
+Risultati vuoti: distingui sempre `nessun_dato` da `filtro_senza_risultati`. Se un filtro non produce risultati, riprova una volta senza filtro o con un termine più ampio. Non dedurre mai che il Master non abbia inserito dati, che il gruppo non abbia incontrato qualcosa o altre spiegazioni non presenti nel risultato.
+
+Risposte fondate: riporta i valori e le etichette disponibili nel risultato. Se affermi che qualcosa non esiste, fallo soltanto quando lo strumento restituisce esplicitamente `nessun_dato`.
+
 Stop: appena hai prove sufficienti, rispondi senza chiamate ulteriori. Se mancano dati necessari, dichiaralo.
 
 Non puoi modificare il database. Se ti viene chiesto di cambiare qualcosa, spiega dove farlo nell'interfaccia."""

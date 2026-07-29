@@ -6,10 +6,25 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
 
+from backend.core.api import ApiError
 from backend.core.defaults import FORMULE_BASE_VALUE_FLOAT
 from backend.core.models import Effetto, Giocatore, GlobalModifiers, Oggetto, Skill, TipoArma
 
-from .models import PERSONAGGIO_TOT_KEYS, EffettiPersonaggio, Equip, Personaggio
+from .effect_preset_defaults import DEFAULT_EFFECT_PRESETS
+from .models import (
+    PERSONAGGIO_TOT_KEYS,
+    EffettiPersonaggio,
+    EffettoPersonalizzato,
+    EffettoPreset,
+    Equip,
+    Personaggio,
+)
+from .services.custom_effects import (
+    create_custom_effect,
+    effect_configuration_payload,
+    validate_effect_values,
+)
+from .services.effect_presets import effect_preset_payload, validate_preset_values
 from .selectors import _character_appearance
 from .selectors import _effects
 from .selectors import serialize_item
@@ -969,3 +984,92 @@ class ItemSpecialIconTests(TestCase):
     def test_missing_item_returns_not_found(self):
         response = self.client.post(f"/api/oggetti/{self.item.id + 99999}/icona/", {})
         self.assertEqual(response.status_code, 404)
+
+
+class EffectPresetTests(TestCase):
+    """I preset ereditati da Elder Django precompilano l'editor "Nuovo effetto"."""
+
+    def test_every_seeded_preset_survives_the_effect_validation(self):
+        payload = effect_preset_payload()
+        self.assertEqual(len(payload), len(DEFAULT_EFFECT_PRESETS))
+        for preset in payload:
+            with self.subTest(preset=preset["name"]):
+                validate_preset_values(
+                    {
+                        "name": preset["name"],
+                        "description": preset["description"],
+                        "origin": preset["origin"],
+                        "icon": preset["icon"],
+                        "temporary": preset["temporary"],
+                        "category": preset["category"],
+                        "operations": preset["operations"],
+                    }
+                )
+
+    def test_seeded_presets_are_all_temporary_and_expose_an_icon(self):
+        for preset in effect_preset_payload():
+            with self.subTest(preset=preset["name"]):
+                self.assertTrue(preset["temporary"])
+                self.assertTrue(preset["iconUrl"], "l'icona ereditata deve risolvere a un asset reale")
+
+    def test_configuration_payload_carries_the_presets_to_the_editor(self):
+        configuration = effect_configuration_payload()
+        names = {preset["name"] for preset in configuration["presets"]}
+        self.assertIn("Impaurito", names)
+        self.assertIn("C-Stufato di Carne", names)
+
+    def test_food_preset_keeps_its_converted_elder_formula(self):
+        stew = EffettoPreset.objects.get(nome="C-Stufato di Carne")
+        self.assertEqual(
+            stew.operazioni,
+            [{"target": "pf", "operation": "add", "value": "personaggio.livello/1.5+5", "condition": ""}],
+        )
+
+    def test_a_descriptive_preset_becomes_an_effect_without_operations(self):
+        personaggio = Personaggio.objects.create(nome="Malcapitato", nome_interno="malcapitato")
+        preset = EffettoPreset.objects.get(nome="Terrorizzato")
+        self.assertEqual(preset.operazioni, [])
+
+        create_custom_effect(
+            personaggio.id,
+            {
+                "name": preset.nome,
+                "description": preset.descrizione,
+                "origin": preset.origine,
+                "icon": preset.icona,
+                "temporary": preset.temporaneo,
+                "operations": preset.operazioni,
+            },
+        )
+
+        effect = EffettoPersonalizzato.objects.get(personaggio=personaggio, nome="Terrorizzato")
+        self.assertEqual(effect.operazioni.count(), 0)
+        self.assertTrue(effect.temporaneo)
+        self.assertTrue(effect.descrizione.endswith("(t)"))
+
+    def test_a_mechanical_preset_applies_its_modifiers(self):
+        personaggio = Personaggio.objects.create(nome="Spaventato", nome_interno="spaventato")
+        preset = EffettoPreset.objects.get(nome="Impaurito")
+
+        create_custom_effect(
+            personaggio.id,
+            {
+                "name": preset.nome,
+                "description": preset.descrizione,
+                "origin": preset.origine,
+                "icon": preset.icona,
+                "temporary": preset.temporaneo,
+                "operations": preset.operazioni,
+            },
+        )
+
+        effect = EffettoPersonalizzato.objects.get(personaggio=personaggio, nome="Impaurito")
+        self.assertEqual(
+            [(operation.bersaglio, operation.operazione, operation.valore) for operation in effect.operazioni.all()],
+            [("difesa", "add", "2"), ("attacco", "subtract", "6")],
+        )
+
+    def test_skill_passives_still_require_at_least_one_modifier(self):
+        with self.assertRaises(ApiError) as caught:
+            validate_effect_values({"name": "Passiva vuota", "icon": "runa", "operations": []})
+        self.assertEqual(caught.exception.code, "effects.operations_required")

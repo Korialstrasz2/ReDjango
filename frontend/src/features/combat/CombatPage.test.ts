@@ -4,7 +4,9 @@ import {
   actionMatchesTagFilters,
   actionTagsFor,
   combatEventNeedsRefresh,
+  healthBand,
   manaForEffect,
+  publicEquipmentValue,
   persistentCombatButtonIds,
   spellCastCosts,
   spellManaBreakdown,
@@ -168,5 +170,33 @@ describe("compact attack helpers", () => {
     const totals = selectedCombatButtonTotals(buttons, [1, 2]);
     expect(totals).toEqual({ attackBonus: 3, damageBonus: 2, damageTierBonus: 1, penetrationFlat: 2, penetrationPercent: 10 });
     expect(combatButtonTotalsSummary(totals)).toBe("ATK +3 · Danno +2 · Tier +1 · Perforazione +2 · Perforazione % +10");
+  });
+});
+
+describe("visibilità dei combattenti per i giocatori", () => {
+  it("arrotonda i PF al limite superiore della fascia", () => {
+    expect(healthBand(0)).toMatchObject({ key: "empty", width: 0 });
+    expect(healthBand(-30)).toMatchObject({ key: "empty", width: 0 });
+    expect(healthBand(1)).toMatchObject({ key: "very-low", width: 15 });
+    expect(healthBand(14.9)).toMatchObject({ key: "very-low", width: 15 });
+    expect(healthBand(15)).toMatchObject({ key: "low", width: 40 });
+    expect(healthBand(39.9)).toMatchObject({ key: "low", width: 40 });
+    expect(healthBand(40)).toMatchObject({ key: "ok", width: 70 });
+    expect(healthBand(69.9)).toMatchObject({ key: "ok", width: 70 });
+    expect(healthBand(70)).toMatchObject({ key: "high", width: 95 });
+    expect(healthBand(94.9)).toMatchObject({ key: "high", width: 95 });
+    expect(healthBand(95)).toMatchObject({ key: "full", width: 100 });
+    expect(healthBand(140)).toMatchObject({ key: "full", width: 100 });
+  });
+
+  it("mostra solo armi, scudo e protezioni finché il personaggio ha PF", () => {
+    const weapon = { slot: "arma", item: { name: "Lama corta" } };
+    const shield = { slot: "scudo", item: null };
+    const ring = { slot: "anello_1", item: { name: "Anello del silenzio" } };
+    expect(publicEquipmentValue(weapon, false)).toBe("Lama corta");
+    expect(publicEquipmentValue(shield, false)).toBe("VUOTO");
+    expect(publicEquipmentValue(ring, false)).toBe("Vedi a 0 PF");
+    expect(publicEquipmentValue(ring, true)).toBe("Anello del silenzio");
+    expect(publicEquipmentValue({ slot: "mantello", item: null }, true)).toBe("VUOTO");
   });
 });

@@ -7,7 +7,7 @@ from typing import Any
 from backend.core.models import Giocatore
 from backend.core.security import effective_role, get_or_create_giocatore_for_user, has_minimum_role
 
-from .defaults import AI_IMAGE_QUALITIES, AI_IMAGE_SIZES
+from .defaults import image_generation_options
 from .models import AIAgentProfile, AIProvider
 from .tools import AI_TOOLS, tool_is_available
 
@@ -63,6 +63,8 @@ def serialize_provider(provider: AIProvider, *, include_management: bool) -> dic
         "isDefault": provider.is_default, "description": str(options.get("description") or ""),
         "isConfigured": is_provider_configured(provider), "capabilities": provider_capabilities(provider),
     }
+    if provider.purpose == AIProvider.PURPOSE_IMAGE:
+        payload["imageGeneration"] = image_generation_options(provider)
     if include_management:
         payload.update(
             {
@@ -130,7 +132,6 @@ def ai_workspace_payload(user, giocatore: Giocatore) -> dict[str, Any]:
         "chatProviders": [serialize_provider(entry, include_management=False) for entry in chat],
         "imageProviders": [serialize_provider(entry, include_management=False) for entry in images],
         "tools": [tool_payload(tool) for tool in AI_TOOLS if tool_is_available(tool, user, giocatore)],
-        "imageSizes": AI_IMAGE_SIZES, "imageQualities": AI_IMAGE_QUALITIES,
         "canManage": can_manage_ai(user, giocatore), "ready": bool(agents),
     }
 

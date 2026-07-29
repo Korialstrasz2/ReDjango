@@ -11,6 +11,11 @@ from backend.core.alchemy_defaults import (
 from backend.core.models import ReagenteAlchemico
 
 from .models import Personaggio
+from .services.alchemy_sets import (
+    BASE_SET_BONUS,
+    auto_selected_alchemy_set,
+    available_alchemy_sets,
+)
 from .services.extended_inventory import personal_container, reagent_stock_for_container
 
 
@@ -76,6 +81,8 @@ def alchemy_creation_payload(character: Personaggio) -> dict[str, Any]:
         }
         for reagent in ReagenteAlchemico.objects.filter(attivo=True, archived_at__isnull=True)
     ]
+    sets = available_alchemy_sets(character)
+    auto_set = auto_selected_alchemy_set(sets)
     return {
         "character": {"id": character.id, "name": character.nome, "level": character.livello},
         "bag": {
@@ -87,6 +94,7 @@ def alchemy_creation_payload(character: Personaggio) -> dict[str, Any]:
             "unclassified": unknown_rows,
         },
         "multipliers": {"colors": color_multipliers, "levels": level_multipliers},
+        "sets": sets,
         "catalog": catalog,
         "potionFamilies": [
             {
@@ -103,7 +111,9 @@ def alchemy_creation_payload(character: Personaggio) -> dict[str, Any]:
         "notes": character.note.crafting if character.note else "",
         "rules": {
             "maxIngredients": 4,
-            "defaultSetBonus": 1,
+            "defaultSetBonus": auto_set["bonus"] if auto_set else BASE_SET_BONUS,
+            "defaultSetId": auto_set["id"] if auto_set else None,
+            "baseSetBonus": BASE_SET_BONUS,
             "formula": "(somma dei moltiplicatori di livello) × (bonus del set + abilità del colore)",
         },
     }

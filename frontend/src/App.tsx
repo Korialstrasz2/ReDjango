@@ -299,13 +299,16 @@ function Shell({ children }: { children: ReactNode }) {
       <aside className="side-nav" data-component-type="nav" data-theme="dark">
         <Link to="/" className="brand-block">
           {activeCharacterPortrait && <img src={activeCharacterPortrait} alt="" />}
-          <span><strong>{activeCharacterFirstName || "Sala principale"}</strong><small>{settings.giocatore.displayName}</small></span>
+          <span style={{ "--name-len": (activeCharacterFirstName || "Sala principale").length, "--player-len": settings.giocatore.displayName.length } as CSSProperties}>
+            <strong>{activeCharacterFirstName || "Sala principale"}</strong><small>{settings.giocatore.displayName}</small>
+          </span>
         </Link>
         <nav className="nav-list" aria-label="Menu principale">
           {links.map(([href, label, icon, shortcutTarget]) => {
             const shortcut = shortcutTarget ? shortcutValue(settings.ui, shortcutTarget) : "";
             return <Link key={label} to={href} aria-keyshortcuts={shortcut || undefined} title={shortcut ? `${label} (${shortcut.replace("+", " + ")})` : label} className={location.pathname === href || (href !== "/" && location.pathname.startsWith(href)) ? "active" : ""}>
-              <span aria-hidden="true">{icon}</span>{label}
+              <span aria-hidden="true">{icon}</span>
+              <span className="nav-label" style={{ "--label-len": label.length } as CSSProperties}>{label}</span>
             </Link>;
           })}
           {settings.security.canManageGameData && <div className="nav-management-section">
@@ -313,7 +316,8 @@ function Shell({ children }: { children: ReactNode }) {
             {managementLinks.map(([href, label, icon, shortcutTarget]) => {
               const shortcut = shortcutTarget ? shortcutValue(settings.ui, shortcutTarget) : "";
               return <Link key={href} to={href} aria-keyshortcuts={shortcut || undefined} title={shortcut ? `${label} (${shortcut.replace("+", " + ")})` : label} className={location.pathname === href ? "active" : ""}>
-                <span aria-hidden="true">{icon}</span>{label}
+                <span aria-hidden="true">{icon}</span>
+                <span className="nav-label" style={{ "--label-len": label.length } as CSSProperties}>{label}</span>
               </Link>;
             })}
           </div>}
@@ -326,7 +330,7 @@ function Shell({ children }: { children: ReactNode }) {
           notify={notify}
         />}
         {bootstrap.security.showAdminLink && <div className="account-actions">
-          <a className="admin-link" href={bootstrap.security.adminUrl}>Amministrazione Django</a>
+          <a className="admin-link" href={bootstrap.security.adminUrl} style={{ "--label-len": "Amministrazione Django".length } as CSSProperties}>Amministrazione Django</a>
         </div>}
       </aside>
       <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} notify={notify} />

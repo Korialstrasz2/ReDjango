@@ -10,6 +10,8 @@ Nessuno strumento scrive: la versione 1 dell'agente risponde e basta.
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -139,42 +141,72 @@ def _competences(user, giocatore: Giocatore, nome: str = "") -> dict[str, Any]:
 
 
 def _lore(user, giocatore: Giocatore, argomento: str = "") -> dict[str, Any]:
-    # lore_payload filtra già gli eventi e i personaggi nascosti ai giocatori.
     payload = lore_payload(user, giocatore)
-    needle = str(argomento or "").strip().casefold()
+    requested = str(argomento or "").strip()
 
-    def matches(entry: dict[str, Any]) -> bool:
+    def normalize(value: object) -> str:
+        text = unicodedata.normalize("NFKD", str(value or "")).encode("ascii", "ignore").decode("ascii")
+        return re.sub(r"[^a-z0-9]+", " ", text.casefold()).strip()
+
+    needle = normalize(requested)
+    requested_tokens = set(needle.split())
+    generic_words = {
+        "che", "quale", "quali", "abbiamo", "con", "le", "la", "i", "rapporti",
+        "rapporto", "reputazione", "reputazioni", "fazione", "fazioni", "standing",
+    }
+    if needle and set(needle.split()).issubset(generic_words):
+        needle = ""
+
+    def matches(entry: dict[str, Any], aliases: str = "") -> bool:
         if not needle:
             return True
-        return needle in json.dumps(entry, ensure_ascii=False).casefold()
+        searchable = normalize(f"{aliases} {json.dumps(entry, ensure_ascii=False)}")
+        return all(token in searchable for token in needle.split())
+
+    factions = [
+        {
+            "nome": item.get("name"),
+            "reputazione": item.get("reputation"),
+            "livello": (item.get("tier") or {}).get("label") if isinstance(item.get("tier"), dict) else item.get("tier"),
+            "descrizione": item.get("description"),
+        }
+        for item in payload.get("factions", [])
+        if matches(item, "fazione fazioni reputazione reputazioni rapporti standing")
+    ][:20]
+    npcs = [
+        {
+            "nome": item.get("name"),
+            "ruolo": item.get("role"),
+            "fazione": item.get("factionName"),
+            "descrizione": item.get("description"),
+        }
+        for item in payload.get("npcs", [])
+        if matches(item, "personaggio personaggi npc fazione")
+    ][:20]
+    events = [
+        {"titolo": item.get("title"), "motivo": item.get("reason"), "giorno": item.get("campaignDay")}
+        for item in payload.get("events", [])
+        if matches(item, "evento eventi reputazione reputazioni")
+    ][:20]
+    if requested_tokens & {"reputazione", "reputazioni", "fazione", "fazioni", "standing", "rapporti", "rapporto"}:
+        npcs = []
+        if not requested_tokens & {"evento", "eventi", "motivo", "motivi", "storia"}:
+            events = []
+    total_factions = len(payload.get("factions", []))
+    status = "ok"
+    if not total_factions:
+        status = "nessun_dato"
+    elif needle and not factions and not npcs and not events:
+        status = "filtro_senza_risultati"
 
     return {
         "campagna": (payload.get("campaign") or {}).get("name"),
-        "fazioni": [
-            {
-                "nome": item.get("name"),
-                "reputazione": item.get("reputation"),
-                "livello": item.get("tier"),
-                "descrizione": item.get("description"),
-            }
-            for item in payload.get("factions", [])
-            if matches(item)
-        ][:20],
-        "personaggi": [
-            {
-                "nome": item.get("name"),
-                "ruolo": item.get("role"),
-                "fazione": item.get("factionName"),
-                "descrizione": item.get("description"),
-            }
-            for item in payload.get("npcs", [])
-            if matches(item)
-        ][:20],
-        "eventi": [
-            {"titolo": item.get("title"), "motivo": item.get("reason"), "giorno": item.get("campaignDay")}
-            for item in payload.get("events", [])
-            if matches(item)
-        ][:20],
+        "stato": status,
+        "filtroRichiesto": requested,
+        "fazioniTotali": total_factions,
+        "fazioni": factions,
+        "personaggi": npcs,
+        "eventi": events,
     }
 
 
@@ -265,8 +297,8 @@ AI_TOOLS: list[AITool] = [
     ),
     AITool(
         name="lore_campagna",
-        description="Consulta fazioni, reputazioni, personaggi non giocanti ed eventi della campagna. Mostra soltanto ciò che chi chiede può già vedere.",
-        schema=_object_schema({"argomento": {"type": "string", "description": "Parola chiave. Vuoto per un quadro generale."}}),
+        description="Consulta fazioni, reputazioni correnti, personaggi non giocanti ed eventi della campagna. Per domande generali su fazioni o reputazione usa un argomento vuoto. `stato` distingue dati assenti da un filtro senza corrispondenze.",
+        schema=_object_schema({"argomento": {"type": "string", "description": "Solo una fazione, persona o evento specifico; vuoto per reputazioni e panoramiche generali."}}),
         run=_lore,
         scope="campagna",
     ),

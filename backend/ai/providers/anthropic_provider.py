@@ -17,7 +17,7 @@ from backend.core.api import ApiError
 from .base import ChatTurn, ToolCall
 
 
-DEFAULT_MODEL = "claude-opus-5"
+DEFAULT_MODEL = "claude-opus-4-1-20250805"
 DEFAULT_MAX_TOKENS = 8000
 
 

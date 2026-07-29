@@ -12,7 +12,7 @@ from backend.media_library.models import UploadedImage
 from backend.media_library.services import create_uploaded_image
 
 from .agent import run_agent
-from .defaults import AI_IMAGE_QUALITIES, AI_IMAGE_SIZES
+from .defaults import image_generation_options
 from .models import AIAgentProfile, AIProvider
 from .providers import image_provider_for
 from .providers.images import decode_image
@@ -126,11 +126,14 @@ def generate_image(user, giocatore: Giocatore, payload: dict) -> UploadedImage:
         raise ApiError("ai.prompt_required", "Descrivi l'immagine da generare.", "prompt")
     provider = _resolve_provider(AIProvider.PURPOSE_IMAGE, payload.get("providerId"))
 
-    size = str(payload.get("size") or AI_IMAGE_SIZES[0]["value"])
-    if size not in {entry["value"] for entry in AI_IMAGE_SIZES}:
+    generation = image_generation_options(provider)
+    sizes = generation["sizes"]
+    qualities = generation["qualities"]
+    size = str(payload.get("size") or generation["defaultSize"])
+    if size not in {entry["value"] for entry in sizes}:
         raise ApiError("ai.size_invalid", "Formato immagine non valido.", "size")
-    quality = str(payload.get("quality") or "medium")
-    if quality not in {entry["value"] for entry in AI_IMAGE_QUALITIES}:
+    quality = str(payload.get("quality") or generation["defaultQuality"])
+    if quality not in {entry["value"] for entry in qualities}:
         raise ApiError("ai.quality_invalid", "Qualità immagine non valida.", "quality")
 
     source = ""

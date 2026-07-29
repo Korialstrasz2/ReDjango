@@ -1,7 +1,8 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
-import type { Effect, EffectConfiguration, EffectOperation } from "../../lib/types";
+import type { Effect, EffectConfiguration, EffectOperation, EffectPreset } from "../../lib/types";
 import { EffectIcon } from "./EffectIcon";
+import { EffectPresetPicker } from "./EffectPresetPicker";
 
 type EffectDraft = {
   name: string;
@@ -67,14 +68,26 @@ function freshDraft(configuration: EffectConfiguration): EffectDraft {
 }
 
 function draftFrom(effect: Effect, configuration: EffectConfiguration): EffectDraft {
-  const fallback = freshDraft(configuration);
   return {
     name: effect.name,
     description: withoutTemporaryMarker(effect.description),
     origin: effect.originName,
     icon: configuration.icons.some((entry) => entry.value === effect.icon) ? effect.icon : "runa",
     temporary: effect.temporary,
-    operations: effect.operations.length ? effect.operations.map((operation) => ({ ...operation })) : fallback.operations,
+    // Un effetto senza modifiche resta senza modifiche: è una condizione narrata,
+    // non un modulo da riempire.
+    operations: effect.operations.map((operation) => ({ ...operation })),
+  };
+}
+
+function draftFromPreset(preset: EffectPreset, configuration: EffectConfiguration): EffectDraft {
+  return {
+    name: preset.name,
+    description: withoutTemporaryMarker(preset.description),
+    origin: preset.origin,
+    icon: configuration.icons.some((entry) => entry.value === preset.icon) ? preset.icon : "runa",
+    temporary: preset.temporary,
+    operations: preset.operations.map((operation) => ({ ...operation })),
   };
 }
 
@@ -127,6 +140,7 @@ function EffectEditor({ effect, configuration, saving, initialFocus, onCancel, o
 }) {
   const [draft, setDraft] = useState<EffectDraft>(() => effect ? draftFrom(effect, configuration) : freshDraft(configuration));
   const [iconSearch, setIconSearch] = useState("");
+  const [presetPickerOpen, setPresetPickerOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => setDraft(effect ? draftFrom(effect, configuration) : freshDraft(configuration)), [effect, configuration]);
   useEffect(() => setIconSearch(""), [effect]);
@@ -166,8 +180,20 @@ function EffectEditor({ effect, configuration, saving, initialFocus, onCancel, o
         <p className="eyebrow">{effect ? "Modifica effetto" : "Nuovo effetto"}</p>
         <h3>{effect ? effect.name : "Crea e applica"}</h3>
       </div>
+      <button
+        className="button secondary small effect-preset-open"
+        type="button"
+        onClick={() => setPresetPickerOpen(true)}
+        title="Parti da un preset già pronto"
+      >Preset</button>
       {effect?.scope === "legacy" && <span className="effect-format-badge">Verrà personalizzato</span>}
     </header>
+
+    {presetPickerOpen && <EffectPresetPicker
+      configuration={configuration}
+      onClose={() => setPresetPickerOpen(false)}
+      onPick={(preset) => { setDraft(draftFromPreset(preset, configuration)); setPresetPickerOpen(false); }}
+    />}
 
     {effect?.scope === "legacy" && <p className="effect-legacy-note">Salvando, questo effetto attivo passa al formato personalizzato. Lo slot storico e gli altri effetti esistenti restano invariati.</p>}
 
@@ -215,9 +241,10 @@ function EffectEditor({ effect, configuration, saving, initialFocus, onCancel, o
         <label>Operazione<select aria-label="Operazione" value={operation.operation} onChange={(event) => updateOperation(index, { operation: event.target.value })}>{configuration.operations.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label>
         <label className="effect-expression-field">Valore o formula<input required spellCheck={false} data-effect-operation-index={index} data-effect-operation-field="value" value={operation.value} onChange={(event) => updateOperation(index, { value: event.target.value })} placeholder="5 oppure floor(final.mana / 10)" /></label>
         <label className="effect-condition-field">Condizione, facoltativa<input spellCheck={false} value={operation.condition} onChange={(event) => updateOperation(index, { condition: event.target.value })} placeholder="personaggio.livello >= 5" /></label>
-        <button className="effect-operation-remove" type="button" disabled={draft.operations.length === 1} onClick={() => setDraft((current) => ({ ...current, operations: current.operations.filter((_, operationIndex) => operationIndex !== index) }))} aria-label={`Rimuovi modifica ${index + 1}`}>×</button>
+        <button className="effect-operation-remove" type="button" onClick={() => setDraft((current) => ({ ...current, operations: current.operations.filter((_, operationIndex) => operationIndex !== index) }))} aria-label={`Rimuovi modifica ${index + 1}`}>×</button>
         <p>{configuration.operations.find((entry) => entry.value === operation.operation)?.description}</p>
       </article>)}</div>
+      {!draft.operations.length && <p className="effect-operations-descriptive">Nessuna modifica: l'effetto resta descrittivo e non tocca il calcolo del personaggio.</p>}
     </section>
 
     <details className="effect-operation-guide">

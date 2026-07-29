@@ -2573,6 +2573,14 @@
             "title": "Targets",
             "type": "array"
           },
+          "presets": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EffectPresetSchema"
+            },
+            "title": "Presets",
+            "type": "array"
+          },
           "operations": {
             "items": {
               "$ref": "#/components/schemas/EffectOperationOptionSchema"
@@ -2732,6 +2740,62 @@
           "value"
         ],
         "title": "EffectOperationSchema",
+        "type": "object"
+      },
+      "EffectPresetSchema": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "origin": {
+            "default": "",
+            "title": "Origin",
+            "type": "string"
+          },
+          "icon": {
+            "default": "effetto",
+            "title": "Icon",
+            "type": "string"
+          },
+          "iconUrl": {
+            "default": "",
+            "title": "Iconurl",
+            "type": "string"
+          },
+          "temporary": {
+            "default": true,
+            "title": "Temporary",
+            "type": "boolean"
+          },
+          "category": {
+            "default": "",
+            "title": "Category",
+            "type": "string"
+          },
+          "operations": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EffectOperationSchema"
+            },
+            "title": "Operations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "EffectPresetSchema",
         "type": "object"
       },
       "EffectSchema": {
@@ -4791,6 +4855,14 @@
           "multipliers": {
             "$ref": "#/components/schemas/AlchemyMultipliersSchema"
           },
+          "sets": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AlchemySetSchema"
+            },
+            "title": "Sets",
+            "type": "array"
+          },
           "catalog": {
             "items": {
               "$ref": "#/components/schemas/AlchemyCatalogReagentSchema"
@@ -4973,6 +5045,22 @@
             "title": "Defaultsetbonus",
             "type": "number"
           },
+          "defaultSetId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Defaultsetid"
+          },
+          "baseSetBonus": {
+            "default": 1,
+            "title": "Basesetbonus",
+            "type": "number"
+          },
           "formula": {
             "title": "Formula",
             "type": "string"
@@ -4984,6 +5072,80 @@
           "formula"
         ],
         "title": "AlchemyRulesSchema",
+        "type": "object"
+      },
+      "AlchemySetSchema": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "bonus": {
+            "title": "Bonus",
+            "type": "number"
+          },
+          "bonusPercent": {
+            "title": "Bonuspercent",
+            "type": "number"
+          },
+          "source": {
+            "enum": [
+              "backpack",
+              "utility",
+              "campaign"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "sourceLabel": {
+            "title": "Sourcelabel",
+            "type": "string"
+          },
+          "shared": {
+            "title": "Shared",
+            "type": "boolean"
+          },
+          "rarity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rarity"
+          },
+          "rarityLabel": {
+            "default": "",
+            "title": "Raritylabel",
+            "type": "string"
+          },
+          "value": {
+            "default": 0,
+            "title": "Value",
+            "type": "integer"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "bonus",
+          "bonusPercent",
+          "source",
+          "sourceLabel",
+          "shared"
+        ],
+        "title": "AlchemySetSchema",
         "type": "object"
       },
       "AlchemyStockSchema": {
@@ -6723,6 +6885,22 @@
             "title": "Setbonus",
             "type": "number"
           },
+          "setId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setid"
+          },
+          "setName": {
+            "default": "",
+            "title": "Setname",
+            "type": "string"
+          },
           "abilityBonus": {
             "title": "Abilitybonus",
             "type": "number"
@@ -7082,10 +7260,16 @@
             "title": "Effect",
             "type": "string"
           },
-          "setBonus": {
-            "default": 1,
-            "title": "Setbonus",
-            "type": "number"
+          "setItemId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setitemid"
           }
         },
         "required": [

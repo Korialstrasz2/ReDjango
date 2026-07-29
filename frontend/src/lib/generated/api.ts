@@ -667,6 +667,11 @@ export interface components {
         EffectConfigurationSchema: {
             /** Targets */
             targets: components["schemas"]["EffectConfigurationOptionSchema"][];
+            /**
+             * Presets
+             * @default []
+             */
+            presets: components["schemas"]["EffectPresetSchema"][];
             /** Operations */
             operations: components["schemas"]["EffectOperationOptionSchema"][];
             /** Operationordernote */
@@ -732,6 +737,48 @@ export interface components {
              * @default
              */
             condition: string;
+        };
+        /** EffectPresetSchema */
+        EffectPresetSchema: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /**
+             * Origin
+             * @default
+             */
+            origin: string;
+            /**
+             * Icon
+             * @default effetto
+             */
+            icon: string;
+            /**
+             * Iconurl
+             * @default
+             */
+            iconUrl: string;
+            /**
+             * Temporary
+             * @default true
+             */
+            temporary: boolean;
+            /**
+             * Category
+             * @default
+             */
+            category: string;
+            /**
+             * Operations
+             * @default []
+             */
+            operations: components["schemas"]["EffectOperationSchema"][];
         };
         /** EffectSchema */
         EffectSchema: {
@@ -1793,6 +1840,11 @@ export interface components {
             character: components["schemas"]["AlchemyCharacterSchema"];
             bag: components["schemas"]["AlchemyBagSchema"];
             multipliers: components["schemas"]["AlchemyMultipliersSchema"];
+            /**
+             * Sets
+             * @default []
+             */
+            sets: components["schemas"]["AlchemySetSchema"][];
             /** Catalog */
             catalog: components["schemas"]["AlchemyCatalogReagentSchema"][];
             /** Potionfamilies */
@@ -1867,8 +1919,52 @@ export interface components {
             maxIngredients: number;
             /** Defaultsetbonus */
             defaultSetBonus: number;
+            /** Defaultsetid */
+            defaultSetId?: number | null;
+            /**
+             * Basesetbonus
+             * @default 1
+             */
+            baseSetBonus: number;
             /** Formula */
             formula: string;
+        };
+        /** AlchemySetSchema */
+        AlchemySetSchema: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Bonus */
+            bonus: number;
+            /** Bonuspercent */
+            bonusPercent: number;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "backpack" | "utility" | "campaign";
+            /** Sourcelabel */
+            sourceLabel: string;
+            /** Shared */
+            shared: boolean;
+            /** Rarity */
+            rarity?: number | null;
+            /**
+             * Raritylabel
+             * @default
+             */
+            rarityLabel: string;
+            /**
+             * Value
+             * @default 0
+             */
+            value: number;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
         };
         /** AlchemyStockSchema */
         AlchemyStockSchema: {
@@ -2744,6 +2840,13 @@ export interface components {
             levelTotal: number;
             /** Setbonus */
             setBonus: number;
+            /** Setid */
+            setId?: number | null;
+            /**
+             * Setname
+             * @default
+             */
+            setName: string;
             /** Abilitybonus */
             abilityBonus: number;
             /** Potency */
@@ -2929,11 +3032,8 @@ export interface components {
             potionColor: "rosso" | "verde" | "blu";
             /** Effect */
             effect: string;
-            /**
-             * Setbonus
-             * @default 1
-             */
-            setBonus: number;
+            /** Setitemid */
+            setItemId?: number | null;
         };
         /** AlchemyExtractActionSchema */
         AlchemyExtractActionSchema: {

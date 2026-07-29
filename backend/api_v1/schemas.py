@@ -206,8 +206,21 @@ class EffectFormulaGuideSchema(Schema):
     values: list[str] = []
 
 
+class EffectPresetSchema(Schema):
+    id: int
+    name: str
+    description: str = ""
+    origin: str = ""
+    icon: str = "effetto"
+    iconUrl: str = ""
+    temporary: bool = True
+    category: str = ""
+    operations: list[EffectOperationSchema] = []
+
+
 class EffectConfigurationSchema(Schema):
     targets: list[EffectConfigurationOptionSchema]
+    presets: list[EffectPresetSchema] = []
     operations: list[EffectOperationOptionSchema]
     operationOrderNote: str
     icons: list[EffectIconOptionSchema]
@@ -771,9 +784,25 @@ class AlchemyCharacterSchema(Schema):
     level: int
 
 
+class AlchemySetSchema(Schema):
+    id: int
+    name: str
+    bonus: float
+    bonusPercent: float
+    source: Literal["backpack", "utility", "campaign"]
+    sourceLabel: str
+    shared: bool
+    rarity: int | None = None
+    rarityLabel: str = ""
+    value: int = 0
+    description: str = ""
+
+
 class AlchemyRulesSchema(Schema):
     maxIngredients: int
     defaultSetBonus: float
+    defaultSetId: int | None = None
+    baseSetBonus: float = 1
     formula: str
 
 
@@ -781,6 +810,7 @@ class AlchemyCreationDataSchema(Schema):
     character: AlchemyCharacterSchema
     bag: AlchemyBagSchema
     multipliers: AlchemyMultipliersSchema
+    sets: list[AlchemySetSchema] = []
     catalog: list[AlchemyCatalogReagentSchema]
     potionFamilies: list[AlchemyPotionFamilySchema]
     thresholds: list[AlchemyThresholdSchema]
@@ -811,6 +841,8 @@ class AlchemyBrewResultSchema(Schema):
     ingredients: list[AlchemyBrewIngredientSchema]
     levelTotal: float
     setBonus: float
+    setId: int | None = None
+    setName: str = ""
     abilityBonus: float
     potency: float
     potionLevel: int
@@ -1165,7 +1197,7 @@ class AlchemyBrewPayloadSchema(Schema):
     ingredients: list[AlchemyIngredientSelectionSchema]
     potionColor: Literal["rosso", "verde", "blu"]
     effect: str
-    setBonus: float = 1
+    setItemId: int | None = None
 
 
 class AlchemyExtractPayloadSchema(Schema):

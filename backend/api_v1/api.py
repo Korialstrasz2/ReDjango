@@ -1059,7 +1059,7 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 payload.get("ingredients", []),
                 payload["potionColor"],
                 payload["effect"],
-                payload.get("setBonus", 1),
+                payload.get("setItemId"),
             )
             data = {
                 "creation": alchemy_creation_payload(character),
