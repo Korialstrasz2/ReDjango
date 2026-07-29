@@ -140,6 +140,121 @@ RACE_CATALOG: dict[str, dict[str, Any]] = {
             "Sangue Corrotto": "Immunità ai veleni e creazione di pozioni dal proprio sangue.",
         },
     },
+    "Dremora": {
+        "modifiers": {
+            "personalita": -2,
+            "fortuna": -2,
+            "saggezza": -1,
+            "forza": 2,
+            "resistenza": 2,
+            "concentrazione": 1,
+        },
+        "trait": {
+            "note": (
+                "Resistenza naturale al fuoco; una volta al giorno può ottenere un reroll "
+                "a Intimidire contro una creatura mortale."
+            ),
+            "effects": {"res_fuoco": 1, "rd_fuoco": 2},
+        },
+        "subraces": {
+            "Churl": {
+                "note": "Fante di rango inferiore, temprato dal servizio nelle legioni daedriche.",
+                "effects": {"energia": 1},
+            },
+            "Caitiff": {
+                "note": "Soldato esperto, abituato ad assalti rapidi e combattimenti prolungati.",
+                "effects": {"velocita": 1},
+            },
+            "Kynval": {
+                "note": "Guerriero di rango elevato, premiato per la ferocia in battaglia.",
+                "effects": {"attacco": 1},
+            },
+            "Kynreeve": {
+                "note": "Ufficiale di clan responsabile della disciplina e della difesa.",
+                "effects": {"difesa": 1},
+            },
+            "Kynmarcher": {
+                "note": "Comandante operativo capace di guidare reparti e campagne.",
+                "effects": {"concentrazione": 1},
+            },
+            "Markynaz": {
+                "note": "Signore del consiglio Markyn, dotato di autorità e potere daedrico.",
+                "effects": {"potere": 1},
+            },
+            "Valkynaz": {
+                "note": "Principe guerriero al vertice della gerarchia Dremora.",
+                "effects": {"resistenza": 1},
+            },
+        },
+        "native": True,
+    },
+    "Xivilai": {
+        "modifiers": {
+            "personalita": -2,
+            "fortuna": -2,
+            "saggezza": -1,
+            "forza": 2,
+            "resistenza": 2,
+            "intelligenza": 1,
+        },
+        "trait": {
+            "note": (
+                "Daedra maggiore dalla fisicità imponente e dall'innata affinità con "
+                "l'Oblivion; resiste naturalmente al fuoco."
+            ),
+            "effects": {"res_fuoco": 1, "rd_fuoco": 2},
+        },
+        "subraces": {},
+        "native": True,
+    },
+    "Non morto": {
+        "modifiers": {
+            "personalita": -2,
+            "fortuna": -1,
+            "saggezza": -1,
+            "forza": 1,
+            "resistenza": 2,
+            "concentrazione": 1,
+        },
+        "trait": {
+            "note": (
+                "Non necessita di respirare, mangiare o dormire ed è immune a veleni e malattie; "
+                "una volta al giorno può ignorare un effetto di paura."
+            ),
+            "effects": {"rd_fis": 1},
+        },
+        "subraces": {
+            "Scheletro": {
+                "note": "Ossa animate, leggere e prive di carne; vulnerabilità narrative al danno contundente.",
+                "effects": {"agilita": 1},
+            },
+            "Draugr": {
+                "note": "Guerriero nordico sepolto, temprato dal gelo e dalla custodia delle tombe.",
+                "effects": {"res_gelo": 1},
+            },
+            "Revenant": {
+                "note": "Cadavere richiamato da un giuramento incompiuto o dalla volontà di un necromante.",
+                "effects": {"forza": 1},
+            },
+            "Mummia": {
+                "note": "Corpo conservato da riti funerari e bende protettive.",
+                "effects": {"rd_fis": 1},
+            },
+            "Vampiro": {
+                "note": "Predatore notturno mosso dal sangue, rapido e socialmente pericoloso.",
+                "effects": {"velocita": 1},
+            },
+            "Lich": {
+                "note": "Necromante che ha vincolato la propria anima alla non morte.",
+                "effects": {"potere": 1},
+            },
+            "Spettro": {
+                "note": "Anima disincarnata legata a un luogo, un oggetto o un rancore.",
+                "effects": {"difesa": 1},
+            },
+        },
+        "native": True,
+    },
 }
 
 RACE_NAMES = tuple(RACE_CATALOG)

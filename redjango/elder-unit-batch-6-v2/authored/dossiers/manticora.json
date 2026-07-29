@@ -1,0 +1,1299 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1052",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1052
+    ],
+    "normalizedName": "manticora",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 1052,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Manticora",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            1,
+            "0"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            3,
+            "linear"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "ap_tot": [
+            3,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            3,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            7,
+            "0"
+          ],
+          "res_taglio_tot": [
+            7,
+            "1"
+          ],
+          "res_perforante_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "-1"
+          ],
+          "res_gelo_tot": [
+            5,
+            "-1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "1"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "1"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "1"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            6,
+            "linear"
+          ],
+          "sconto_mana_per_potere_tot": [
+            5,
+            "linear"
+          ],
+          "sconto_pa_per_potere_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "entità",
+        "scudo": [],
+        "skill_1_id": 1,
+        "skill_2_id": 2,
+        "skill_3_id": 16,
+        "skill_4_id": 50,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 80,
+        "unitId": 1052,
+        "name": "Manticora",
+        "description": "Le Manticore, o Mantikora secondo alcune fonti più vicine alla tradizione di Tamriel, sono creature rare e innaturali, più legate a esperimenti, alchimia e magie antiche che alla normale fauna del continente. Possono comparire in rovine dimenticate, laboratori abbandonati o regioni selvagge dove una creazione fuggita ha avuto il tempo di riprodursi o diventare leggenda. Non sono bestie comuni: il loro stesso corpo racconta una forzatura. Sono aggressive, territoriali e dotate di una malizia superiore a quella di molti predatori. Non cacciano soltanto per nutrirsi, ma sembrano provare un gusto feroce nell'inseguimento e nella paura della preda. Questo le rende particolarmente inquietanti per i cacciatori di mostri, perché non si comportano mai come semplici animali. Hanno corpo possente, tratti chimerici e spesso una coda velenosa o altre armi naturali derivate dalla loro origine artificiale. Sono robuste, rapide e pericolose sia a distanza ravvicinata sia quando riescono a sfruttare il terreno. Chi le affronta deve aspettarsi una creatura nata da molte minacce fuse insieme, non una sola bestia da catalogo.",
+        "image": "UnitLorePics/Manticora.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 1,
+        "name": "Colpo d'Ala",
+        "description": "La creatura batte le sue potenti ali per respingere i nemici.",
+        "effect": "Tutti i nemici entro 2 esagoni devono effettuare un controllo di difesa o essere spinti indietro di 2 esagoni e subire danni contundenti pari a (livello)d4.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta la distanza di spinta a 4 esagoni e il dado del danno a d6."
+      },
+      {
+        "sourceId": 2,
+        "name": "Sputo Velenoso",
+        "description": "La creatura sputa un globo di veleno verso il bersaglio.",
+        "effect": "Attacco a distanza fino a 4 esagoni che infligge (2d6 + livello) danni da veleno e infligge lo status veleno per 2 turni.",
+        "cost": "4 PA, 5 EN.",
+        "boost": "Per 4 POW, aumenta la portata a 6 esagoni e la durata del veleno a 4 turni."
+      },
+      {
+        "sourceId": 16,
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici.",
+        "effect": "Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA.",
+        "cost": "6 PA, 4 EN.",
+        "boost": "Per 4 POW, +4 atk, +30% danno"
+      },
+      {
+        "sourceId": 50,
+        "name": "Divorare",
+        "description": "Consuma un nemico sconfitto per recuperare forze.",
+        "effect": "Può bersagliare solo un nemico caduto; recupera (livello nemico*2) Punti Ferita e guadagna +2 forza per 3 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, recupera anche LV/2 EN e LV/2 POW."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Manticora",
+    "sourceIds": [
+      1052
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve 1-20 sorgente sono preservate e Volo esplicita l'anatomia alata.",
+    "fantasy": "Chimera alchemica alata, territoriale e maliziosa, costruita per colpire da ogni angolo.",
+    "combatStory": "Vola, respinge con le ali, spazza con la coda, sputa secrezione corrosiva e divora chi cade.",
+    "siblings": [
+      {
+        "unit": "Viverna",
+        "relation": "nearest",
+        "mustDifferBy": "Chimera con ala/coda/Divorare invece di drago minore."
+      },
+      {
+        "unit": "Tigre denti a Sciabola",
+        "relation": "same-predator",
+        "mustDifferBy": "Volo e controllo d'area invece di balzo/Furia."
+      },
+      {
+        "unit": "Drago",
+        "relation": "contrast",
+        "mustDifferBy": "Creazione alchemica senza Thu'um o respiri elementali."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "corpo chimerico",
+        "expressedBy": "ala, coda e sputo"
+      },
+      {
+        "axis": "predatore alato",
+        "expressedBy": "Volo e Divorare"
+      }
+    ],
+    "must": [
+      "Volo",
+      "Colpo d'Ala",
+      "Colpo di Coda",
+      "Divorare"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "Thu'um",
+      "Furia",
+      "Mana"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "chimera alata",
+      "5": "coda",
+      "10": "sputo",
+      "15": "Divorare",
+      "20": "Manticora dominante"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Manticora",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Volo e Colpo d'Ala presenti dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "Thu'um",
+      "Furia",
+      "Mana"
+    ],
+    "differsFrom": {
+      "Viverna": "Chimera con ala/coda/Divorare invece di drago minore.",
+      "Tigre denti a Sciabola": "Volo e controllo d'area invece di balzo/Furia."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1052"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1052"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Manticora",
+    "category": "Natura",
+    "archetypeDescription": "Predatore chimerico volante con controllo d'area, coda e recupero su caduto.",
+    "loreDescription": "Le Manticore, o Mantikora secondo alcune fonti più vicine alla tradizione di Tamriel, sono creature rare e innaturali, più legate a esperimenti, alchimia e magie antiche che alla normale fauna del continente. Possono comparire in rovine dimenticate, laboratori abbandonati o regioni selvagge dove una creazione fuggita ha avuto il tempo di riprodursi o diventare leggenda. Non sono bestie comuni: il loro stesso corpo racconta una forzatura. Sono aggressive, territoriali e dotate di una malizia superiore a quella di molti predatori. Non cacciano soltanto per nutrirsi, ma sembrano provare un gusto feroce nell'inseguimento e nella paura della preda. Questo le rende particolarmente inquietanti per i cacciatori di mostri, perché non si comportano mai come semplici animali. Hanno corpo possente, tratti chimerici e spesso una coda velenosa o altre armi naturali derivate dalla loro origine artificiale. Sono robuste, rapide e pericolose sia a distanza ravvicinata sia quando riescono a sfruttare il terreno. Chi le affronta deve aspettarsi una creatura nata da molte minacce fuse insieme, non una sola bestia da catalogo.",
+    "notes": "Batch 6 v2: conversione Elder [1052]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch6-volo",
+        "name": "Volo",
+        "description": "Passiva. La creatura può attraversare il campo in volo; usa l'azione Volo già presente nel vocabolario delle Unit.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-1",
+        "name": "Colpo d'Ala",
+        "description": "La creatura batte le sue potenti ali per respingere i nemici. Tutti i nemici entro 2 esagoni devono effettuare un controllo di difesa o essere spinti indietro di 2 esagoni e subire danni contundenti pari a (livello)d4. Boost Elder: Per 5 POW, aumenta la distanza di spinta a 4 esagoni e il dado del danno a d6.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-2",
+        "name": "Sputo Velenoso",
+        "description": "Bersaglio entro 4 esagoni. La secrezione corrosiva infligge danni Perforante; il nome conserva la firma biologica senza introdurre elementi fuori vocabolario.",
+        "minLevel": 7,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-16",
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici. Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA. Boost Elder: Per 4 POW, +4 atk, +30% danno",
+        "minLevel": 4,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-50",
+        "name": "Divorare",
+        "description": "Consuma un nemico sconfitto per recuperare forze. Può bersagliare solo un nemico caduto; recupera (livello nemico*2) Punti Ferita e guadagna +2 forza per 3 turni. Boost Elder: Per 5 POW, recupera anche LV/2 EN e LV/2 POW.",
+        "minLevel": 10,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "ap",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:2fe8872c4b75700c53131cabcccc18b9e6e3475aa2301daf8be4c32e723caea9",
+  "charterHash": "sha256:729ea63e87096a7a2c30cccd019eed4fe7b5503eadfbbcfad0f16e8a48ac28cd",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Sputo Velenoso"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve 1-20 sorgente sono preservate e Volo esplicita l'anatomia alata."
+    },
+    {
+      "what": "locomozione",
+      "from": "Colpo d'Ala senza Volo separato",
+      "to": "Volo innato dal livello 1",
+      "why": "Anatomia alata e azione già implementata."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Sputo Velenoso']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:09d4ed96055e1c71b651bc97d489420ee3f38486eb90f630ef21081ab18bfdda",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:3f4feb9aa42bd0e27d8db01a502030a1b47c994491370bc88f1c949c61f35124",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:4f4a11fed20e97efd1f36fa37177667328a5b6cf33e96979d9078fd58e27e518",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:fba517641e2a61cae976fd6727003a2ce288128e9d5bf7f79bc764981d8e9bcc",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:02991a8fbe54305193bba609b02d9e39b5a42bea75c6984318f14ea92e37f887",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Colpo d'Ala",
+          "Sputo Velenoso",
+          "Colpo di Coda",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Manticora",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

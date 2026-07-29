@@ -9,7 +9,7 @@ import { ItemEditorModal } from "../character/ItemEditorModal";
 import { command, getData } from "../../lib/api";
 import type { Item, ItemCatalog } from "../../lib/types";
 
-type ItemActionData = { item?: Item | null; catalog?: ItemCatalog | null; management?: { created?: boolean } | null };
+type ItemActionData = { item?: Item | null; catalog?: ItemCatalog | null; management?: { created?: boolean; updated?: number } | null };
 type ItemDraft = {
   identityId: number | null;
   identityName: string;
@@ -166,6 +166,19 @@ function ItemComparer({ catalog, onSaved }: { catalog: ItemCatalog; onSaved: (it
   };
 
   return <><section className="item-comparer" data-component-type="panel" data-theme="default">
+    <div className="callout guide-warning legacy-tool-notice" role="note">
+      <strong>Strumento storico, non più il modo normale di lavorare</strong>
+      <p>
+        Il confronto affiancato è nato per la migrazione da Elder Django: serviva a mettere una riga importata
+        accanto a una già sistemata e ricopiarne i valori campo per campo. Oggi il catalogo si modifica dalla
+        scheda <em>Catalogo</em>, con l'editor completo.
+      </p>
+      <p>
+        Resta qui perché è ancora comodo per allineare due record simili, ma copre solo i campi che esistevano
+        allora: non tocca il profilo arma e carica l'intero catalogo in memoria. Per creare o modificare un
+        oggetto usa <em>Crea oggetto</em> o <em>Modifica</em>.
+      </p>
+    </div>
     <header className="comparer-toolbar"><div><p className="eyebrow">Confronto affiancato</p><h2>Sinistra: riferimento · Destra: destinazione</h2></div><div className="button-row"><button className="button secondary" type="button" onClick={() => { setRight({ ...EMPTY_DRAFT }); setError(""); }}>Nuovo oggetto</button><button className="button secondary" type="button" disabled={!left} onClick={copyLeft}>Copia i valori →</button></div></header>
     <div className="comparer-selectors"><label>Oggetto a sinistra<select value={leftId || ""} onChange={(event) => setLeftId(Number(event.target.value) || null)}>{catalog.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {item.name}</option>)}</select></label><label>Oggetto o bozza a destra<select value={right.identityId || ""} onChange={(event) => selectRight(event.target.value)}><option value="">Nuovo oggetto</option>{catalog.items.map((item) => <option key={item.id} value={item.id}>#{item.id} · {item.name}</option>)}</select></label></div>
     <div className="identity-rule" data-state={right.identityId && right.nome.toLocaleLowerCase("it") === right.identityName.toLocaleLowerCase("it") ? "update" : "create"}>
@@ -216,50 +229,99 @@ function ItemComparer({ catalog, onSaved }: { catalog: ItemCatalog; onSaved: (it
   </section>{imagePickerOpen && <ImagePickerModal selectedId={rightMedia?.id || null} usageType="item_icon" defaultGroup="Oggetti" defaultTitle={right.nome || "Nuovo oggetto"} onSelect={(asset) => update("mediaId", asset ? String(asset.id) : "")} onClose={() => setImagePickerOpen(false)} />}</>;
 }
 
+// The comparer predates paging and drives both of its dropdowns from one
+// in-memory list. It keeps its own unpaged query so the catalogue tab can page
+// properly without changing how the legacy tool behaves.
+function LegacyComparerTab({ onSaved }: { onSaved: (item: Item, created: boolean) => void }) {
+  const comparerQuery = useQuery({
+    queryKey: ["management-items-comparer"],
+    queryFn: () => getData<ItemCatalog>("/api/v1/management/items?limit=10000"),
+  });
+  const queryClient = useQueryClient();
+  if (comparerQuery.isLoading) return <section className="panel"><p>Caricamento dell'intero catalogo…</p></section>;
+  if (comparerQuery.error) return <section className="panel danger-panel"><p>{(comparerQuery.error as Error).message}</p></section>;
+  if (!comparerQuery.data) return null;
+  return <ItemComparer catalog={comparerQuery.data} onSaved={(item, created) => {
+    void queryClient.invalidateQueries({ queryKey: ["management-items-comparer"] });
+    onSaved(item, created);
+  }} />;
+}
+
+const PAGE_SIZE = 100;
+
 export function ItemManagementPage() {
   const { media, notify } = useApp();
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<"catalog" | "compare">("catalog");
+  const [queryInput, setQueryInput] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [regionFilter, setRegionFilter] = useState("");
   const [stateFilter, setStateFilter] = useState<"active" | "archived" | "all">("active");
   const [specialFilter, setSpecialFilter] = useState<"all" | "special" | "standard">("all");
+  const [offset, setOffset] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [editorItem, setEditorItem] = useState<Item | null | undefined>(undefined);
   const [cloning, setCloning] = useState(false);
-  const catalogQuery = useQuery({ queryKey: ["management-items"], queryFn: () => getData<ItemCatalog>("/api/v1/management/items?limit=10000") });
+  const [triageSelection, setTriageSelection] = useState<number[]>([]);
+
+  // The catalogue is far too large to filter in the browser, so the search box
+  // drives the query itself; debouncing keeps a request per keystroke away.
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQuery(queryInput.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [queryInput]);
+  useEffect(() => setOffset(0), [query, typeFilter, regionFilter, stateFilter, specialFilter]);
+  useEffect(() => setTriageSelection([]), [query, typeFilter, regionFilter, stateFilter, specialFilter, offset]);
+
+  const catalogParameters = new URLSearchParams({
+    limit: String(PAGE_SIZE),
+    offset: String(offset),
+    query,
+    type_1: typeFilter,
+    region: regionFilter,
+    state: stateFilter === "all" ? "" : stateFilter,
+    special: specialFilter === "all" ? "" : specialFilter,
+  });
+  const catalogQuery = useQuery({
+    queryKey: ["management-items", catalogParameters.toString()],
+    queryFn: () => getData<ItemCatalog>(`/api/v1/management/items?${catalogParameters}`),
+    placeholderData: (previous) => previous,
+  });
   const catalog = catalogQuery.data;
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["management-items"] });
   const mutation = useMutation({
     mutationFn: ({ action, itemId, values }: { action: "items.create" | "items.update" | "items.archive"; itemId?: number; values?: Record<string, unknown> }) => command<ItemActionData>(action, { itemId, values: values || {} }, "management-items"),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ["management-items"] });
+      await invalidate();
       setEditorItem(undefined);
       setCloning(false);
       notify(variables.action === "items.archive" ? "Oggetto archiviato." : "Catalogo oggetti aggiornato.");
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
-  const types = useMemo(() => [...new Set(catalog?.items.flatMap((item) => item.types) || [])].sort((a, b) => a.localeCompare(b, "it")), [catalog]);
-  const regions = useMemo(() => [...new Set(catalog?.items.map((item) => item.region).filter(Boolean) || [])].sort((a, b) => a.localeCompare(b, "it")), [catalog]);
-  const normalized = query.trim().toLocaleLowerCase("it");
-  const filtered = (catalog?.items || []).filter((item) => {
-    const searchable = `${item.name} ${item.description} ${item.types.join(" ")} ${item.region}`.toLocaleLowerCase("it");
-    return (!normalized || searchable.includes(normalized))
-      && (!typeFilter || item.types.includes(typeFilter))
-      && (!regionFilter || item.region === regionFilter)
-      && (specialFilter === "all" || (specialFilter === "special" ? item.special : !item.special))
-      && (stateFilter === "all" || (stateFilter === "archived" ? item.archived : !item.archived));
+  const triageMutation = useMutation({
+    mutationFn: (itemIds: number[]) => command<ItemActionData>("items.setSpecial", { itemIds, special: false }, "management-items"),
+    onSuccess: async (response) => {
+      await invalidate();
+      setTriageSelection([]);
+      notify(`${response.data.management?.updated ?? 0} oggetti non sono più Speciali.`);
+    },
+    onError: (error: Error) => notify(error.message, "error"),
   });
+  const types = useMemo(() => (catalog?.typeOptions || []).filter((option) => option.position === 1), [catalog]);
+  const items = catalog?.items || [];
+  const total = catalog?.total ?? 0;
   useEffect(() => {
-    const visibleSelection = filtered.find((item) => item.id === selectedId)?.id ?? filtered[0]?.id ?? null;
+    const visibleSelection = items.find((item) => item.id === selectedId)?.id ?? items[0]?.id ?? null;
     if (visibleSelection !== selectedId) setSelectedId(visibleSelection);
-  }, [filtered, selectedId]);
-  const selected = filtered.find((item) => item.id === selectedId) || null;
+  }, [items, selectedId]);
+  const selected = items.find((item) => item.id === selectedId) || null;
   const saveEditor = (values: Record<string, unknown>) => mutation.mutate({ action: editorItem && !cloning ? "items.update" : "items.create", itemId: editorItem && !cloning ? editorItem.id : undefined, values });
   const archiveEditor = () => {
     if (editorItem && window.confirm(`Archiviare ${editorItem.name}?`)) mutation.mutate({ action: "items.archive", itemId: editorItem.id });
   };
+  const toggleTriage = (itemId: number) => setTriageSelection((current) => current.includes(itemId) ? current.filter((entry) => entry !== itemId) : [...current, itemId]);
 
   return <div className="page management-page">
     <header className="page-header"><div><p className="eyebrow">Gestione del gioco</p><h1>Catalogo oggetti</h1></div><div className="button-row"><Link className="button secondary" to="/tools">Tutti gli strumenti</Link><button className="button secondary" disabled={!selected} onClick={() => { if (selected) { setCloning(true); setEditorItem(selected); } }}>Clona selezionato</button><button className="button primary" onClick={() => { setCloning(false); setEditorItem(null); }}>Crea oggetto</button></div></header>
@@ -267,11 +329,20 @@ export function ItemManagementPage() {
     {catalogQuery.isLoading && <section className="panel"><p>Caricamento catalogo…</p></section>}
     {catalogQuery.error && <section className="panel danger-panel"><p>{(catalogQuery.error as Error).message}</p></section>}
     {mode === "catalog" && catalog && <>
-      <section className="panel management-filterbar item-filters" data-component-type="toolbar" data-theme="default"><label>Cerca<input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nome, descrizione, tipo…" /></label><label>Tipo<select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="">Tutti</option>{types.map((type) => <option key={type}>{type}</option>)}</select></label><label>Regione<select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}><option value="">Tutte</option>{regions.map((region) => <option key={region}>{region}</option>)}</select></label><label>Stato<select value={stateFilter} onChange={(event) => setStateFilter(event.target.value as typeof stateFilter)}><option value="active">Attivi</option><option value="archived">Archiviati</option><option value="all">Tutti</option></select></label></section>
-      <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{filtered.length} oggetti</strong><small>{catalog.items.length} record totali</small></header>{filtered.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}><span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small></span><b>{item.weight ?? "—"}</b></button>)}</section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p><dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.notes && <aside><strong>Note</strong><p>{selected.notes}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
+      <section className="panel management-filterbar item-filters" data-component-type="toolbar" data-theme="default"><label>Cerca<input type="search" value={queryInput} onChange={(event) => setQueryInput(event.target.value)} placeholder="Nome, descrizione, tipo…" /></label><label>Tipo<select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="">Tutti</option>{types.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></label><label>Regione<select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}><option value="">Tutte</option>{(catalog.regions || []).map((region) => <option key={region}>{region}</option>)}</select></label><label>Stato<select value={stateFilter} onChange={(event) => setStateFilter(event.target.value as typeof stateFilter)}><option value="active">Attivi</option><option value="archived">Archiviati</option><option value="all">Tutti</option></select></label><label>Revisione<select value={specialFilter} onChange={(event) => setSpecialFilter(event.target.value as typeof specialFilter)}><option value="all">Tutti</option><option value="special">Solo Speciali</option><option value="standard">Solo standard</option></select></label></section>
+      {specialFilter === "special" && <section className="panel item-triage-bar" data-component-type="toolbar" data-theme="gold">
+        <div>
+          <strong>{catalog.specialCount ?? 0} oggetti sono marcati Speciali</strong>
+          <p>Il flag li esclude da ogni negozio. Seleziona quelli ormai a posto e togli il flag in blocco; il resto del catalogo non viene toccato.</p>
+        </div>
+        <div className="button-row">
+          <button type="button" className="button secondary" disabled={!items.length} onClick={() => setTriageSelection(triageSelection.length === items.length ? [] : items.map((item) => item.id))}>{triageSelection.length === items.length && items.length ? "Deseleziona pagina" : "Seleziona pagina"}</button>
+          <button type="button" className="button primary" disabled={!triageSelection.length || triageMutation.isPending} onClick={() => { if (window.confirm(`Togliere il flag Speciale da ${triageSelection.length} oggetti?`)) triageMutation.mutate(triageSelection); }}>{triageMutation.isPending ? "Aggiornamento…" : `Togli Speciale (${triageSelection.length})`}</button>
+        </div>
+      </section>}
+      <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{total} oggetti</strong><small>{total ? `${offset + 1}–${offset + items.length}` : "nessun risultato"}{catalogQuery.isFetching ? " · aggiornamento…" : ""}</small></header>{items.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}>{specialFilter === "special" && <input type="checkbox" aria-label={`Seleziona ${item.name}`} checked={triageSelection.includes(item.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleTriage(item.id)} />}<span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small></span><b>{item.weight ?? "—"}</b></button>)}{!items.length && !catalogQuery.isFetching && <div className="management-empty-state"><strong>Nessun oggetto</strong><p>Cambia ricerca o filtri.</p></div>}<footer className="managed-item-pager"><button type="button" className="button secondary small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>← Precedenti</button><span>{Math.floor(offset / PAGE_SIZE) + 1} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><button type="button" className="button secondary small" disabled={!catalog.hasMore} onClick={() => setOffset(offset + PAGE_SIZE)}>Successivi →</button></footer></section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}{selected.special ? " · speciale" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p><dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.notes && <aside><strong>Note</strong><p>{selected.notes}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
     </>}
-    {mode === "catalog" && catalog && <section className="panel management-filterbar"><label>Revisione<select value={specialFilter} onChange={(event) => setSpecialFilter(event.target.value as typeof specialFilter)}><option value="all">Tutti</option><option value="special">Solo Speciali</option><option value="standard">Solo standard</option></select></label><small>Gli oggetti Speciali includono anomalie legacy ed effetti descrittivi conservati.</small></section>}
-    {mode === "compare" && catalog && <ItemComparer catalog={catalog} onSaved={(item) => { setSelectedId(item.id); queryClient.invalidateQueries({ queryKey: ["management-items"] }); }} />}
+    {mode === "compare" && <LegacyComparerTab onSaved={(item) => { setSelectedId(item.id); void invalidate(); }} />}
     {editorItem !== undefined && catalog && <ItemEditorModal item={editorItem} clone={cloning} catalog={catalog} media={media} saving={mutation.isPending} onClose={() => { setEditorItem(undefined); setCloning(false); }} onSave={saveEditor} onArchive={editorItem && !cloning ? archiveEditor : undefined} />}
   </div>;
 }

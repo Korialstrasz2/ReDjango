@@ -1,0 +1,1116 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:980",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      980
+    ],
+    "normalizedName": "operaio kwama",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 980,
+        "levels": [
+          20
+        ],
+        "nome": "Operaio Kwama",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            3,
+            "linear"
+          ],
+          "resistenza_tot": [
+            4,
+            "linear"
+          ],
+          "velocita_tot": [
+            3,
+            "linear"
+          ],
+          "agilita_tot": [
+            3,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            4,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            4,
+            "1"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-2"
+          ],
+          "res_perforante_tot": [
+            6,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            1,
+            "0"
+          ],
+          "tier_tot": [
+            3,
+            "linear"
+          ],
+          "attacco_tot": [
+            3,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 6,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 89,
+        "unitId": 980,
+        "name": "Operaio Kwama",
+        "description": "Gli Operai Kwama vivono nelle colonie sotterranee di Morrowind, dove scavano tunnel, trasportano uova e mantengono viva la struttura del nido. Sono la casta più numerosa e indispensabile delle miniere di uova, e i minatori dunmer imparano presto a riconoscerne abitudini e percorsi. Senza di loro, una colonia Kwama crollerebbe in poco tempo. Sono generalmente docili, concentrati sul lavoro e poco interessati agli intrusi finché non vengono minacciati. Non hanno una personalità individuale evidente, ma partecipano a una logica collettiva precisa. Il loro mondo è fatto di odori, tunnel, feromoni e compiti ripetuti con ostinazione. Sono meno pericolosi dei Guerrieri Kwama, ma possono difendersi con morsi, secrezioni e forza sorprendente. Il loro valore sta più nella funzione biologica che nel combattimento. Ucciderne troppi può danneggiare una colonia intera, cosa che i minatori più saggi evitano con cura.",
+        "image": "UnitLorePics/Operaio_Kwama.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 6,
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori.",
+        "effect": "Recupera (livello)d4 Punti Ferita alla fine di ogni turno.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, può raddoppiare la guarigione per un turno."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Operaio Kwama",
+    "sourceIds": [
+      980
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene linearizzata senza aggiungere azioni da Guerriero.",
+    "fantasy": "Casta laboriosa della colonia Kwama, costruita per scavare, trasportare e sopravvivere.",
+    "combatStory": "Non cerca lo scontro: resiste grazie alla pelle rigenerativa e protegge il percorso verso il nido.",
+    "siblings": [
+      {
+        "unit": "Guerriero Kwama",
+        "relation": "nearest",
+        "mustDifferBy": "Lavoro e sopravvivenza invece di carica e veleno."
+      },
+      {
+        "unit": "Regina Kwama",
+        "relation": "same-colony",
+        "mustDifferBy": "Casta subordinata senza controllo della covata."
+      },
+      {
+        "unit": "Scrib",
+        "relation": "contrast",
+        "mustDifferBy": "Più robusto e operaio, non giovane raccoglitore."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "casta operaia",
+        "expressedBy": "attacco basso e chassis resistente"
+      },
+      {
+        "axis": "pelle rigenerativa",
+        "expressedBy": "unica azione identitaria"
+      }
+    ],
+    "must": [
+      "Kwama",
+      "rigenerazione",
+      "nido",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "veleno",
+      "evocazione",
+      "carica"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "operaio riconoscibile",
+      "5": "rigenerazione",
+      "10": "tenacia del nido",
+      "15": "operaio maturo",
+      "20": "guardiano dei tunnel"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Operaio Kwama",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "solo Pelle Rigenerativa come azione"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "veleno",
+      "evocazione",
+      "carica"
+    ],
+    "differsFrom": {
+      "Guerriero Kwama": "Lavoro e sopravvivenza invece di carica e veleno.",
+      "Regina Kwama": "Casta subordinata senza controllo della covata."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:980"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:980"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Operaio Kwama",
+    "category": "Animale",
+    "archetypeDescription": "Creatura da nido resistente ma poco offensiva con rigenerazione naturale.",
+    "loreDescription": "Gli Operai Kwama vivono nelle colonie sotterranee di Morrowind, dove scavano tunnel, trasportano uova e mantengono viva la struttura del nido. Sono la casta più numerosa e indispensabile delle miniere di uova, e i minatori dunmer imparano presto a riconoscerne abitudini e percorsi. Senza di loro, una colonia Kwama crollerebbe in poco tempo. Sono generalmente docili, concentrati sul lavoro e poco interessati agli intrusi finché non vengono minacciati. Non hanno una personalità individuale evidente, ma partecipano a una logica collettiva precisa. Il loro mondo è fatto di odori, tunnel, feromoni e compiti ripetuti con ostinazione. Sono meno pericolosi dei Guerrieri Kwama, ma possono difendersi con morsi, secrezioni e forza sorprendente. Il loro valore sta più nella funzione biologica che nel combattimento. Ucciderne troppi può danneggiare una colonia intera, cosa che i minatori più saggi evitano con cura.",
+    "notes": "Batch 4 v2: conversione Elder [980]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-6",
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori. Recupera (livello)d4 Punti Ferita alla fine di ogni turno. Boost Elder: Per 5 POW, può raddoppiare la guarigione per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "medium",
+          "level1": 1,
+          "level20": 3
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "tier",
+          "profile": "low",
+          "level1": 3,
+          "level20": 9
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:0527007355a2b3985683075f2439d44243027f293a0ce0a267edc8211bebbb63",
+  "charterHash": "sha256:fe74a202161a77b35b720bfa1ae61b06e30013e444d26210040449d1fce113ea",
+  "converterVersion": "elder-unit-charter-v2-batch4",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene linearizzata senza aggiungere azioni da Guerriero."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:7adc2a48ccfc4027d219602bf5f44f1b8d1133a887cc929854dd165c6965b8f0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:2ffaa8ab96332439153816a2508e30f097bf28afe7da149b59d6a1433dd72a4a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:d63a8301aed4ff416c2699c8e4a8731e1e1a9cf2a566810fb585078d7db14dd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:8ec158dc4cf2d15534e1421e9d49fa6740a983d86803a529eec871052c351530",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:38ce23ad9e68e460d94765e8e4ef971008cd1843f0f2e91e563e7ad8fd29f0f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Operaio Kwama",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch4-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:59:53.280132+00:00",
+    "notes": "Standing authorization: user requested 20 more Units and explicitly asked for careful, thorough adherence to the V2 guide, best practices, and sibling coherence. Applied only after final subrace constraints, 20/20 static validation, a fresh 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 final review samples."
+  }
+}

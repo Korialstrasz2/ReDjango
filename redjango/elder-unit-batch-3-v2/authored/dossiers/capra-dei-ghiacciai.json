@@ -1,0 +1,1176 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:989",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      989
+    ],
+    "normalizedName": "capra dei ghiacciai",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 989,
+        "levels": [
+          20
+        ],
+        "nome": "Capra dei Ghiacciai",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            4,
+            "linear"
+          ],
+          "resistenza_tot": [
+            5,
+            "linear"
+          ],
+          "velocita_tot": [
+            5,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            3,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            3,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            4,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            4,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            5,
+            "0"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            6,
+            "hi_hi"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            6,
+            "hi_hi"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "pf_tot": [
+            4,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            3,
+            "linear"
+          ],
+          "attacco_tot": [
+            4,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 6,
+        "skill_2_id": 67,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 28,
+        "unitId": 989,
+        "name": "Capra dei Ghiacciai",
+        "description": "Le Capre dei Ghiacciai vivono sulle vette innevate di Skyrim, tra dirupi, passi montani e pendii dove pochi animali riescono a trovare nutrimento. Sono comuni nelle zone fredde e impervie, spesso viste da cacciatori, pellegrini e viandanti che attraversano le montagne. Per molti villaggi isolati rappresentano una fonte preziosa di carne, latte, pelle e corna. Sono creature diffidenti, testarde e sorprendentemente coraggiose quando messe alle strette. Non cercano lo scontro, ma non sono nemmeno indifese: una capra adulta sa usare il terreno meglio di molti predatori. Il loro istinto principale è la sopravvivenza, e questo le rende difficili da catturare vive. Hanno zoccoli adatti alla roccia, mantello folto e un equilibrio quasi innaturale sui pendii ghiacciati. Le corna possono ferire seriamente un aggressore, soprattutto se l'animale carica dall'alto. Non sono mostri, ma nelle montagne di Skyrim anche una semplice capra può ricordare agli avventurieri che il terreno è parte del pericolo.",
+        "image": "UnitLorePics/Capra_dei_Ghiacciai.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 6,
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori.",
+        "effect": "Recupera (livello)d4 Punti Ferita alla fine di ogni turno.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, può raddoppiare la guarigione per un turno."
+      },
+      {
+        "sourceId": 67,
+        "name": "Scatto Rapido",
+        "description": "La creatura scatta a velocità incredibile, colmando distanze o sfuggendo rapidamente.",
+        "effect": "Si muove per almeno 3 esagoni fino a un massimo di 6 esagoni in linea retta evitando tutti gli attacchi di opportunità.",
+        "cost": "6 PA, 2 EN.",
+        "boost": "Per 3 POW, aumenta il movimento a 8 esagoni. Per 8 POW, può attraversare gli NPC e infliggere danni a tutti gli NPC entro 1 esagono dalla linea di movimento pari a (livello/2)d10 danni da taglio."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Capra dei Ghiacciai",
+    "sourceIds": [
+      989
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene distribuita mantenendo Mana zero e chassis leggero.",
+    "fantasy": "Capra alpina ostinata, adattata a ghiaccio, quota e pendii impossibili.",
+    "combatStory": "Scatta tra le rocce, recupera dalle ferite superficiali e usa mobilità invece di massa.",
+    "siblings": [
+      {
+        "unit": "Cinghiale",
+        "relation": "nearest",
+        "mustDifferBy": "Mobilità verticale invece di carica massiccia."
+      },
+      {
+        "unit": "Lupo delle Nevi",
+        "relation": "same-biome",
+        "mustDifferBy": "Fuga e tenacia invece di caccia di branco."
+      },
+      {
+        "unit": "Guar",
+        "relation": "contrast",
+        "mustDifferBy": "Piccola e agile, non bestia da soma."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "passo alpino",
+        "expressedBy": "velocità e Scatto Rapido"
+      },
+      {
+        "axis": "tenacia glaciale",
+        "expressedBy": "Pelle Rigenerativa e res_gelo crescente"
+      }
+    ],
+    "must": [
+      "gelo",
+      "scatto",
+      "rigenerazione",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "predazione",
+      "magia"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "capra alpina",
+      "5": "scatto",
+      "10": "rigenerazione",
+      "15": "resistenza glaciale",
+      "20": "veterana delle vette"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Capra dei Ghiacciai",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "mana 0 a ogni livello"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "predazione",
+      "magia"
+    ],
+    "differsFrom": {
+      "Cinghiale": "Mobilità verticale invece di carica massiccia.",
+      "Lupo delle Nevi": "Fuga e tenacia invece di caccia di branco."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 61
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:989"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:989"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Capra dei Ghiacciai",
+    "category": "Animale",
+    "archetypeDescription": "Animale rapido del gelo con scatto e rigenerazione leggera.",
+    "loreDescription": "Le Capre dei Ghiacciai vivono sulle vette innevate di Skyrim, tra dirupi, passi montani e pendii dove pochi animali riescono a trovare nutrimento. Sono comuni nelle zone fredde e impervie, spesso viste da cacciatori, pellegrini e viandanti che attraversano le montagne. Per molti villaggi isolati rappresentano una fonte preziosa di carne, latte, pelle e corna. Sono creature diffidenti, testarde e sorprendentemente coraggiose quando messe alle strette. Non cercano lo scontro, ma non sono nemmeno indifese: una capra adulta sa usare il terreno meglio di molti predatori. Il loro istinto principale è la sopravvivenza, e questo le rende difficili da catturare vive. Hanno zoccoli adatti alla roccia, mantello folto e un equilibrio quasi innaturale sui pendii ghiacciati. Le corna possono ferire seriamente un aggressore, soprattutto se l'animale carica dall'alto. Non sono mostri, ma nelle montagne di Skyrim anche una semplice capra può ricordare agli avventurieri che il terreno è parte del pericolo.",
+    "notes": "Batch 3 v2: conversione Elder [989]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-6",
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori. Recupera (livello)d4 Punti Ferita alla fine di ogni turno. Boost Elder: Per 5 POW, può raddoppiare la guarigione per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-67",
+        "name": "Scatto Rapido",
+        "description": "La creatura scatta a velocità incredibile, colmando distanze o sfuggendo rapidamente. Si muove per almeno 3 esagoni fino a un massimo di 6 esagoni in linea retta evitando tutti gli attacchi di opportunità. Boost Elder: Per 3 POW, aumenta il movimento a 8 esagoni. Per 8 POW, può attraversare gli NPC e infliggere danni a tutti gli NPC entro 1 esagono dalla linea di movimento pari a (livello/2)d10 danni da taglio.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 2
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 18,
+          "level20": 108
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "low",
+          "level1": 3,
+          "level20": 9
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:f196209cb8195fe2931b89e88173a3097f952593c81810f50f47dedb7ea351f5",
+  "charterHash": "sha256:36085c1e6390a22d8a0f2fd593c6996dcafa06a9c3c851aadce372e7559cc73f",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene distribuita mantenendo Mana zero e chassis leggero."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:e5caa61d993682b24d2304129060d204d1a7ce0480f7115ab0f06a76747bc6cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:57ee0fb41fd753d7627fed5614865d534c05ed484411aafb7949c0738da825cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:98802c1771934c833bb8608b098bd432f4f60e1f8ad0b176c6cff75cfc8c6d16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:60a1416679d19b29320e55742d96d6579f75f804505d627115012c531d780cd6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:7f65f36605f968b18429d4d8ba27cdc8cd8c3deca914a473404a1578c0c2fa16",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scatto Rapido"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Capra dei Ghiacciai",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

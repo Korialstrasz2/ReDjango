@@ -94,18 +94,42 @@ class LegacyRaceImportTests(TestCase):
             razza_1="Dunmer",
             razza_2="Retaggio Mago",
         )
+        dremora = Personaggio.objects.create(
+            nome="Kynval",
+            nome_interno="dremora-race-import-test",
+            razza_1="Dremora",
+            razza_2="Kynval",
+        )
+        xivilai = Personaggio.objects.create(
+            nome="Xivilai",
+            nome_interno="xivilai-race-import-test",
+            razza_1="Xivilai",
+        )
+        undead = Personaggio.objects.create(
+            nome="Draugr",
+            nome_interno="undead-race-import-test",
+            razza_1="Non morto",
+            razza_2="Draugr",
+        )
 
         result = import_legacy_races(Path("unused.sqlite3"))
         character.refresh_from_db()
+        dremora.refresh_from_db()
+        xivilai.refresh_from_db()
+        undead.refresh_from_db()
 
-        self.assertEqual(result["families"], 11)
+        self.assertEqual(result["families"], 14)
+        self.assertEqual(result["generated"], 17)
         self.assertTrue(Guida.objects.filter(nome="Razze", contenuto__contains="Guida Elder").exists())
+        self.assertTrue(Guida.objects.filter(nome="Razze", contenuto__contains="Dremora").exists())
+        self.assertTrue(Guida.objects.filter(nome="Razze", contenuto__contains="Xivilai").exists())
+        self.assertTrue(Guida.objects.filter(nome="Razze", contenuto__contains="Non morto").exists())
         self.assertTrue(GruppoFamiglieSkill.objects.filter(slug="razze-sottorazze").exists())
         self.assertEqual(GruppoFamiglieSkill.objects.get(slug="razze-sottorazze").ordine, 41)
         family = FamigliaSkill.objects.get(nome="Dunmer")
         self.assertEqual(family.skills.count(), 4)
         self.assertEqual(character.skill_sbloccate.count(), 4)
-        self.assertEqual(character.tot["intelligenza"], 12)
+        self.assertEqual(character.tot["intelligenza"], 11)
         self.assertGreaterEqual(character.tot["mana"], 8)
         actions = [
             action
@@ -113,6 +137,26 @@ class LegacyRaceImportTests(TestCase):
             for action in ownership.skill.azioni_attive
         ]
         self.assertEqual(actions[0]["description"], "Evoca un fantasma di livello -4 una volta al giorno.")
+        dremora_family = FamigliaSkill.objects.get(nome="Dremora")
+        self.assertEqual(dremora_family.skills.count(), 9)
+        self.assertEqual(dremora.skill_sbloccate.count(), 3)
+        self.assertEqual(dremora.tot["forza"], 11)
+        self.assertEqual(dremora.tot["personalita"], 7)
+        self.assertEqual(dremora.tot["res_fuoco"], 1)
+        self.assertEqual(dremora.tot["rd_fuoco"], 2)
+        xivilai_family = FamigliaSkill.objects.get(nome="Xivilai")
+        self.assertEqual(xivilai_family.skills.count(), 2)
+        self.assertEqual(xivilai.skill_sbloccate.count(), 2)
+        self.assertEqual(xivilai.tot["forza"], 11)
+        self.assertEqual(xivilai.tot["intelligenza"], 10)
+        self.assertEqual(xivilai.tot["res_fuoco"], 1)
+        self.assertEqual(xivilai.tot["rd_fuoco"], 2)
+        undead_family = FamigliaSkill.objects.get(nome="Non morto")
+        self.assertEqual(undead_family.skills.count(), 9)
+        self.assertEqual(undead.skill_sbloccate.count(), 3)
+        self.assertEqual(undead.tot["resistenza"], 11)
+        self.assertEqual(undead.tot["rd_fis"], 1)
+        self.assertEqual(undead.tot["res_gelo"], 1)
 
 
 class CoreContractTests(TestCase):

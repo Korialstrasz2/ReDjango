@@ -165,7 +165,12 @@ venv\Scripts\python.exe manage.py import_legacy_items --apply
 
 La guida Elder `Razze` e il mapping `EffettiSbloccabili`/`Attivabile` si importano
 come gruppo di abilità `Razze/Sottorazze`, con una famiglia per razza. Il comando
-è idempotente: senza `--apply` verifica soltanto la sorgente.
+è idempotente: senza `--apply` verifica soltanto la sorgente. ReDjango estende
+il catalogo con le razze `Dremora`, `Xivilai` e `Non morto`. Dremora usa i sette
+ranghi-sottorazza da Churl a Valkynaz; Xivilai è una razza daedrica autonoma
+senza sottorazze; Non morto copre Scheletro, Draugr,
+Revenant, Mummia, Vampiro, Lich e Spettro. I supplementi vengono aggiunti
+anche alla guida `Razze`.
 
 ```powershell
 venv\Scripts\python.exe manage.py import_legacy_races

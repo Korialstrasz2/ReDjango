@@ -1,0 +1,1128 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1030",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1030
+    ],
+    "normalizedName": "steam centurion",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [
+          "Mazza (dwemer)"
+        ],
+        "armatura": [],
+        "categoria": "Extra",
+        "chainmail": [],
+        "id": 1030,
+        "levels": [
+          20
+        ],
+        "nome": "Steam Centurion",
+        "preset": "Heavy",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            7,
+            "linear"
+          ],
+          "velocita_tot": [
+            4,
+            "linear"
+          ],
+          "agilita_tot": [
+            3,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "5"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "2"
+          ],
+          "res_perforante_tot": [
+            6,
+            "1"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "2"
+          ],
+          "res_gelo_tot": [
+            7,
+            "1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "2"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "2"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "2"
+          ],
+          "ap_tot": [
+            2,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            6,
+            "linear"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            5,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            7,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 120,
+        "unitId": 1030,
+        "name": "Steam Centurion",
+        "description": "Gli Steam Centurion sono una variante di automa Dwemer associata soprattutto a Vvardenfell e alle rovine naniche più compatte di Morrowind. A differenza dei grandi Centurioni Nanici incontrati spesso nelle rovine di Skyrim, questi costrutti sono più tozzi, larghi e pesanti, pensati per muoversi in spazi più chiusi e corridoi meno monumentali. Quando uno di loro si risveglia, il rumore del vapore sembra riempire tutta la rovina. Non hanno volontà, paura o curiosità, ma proprio questa assenza li rende terribili. Non discutono, non esitano e non interpretano la situazione: riconoscono un intruso e lo eliminano secondo istruzioni più antiche di molti regni mortali. Sono meno slanciati dei cugini nordici, ma danno l'impressione di essere ancora più difficili da spostare. Sono costrutti bassi, massicci e corazzati, armati spesso con una mazza o un pesante braccio contundente. La loro forza non sta nella velocità, ma nel peso, nella pressione e nella capacità di schiacciare chi rimane bloccato davanti a loro. Contro uno Steam Centurion di Vvardenfell, lo spazio stretto non è un vantaggio per l'avventuriero: è parte della trappola.",
+        "image": "UnitLorePics/Steam_Centurion.png"
+      }
+    ],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Steam Centurion",
+    "sourceIds": [
+      1030
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La mazza legacy diventa azione innata e Mana viene azzerato per il costrutto.",
+    "fantasy": "Automa Dwemer mosso da pistoni e pressione, progettato per sfondare corridoi fortificati.",
+    "combatStory": "Avanza lentamente e scarica una mazza integrata alimentata a vapore; non usa Mana o equipaggiamento.",
+    "siblings": [
+      {
+        "unit": "Centurione Nanico",
+        "relation": "nearest",
+        "mustDifferBy": "Pistone e mazza compatta invece di colosso da guerra completo."
+      },
+      {
+        "unit": "Sfera Dwemer",
+        "relation": "same-origin",
+        "mustDifferBy": "Massa e impatto invece di mobilità e lama."
+      },
+      {
+        "unit": "Ogrim",
+        "relation": "contrast",
+        "mustDifferBy": "Costrutto disciplinato, non bruto daedrico."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "pressione a vapore",
+        "expressedBy": "energia e Mazza a Vapore Integrata"
+      },
+      {
+        "axis": "corazza Dwemer",
+        "expressedBy": "rd_fis costante e PF elevati"
+      }
+    ],
+    "must": [
+      "Dwemer",
+      "vapore",
+      "mazza integrata",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "equipment",
+      "Skill",
+      "magia"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "automa a vapore",
+      "5": "mazza integrata",
+      "10": "corazza",
+      "15": "pistoni veterani",
+      "20": "Steam Centurion d'élite"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Steam Centurion",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Mazza a Vapore Integrata presente"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "equipment",
+      "Skill",
+      "magia"
+    ],
+    "differsFrom": {
+      "Centurione Nanico": "Pistone e mazza compatta invece di colosso da guerra completo.",
+      "Sfera Dwemer": "Massa e impatto invece di mobilità e lama."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1030"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1030"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Steam Centurion",
+    "category": "Costrutto",
+    "archetypeDescription": "Costrutto pesante con mazza a vapore, riduzione fisica costante e grande massa.",
+    "loreDescription": "Gli Steam Centurion sono una variante di automa Dwemer associata soprattutto a Vvardenfell e alle rovine naniche più compatte di Morrowind. A differenza dei grandi Centurioni Nanici incontrati spesso nelle rovine di Skyrim, questi costrutti sono più tozzi, larghi e pesanti, pensati per muoversi in spazi più chiusi e corridoi meno monumentali. Quando uno di loro si risveglia, il rumore del vapore sembra riempire tutta la rovina. Non hanno volontà, paura o curiosità, ma proprio questa assenza li rende terribili. Non discutono, non esitano e non interpretano la situazione: riconoscono un intruso e lo eliminano secondo istruzioni più antiche di molti regni mortali. Sono meno slanciati dei cugini nordici, ma danno l'impressione di essere ancora più difficili da spostare. Sono costrutti bassi, massicci e corazzati, armati spesso con una mazza o un pesante braccio contundente. La loro forza non sta nella velocità, ma nel peso, nella pressione e nella capacità di schiacciare chi rimane bloccato davanti a loro. Contro uno Steam Centurion di Vvardenfell, lo spazio stretto non è un vantaggio per l'avventuriero: è parte della trappola.",
+    "notes": "Batch 4 v2: conversione Elder [1030]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch4-mazza-vapore-integrata",
+        "name": "Mazza a Vapore Integrata",
+        "description": "Bersaglio adiacente. Il Centurione scarica il pistone e colpisce con la mazza incorporata, infliggendo danni Contundenti; l'arma non può essere disarmata.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "martello"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 5
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:a7bb4661619db1403f8a0aff0cc259f29de433d014c38388fd83ea048b346153",
+  "charterHash": "sha256:911c50c03159f508725f782181d9289d780102e9fc82a3299b4ce8e9477e5fba",
+  "converterVersion": "elder-unit-charter-v2-batch4",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "slot": "arma",
+        "name": "Mazza (dwemer)"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-equipment-contract",
+      "reason": "Il costrutto non può equipaggiare oggetti: la mazza è parte del telaio."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La mazza legacy diventa azione innata e Mana viene azzerato per il costrutto."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "creature-equipment-contract",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'slot': 'arma', 'name': 'Mazza (dwemer)'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il costrutto non può equipaggiare oggetti: la mazza è parte del telaio.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:48dd69b95b7ded5005df139ced1540a324552e41c7c0b62d736fed377b20652f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:cfed4fe2e0ae0aa29dc1f096b65f39f96ae5edf46ba3587203dadc26da87515f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:08e0744ddc0dec7cd82115d92fe298b4c2c446b61a706935c690b46e64269a7b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:367f8e357f92c26d9f2914532342668c63a64008574ba440784b410b66146dc7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:c8a62be8a4499160f5a6939d00f9419e2ab6aab2d475136c235f2dcd26c5e8de",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Mazza a Vapore Integrata"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Steam Centurion",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch4-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:59:53.280132+00:00",
+    "notes": "Standing authorization: user requested 20 more Units and explicitly asked for careful, thorough adherence to the V2 guide, best practices, and sibling coherence. Applied only after final subrace constraints, 20/20 static validation, a fresh 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 final review samples."
+  }
+}

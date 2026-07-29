@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1006",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1006
+    ],
+    "normalizedName": "atronach di fuoco",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1006,
+        "levels": [
+          20
+        ],
+        "nome": "Atronach di Fuoco",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            5,
+            "linear"
+          ],
+          "resistenza_tot": [
+            5,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            6,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            7,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            6,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            5,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            5,
+            "0"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            10,
+            "5"
+          ],
+          "res_gelo_tot": [
+            3,
+            "linear"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            10,
+            "5"
+          ],
+          "rd_gelo_tot": [
+            3,
+            "linear"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            4,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            5,
+            "linear"
+          ],
+          "mana_tot": [
+            8,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            7,
+            "linear"
+          ],
+          "tier_tot": [
+            4,
+            "linear"
+          ],
+          "attacco_tot": [
+            5,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 9,
+        "skill_2_id": 15,
+        "skill_3_id": 48,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 19,
+        "unitId": 1006,
+        "name": "Atronach di Fuoco",
+        "description": "Gli Atronach di Fuoco vengono evocati dai piani ardenti dell'Oblivion o richiamati dove la magia distruttiva ha acceso un varco abbastanza stabile. Si trovano spesso al servizio di maghi da battaglia, cultisti daedrici o stregoni che preferiscono bruciare un problema invece di risolverlo. In ambienti vulcanici o rovine incendiate, sembrano fondersi con il paesaggio. Sono aggressivi, rapidi e pieni di una furia che non ha bisogno di parole. A differenza di altri costrutti elementali, danno l'impressione di danzare mentre distruggono. Ogni movimento è scintilla, ogni passo è minaccia, e tutto ciò che li circonda sembra diventare più fragile. Il loro corpo è fatto di fiamma, cenere e magia legata insieme. Attaccano con getti di fuoco, esplosioni ravvicinate e calore costante, risultando devastanti contro nemici impreparati. Sono però creature instabili: quando vengono distrutti, la loro fine può essere pericolosa quasi quanto la loro presenza.",
+        "image": "UnitLorePics/Atronach_di_Fuoco.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 9,
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici.",
+        "effect": "Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni."
+      },
+      {
+        "sourceId": 15,
+        "name": "Aura di Fiamme",
+        "description": "Circondata da un'aura di fiamme che danneggia gli attaccanti.",
+        "effect": "Gli attaccanti in mischia subiscono danni da fuoco pari a (livello)d4 quando colpiscono la creatura.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 3 POW, aumenta i dadi del danno a d6 per un turno."
+      },
+      {
+        "sourceId": 48,
+        "name": "Scudo di Mana",
+        "description": "Converte il mana in una barriera protettiva.",
+        "effect": "Utilizza 10 Mana per assorbire 20 danni per 2 turni.",
+        "cost": "4 PA, 10 Mana.",
+        "boost": "Per 5 POW, aumenta l'assorbimento a 30 danni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Atronach di Fuoco",
+    "sourceIds": [
+      1006
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene estesa con firma elementale costante.",
+    "fantasy": "Fiamma vincolata in forma agile, letale se può restare in movimento.",
+    "combatStory": "Lancia fuoco, punisce gli adiacenti con aura e usa Mana per proteggersi; teme il gelo.",
+    "siblings": [
+      {
+        "unit": "Atronach del Gelo",
+        "relation": "nearest",
+        "mustDifferBy": "Velocità e danno sostituiscono tanking e controllo."
+      },
+      {
+        "unit": "Atronach della Tempesta",
+        "relation": "same-family",
+        "mustDifferBy": "Aura di Fuoco e debolezza gelo invece di controllo elettrico."
+      },
+      {
+        "unit": "Daedroth",
+        "relation": "contrast",
+        "mustDifferBy": "Puro elemento a distanza, non bruto daedrico."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "fiamma mobile",
+        "expressedBy": "velocità/agilità e Palla di Fuoco"
+      },
+      {
+        "axis": "polarità elementale",
+        "expressedBy": "res_fuoco alta e res_gelo bassa"
+      }
+    ],
+    "must": [
+      "fuoco",
+      "mobilità",
+      "Mana"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "gelo offensivo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "fiamma mobile",
+      "5": "aura online",
+      "10": "scudo Mana",
+      "15": "caster incendiario",
+      "20": "elementale maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Atronach di Fuoco",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "res_fuoco 5 e debolezza gelo"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "gelo offensivo"
+    ],
+    "differsFrom": {
+      "Atronach del Gelo": "Velocità e danno sostituiscono tanking e controllo.",
+      "Atronach della Tempesta": "Aura di Fuoco e debolezza gelo invece di controllo elettrico."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 72
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1006"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1006"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Atronach di Fuoco",
+    "category": "Daedra",
+    "archetypeDescription": "Caster di Fuoco rapido con aura, proiettile e vulnerabilità al gelo.",
+    "loreDescription": "Gli Atronach di Fuoco vengono evocati dai piani ardenti dell'Oblivion o richiamati dove la magia distruttiva ha acceso un varco abbastanza stabile. Si trovano spesso al servizio di maghi da battaglia, cultisti daedrici o stregoni che preferiscono bruciare un problema invece di risolverlo. In ambienti vulcanici o rovine incendiate, sembrano fondersi con il paesaggio. Sono aggressivi, rapidi e pieni di una furia che non ha bisogno di parole. A differenza di altri costrutti elementali, danno l'impressione di danzare mentre distruggono. Ogni movimento è scintilla, ogni passo è minaccia, e tutto ciò che li circonda sembra diventare più fragile. Il loro corpo è fatto di fiamma, cenere e magia legata insieme. Attaccano con getti di fuoco, esplosioni ravvicinate e calore costante, risultando devastanti contro nemici impreparati. Sono però creature instabili: quando vengono distrutti, la loro fine può essere pericolosa quasi quanto la loro presenza.",
+    "notes": "Batch 2 v2: conversione Elder [1006]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-9",
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici. Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti. Boost Elder: Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-15",
+        "name": "Aura di Fiamme",
+        "description": "Circondata da un'aura di fiamme che danneggia gli attaccanti. Gli attaccanti in mischia subiscono danni da fuoco pari a (livello)d4 quando colpiscono la creatura. Boost Elder: Per 3 POW, aumenta i dadi del danno a d6 per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-48",
+        "name": "Scudo di Mana",
+        "description": "Converte il mana in una barriera protettiva. Utilizza 10 Mana per assorbire 20 danni per 2 turni. Boost Elder: Per 5 POW, aumenta l'assorbimento a 30 danni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "mana": 10
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "concentrazione",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 5
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -3,
+          "level20": 1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 5
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 10
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:164e565876e3e8e7b6135ea7ba4056bc436d7e480ae5a11a10e773ab2ef42861",
+  "charterHash": "sha256:179ac43d93a7fec11b92a9f53faf80bd0c7c17356a077b1f7f91d69854acb5cd",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene estesa con firma elementale costante."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:f3e462a5747874348ea06a6cc18d30a71d60ae278fcb66e8833f2240289f0e28",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:6567ee2f952c91456093caf4d7b0e29d5531cc15bf1ee72b46f4f84d8c289509",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:f72ca08696c24184132061eb9f4eb92bb11c4962d1a46b024e039aa3710ec523",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:b96c6f771c237c0d472bcdafcc17c1850bbd0bb2001043e8c133b57a542a8f6e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:a92f9418d736d6c37e09a29d0e5b2beb6cc214d68fb462cbee020ee2422cc894",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Aura di Fiamme",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Atronach di Fuoco",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

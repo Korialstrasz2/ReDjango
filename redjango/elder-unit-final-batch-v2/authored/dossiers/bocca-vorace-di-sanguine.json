@@ -1,0 +1,1131 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1050",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1050
+    ],
+    "normalizedName": "bocca vorace di sanguine",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1050,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Bocca Vorace di Sanguine",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            3,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "ap_tot": [
+            5,
+            "exponential"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            2,
+            "0"
+          ],
+          "res_taglio_tot": [
+            1,
+            "0"
+          ],
+          "res_perforante_tot": [
+            1,
+            "0"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            6,
+            "linear"
+          ],
+          "sconto_mana_per_potere_tot": [
+            5,
+            "linear"
+          ],
+          "sconto_pa_per_potere_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "entità",
+        "scudo": [],
+        "skill_1_id": 140,
+        "skill_2_id": 147,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 24,
+        "unitId": 1050,
+        "name": "Bocca Vorace di Sanguine",
+        "description": "La Bocca Vorace di Sanguine appartiene quasi unicamente ai reami del Principe dell'Eccesso, dove banchetti, punizioni e appetiti innaturali si confondono senza vergogna. Si trova nei palazzi daedrici, nelle sale dei festini e nelle cucine mostruose del piano di Sanguine, più che su Tamriel. Se appare a Nirn, è quasi sempre per una convocazione maldestra o per una festa daedrica sfuggita al controllo. Non ha una personalità complessa, ma possiede una fame che sembra una forma di devozione. Tutto ciò che la circonda viene interpretato come cibo, gioco o spettacolo disgustoso. La sua presenza trasforma l'abbondanza in minaccia, perché davanti a lei perfino un banchetto diventa una trappola. È una massa carnosa dotata di fauci, lingue e movimenti sgraziati ma sorprendentemente rapidi. Può mordere, afferrare e inghiottire con forza innaturale, lasciando dietro di sé odore di vino, sangue e carne corrotta. Non è elegante, ma rappresenta perfettamente la parte più mostruosa dell'indulgenza senza limite.",
+        "image": "UnitLorePics/Bocca_Vorace_di_Sanguine.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 140,
+        "name": "Inghiotti pericolo",
+        "description": "Inghiotte gli attacchi che vengono da posizioni frontali",
+        "effect": "25% di assorbire danno magico, aumentando i PF. 25% di mangiare le armi degli attacchi melee (se c'è l'arma) e il 50% di frecce. Le armi si recuperano a fine combat aprendo il daedra, 10 turni senza oggetti taglienti, altrimenti 2 turni.",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 147,
+        "name": "Vomito Acido",
+        "description": "",
+        "effect": "Vomita in alto, con uno splash di acido che coinvolge tutti i personaggi vicini. 1d4*lv danno puro. 5 PA",
+        "cost": "",
+        "boost": ""
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Bocca Vorace di Sanguine",
+    "sourceIds": [
+      1050
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve 1-20 sorgente sono preservate; l'ingestione non altera permanentemente l'inventario.",
+    "fantasy": "Fauce daedrica vivente che trasforma la fame e il banchetto in difesa e aggressione.",
+    "combatStory": "Assorbe frontalmente gli attacchi e riversa danno Puro in area con il vomito corrosivo.",
+    "siblings": [
+      {
+        "unit": "Hunger",
+        "relation": "nearest",
+        "mustDifferBy": "Fame grottesca e assorbimento frontale invece di drenaggio predatorio."
+      },
+      {
+        "unit": "Slime di Alcol",
+        "relation": "same-plane",
+        "mustDifferBy": "Fauce corazzata invece di assimilazione e moltiplicazione."
+      },
+      {
+        "unit": "Tamburo di Sanguine",
+        "relation": "contrast",
+        "mustDifferBy": "Pressione fisica e corrosiva invece di controllo sonoro."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "fame di Sanguine",
+        "expressedBy": "Inghiotti pericolo e PF elevati"
+      },
+      {
+        "axis": "eccesso corrosivo",
+        "expressedBy": "Vomito Acido con danno Puro"
+      }
+    ],
+    "must": [
+      "Sanguine",
+      "fauci",
+      "assorbimento",
+      "Puro"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "equipment",
+      "Skill",
+      "volo",
+      "distruzione permanente di oggetti"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "fauce vorace",
+      "5": "difesa frontale",
+      "10": "vomito corrosivo",
+      "15": "massa da banchetto",
+      "20": "bocca insaziabile"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Bocca Vorace di Sanguine",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Inghiotti pericolo presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "equipment",
+      "Skill",
+      "volo",
+      "distruzione permanente di oggetti"
+    ],
+    "differsFrom": {
+      "Hunger": "Fame grottesca e assorbimento frontale invece di drenaggio predatorio.",
+      "Slime di Alcol": "Fauce corazzata invece di assimilazione e moltiplicazione."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1050"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1050"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Bocca Vorace di Sanguine",
+    "category": "Daedra",
+    "archetypeDescription": "Massa daedrica resistente con assorbimento frontale e attacco Puro ad area.",
+    "loreDescription": "La Bocca Vorace di Sanguine appartiene quasi unicamente ai reami del Principe dell'Eccesso, dove banchetti, punizioni e appetiti innaturali si confondono senza vergogna. Si trova nei palazzi daedrici, nelle sale dei festini e nelle cucine mostruose del piano di Sanguine, più che su Tamriel. Se appare a Nirn, è quasi sempre per una convocazione maldestra o per una festa daedrica sfuggita al controllo. Non ha una personalità complessa, ma possiede una fame che sembra una forma di devozione. Tutto ciò che la circonda viene interpretato come cibo, gioco o spettacolo disgustoso. La sua presenza trasforma l'abbondanza in minaccia, perché davanti a lei perfino un banchetto diventa una trappola. È una massa carnosa dotata di fauci, lingue e movimenti sgraziati ma sorprendentemente rapidi. Può mordere, afferrare e inghiottire con forza innaturale, lasciando dietro di sé odore di vino, sangue e carne corrotta. Non è elegante, ma rappresenta perfettamente la parte più mostruosa dell'indulgenza senza limite.",
+    "notes": "Final Batch v2: conversione Elder [1050]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-140",
+        "name": "Inghiotti pericolo",
+        "description": "Passiva frontale. Quando subisce un attacco proveniente dal fronte, la Bocca può assorbirne parte dell'impatto e recuperare PF; l'effetto non distrugge né trasferisce equipment.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Reazione",
+        "duration": "Istantanea",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-147",
+        "name": "Vomito Acido",
+        "description": "Area entro 2 esagoni. La Bocca erutta una sostanza corrosiva che infligge danni Puro a tutti i bersagli nell'area.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "mana": 3
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:d39c3c66ab700e611252f850f0ca0b8f65d6a5bcaba24de2684218ea2148e4c9",
+  "charterHash": "sha256:cb5276a6ce9bfc7f4de25ff3c5529dc340d0a1b3e03a76c1621075946c74a479",
+  "converterVersion": "elder-unit-charter-v2-final",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve 1-20 sorgente sono preservate; l'ingestione non altera permanentemente l'inventario."
+    },
+    {
+      "what": "ingestione di equipment",
+      "from": "possibile rimozione temporanea delle armi legacy",
+      "to": "assorbimento difensivo senza mutare equipment",
+      "why": "Il generatore Unit non implementa trasferimenti o distruzione di oggetti in combattimento."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:ecba5055e7e963eeb9d0657eedd6912950b55beaabbf3e6505c1736b23eee185",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:a78c07834e050e292378930938141cbc45f05bc06be76de891f3acd12b2b060a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:a54802e3557fd26e7c8aac23ddbf8fe5e0c4bb0985bd030c6df00947fa47cc71",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:77f140621a287e1c31e8e233c1fa0e199c8bf1436724463bb3c1c56d0e166df4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:851f895a43fd8a0db5daac03e0c07949bdcd35197ad0718f81e958e93005b819",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inghiotti pericolo",
+          "Vomito Acido"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Bocca Vorace di Sanguine",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "final-batch-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:50:35.334810+00:00",
+    "notes": "Standing authorization granted by Ale for all remaining coherent Elder unit conversions after prior batch approvals."
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "validation": {
+    "passed": 20,
+    "failed": 0,
+    "results": [
+      {
+        "unit": "Arciere (standard)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\arciere-(standard).json"
+      },
+      {
+        "unit": "Arciere Scheletro",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\arciere-scheletro.json"
+      },
+      {
+        "unit": "Atronach della Tempesta",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\atronach-della-tempesta.json"
+      },
+      {
+        "unit": "Atronach di Carne",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\atronach-di-carne.json"
+      },
+      {
+        "unit": "Atronach di Fuoco",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\atronach-di-fuoco.json"
+      },
+      {
+        "unit": "Barbaro Nord",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\barbaro-nord.json"
+      },
+      {
+        "unit": "Cacciatore Bosmer",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\cacciatore-bosmer.json"
+      },
+      {
+        "unit": "Cinghiale",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\cinghiale.json"
+      },
+      {
+        "unit": "Clannfear",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\clannfear.json"
+      },
+      {
+        "unit": "Colosso d’Ossa",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\colosso-d’ossa.json"
+      },
+      {
+        "unit": "Crepuscolo Alato",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\crepuscolo-alato.json"
+      },
+      {
+        "unit": "Daedroth",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\daedroth.json"
+      },
+      {
+        "unit": "Drago d’Ossa",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\drago-d’ossa.json"
+      },
+      {
+        "unit": "Drago Spettrale",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\drago-spettrale.json"
+      },
+      {
+        "unit": "Draugr Guerriero",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\draugr-guerriero.json"
+      },
+      {
+        "unit": "Esploratore Imperiale",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\esploratore-imperiale.json"
+      },
+      {
+        "unit": "Guerriero (standard)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\guerriero-(standard).json"
+      },
+      {
+        "unit": "Ladro (standard)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\ladro-(standard).json"
+      },
+      {
+        "unit": "Mago (standard)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\mago-(standard).json"
+      },
+      {
+        "unit": "Monaco (standard)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-2-v2\\authored\\dossiers\\monaco-(standard).json"
+      }
+    ]
+  },
+  "simulations": [
+    {
+      "unit": "Cacciatore Bosmer",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 28,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    }
+  ]
+}

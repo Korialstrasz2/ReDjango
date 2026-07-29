@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1016",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1016
+    ],
+    "normalizedName": "fantasma",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Nonmorto",
+        "chainmail": [],
+        "id": 1016,
+        "levels": [
+          20
+        ],
+        "nome": "Fantasma",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            3,
+            "linear"
+          ],
+          "resistenza_tot": [
+            4,
+            "linear"
+          ],
+          "velocita_tot": [
+            3,
+            "linear"
+          ],
+          "agilita_tot": [
+            5,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            7,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            7,
+            "linear"
+          ],
+          "personalita_tot": [
+            4,
+            "linear"
+          ],
+          "saggezza_tot": [
+            7,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            9,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            8,
+            "hi_hi"
+          ],
+          "res_taglio_tot": [
+            8,
+            "hi_hi"
+          ],
+          "res_perforante_tot": [
+            8,
+            "hi_hi"
+          ],
+          "res_fuoco_tot": [
+            6,
+            "1"
+          ],
+          "res_gelo_tot": [
+            8,
+            "4"
+          ],
+          "res_elettro_tot": [
+            4,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            6,
+            "1"
+          ],
+          "rd_gelo_tot": [
+            8,
+            "5"
+          ],
+          "rd_elettro_tot": [
+            4,
+            "0"
+          ],
+          "ap_tot": [
+            5,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            4,
+            "linear"
+          ],
+          "mana_tot": [
+            8,
+            "linear"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            5,
+            "linear"
+          ],
+          "tier_tot": [
+            3,
+            "linear"
+          ],
+          "attacco_tot": [
+            4,
+            "linear"
+          ],
+          "difesa_tot": [
+            3,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 33,
+        "skill_2_id": 36,
+        "skill_3_id": 40,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 56,
+        "unitId": 1016,
+        "name": "Fantasma",
+        "description": "I Fantasmi si trovano in rovine, castelli abbandonati, tombe, campi di battaglia e case dove qualcosa è rimasto irrisolto. Non tutti sono malvagi: alcuni proteggono un luogo, altri ripetono un dolore, altri ancora non capiscono nemmeno di essere morti. In Tamriel, la morte non sempre chiude una storia. Sono malinconici, vendicativi o confusi, a seconda del legame che li trattiene. Molti reagiscono agli intrusi come minacce, specialmente se il luogo della loro morte viene profanato. Altri cercano aiuto, ma lo fanno con segni, apparizioni e frammenti di memoria più che con parole chiare. Il loro corpo è incorporeo, difficile da ferire con armi comuni e spesso legato a un oggetto, una colpa o una promessa. Possono prosciugare energia, spaventare i viventi o manifestarsi in forme instabili. Per liberarli davvero, a volte non basta combattere: bisogna capire cosa li tiene ancora qui.",
+        "image": "UnitLorePics/Fantasma.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 33,
+        "name": "Forma Eterea",
+        "description": "La creatura può entrare in uno stato etereo.",
+        "effect": "Ottiene resistenza al danno fisico del 50%, ma subisce il 25% di danno magico in più.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, annulla la penalità al danno magico per un turno."
+      },
+      {
+        "sourceId": 36,
+        "name": "Sottrazione Spirituale",
+        "description": "Assorbe energia spirituale dai nemici.",
+        "effect": "Infligge (2d6 + livello) danni e riduce la saggezza del bersaglio di 2 per 2 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 4 POW, colpisce fino a 2 bersagli entro la portata."
+      },
+      {
+        "sourceId": 40,
+        "name": "Spostamento Fase",
+        "description": "La creatura può sfuggire alla realtà.",
+        "effect": "Ogni volta che la creatura viene attaccata, c'è il 25% di possibilità che l'attacco manchi completamente.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, la probabilità aumenta al 50% per un turno."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Fantasma",
+    "sourceIds": [
+      1016
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint vengono linearizzati senza rimuovere le resistenze costanti.",
+    "fantasy": "Spirito legato a un luogo o a una morte irrisolta, privo di corpo stabile.",
+    "combatStory": "Nega il contatto con forma eterea e fase, poi sottrae spirito dalla media distanza.",
+    "siblings": [
+      {
+        "unit": "Spettro",
+        "relation": "nearest",
+        "mustDifferBy": "Più difensivo e legato al luogo, meno aggressivo."
+      },
+      {
+        "unit": "Drago Spettrale",
+        "relation": "same-state",
+        "mustDifferBy": "Chassis umanoide fragile senza volo draconico."
+      },
+      {
+        "unit": "Mago Scheletro",
+        "relation": "contrast",
+        "mustDifferBy": "Azioni innate incorporee, non Skill e focus."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "incorporeità",
+        "expressedBy": "Forma Eterea e Spostamento Fase"
+      },
+      {
+        "axis": "fame spirituale",
+        "expressedBy": "Sottrazione Spirituale e Mana alto"
+      }
+    ],
+    "must": [
+      "forma eterea",
+      "fase",
+      "spirito",
+      "gelo"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "corpo osseo",
+      "equipment"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "presenza incorporea",
+      "5": "fase",
+      "10": "drenaggio",
+      "15": "fantasma persistente",
+      "20": "spirito maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Fantasma",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Forma Eterea presente"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "corpo osseo",
+      "equipment"
+    ],
+    "differsFrom": {
+      "Spettro": "Più difensivo e legato al luogo, meno aggressivo.",
+      "Drago Spettrale": "Chassis umanoide fragile senza volo draconico."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 61
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1016"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1016"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Fantasma",
+    "category": "Non morto",
+    "archetypeDescription": "Non morto incorporeo difensivo con drenaggio spirituale e alto Mana.",
+    "loreDescription": "I Fantasmi si trovano in rovine, castelli abbandonati, tombe, campi di battaglia e case dove qualcosa è rimasto irrisolto. Non tutti sono malvagi: alcuni proteggono un luogo, altri ripetono un dolore, altri ancora non capiscono nemmeno di essere morti. In Tamriel, la morte non sempre chiude una storia. Sono malinconici, vendicativi o confusi, a seconda del legame che li trattiene. Molti reagiscono agli intrusi come minacce, specialmente se il luogo della loro morte viene profanato. Altri cercano aiuto, ma lo fanno con segni, apparizioni e frammenti di memoria più che con parole chiare. Il loro corpo è incorporeo, difficile da ferire con armi comuni e spesso legato a un oggetto, una colpa o una promessa. Possono prosciugare energia, spaventare i viventi o manifestarsi in forme instabili. Per liberarli davvero, a volte non basta combattere: bisogna capire cosa li tiene ancora qui.",
+    "notes": "Batch 3 v2: conversione Elder [1016]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-33",
+        "name": "Forma Eterea",
+        "description": "La creatura può entrare in uno stato etereo. Ottiene resistenza al danno fisico del 50%, ma subisce il 25% di danno magico in più. Boost Elder: Per 5 POW, annulla la penalità al danno magico per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-36",
+        "name": "Sottrazione Spirituale",
+        "description": "Assorbe energia spirituale dai nemici. Infligge (2d6 + livello) danni e riduce la saggezza del bersaglio di 2 per 2 turni. Boost Elder: Per 4 POW, colpisce fino a 2 bersagli entro la portata.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-40",
+        "name": "Spostamento Fase",
+        "description": "La creatura può sfuggire alla realtà. Ogni volta che la creatura viene attaccata, c'è il 25% di possibilità che l'attacco manchi completamente. Boost Elder: Per 5 POW, la probabilità aumenta al 50% per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "intelligenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "concentrazione",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "saggezza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 6
+        },
+        {
+          "key": "res_contundente",
+          "profile": "high",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_taglio",
+          "profile": "high",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_perforante",
+          "profile": "high",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 4
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 5
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 18,
+          "level20": 108
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "tier",
+          "profile": "low",
+          "level1": 3,
+          "level20": 9
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:a78af1615c4fcb5760498d242a5a0addee6b6566de4d11ee07bbd02afa65b7c1",
+  "charterHash": "sha256:72050856eb3a14ee451580467955142e247d13e1b5256565d025650b6ebd0bba",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint vengono linearizzati senza rimuovere le resistenze costanti."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:0dede4cac4c410be81d68c35ef7d5fac87c3a39d0dd991202c12631f36ef033a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:32371dac002dd24b0b58184ac2fdeebaef07f3112470214fe40b571e1397a0bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:d5571a63525c1d1732e950d2b4572399bc5198c6101adcdc1078bbad89f0cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:72b0407d6cfd8ad43a07b9fac4fb874795f4ac8f931ff21ca031303e2d6e0cc9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:b91b2d33f9ee4126d26ecc49f48fc54d75f4c64cb141dbe9122583aceb1b826d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Sottrazione Spirituale",
+          "Spostamento Fase"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Fantasma",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

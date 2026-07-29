@@ -4,6 +4,7 @@ from typing import Any
 
 from django.db import transaction
 from django.db.models import Q
+from django.utils import timezone
 
 from backend.core.api import ApiError
 from backend.core.models import Giocatore, Oggetto, OpzioneTipoOggetto, TipoArma
@@ -123,6 +124,11 @@ def _relations(payload: dict[str, Any], values: dict[str, Any]) -> None:
         raw_id = payload.get("tipo_arma_id", payload.get("tipoArmaId"))
         weapon_type = None if raw_id in (None, "") else TipoArma.objects.get(pk=int(raw_id))
         values["tipo_arma"] = weapon_type
+        # `weapon_profile` is a per-item override and is currently unused: no
+        # catalogue row stores one, and `item_weapon_profile()` resolves every
+        # weapon through `TipoArma.rules`, which is the effective source of
+        # truth. Seeding it from the weapon type keeps the override consistent
+        # with the type it was derived from whenever a caller does write one.
         if weapon_type is not None and "weapon_profile" not in values:
             rules = weapon_type.rules if isinstance(weapon_type.rules, dict) else {}
             values["weapon_profile"] = normalize_weapon_profile(rules.get("profile"))
@@ -166,6 +172,11 @@ def update_item(user, giocatore: Giocatore, item_id: int, payload: dict[str, Any
         raise ApiError("items.duplicate_name", "Esiste già un oggetto con questo nome.", "nome", 409)
     for field, value in values.items():
         setattr(item, field, value)
+    # The editor exposes `archiviato` as a checkbox; keep the soft-delete
+    # timestamp in step with it, or unticking the box would leave the item
+    # hidden from every query that filters on `archived_at`.
+    if "archiviato" in values:
+        item.archived_at = (item.archived_at or timezone.now()) if values["archiviato"] else None
     item.save()
     _refresh_characters_using(item)
     return item
@@ -207,5 +218,40 @@ def archive_item(user, giocatore: Giocatore, item_id: int) -> Oggetto:
     require_item_author(user, giocatore)
     item = Oggetto.objects.select_for_update().get(pk=item_id)
     item.archiviato = True
-    item.save(update_fields=["archiviato", "updated_at"])
+    # `archiviato` is the catalogue flag and `archived_at` the V2Model soft
+    # delete. Half the queries in the project filter on one and half on the
+    # other, so archiving has to set both or the item stays visible somewhere.
+    item.archived_at = item.archived_at or timezone.now()
+    item.save(update_fields=["archiviato", "archived_at", "updated_at"])
     return item
+
+
+@transaction.atomic
+def restore_item(user, giocatore: Giocatore, item_id: int) -> Oggetto:
+    require_item_author(user, giocatore)
+    item = Oggetto.objects.select_for_update().get(pk=item_id)
+    item.archiviato = False
+    item.archived_at = None
+    item.save(update_fields=["archiviato", "archived_at", "updated_at"])
+    return item
+
+
+@transaction.atomic
+def set_items_special(user, giocatore: Giocatore, item_ids: list[int], special: bool) -> int:
+    """Flag or clear `speciale` on several items at once.
+
+    The flag excludes an item from every shop, and it is by far the commonest
+    reason a template never appears anywhere. Reviewing thousands of legacy rows
+    one modal at a time is not a workflow, so the triage list clears them in
+    batches.
+    """
+    require_item_author(user, giocatore)
+    identifiers = []
+    for raw in item_ids or []:
+        try:
+            identifiers.append(int(raw))
+        except (TypeError, ValueError) as exc:
+            raise ApiError("items.id_invalid", "Identificativo oggetto non valido.", "itemIds") from exc
+    if not identifiers:
+        raise ApiError("items.selection_required", "Seleziona almeno un oggetto.", "itemIds")
+    return Oggetto.objects.filter(id__in=identifiers).update(speciale=special, updated_at=timezone.now())

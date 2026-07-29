@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1019",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1019
+    ],
+    "normalizedName": "spriggan bruciato",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 1019,
+        "levels": [
+          20
+        ],
+        "nome": "Spriggan Bruciato",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            7,
+            "linear"
+          ],
+          "velocita_tot": [
+            5,
+            "linear"
+          ],
+          "agilita_tot": [
+            6,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            6,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            7,
+            "linear"
+          ],
+          "personalita_tot": [
+            8,
+            "linear"
+          ],
+          "saggezza_tot": [
+            7,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            7,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_taglio_tot": [
+            2,
+            "hi_hi"
+          ],
+          "res_perforante_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_fuoco_tot": [
+            9,
+            "hi_hi"
+          ],
+          "res_gelo_tot": [
+            1,
+            "linear"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            8,
+            "hi_hi"
+          ],
+          "rd_gelo_tot": [
+            3,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            2,
+            "1"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            8,
+            "linear"
+          ],
+          "mana_tot": [
+            7,
+            "linear"
+          ],
+          "energia_tot": [
+            7,
+            "linear"
+          ],
+          "potere_tot": [
+            7,
+            "linear"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 43,
+        "skill_2_id": 18,
+        "skill_3_id": 9,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 119,
+        "unitId": 1019,
+        "name": "Spriggan Bruciato",
+        "description": "Le Spriggan Bruciate si trovano soprattutto nelle terre devastate dal fuoco, dalla cenere e dalla magia vulcanica, come certe zone di Solstheim dopo l'Anno Rosso. Sono ciò che resta di spiriti della natura travolti da una ferita troppo grande per guarire. Non rappresentano più la foresta verde, ma il suo dolore carbonizzato. Sono tormentate, rabbiose e incapaci della calma che talvolta caratterizza le Spriggan comuni. La loro ostilità non nasce solo dalla difesa del territorio, ma da una sofferenza trasformata in fiamma. Sembrano punire qualunque vivente si avvicini, come se ogni intruso fosse complice dell'incendio originario. Il loro corpo è fatto di legno annerito, brace, cenere e magia naturale distorta. Possono bruciare, evocare calore e resistere dove altre creature vegetali morirebbero. Sono tragiche quanto pericolose: abbatterle spesso sembra meno una vittoria che la fine di qualcosa già perduto.",
+        "image": "UnitLorePics/Spriggan_Bruciato.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 43,
+        "name": "Radici Intrappolanti",
+        "description": "Fa emergere radici per immobilizzare i nemici.",
+        "effect": "Colpisce fino a 2 nemici entro 4 esagoni; sono immobilizzati per 2 turni.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta il numero di bersagli a 3."
+      },
+      {
+        "sourceId": 18,
+        "name": "Sottrai Vita",
+        "description": "Draga l'energia vitale dal bersaglio.",
+        "effect": "Riduce il bersaglio di (2d6 + livello) Punti Ferita e cura la creatura dello stesso ammontare.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d8."
+      },
+      {
+        "sourceId": 9,
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici.",
+        "effect": "Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Spriggan Bruciato",
+    "sourceIds": [
+      1019
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint preservano il profilo superiore e la corruzione elementale.",
+    "fantasy": "Spirito arboreo consumato dal fuoco che ora usa le fiamme contro chi invade il territorio.",
+    "combatStory": "Blocca con radici, sottrae vita e punisce la distanza con Palla di Fuoco; non evoca alleati.",
+    "siblings": [
+      {
+        "unit": "Spriggan",
+        "relation": "nearest",
+        "mustDifferBy": "Fuoco e aggressione sostituiscono evocazione della natura."
+      },
+      {
+        "unit": "Atronach di Fuoco",
+        "relation": "same-element",
+        "mustDifferBy": "Radici e drenaggio organico invece di puro elemento."
+      },
+      {
+        "unit": "Hunger",
+        "relation": "contrast",
+        "mustDifferBy": "Controllo del terreno, non predazione mobile."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "natura bruciata",
+        "expressedBy": "Palla di Fuoco e resistenze alterate"
+      },
+      {
+        "axis": "radici affamate",
+        "expressedBy": "Radici Intrappolanti e Sottrai Vita"
+      }
+    ],
+    "must": [
+      "radici",
+      "fuoco",
+      "drenaggio",
+      "Mana"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "Evoca Minion",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Spriggan bruciato",
+      "5": "radici",
+      "10": "drenaggio",
+      "15": "fuoco",
+      "20": "spirito incendiato"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Spriggan Bruciato",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Palla di Fuoco presente e Evoca Minion assente"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "Evoca Minion",
+      "volo"
+    ],
+    "differsFrom": {
+      "Spriggan": "Fuoco e aggressione sostituiscono evocazione della natura.",
+      "Atronach di Fuoco": "Radici e drenaggio organico invece di puro elemento."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 103
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1019"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1019"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Spriggan Bruciato",
+    "category": "Natura",
+    "archetypeDescription": "Controllore naturale corrotto con radici, drenaggio e fuoco.",
+    "loreDescription": "Le Spriggan Bruciate si trovano soprattutto nelle terre devastate dal fuoco, dalla cenere e dalla magia vulcanica, come certe zone di Solstheim dopo l'Anno Rosso. Sono ciò che resta di spiriti della natura travolti da una ferita troppo grande per guarire. Non rappresentano più la foresta verde, ma il suo dolore carbonizzato. Sono tormentate, rabbiose e incapaci della calma che talvolta caratterizza le Spriggan comuni. La loro ostilità non nasce solo dalla difesa del territorio, ma da una sofferenza trasformata in fiamma. Sembrano punire qualunque vivente si avvicini, come se ogni intruso fosse complice dell'incendio originario. Il loro corpo è fatto di legno annerito, brace, cenere e magia naturale distorta. Possono bruciare, evocare calore e resistere dove altre creature vegetali morirebbero. Sono tragiche quanto pericolose: abbatterle spesso sembra meno una vittoria che la fine di qualcosa già perduto.",
+    "notes": "Batch 4 v2: conversione Elder [1019]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-43",
+        "name": "Radici Intrappolanti",
+        "description": "Fa emergere radici per immobilizzare i nemici. Colpisce fino a 2 nemici entro 4 esagoni; sono immobilizzati per 2 turni. Boost Elder: Per 5 POW, aumenta il numero di bersagli a 3.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-18",
+        "name": "Sottrai Vita",
+        "description": "Draga l'energia vitale dal bersaglio. Riduce il bersaglio di (2d6 + livello) Punti Ferita e cura la creatura dello stesso ammontare. Boost Elder: Per 5 POW, aumenta i dadi del danno a d8.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-9",
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici. Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti. Boost Elder: Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "concentrazione",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "saggezza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -3,
+          "level20": 1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "high",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_gelo",
+          "profile": "very_low",
+          "level1": -4,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 6
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:f567ab7cef03419964a2b0861c20ede157053daef69d6e37c3f8256190527d83",
+  "charterHash": "sha256:0eb0eab42a937dd013db7a5902c4f8ad4f5bcafd772527e207ede197f226d030",
+  "converterVersion": "elder-unit-charter-v2-batch4",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint preservano il profilo superiore e la corruzione elementale."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:f32d4d2adcb36d2dbb15a04b392e6880f8372b4c7d98cca8ab4a628a2a920da0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:d8c2651f8bccd0cabcdecc378364b9ab656d0e2d4c3cc7e75296cd02a8b863ad",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:8ffbec4aca5bfe4b0645ebc8f2916e077f6dc017c8d52a7131f1749f2f2c092e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:7848bf6a1f3040d71e6a7e12248027fd9102c9a7173748f5a1fefdd500276e50",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:1ab22e391252b8a1883f37dd75826787c75de6ad95e93af34aebbb0a1ba40d07",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Radici Intrappolanti",
+          "Sottrai Vita",
+          "Palla di Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Spriggan Bruciato",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch4-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:59:53.280132+00:00",
+    "notes": "Standing authorization: user requested 20 more Units and explicitly asked for careful, thorough adherence to the V2 guide, best practices, and sibling coherence. Applied only after final subrace constraints, 20/20 static validation, a fresh 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 final review samples."
+  }
+}

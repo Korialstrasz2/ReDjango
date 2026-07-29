@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -157,8 +158,9 @@ def generation(
     classes: list[str] | None = None,
     religions: list[str] | None = None,
     races: list[str] | None = None,
+    subraces: list[str] | None = None,
 ) -> dict[str, Any]:
-    return {
+    result = {
         "kind": "humanoid",
         "coreKey": core_key,
         "coreShare": core_share,
@@ -175,6 +177,9 @@ def generation(
         "allowedRaces": races or [],
         "allowHumanoidStatGrowth": False,
     }
+    if subraces:
+        result["allowedSubraces"] = subraces
+    return result
 
 
 def humanoid_payload(
@@ -303,16 +308,33 @@ def expectations(
     differs_from: dict[str, str],
     curve_assertions: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    normalized_all_variants = {"generationKind": kind, **all_variants}
+    if kind == "humanoid" and normalized_all_variants.get("warningCount") == 0:
+        normalized_all_variants.pop("warningCount")
     result = {
         "unit": unit,
         "levels": list(LEVELS),
         "variantsPerLevel": len(VARIANTS),
-        "allVariants": {"generationKind": kind, **all_variants},
+        "allVariants": normalized_all_variants,
         "atLeastOneVariantHas": at_least_one,
         "allowedVariation": allowed,
         "forbidden": forbidden,
         "differsFrom": differs_from,
     }
+    if kind == "humanoid":
+        result["explainedWarnings"] = [
+            {
+                "code": "indivisible-general-xp-residual",
+                "pattern": (
+                    r"^[1-9] PE generali restano disponibili: "
+                    r"nessuna Skill configurata è acquistabile\.$"
+                ),
+                "why": (
+                    "Il pool resta curato; 1-9 PE indivisibili non autorizzano "
+                    "l'aggiunta di una Skill incoerente."
+                ),
+            }
+        ]
     if curve_assertions is not None:
         result["curveAssertions"] = curve_assertions
     return result
@@ -1954,13 +1976,7 @@ HUMANOIDS: list[dict[str, Any]] = [
                 "La sorgente copre 15-18. L'estensione mantiene il loadout iconico "
                 "invariato e sposta la crescita sulle Skill."
             ),
-            open_questions=[
-                (
-                    "Il generatore humanoid assegna sempre una delle 11 razze mortali e "
-                    "RACE_NAMES non contiene Dremora. Non esiste una scelta legale che "
-                    "soddisfi mustNot: razza mortale."
-                )
-            ],
+            open_questions=[],
         ),
         expectation_data=expectations(
             unit="Soldato Dremora",
@@ -2016,6 +2032,8 @@ HUMANOIDS: list[dict[str, Any]] = [
                 core_share=0.56,
                 magic_policy="none",
                 classes=["Torre Umana"],
+                races=["Dremora"],
+                subraces=["Churl", "Caitiff", "Kynval"],
             ),
             skills=PHYSICAL_CORE
             + SHIELD_ARCHETYPE
@@ -2036,8 +2054,8 @@ HUMANOIDS: list[dict[str, Any]] = [
                 item("arma", 593, weight=3),
             ],
             notes=(
-                "Conversione v2 della riga Elder #944. Payload completo ma apply "
-                "bloccato finché il generatore non può rappresentare razza Dremora."
+                "Conversione v2 della riga Elder #944. La razza Dremora è esplicita e "
+                "le sottorazze sono limitate ai ranghi di truppa Churl, Caitiff e Kynval."
             ),
         ),
         evidence=[
@@ -2062,9 +2080,9 @@ HUMANOIDS: list[dict[str, Any]] = [
         ],
         legality=[
             {"claim": "contratto humanoid", "source": "unit:944 equipment + backend.combat.unit_generation"},
-            {"claim": "blocco razza", "source": "backend.characters.race_rules.RACE_NAMES"},
+            {"claim": "razza e ranghi legali", "source": "backend.characters.race_rules.RACE_CATALOG[Dremora]"},
         ],
-        blocked=["humanoid_race_catalog_has_no_dremora"],
+        blocked=[],
     ),
 ]
 
@@ -3744,6 +3762,22 @@ def critic_findings(candidate: dict[str, Any]) -> list[dict[str, str]]:
                 "status": "open",
             }
         )
+    if candidate["proposal"]["generation"]["kind"] == "humanoid":
+        findings.append(
+            {
+                "code": "indivisible-general-xp-residual",
+                "severity": "warning-audit",
+                "finding": (
+                    "Il generatore può lasciare 1-9 PE quando nessun costo intero "
+                    "del pool curato coincide col residuo."
+                ),
+                "resolution": (
+                    "Accettare soltanto l'esatto warning residuo 1-9; ogni altro "
+                    "warning resta un fallimento. Non allargare il pool per consumarlo."
+                ),
+                "status": "resolved",
+            }
+        )
     if not findings:
         findings.append(
             {
@@ -3799,6 +3833,69 @@ def write_dossiers() -> list[Path]:
     paths = []
     for dossier in dossiers:
         path = dossier_root / f"{dossier['sourceSnapshot']['normalizedName'].replace(' ', '-')}.json"
+        if path.exists():
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            existing_simulation = existing.get("simulation") or {}
+            if (
+                existing.get("proposalHash") == dossier["proposalHash"]
+                and existing_simulation.get("completed") == 40
+            ):
+                previews = existing_simulation.get("previews", [])
+                preview_errors = []
+                warnings = []
+                for preview in previews:
+                    preview_warnings = list(preview.get("warnings") or [])
+                    warnings.extend(preview_warnings)
+                    retained_errors = [
+                        error
+                        for error in preview.get("errors", [])
+                        if error != "warnings"
+                        or any(
+                            not explained_warning(dossier, warning)
+                            for warning in preview_warnings
+                        )
+                    ]
+                    preview["errors"] = retained_errors
+                    preview_errors.extend(
+                        f"{preview['level']}:{preview['variant']}:{error}"
+                        for error in retained_errors
+                    )
+                dossier["simulation"] = {
+                    **existing_simulation,
+                    "previews": previews,
+                    "warnings": list(dict.fromkeys(warnings)),
+                    "previewErrors": list(dict.fromkeys(preview_errors)),
+                }
+                deterministic = bool(
+                    (existing.get("scorecard") or {})
+                    .get("determinism", {})
+                    .get("match")
+                )
+                dossier["scorecard"] = scorecard(
+                    dossier,
+                    completed=len(previews),
+                    warnings=warnings,
+                    preview_errors=preview_errors,
+                    deterministic=deterministic,
+                )
+                if existing.get("status") == "applied":
+                    dossier["status"] = "applied"
+                    dossier["approval"] = existing.get("approval")
+        live_unit = Unit.objects.filter(
+            metadata__sourceProject="the_elder_django",
+            metadata__sourceIds=dossier["sourceSnapshot"]["ids"],
+        ).first()
+        live_metadata = live_unit.metadata if live_unit and isinstance(live_unit.metadata, dict) else {}
+        if (
+            live_metadata.get("proposalHash") == dossier["proposalHash"]
+            and live_metadata.get("charterHash") == dossier["charterHash"]
+        ):
+            dossier["status"] = "applied"
+            dossier["approval"] = {
+                "approvedBy": live_metadata.get("approvedBy", ""),
+                "approvedAt": live_metadata.get("approvedAt", ""),
+                "notes": live_metadata.get("approvalNotes", ""),
+            }
         path.write_text(
             json.dumps(dossier, ensure_ascii=False, indent=2, default=str) + "\n",
             encoding="utf-8",
@@ -4030,6 +4127,11 @@ def check_preview(
     expected = dossier["expectations"]["allVariants"]
     if signature["kind"] != expected["generationKind"]:
         errors.append("kind")
+    race = dict(signature.get("race") or {})
+    if expected.get("racePrimary") and race.get("primary") not in expected["racePrimary"]:
+        errors.append("race-primary")
+    if expected.get("subraceIn") and race.get("subrace") not in expected["subraceIn"]:
+        errors.append("subrace")
     equipment_by_slot: dict[str, list[int]] = {}
     for slot, item_id in signature["equipment"]:
         equipment_by_slot.setdefault(str(slot), []).append(int(item_id))
@@ -4045,20 +4147,31 @@ def check_preview(
         errors.append("creature-equipment")
     if expected.get("innateActionCount") == 0 and signature["innateActions"]:
         errors.append("humanoid-actions")
-    if expected.get("warningCount") == 0 and signature["warnings"]:
-        errors.append("warnings")
+    for warning in signature["warnings"]:
+        if not explained_warning(dossier, warning):
+            errors.append("warnings")
     return errors
+
+
+def explained_warning(dossier: dict[str, Any], warning: str) -> bool:
+    return any(
+        re.fullmatch(str(entry.get("pattern") or ""), warning)
+        for entry in dossier["expectations"].get("explainedWarnings", [])
+    )
 
 
 def scorecard(
     dossier: dict[str, Any],
     *,
     completed: int,
-    warning_count: int,
+    warnings: list[str],
     preview_errors: list[str],
     deterministic: bool,
 ) -> dict[str, Any]:
     blocked = dossier["status"] == "blocked"
+    unexplained_warnings = [
+        warning for warning in warnings if not explained_warning(dossier, warning)
+    ]
     hard_failures = len(preview_errors) + int(not deterministic)
     return {
         "unit": dossier["proposal"]["name"],
@@ -4067,7 +4180,8 @@ def scorecard(
             "levels": list(LEVELS),
             "variantsPerLevel": len(VARIANTS),
             "completed": completed,
-            "warnings": warning_count,
+            "warnings": len(warnings),
+            "unexplainedWarnings": len(unexplained_warnings),
         },
         "determinism": {"variant": VARIANTS[0], "match": deterministic},
         "qualitative": {
@@ -4081,13 +4195,13 @@ def scorecard(
             "blocked"
             if blocked
             else "ready-for-human-approval"
-            if not preview_errors and deterministic and warning_count == 0 and completed == 40
+            if not preview_errors and deterministic and not unexplained_warnings and completed == 40
             else "needs-resolution"
         ),
     }
 
 
-def simulate_all(username: str) -> dict[str, Any]:
+def simulate_all(username: str, unit_filter: str = "") -> dict[str, Any]:
     validation = validate_all()
     failed_units = {
         result["unit"]
@@ -4098,6 +4212,8 @@ def simulate_all(username: str) -> dict[str, Any]:
     summaries = []
     for path, dossier in load_dossiers():
         unit_name = dossier["proposal"]["name"]
+        if unit_filter and unit_name.casefold() != unit_filter.strip().casefold():
+            continue
         if dossier["status"] == "blocked" or unit_name in failed_units:
             summaries.append(
                 {
@@ -4165,7 +4281,7 @@ def simulate_all(username: str) -> dict[str, Any]:
         dossier["scorecard"] = scorecard(
             dossier,
             completed=len(previews),
-            warning_count=len(warnings),
+            warnings=warnings,
             preview_errors=preview_errors,
             deterministic=deterministic,
         )
@@ -4195,12 +4311,228 @@ def simulate_all(username: str) -> dict[str, Any]:
     return result
 
 
+def review_samples(username: str, unit_filter: str = "") -> dict[str, Any]:
+    user, giocatore = manager_identity(username)
+    samples = []
+    for _path, dossier in load_dossiers():
+        if (
+            unit_filter
+            and dossier["proposal"]["name"].casefold() != unit_filter.strip().casefold()
+        ):
+            continue
+        if dossier["status"] == "blocked":
+            samples.append(
+                {
+                    "unit": dossier["proposal"]["name"],
+                    "status": "blocked",
+                    "reasons": [
+                        finding["finding"]
+                        for finding in dossier["findings"]
+                        if finding["status"] == "open"
+                    ],
+                    "samples": [],
+                }
+            )
+            continue
+        unit_samples = []
+        with transaction.atomic():
+            existing = Unit.objects.filter(nome__iexact=dossier["proposal"]["name"]).first()
+            unit, _created = save_managed_unit(
+                user,
+                giocatore,
+                dossier["proposal"],
+                existing.id if existing else None,
+                source_metadata={
+                    "sourceProject": "the_elder_django",
+                    "sourceTable": "django_slim_unit",
+                    "sourceIds": dossier["sourceSnapshot"]["ids"],
+                    "converterVersion": CONVERTER_VERSION,
+                    "charterHash": dossier["charterHash"],
+                    "proposalHash": dossier["proposalHash"],
+                },
+            )
+            for level in (1, 10, 20):
+                character = create_unit_character(unit, level, VARIANTS[0])
+                report = dict(character.metadata.get("unitGeneration") or {})
+                unit_samples.append(
+                    {
+                        "level": level,
+                        "variant": VARIANTS[0],
+                        "race": report.get("race"),
+                        "skills": [
+                            {
+                                "name": entry.get("name"),
+                                "source": entry.get("source"),
+                                "level": entry.get("level"),
+                                "cost": entry.get("cost"),
+                            }
+                            for entry in report.get("skills", [])
+                        ],
+                        "perks": [
+                            {
+                                "name": entry.get("name"),
+                                "tier": entry.get("tier"),
+                                "level": entry.get("level"),
+                            }
+                            for entry in report.get("perks", [])
+                        ],
+                        "equipment": [
+                            {
+                                "slot": entry.get("slot"),
+                                "name": entry.get("name"),
+                                "itemId": entry.get("itemId"),
+                            }
+                            for entry in report.get("equipment", [])
+                        ],
+                        "innateActions": list(report.get("innateActions", [])),
+                        "statCurves": {
+                            entry["key"]: entry["value"]
+                            for entry in report.get("statCurves", [])
+                        },
+                        "warnings": list(report.get("warnings", [])),
+                    }
+                )
+            transaction.set_rollback(True)
+        samples.append(
+            {
+                "unit": dossier["proposal"]["name"],
+                "status": "ready-for-human-approval",
+                "signatureAxes": dossier["charter"]["signatureAxes"],
+                "mustNot": dossier["charter"]["mustNot"],
+                "samples": unit_samples,
+            }
+        )
+    payload = {
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "variant": VARIANTS[0],
+        "levels": [1, 10, 20],
+        "units": samples,
+    }
+    output_suffix = (
+        "-" + re.sub(r"[^a-z0-9]+", "-", unit_filter.casefold()).strip("-")
+        if unit_filter
+        else ""
+    )
+    json_path = OUTPUT_ROOT / f"human_review_samples{output_suffix}.json"
+    json_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
+
+    lines = [
+        "# Elder Unit calibration v2 — human review packet",
+        "",
+        (
+            "Read the three checkpoints for each Unit before approving. "
+            "These are real rollback-only generator outputs, not mocked projections."
+        ),
+        "",
+    ]
+    for entry in samples:
+        lines.extend([f"## {entry['unit']}", ""])
+        if entry["status"] == "blocked":
+            lines.append("**BLOCKED:** " + " ".join(entry["reasons"]))
+            lines.append("")
+            continue
+        lines.append(
+            "**Signature axes:** "
+            + "; ".join(
+                f"{axis['axis']} → {axis['expressedBy']}"
+                for axis in entry["signatureAxes"]
+            )
+        )
+        lines.append("")
+        lines.append("**Must not:** " + "; ".join(entry["mustNot"]))
+        lines.append("")
+        for sample in entry["samples"]:
+            equipment = ", ".join(
+                f"{item['slot']}: {item['name']} #{item['itemId']}"
+                for item in sample["equipment"]
+            ) or "none"
+            skills = ", ".join(
+                f"{item['name']} ({item['source']}, L{item['level']})"
+                for item in sample["skills"]
+            ) or "none"
+            actions = ", ".join(sample["innateActions"]) or "none"
+            warnings = "; ".join(sample["warnings"]) or "none"
+            race = (sample.get("race") or {}).get("primary") or "n/a"
+            key_curves = ", ".join(
+                f"{key}={value}"
+                for key, value in sample["statCurves"].items()
+                if key in {"pf", "mana", "forza", "velocita", "attacco", "difesa", "tier"}
+            ) or "n/a"
+            lines.extend(
+                [
+                    f"### Level {sample['level']} · `{sample['variant']}`",
+                    "",
+                    f"- Race: {race}",
+                    f"- Equipment: {equipment}",
+                    f"- Skills: {skills}",
+                    f"- Innate actions: {actions}",
+                    f"- Key curves: {key_curves}",
+                    f"- Generator warnings: {warnings}",
+                    "",
+                ]
+            )
+    markdown_path = OUTPUT_ROOT / f"HUMAN_REVIEW{output_suffix.upper()}.md"
+    markdown_path.write_text("\n".join(lines), encoding="utf-8")
+    return {
+        "units": len(samples),
+        "samples": sum(len(entry["samples"]) for entry in samples),
+        "json": str(json_path),
+        "markdown": str(markdown_path),
+    }
+
+
 def load_approvals(path: Path) -> dict[str, dict[str, Any]]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     return {
         str(entry["conversionKey"]): entry
         for entry in payload.get("approvals", [])
         if isinstance(entry, dict) and entry.get("conversionKey")
+    }
+
+
+def record_approvals(
+    output_path: Path,
+    approved_by: str,
+    notes: str,
+    unit_filter: str = "",
+) -> dict[str, Any]:
+    approved_by = str(approved_by or "").strip()
+    if not approved_by:
+        raise RuntimeError("approvedBy mancante.")
+    approved_at = datetime.now(timezone.utc).isoformat()
+    approvals = {
+        "schemaVersion": 2,
+        "approvals": [
+            {
+                "conversionKey": dossier["conversionKey"],
+                "proposalHash": dossier["proposalHash"],
+                "approved": True,
+                "approvedBy": approved_by,
+                "approvedAt": approved_at,
+                "notes": notes,
+            }
+            for _, dossier in load_dossiers()
+            if dossier["status"] != "blocked"
+            and (dossier.get("scorecard") or {}).get("decision") == "ready-for-human-approval"
+            and (
+                not unit_filter
+                or dossier["proposal"]["name"].casefold() == unit_filter.strip().casefold()
+            )
+        ],
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(approvals, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return {
+        "output": str(output_path),
+        "approvedBy": approved_by,
+        "approvedAt": approved_at,
+        "approved": len(approvals["approvals"]),
     }
 
 
@@ -4290,6 +4622,15 @@ def main() -> None:
     subparsers.add_parser("validate")
     simulate_parser = subparsers.add_parser("simulate")
     simulate_parser.add_argument("--username", default="ale")
+    simulate_parser.add_argument("--unit", default="")
+    review_parser = subparsers.add_parser("review")
+    review_parser.add_argument("--username", default="ale")
+    review_parser.add_argument("--unit", default="")
+    approve_parser = subparsers.add_parser("approve")
+    approve_parser.add_argument("--output", required=True, type=Path)
+    approve_parser.add_argument("--approved-by", required=True)
+    approve_parser.add_argument("--notes", default="")
+    approve_parser.add_argument("--unit", default="")
     apply_parser = subparsers.add_parser("apply")
     apply_parser.add_argument("--approvals", required=True, type=Path)
     apply_parser.add_argument("--username", default="ale")
@@ -4301,7 +4642,11 @@ def main() -> None:
     elif args.command == "validate":
         print_json(validate_all())
     elif args.command == "simulate":
-        print_json(simulate_all(args.username))
+        print_json(simulate_all(args.username, args.unit))
+    elif args.command == "review":
+        print_json(review_samples(args.username, args.unit))
+    elif args.command == "approve":
+        print_json(record_approvals(args.output, args.approved_by, args.notes, args.unit))
     elif args.command == "apply":
         print_json(apply_approved(args.approvals, args.username))
 

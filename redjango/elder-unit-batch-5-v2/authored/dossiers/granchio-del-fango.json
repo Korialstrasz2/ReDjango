@@ -1,0 +1,1186 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:976",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      976
+    ],
+    "normalizedName": "granchio del fango",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 976,
+        "levels": [
+          20
+        ],
+        "nome": "Granchio del Fango",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            2,
+            "linear"
+          ],
+          "resistenza_tot": [
+            5,
+            "linear"
+          ],
+          "velocita_tot": [
+            2,
+            "linear"
+          ],
+          "agilita_tot": [
+            2,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            1,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            1,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            1,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            7,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            1,
+            "-3"
+          ],
+          "res_taglio_tot": [
+            7,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            7,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            4,
+            "linear"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "3"
+          ],
+          "pa_tot": [
+            3,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            3,
+            "linear"
+          ],
+          "potere_tot": [
+            1,
+            "linear"
+          ],
+          "tier_tot": [
+            4,
+            "linear"
+          ],
+          "attacco_tot": [
+            3,
+            "linear"
+          ],
+          "difesa_tot": [
+            6,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 17,
+        "skill_2_id": 27,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 59,
+        "unitId": 976,
+        "name": "Granchio del Fango",
+        "description": "I Granchi del Fango vivono lungo coste, paludi, rive di fiumi e zone umide di tutta Tamriel. Sono così comuni che molti viaggiatori li considerano poco più di un fastidio, ma chi vive vicino all'acqua sa che possono diventare aggressivi se disturbati. In alcune regioni sono anche una fonte semplice di cibo. Sono creature semplici, guardinghe e legate al proprio piccolo territorio. Passano molto tempo sepolti nel fango o nascosti tra rocce e detriti, emergendo quando percepiscono cibo o minaccia. Non hanno malizia, ma possiedono l'ostinazione tipica degli animali che non capiscono quando sarebbe meglio fuggire. Hanno carapace duro, chele robuste e una sorprendente capacità di mimetizzarsi negli ambienti fangosi. Da soli sono raramente letali per un avventuriero esperto, ma possono ferire, intralciare o sorprendere chi li sottovaluta. Gli esemplari più grandi, invece, meritano decisamente più rispetto.",
+        "image": "UnitLorePics/Granchio_del_Fango.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 17,
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti.",
+        "effect": "Riduce tutti i danni in arrivo del 50% per 3 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, riflette anche il 10% dei danni agli attaccanti."
+      },
+      {
+        "sourceId": 27,
+        "name": "Sangue Tossico",
+        "description": "Il sangue della creatura è corrosivo per gli attaccanti.",
+        "effect": "Gli attaccanti in mischia subiscono danni da veleno pari a (livello)d4 quando infliggono danno.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 3 POW, il danno da veleno aumenta a d6 per un turno."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Granchio del Fango",
+    "sourceIds": [
+      976
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La singola riga viene linearizzata mantenendo velocità bassa e difesa alta.",
+    "fantasy": "Crostaceo territoriale lento, protetto da un carapace duro e fluidi irritanti.",
+    "combatStory": "Si chiude dietro Pelle di Pietra e punisce gli attaccanti in mischia; non insegue e non controlla a distanza.",
+    "siblings": [
+      {
+        "unit": "Scrib",
+        "relation": "nearest",
+        "mustDifferBy": "Carapace difensivo e reazione melee invece di spore e suono."
+      },
+      {
+        "unit": "Ragno Frostbite",
+        "relation": "same-scale",
+        "mustDifferBy": "Difesa statica invece di mobilità e ragnatela."
+      },
+      {
+        "unit": "Dreugh",
+        "relation": "contrast",
+        "mustDifferBy": "Fauna minore, non combattente anfibio rigenerante."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "carapace",
+        "expressedBy": "rd_fis e Pelle di Pietra"
+      },
+      {
+        "axis": "deterrente reattivo",
+        "expressedBy": "Sangue Tossico convertito in Puro"
+      }
+    ],
+    "must": [
+      "carapace",
+      "Pelle di Pietra",
+      "reazione melee",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "sputo",
+      "ragnatela",
+      "Carica"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "granchio coriaceo",
+      "5": "Pelle di Pietra",
+      "10": "sangue irritante",
+      "15": "carapace maturo",
+      "20": "guardiano del fango"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Granchio del Fango",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Pelle di Pietra presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "sputo",
+      "ragnatela",
+      "Carica"
+    ],
+    "differsFrom": {
+      "Scrib": "Carapace difensivo e reazione melee invece di spore e suono.",
+      "Ragno Frostbite": "Difesa statica invece di mobilità e ragnatela."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:976"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:976"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Granchio del Fango",
+    "category": "Natura",
+    "archetypeDescription": "Piccolo difensore naturale con carapace e danno reattivo Puro.",
+    "loreDescription": "I Granchi del Fango vivono lungo coste, paludi, rive di fiumi e zone umide di tutta Tamriel. Sono così comuni che molti viaggiatori li considerano poco più di un fastidio, ma chi vive vicino all'acqua sa che possono diventare aggressivi se disturbati. In alcune regioni sono anche una fonte semplice di cibo. Sono creature semplici, guardinghe e legate al proprio piccolo territorio. Passano molto tempo sepolti nel fango o nascosti tra rocce e detriti, emergendo quando percepiscono cibo o minaccia. Non hanno malizia, ma possiedono l'ostinazione tipica degli animali che non capiscono quando sarebbe meglio fuggire. Hanno carapace duro, chele robuste e una sorprendente capacità di mimetizzarsi negli ambienti fangosi. Da soli sono raramente letali per un avventuriero esperto, ma possono ferire, intralciare o sorprendere chi li sottovaluta. Gli esemplari più grandi, invece, meritano decisamente più rispetto.",
+    "notes": "Batch 5 v2: conversione Elder [976]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-17",
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti. Riduce tutti i danni in arrivo del 50% per 3 turni. Boost Elder: Per 5 POW, riflette anche il 10% dei danni agli attaccanti.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-27",
+        "name": "Sangue Tossico",
+        "description": "Passiva. Chi infligge danno in mischia alla creatura subisce danni Puro dalla secrezione irritante.",
+        "minLevel": 6,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "intelligenza",
+          "profile": "very_low",
+          "level1": 4,
+          "level20": 10
+        },
+        {
+          "key": "concentrazione",
+          "profile": "very_low",
+          "level1": 4,
+          "level20": 10
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "very_low",
+          "level1": 4,
+          "level20": 10
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -3,
+          "level20": -3
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 3
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 21
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "potere",
+          "profile": "very_low",
+          "level1": 3,
+          "level20": 20
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 10
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:5cf540f233544c9ff950b59ff368489d2827bc747d904c1822369a86c43c35c0",
+  "charterHash": "sha256:9ad32b87e09e6658c41808fc2e57792831c7c58842da82facf035c6a0dfb3692",
+  "converterVersion": "elder-unit-charter-v2-batch5",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Sangue Tossico"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La singola riga viene linearizzata mantenendo velocità bassa e difesa alta."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Sangue Tossico']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:1f9ceef657e8926b5f04c3abf5ed3009751d84a27dbfb17e04e482521969465b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:375db746df9cf6feca015a502c30ef819998c7269e1731d2da79a3f0166e9ce5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:5fb620daad746056374fae0ea12e72d190b3cee1c55d243370c210b27ea3f293",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:fcc653ce2182a2700847707ead6d1dba267b0560f976d21b94d557f7fbfa477b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:811f0cf4432a4735b006796d5fc95190dde8c54ab901e17df80ca2bbb6ba75a5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle di Pietra",
+          "Sangue Tossico"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Granchio del Fango",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch5-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T09:47:56.992038+00:00",
+    "notes": "Standing authorization from Ale; final 10 humanoids and 10 creatures reviewed against the conversion guide and best practices. All 20 pass static gates and 800 deterministic previews. Poison mechanics use only supported vocabulary; Netch flight and Studioso Altmer specialization were explicitly reviewed."
+  }
+}

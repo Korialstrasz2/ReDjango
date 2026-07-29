@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:985",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      985
+    ],
+    "normalizedName": "lupo delle nevi",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 985,
+        "levels": [
+          20
+        ],
+        "nome": "Lupo delle Nevi",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            8,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            8,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-1"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "-1"
+          ],
+          "res_gelo_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "hi_hi"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            8,
+            "exponential"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            5,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            3,
+            "linear"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 62,
+        "skill_2_id": 28,
+        "skill_3_id": 68,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 73,
+        "unitId": 985,
+        "name": "Lupo delle Nevi",
+        "description": "I Lupi delle Nevi abitano le regioni fredde di Skyrim, Solstheim e delle montagne settentrionali, dove il mantello chiaro li confonde con ghiaccio e tormenta. Sono più robusti e aggressivi dei lupi comuni, adattati a un ambiente in cui ogni pasto va conquistato. Le carovane che attraversano passi innevati li temono con ragione. Sono diffidenti, affamati e molto legati al branco. Non sprecano energie in inseguimenti inutili, ma quando scelgono una preda lo fanno con ostinazione feroce. I Nord li rispettano come creature dure, nate dallo stesso gelo che mette alla prova gli uomini. Hanno pelliccia folta, muscoli resistenti e grande capacità di muoversi su neve e roccia. Attaccano in gruppo, cercando di isolare i bersagli più deboli o rallentati. Un Lupo delle Nevi non è solo un lupo più grande: è un predatore costruito per un mondo che perdona poco.",
+        "image": "UnitLorePics/Lupo_delle_Nevi.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 62,
+        "name": "Balzo Predatorio",
+        "description": "La creatura si lancia sulla preda con precisione letale.",
+        "effect": "Salta fino a 3 esagoni su una casella adiacente al bersaglio ed esegue un attacco con +3 all'Attacco e 1 reroll per l'attacco.",
+        "cost": "7 PA, 2 EN.",
+        "boost": "Per 5 POW, ottieni 2 reroll, e il raggio può essere di 3 o 4 esagoni."
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      },
+      {
+        "sourceId": 68,
+        "name": "Rigenerazione",
+        "description": "La creatura guarisce naturalmente le ferite col tempo, migliorando la sua longevità in combattimento.",
+        "effect": "Recupera 1d6 Punti Ferita all'inizio di ogni turno per livello dell'NPC.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 3 POW, aumenta la guarigione a 3d6."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Lupo delle Nevi",
+    "sourceIds": [
+      985
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint mantengono la superiorità sul Lupo senza cambiare contratto.",
+    "fantasy": "Predatore di branco adattato a neve, fame e inseguimenti nei passi settentrionali.",
+    "combatStory": "Balza sulla preda isolata, entra in Furia e rigenera abbastanza da continuare la caccia.",
+    "siblings": [
+      {
+        "unit": "Lupo",
+        "relation": "nearest",
+        "mustDifferBy": "Più robusto, rigenerante e resistente al gelo."
+      },
+      {
+        "unit": "Capra dei Ghiacciai",
+        "relation": "same-biome",
+        "mustDifferBy": "Predazione di branco invece di fuga alpina."
+      },
+      {
+        "unit": "Kagouti",
+        "relation": "contrast",
+        "mustDifferBy": "Mobilità e balzo invece di carica massiccia."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "caccia sulla neve",
+        "expressedBy": "Balzo e velocità"
+      },
+      {
+        "axis": "adattamento artico",
+        "expressedBy": "Rigenerazione e res_gelo crescente"
+      }
+    ],
+    "must": [
+      "balzo",
+      "Furia",
+      "rigenerazione",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "magia",
+      "coda"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "lupo artico",
+      "5": "balzo",
+      "10": "Furia",
+      "15": "rigenerazione",
+      "20": "capobranco delle nevi"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Lupo delle Nevi",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "mana 0 e res_gelo positiva al livello 20"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "magia",
+      "coda"
+    ],
+    "differsFrom": {
+      "Lupo": "Più robusto, rigenerante e resistente al gelo.",
+      "Capra dei Ghiacciai": "Predazione di branco invece di fuga alpina."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 72
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:985"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:985"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Lupo delle Nevi",
+    "category": "Animale",
+    "archetypeDescription": "Lupo artico d'élite con balzo, furia e rigenerazione.",
+    "loreDescription": "I Lupi delle Nevi abitano le regioni fredde di Skyrim, Solstheim e delle montagne settentrionali, dove il mantello chiaro li confonde con ghiaccio e tormenta. Sono più robusti e aggressivi dei lupi comuni, adattati a un ambiente in cui ogni pasto va conquistato. Le carovane che attraversano passi innevati li temono con ragione. Sono diffidenti, affamati e molto legati al branco. Non sprecano energie in inseguimenti inutili, ma quando scelgono una preda lo fanno con ostinazione feroce. I Nord li rispettano come creature dure, nate dallo stesso gelo che mette alla prova gli uomini. Hanno pelliccia folta, muscoli resistenti e grande capacità di muoversi su neve e roccia. Attaccano in gruppo, cercando di isolare i bersagli più deboli o rallentati. Un Lupo delle Nevi non è solo un lupo più grande: è un predatore costruito per un mondo che perdona poco.",
+    "notes": "Batch 3 v2: conversione Elder [985]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-62",
+        "name": "Balzo Predatorio",
+        "description": "La creatura si lancia sulla preda con precisione letale. Salta fino a 3 esagoni su una casella adiacente al bersaglio ed esegue un attacco con +3 all'Attacco e 1 reroll per l'attacco. Boost Elder: Per 5 POW, ottieni 2 reroll, e il raggio può essere di 3 o 4 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 7,
+          "energia": 2
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-68",
+        "name": "Rigenerazione",
+        "description": "La creatura guarisce naturalmente le ferite col tempo, migliorando la sua longevità in combattimento. Recupera 1d6 Punti Ferita all'inizio di ogni turno per livello dell'NPC. Boost Elder: Per 3 POW, aumenta la guarigione a 3d6.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 6
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:a4190b916f3f469ebae4ad71d64d7edc1a180b078372a8c25da93bcc4dcd4eb0",
+  "charterHash": "sha256:001b24071ecfc6a39e151232c83a4e3c0f8808ed33a4f4b48b27d03ab9b498d4",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint mantengono la superiorità sul Lupo senza cambiare contratto."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:371fe75905f3c9a1cb24104f3073d43870569bd92bf94c061d6f76bfb0514f35",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:569e003481d00286e5ad8e47198f5230a1e5a2a862b434f9cdab3c828a37cfa3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:a85d144b7dc8e1b49069c97f9cd04abe9680e435b9965cde76e300132a065c9f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:31adb328c13f3056c0f48768451ac09509dabaddc5185e7b1b0d368930455b73",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:6b44e803bfb16d66324f18dfdf39af74d1baea0fe742e8283b0ffa727b5cd065",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Rigenerazione"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Lupo delle Nevi",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

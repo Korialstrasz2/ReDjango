@@ -1,0 +1,1140 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1027",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1027
+    ],
+    "normalizedName": "goblin",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [
+          "Spada lunga (ferro)",
+          "Ascia (acciaio)",
+          "Mazza (legno)"
+        ],
+        "armatura": [],
+        "categoria": "Extra",
+        "chainmail": [],
+        "id": 1027,
+        "levels": [
+          20
+        ],
+        "nome": "Goblin",
+        "preset": "Light",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            4,
+            "linear"
+          ],
+          "resistenza_tot": [
+            3,
+            "linear"
+          ],
+          "velocita_tot": [
+            3,
+            "linear"
+          ],
+          "agilita_tot": [
+            3,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "0"
+          ],
+          "res_perforante_tot": [
+            6,
+            "1"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "1"
+          ],
+          "res_gelo_tot": [
+            7,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            2,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            3,
+            "linear"
+          ],
+          "energia_tot": [
+            3,
+            "linear"
+          ],
+          "potere_tot": [
+            3,
+            "linear"
+          ],
+          "tier_tot": [
+            3,
+            "linear"
+          ],
+          "attacco_tot": [
+            4,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 58,
+        "unitId": 1027,
+        "name": "Goblin",
+        "description": "I Goblin si trovano in caverne, rovine, miniere abbandonate e territori marginali di molte province di Tamriel. Vivono in tribù, spesso guidate da capi brutali e sciamani che custodiscono totem, superstizioni e magie rozze ma efficaci. Le razze civilizzate li trattano come parassiti, ma i Goblin hanno società più complesse di quanto si ami ammettere. Sono sospettosi, territoriali e ostili verso chi invade le loro tane. La loro aggressività nasce tanto dalla fame quanto da secoli di persecuzioni e guerre per il territorio. Non sono nobili selvaggi, ma neppure semplici animali: hanno gerarchie, rituali, rivalità e un forte senso del gruppo. Combattono in massa, usando lance, mazze, trappole e imboscate. Singolarmente possono essere deboli, ma in gruppo compensano con numero, rumore e conoscenza del terreno. Uno scontro con i Goblin è raramente pulito: preferiscono trascinare il nemico dove buio, fango e panico lavorano per loro.",
+        "image": "UnitLorePics/Goblin.png"
+      }
+    ],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Goblin",
+    "sourceIds": [
+      1027
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le armi legacy diventano azione innata e il Mana inutilizzato viene azzerato.",
+    "fantasy": "Razziatore tribale delle caverne che combatte con armi rozze e cooperazione istintiva.",
+    "combatStory": "Avanza in mischia con ascia, mazza o spada e dipende dalla pressione numerica, non dalla magia del singolo.",
+    "siblings": [
+      {
+        "unit": "Guerriero Scheletro",
+        "relation": "nearest",
+        "mustDifferBy": "Tribale vivente senza fase o resistenze non morte."
+      },
+      {
+        "unit": "Scamp",
+        "relation": "same-scale",
+        "mustDifferBy": "Mischia fisica e Mana zero invece di fuoco daedrico."
+      },
+      {
+        "unit": "Guerriero (standard)",
+        "relation": "contrast",
+        "mustDifferBy": "Creatura senza progressione Skill o equipment."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "tribù Goblin",
+        "expressedBy": "chassis minore e arma rozza"
+      },
+      {
+        "axis": "pressione fisica",
+        "expressedBy": "Arma Tribale e Mana zero"
+      }
+    ],
+    "must": [
+      "Goblin",
+      "arma tribale",
+      "Mana zero",
+      "equipment zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "Skill",
+      "magia",
+      "armatura"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Goblin armato",
+      "5": "razzia",
+      "10": "combattente tribale",
+      "15": "veterano della tana",
+      "20": "campione Goblin"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Goblin",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Arma Tribale presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "Skill",
+      "magia",
+      "armatura"
+    ],
+    "differsFrom": {
+      "Guerriero Scheletro": "Tribale vivente senza fase o resistenze non morte.",
+      "Scamp": "Mischia fisica e Mana zero invece di fuoco daedrico."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1027"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1027"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Goblin",
+    "category": "Extra",
+    "archetypeDescription": "Combattente tribale minore con arma innata e chassis agile ma fragile.",
+    "loreDescription": "I Goblin si trovano in caverne, rovine, miniere abbandonate e territori marginali di molte province di Tamriel. Vivono in tribù, spesso guidate da capi brutali e sciamani che custodiscono totem, superstizioni e magie rozze ma efficaci. Le razze civilizzate li trattano come parassiti, ma i Goblin hanno società più complesse di quanto si ami ammettere. Sono sospettosi, territoriali e ostili verso chi invade le loro tane. La loro aggressività nasce tanto dalla fame quanto da secoli di persecuzioni e guerre per il territorio. Non sono nobili selvaggi, ma neppure semplici animali: hanno gerarchie, rituali, rivalità e un forte senso del gruppo. Combattono in massa, usando lance, mazze, trappole e imboscate. Singolarmente possono essere deboli, ma in gruppo compensano con numero, rumore e conoscenza del terreno. Uno scontro con i Goblin è raramente pulito: preferiscono trascinare il nemico dove buio, fango e panico lavorano per loro.",
+    "notes": "Batch 6 v2: conversione Elder [1027]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch6-arma-tribale-goblin",
+        "name": "Arma Tribale",
+        "description": "Bersaglio adiacente. Il Goblin usa ascia, mazza o spada rozza come parte del suo profilo innato, infliggendo Taglio o Contundente. Non crea equipment.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 2
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "ascia"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "tier",
+          "profile": "low",
+          "level1": 3,
+          "level20": 9
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:85d939ccb11407ea93a947cc7633f761851c9ae8e28dee44d1ea59f71cfc17d9",
+  "charterHash": "sha256:dc35a07d00b92148439c9215a40eede8a1f787fa0ffeabdcf88bb02f0cd61c9d",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "slot": "arma",
+        "names": [
+          "Ascia (acciaio)",
+          "Mazza (legno)",
+          "Spada lunga (ferro)"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "creature-equipment-contract",
+      "reason": "Il Goblin resta creature e le armi sono astratte nell'azione Arma Tribale."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le armi legacy diventano azione innata e il Mana inutilizzato viene azzerato."
+    },
+    {
+      "what": "Mana legacy",
+      "from": "curva Mana senza azioni magiche",
+      "to": "Mana 0 costante",
+      "why": "Evita una risorsa morta e mantiene il Goblin base distinto da uno Sciamano."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "creature-equipment-contract",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'slot': 'arma', 'names': ['Ascia (acciaio)', 'Mazza (legno)', 'Spada lunga (ferro)']} rischia deriva d'identità o illegalità.",
+      "resolution": "Il Goblin resta creature e le armi sono astratte nell'azione Arma Tribale.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:615e07f3d9627ccf473b28bc29b2854cd01b722ca04f1167ed5773a47b15a2ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:d5c98ea0b3c3a915909ed561cecf4ccbe5488be102c20d28297dac666e555ea1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:cb7fc43f13c825cb186ffa63c784208904f5c2ecfa7745489ec93b5a118d46af",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:047ba9c066d593ac1faf63849863b145194df26211c6825d6399f4f4970ac88d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:1a160af9b403cdb37ab6a5e50b1475ac3773b7a68fbc5f1a9b91eabee5cba6f7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Arma Tribale"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Goblin",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

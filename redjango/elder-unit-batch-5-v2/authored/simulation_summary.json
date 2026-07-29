@@ -1,0 +1,330 @@
+{
+  "validation": {
+    "passed": 20,
+    "failed": 0,
+    "results": [
+      {
+        "unit": "Alit",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\alit.json"
+      },
+      {
+        "unit": "Assassino della Confraternita Oscura",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\assassino-della-confraternita-oscura.json"
+      },
+      {
+        "unit": "Chaurus",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\chaurus.json"
+      },
+      {
+        "unit": "Contrabbandiere",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\contrabbandiere.json"
+      },
+      {
+        "unit": "Granchio del Fango",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\granchio-del-fango.json"
+      },
+      {
+        "unit": "Netch (Betty)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\netch-(betty).json"
+      },
+      {
+        "unit": "Netch (Bull)",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\netch-(bull).json"
+      },
+      {
+        "unit": "Nix-Hound",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\nix-hound.json"
+      },
+      {
+        "unit": "Nobile Bretone",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\nobile-bretone.json"
+      },
+      {
+        "unit": "Pesce Carnefice",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\pesce-carnefice.json"
+      },
+      {
+        "unit": "Pirata",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\pirata.json"
+      },
+      {
+        "unit": "Ragno Gigante",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\ragno-gigante.json"
+      },
+      {
+        "unit": "Schiavista Dunmer",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\schiavista-dunmer.json"
+      },
+      {
+        "unit": "Scrib",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\scrib.json"
+      },
+      {
+        "unit": "Shadowscale Argoniano",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\shadowscale-argoniano.json"
+      },
+      {
+        "unit": "Sicario Camonna Tong",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\sicario-camonna-tong.json"
+      },
+      {
+        "unit": "Stregone Bretone",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\stregone-bretone.json"
+      },
+      {
+        "unit": "Stregone Dunmer",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\stregone-dunmer.json"
+      },
+      {
+        "unit": "Studioso Altmer",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\studioso-altmer.json"
+      },
+      {
+        "unit": "Tigre denti a Sciabola",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-5-v2\\authored\\dossiers\\tigre-denti-a-sciabola.json"
+      }
+    ]
+  },
+  "simulations": [
+    {
+      "unit": "Alit",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Assassino della Confraternita Oscura",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 33,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Chaurus",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Contrabbandiere",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Granchio del Fango",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Netch (Betty)",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Netch (Bull)",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Nix-Hound",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Nobile Bretone",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 22,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Pesce Carnefice",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Pirata",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 24,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Ragno Gigante",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Schiavista Dunmer",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Scrib",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Shadowscale Argoniano",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 31,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Sicario Camonna Tong",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 20,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Stregone Bretone",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 22,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Stregone Dunmer",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 22,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Studioso Altmer",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 26,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Tigre denti a Sciabola",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    }
+  ]
+}

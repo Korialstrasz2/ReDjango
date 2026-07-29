@@ -1,0 +1,1244 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:979",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      979
+    ],
+    "normalizedName": "scrib",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 979,
+        "levels": [
+          20
+        ],
+        "nome": "Scrib",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            2,
+            "linear"
+          ],
+          "resistenza_tot": [
+            2,
+            "linear"
+          ],
+          "velocita_tot": [
+            2,
+            "linear"
+          ],
+          "agilita_tot": [
+            3,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            3,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            3,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "-1"
+          ],
+          "res_taglio_tot": [
+            5,
+            "1"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            4,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            2,
+            "linear"
+          ],
+          "attacco_tot": [
+            3,
+            "linear"
+          ],
+          "difesa_tot": [
+            3,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 19,
+        "skill_2_id": 11,
+        "skill_3_id": 26,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 106,
+        "unitId": 979,
+        "name": "Scrib",
+        "description": "Gli Scrib vivono nelle colonie Kwama di Morrowind, soprattutto nelle miniere di uova e nei tunnel dove la vita sotterranea segue ritmi propri. Sono piccoli, molli e molto comuni, spesso visti dai minatori come una presenza quasi domestica. Per molti Dunmer rappresentano tanto una risorsa alimentare quanto un segno familiare della vita quotidiana. Sono docili, lenti e poco inclini ad attaccare se non minacciati. Non hanno grande intelligenza individuale, ma sembrano perfettamente inseriti nell'ordine della colonia. La loro esistenza è semplice: nutrirsi, crescere, evitare predatori e contribuire al ciclo dei Kwama. Non sono forti, ma possono difendersi con un morso paralizzante sorprendentemente efficace. La loro carne e la gelatina ricavata dal corpo vengono usate nella cucina e nell'alchimia dunmer. Chi ride troppo di uno Scrib di solito non ha mai provato a essere morso da uno mentre scivola nel fango di una miniera.",
+        "image": "UnitLorePics/Scrib.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 19,
+        "name": "Nuvola di Spore",
+        "description": "Rilascia una nuvola di spore tossiche.",
+        "effect": "Tutti i nemici entro 2 esagoni devono effettuare un controllo di resistenza o essere avvelenati e accecati per 2 turni.",
+        "cost": "6 PA, 6 EN.",
+        "boost": "Per 5 POW, aumenta la portata a 3 esagoni."
+      },
+      {
+        "sourceId": 11,
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante.",
+        "effect": "Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo",
+        "cost": "5 PA, 3 EN.",
+        "boost": "Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni."
+      },
+      {
+        "sourceId": 26,
+        "name": "Stridio Sonico",
+        "description": "Emette uno stridio acuto che disorienta i nemici.",
+        "effect": "I nemici entro 4 esagoni devono effettuare un controllo di concentrazione o essere storditi per 1 turno.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, riduce l'attacco dei nemici colpiti di 2 per 2 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Scrib",
+    "sourceIds": [
+      979
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga livello 20 viene distribuita senza confonderlo con le caste Operaio o Guerriero.",
+    "fantasy": "Piccola creatura Kwama che difende i tunnel con spore, secrezioni gelide e stridio.",
+    "combatStory": "Disturba gruppi con spore e suono, riduce PA e dipende dalla colonia per sopravvivere.",
+    "siblings": [
+      {
+        "unit": "Operaio Kwama",
+        "relation": "nearest",
+        "mustDifferBy": "Controllo di gruppo invece di rigenerazione operaia."
+      },
+      {
+        "unit": "Guerriero Kwama",
+        "relation": "same-colony",
+        "mustDifferBy": "Supporto fragile invece di carica difensiva."
+      },
+      {
+        "unit": "Nix-Hound",
+        "relation": "contrast",
+        "mustDifferBy": "Creatura di colonia lenta, non predatore mobile."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "difesa della colonia",
+        "expressedBy": "spore e stridio"
+      },
+      {
+        "axis": "fragilità Scrib",
+        "expressedBy": "PF e forza basse"
+      }
+    ],
+    "must": [
+      "Kwama",
+      "spore",
+      "stridio",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "Carica",
+      "rigenerazione",
+      "Furia"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Scrib di colonia",
+      "5": "spore",
+      "10": "stridio",
+      "15": "iniezione gelida",
+      "20": "Scrib maturo"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Scrib",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Nuvola di Spore presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "Carica",
+      "rigenerazione",
+      "Furia"
+    ],
+    "differsFrom": {
+      "Operaio Kwama": "Controllo di gruppo invece di rigenerazione operaia.",
+      "Guerriero Kwama": "Supporto fragile invece di carica difensiva."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:979"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:979"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Scrib",
+    "category": "Natura",
+    "archetypeDescription": "Supporto biologico Kwama fragile con controllo PA e stridio sonico.",
+    "loreDescription": "Gli Scrib vivono nelle colonie Kwama di Morrowind, soprattutto nelle miniere di uova e nei tunnel dove la vita sotterranea segue ritmi propri. Sono piccoli, molli e molto comuni, spesso visti dai minatori come una presenza quasi domestica. Per molti Dunmer rappresentano tanto una risorsa alimentare quanto un segno familiare della vita quotidiana. Sono docili, lenti e poco inclini ad attaccare se non minacciati. Non hanno grande intelligenza individuale, ma sembrano perfettamente inseriti nell'ordine della colonia. La loro esistenza è semplice: nutrirsi, crescere, evitare predatori e contribuire al ciclo dei Kwama. Non sono forti, ma possono difendersi con un morso paralizzante sorprendentemente efficace. La loro carne e la gelatina ricavata dal corpo vengono usate nella cucina e nell'alchimia dunmer. Chi ride troppo di uno Scrib di solito non ha mai provato a essere morso da uno mentre scivola nel fango di una miniera.",
+    "notes": "Batch 5 v2: conversione Elder [979]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-19",
+        "name": "Nuvola di Spore",
+        "description": "Tutti i nemici entro 2 esagoni subiscono danni Puro dalle spore e perdono PA nel turno successivo; nessun nuovo status o tipo di danno viene introdotto.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 6
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-11",
+        "name": "Inietta veleno gelido",
+        "description": "Dopo un attacco riuscito, il bersaglio subisce danni da Gelo e perde PA nel turno successivo. Usa soltanto il tipo Gelo e la risorsa PA già implementati.",
+        "minLevel": 9,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-26",
+        "name": "Stridio Sonico",
+        "description": "Emette uno stridio acuto che disorienta i nemici. I nemici entro 4 esagoni devono effettuare un controllo di concentrazione o essere storditi per 1 turno. Boost Elder: Per 5 POW, riduce l'attacco dei nemici colpiti di 2 per 2 turni.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 7
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:9225ffbe8020a8e76e6c7d49bb7b3d21f04ee394fe0541cdf66cd48bd7b7fccb",
+  "charterHash": "sha256:33200c692e31572e68f5e5858b17c0358dfb0b404de85d856fb2b701cf3d4b5a",
+  "converterVersion": "elder-unit-charter-v2-batch5",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga livello 20 viene distribuita senza confonderlo con le caste Operaio o Guerriero."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Nuvola di Spore', 'Inietta veleno gelido']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:d101fd1669db2a5a104654cb36a1d0ea26e1154f5b90bfb66794e5648cc6cad9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:b89d5f8392e3dc7f9afeb5e22f4ed40b5b962964727987230c78e72bf59ed50a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:f9c4fea1557a563c43f5fbd48fdc26ee0d91db4e5e9cc9d83983bbf84da829a3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:dcec5a616508cbe22d20eec485719bf8d041af7b3adae595510fbed520808811",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:692b18cbc0f5e6da22f7703ce15f87c157b382b03b52e0a17409c5fce23f59e6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Nuvola di Spore",
+          "Inietta veleno gelido",
+          "Stridio Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Scrib",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch5-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T09:47:56.992038+00:00",
+    "notes": "Standing authorization from Ale; final 10 humanoids and 10 creatures reviewed against the conversion guide and best practices. All 20 pass static gates and 800 deterministic previews. Poison mechanics use only supported vocabulary; Netch flight and Studioso Altmer specialization were explicitly reviewed."
+  }
+}

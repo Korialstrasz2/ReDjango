@@ -50,11 +50,12 @@ from backend.core.campaigns import (
     update_shared_campaign_notes,
 )
 from backend.core.item_selectors import item_catalog_payload
-from backend.core.item_services import archive_item, create_item, save_compared_item, update_item
+from backend.core.item_services import archive_item, create_item, save_compared_item, set_items_special, update_item
 from backend.core.management_selectors import character_management_detail, character_management_overview
 from backend.core.management_services import (
     attach_orphan_record,
     delete_managed_character,
+    delete_orphan_record,
     require_game_manager,
     update_managed_character,
 )
@@ -353,12 +354,30 @@ def managed_shops(request: HttpRequest):
     response={200: ItemCatalogEnvelopeSchema, 403: ErrorEnvelopeSchema},
     tags=["management"],
 )
-def managed_items(request: HttpRequest, query: str = "", limit: int = 1000):
+def managed_items(
+    request: HttpRequest,
+    query: str = "",
+    limit: int = 100,
+    offset: int = 0,
+    type_1: str = "",
+    region: str = "",
+    state: str = "",
+    special: str = "",
+):
     user, giocatore = _identity(request)
     require_game_manager(user, giocatore)
     return _envelope(
         request,
-        item_catalog_payload(query.strip(), include_archived=True, limit=limit),
+        item_catalog_payload(
+            query.strip(),
+            include_archived=True,
+            limit=limit,
+            offset=offset,
+            type_1=type_1.strip(),
+            region=region.strip(),
+            state=state.strip(),
+            special=None if special not in {"special", "standard"} else special == "special",
+        ),
     )
 
 
@@ -367,10 +386,10 @@ def managed_items(request: HttpRequest, query: str = "", limit: int = 1000):
     response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
     tags=["management"],
 )
-def managed_characters(request: HttpRequest, query: str = "", orphan_kind: str = ""):
+def managed_characters(request: HttpRequest, query: str = "", orphan_kind: str = "", campaign: str = ""):
     user, giocatore = _identity(request)
     require_game_manager(user, giocatore)
-    return _envelope(request, character_management_overview(query.strip(), orphan_kind.strip()))
+    return _envelope(request, character_management_overview(query.strip(), orphan_kind.strip(), campaign.strip()))
 
 
 @api.get(
@@ -756,6 +775,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             item = archive_item(user, giocatore, payload["itemId"])
             data = {"item": serialize_item(item, detailed=True), "catalog": item_catalog_payload(include_archived=True)}
             message = "Oggetto archiviato."
+        elif action == "items.setSpecial":
+            updated = set_items_special(user, giocatore, payload.get("itemIds", []), bool(payload.get("special")))
+            data = {"management": {"updated": updated}}
+            message = f"{updated} oggetti aggiornati."
         elif action == "items.compareSave":
             item, created = save_compared_item(
                 user,
@@ -790,6 +813,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             )
             data = {"management": detail}
             message = "Record orfano collegato al personaggio."
+        elif action == "management.characters.deleteOrphan":
+            removed = delete_orphan_record(user, giocatore, payload["kind"], payload["recordId"])
+            data = {"management": character_management_overview()}
+            message = f"{removed['label']} «{removed['name']}» eliminato."
         elif action == "management.characters.delete":
             character_name = delete_managed_character(
                 user,

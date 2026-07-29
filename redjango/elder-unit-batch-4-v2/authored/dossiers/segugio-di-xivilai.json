@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1005",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1005
+    ],
+    "normalizedName": "segugio di xivilai",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1005,
+        "levels": [
+          20
+        ],
+        "nome": "Segugio di Xivilai",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            3,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            4,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "-1"
+          ],
+          "res_perforante_tot": [
+            6,
+            "-1"
+          ],
+          "res_fuoco_tot": [
+            6,
+            "3"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            6,
+            "hi_hi"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            5,
+            "linear"
+          ],
+          "pa_tot": [
+            6,
+            "linear"
+          ],
+          "pf_tot": [
+            4,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            6,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 28,
+        "skill_2_id": 62,
+        "skill_3_id": 54,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 107,
+        "unitId": 1005,
+        "name": "Segugio di Xivilai",
+        "description": "I Segugi di Xivilai si trovano nei reami di Oblivion, dove accompagnano Daedra potenti come bestie da caccia, guardiani o simboli di prestigio. Raramente appaiono a Nirn senza un padrone o senza un rituale abbastanza forte da trascinarli fuori dal loro piano. La loro presenza suggerisce quasi sempre che uno Xivilai o un altro potere daedrico non sia lontano. Sono feroci, fedeli e dominati da un istinto predatorio addestrato alla guerra. Non sono semplici cani mostruosi: capiscono gerarchia, possesso e comando con una chiarezza inquietante. Quando scelgono o ricevono un bersaglio, difficilmente si distraggono. Hanno corpo massiccio, mascelle terribili, resistenza soprannaturale e una velocità sorprendente per la loro stazza. Sono fatti per inseguire, atterrare e trattenere prede abbastanza a lungo perché il padrone possa finirle. Ucciderne uno può essere necessario, ma spesso significa attirare una vendetta ancora peggiore.",
+        "image": "UnitLorePics/Segugio_di_Xivilai.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      },
+      {
+        "sourceId": 62,
+        "name": "Balzo Predatorio",
+        "description": "La creatura si lancia sulla preda con precisione letale.",
+        "effect": "Salta fino a 3 esagoni su una casella adiacente al bersaglio ed esegue un attacco con +3 all'Attacco e 1 reroll per l'attacco.",
+        "cost": "7 PA, 2 EN.",
+        "boost": "Per 5 POW, ottieni 2 reroll, e il raggio può essere di 3 o 4 esagoni."
+      },
+      {
+        "sourceId": 54,
+        "name": "Passo d'Ombra",
+        "description": "Si muove attraverso le ombre per colpire inaspettatamente.",
+        "effect": "Si teletrasporta fino a 5 esagoni e effettua un attacco in mischia con bonus di +3 all'attacco.",
+        "cost": "5 PA, 4 EN.",
+        "boost": "Per 4 POW, l'attacco non può essere parato o bloccato."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Segugio di Xivilai",
+    "sourceIds": [
+      1005
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene estesa mantenendo Mana zero e mobilità innata.",
+    "fantasy": "Predatore daedrico allevato per inseguire, balzare e ricomparire alle spalle della preda.",
+    "combatStory": "Usa Balzo e Passo d'Ombra per negare distanza, poi entra in Furia; non possiede magia offensiva.",
+    "siblings": [
+      {
+        "unit": "Clannfear",
+        "relation": "nearest",
+        "mustDifferBy": "Ombra e inseguimento invece di carica e coda."
+      },
+      {
+        "unit": "Lupo delle Nevi",
+        "relation": "same-role",
+        "mustDifferBy": "Teletrasporto daedrico invece di adattamento naturale."
+      },
+      {
+        "unit": "Crepuscolo Alato",
+        "relation": "contrast",
+        "mustDifferBy": "Terrestre e fisico, non volante e mentale."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "caccia d'ombra",
+        "expressedBy": "Passo d'Ombra e Balzo Predatorio"
+      },
+      {
+        "axis": "ferocia daedrica",
+        "expressedBy": "Furia e chassis fisico"
+      }
+    ],
+    "must": [
+      "Daedra",
+      "balzo",
+      "ombra",
+      "Furia"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "volo",
+      "incantesimi a distanza"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "segugio daedrico",
+      "5": "balzo",
+      "10": "Passo d'Ombra",
+      "15": "Furia",
+      "20": "cacciatore di Xivilai"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Segugio di Xivilai",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Balzo Predatorio e Passo d'Ombra presenti"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "volo",
+      "incantesimi a distanza"
+    ],
+    "differsFrom": {
+      "Clannfear": "Ombra e inseguimento invece di carica e coda.",
+      "Lupo delle Nevi": "Teletrasporto daedrico invece di adattamento naturale."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 61
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1005"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1005"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Segugio di Xivilai",
+    "category": "Daedra",
+    "archetypeDescription": "Segugio Daedra mobile con balzo, ombra e Furia.",
+    "loreDescription": "I Segugi di Xivilai si trovano nei reami di Oblivion, dove accompagnano Daedra potenti come bestie da caccia, guardiani o simboli di prestigio. Raramente appaiono a Nirn senza un padrone o senza un rituale abbastanza forte da trascinarli fuori dal loro piano. La loro presenza suggerisce quasi sempre che uno Xivilai o un altro potere daedrico non sia lontano. Sono feroci, fedeli e dominati da un istinto predatorio addestrato alla guerra. Non sono semplici cani mostruosi: capiscono gerarchia, possesso e comando con una chiarezza inquietante. Quando scelgono o ricevono un bersaglio, difficilmente si distraggono. Hanno corpo massiccio, mascelle terribili, resistenza soprannaturale e una velocità sorprendente per la loro stazza. Sono fatti per inseguire, atterrare e trattenere prede abbastanza a lungo perché il padrone possa finirle. Ucciderne uno può essere necessario, ma spesso significa attirare una vendetta ancora peggiore.",
+    "notes": "Batch 4 v2: conversione Elder [1005]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-62",
+        "name": "Balzo Predatorio",
+        "description": "La creatura si lancia sulla preda con precisione letale. Salta fino a 3 esagoni su una casella adiacente al bersaglio ed esegue un attacco con +3 all'Attacco e 1 reroll per l'attacco. Boost Elder: Per 5 POW, ottieni 2 reroll, e il raggio può essere di 3 o 4 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 7,
+          "energia": 2
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-54",
+        "name": "Passo d'Ombra",
+        "description": "Si muove attraverso le ombre per colpire inaspettatamente. Si teletrasporta fino a 5 esagoni e effettua un attacco in mischia con bonus di +3 all'attacco. Boost Elder: Per 4 POW, l'attacco non può essere parato o bloccato.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 3
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 29
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 18,
+          "level20": 108
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:e64bf3b635ce41b29d5ffb9bd5494216eb5aa764259e7a21da6d15b2068105bb",
+  "charterHash": "sha256:b6fc3d49ae5899c38eb647254c0b55ab89b4feaa2a438511f040964d67ed5353",
+  "converterVersion": "elder-unit-charter-v2-batch4",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene estesa mantenendo Mana zero e mobilità innata."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:891f58eec632265bfd284fbbca3dcf63063988a57adc57eed5b88b42e4d56fcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:5e7cc4b093c69dde341ae33a2ea3a04230316368b5a596036852cee0b270d4ec",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:015698bcad94970671c0fb71d723528e9b1a753bc15151ca401b6d8af70159ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:41d9e57094c62c406f9b27bf5b3b9af53f5a76fdefee827990514c71b399ec55",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:690f7e4bc388d5085761c5043401dce091075e4c5d8cdd6ab008a81cda536484",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Furia",
+          "Balzo Predatorio",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Segugio di Xivilai",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch4-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:59:53.280132+00:00",
+    "notes": "Standing authorization: user requested 20 more Units and explicitly asked for careful, thorough adherence to the V2 guide, best practices, and sibling coherence. Applied only after final subrace constraints, 20/20 static validation, a fresh 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 final review samples."
+  }
+}

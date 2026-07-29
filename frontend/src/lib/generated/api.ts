@@ -1251,6 +1251,36 @@ export interface components {
             weaponConfiguration: {
                 [key: string]: unknown;
             };
+            /**
+             * Total
+             * @default 0
+             */
+            total: number;
+            /**
+             * Offset
+             * @default 0
+             */
+            offset: number;
+            /**
+             * Limit
+             * @default 0
+             */
+            limit: number;
+            /**
+             * Hasmore
+             * @default false
+             */
+            hasMore: boolean;
+            /**
+             * Regions
+             * @default []
+             */
+            regions: string[];
+            /**
+             * Specialcount
+             * @default 0
+             */
+            specialCount: number;
         };
         /** ItemCatalogEnvelopeSchema */
         ItemCatalogEnvelopeSchema: {
@@ -5980,6 +6010,11 @@ export interface operations {
             query?: {
                 query?: string;
                 limit?: number;
+                offset?: number;
+                type_1?: string;
+                region?: string;
+                state?: string;
+                special?: string;
             };
             header?: never;
             path?: never;

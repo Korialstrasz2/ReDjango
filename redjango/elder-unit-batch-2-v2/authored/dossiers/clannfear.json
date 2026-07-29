@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1000",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1000
+    ],
+    "normalizedName": "clannfear",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1000,
+        "levels": [
+          20
+        ],
+        "nome": "Clannfear",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            6,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            3,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            4,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            6,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "1"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "1"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            3,
+            "linear"
+          ],
+          "pa_tot": [
+            6,
+            "linear"
+          ],
+          "pf_tot": [
+            6,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "tier_tot": [
+            8,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 4,
+        "skill_2_id": 16,
+        "skill_3_id": 28,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 35,
+        "unitId": 1000,
+        "name": "Clannfear",
+        "description": "I Clannfear si trovano nei piani di Oblivion e nei luoghi di Nirn dove vengono evocati da congiuratori, cultisti o poteri daedrici. Sono Daedra bestiali, spesso impiegati come guardiani, predatori o strumenti d'assalto. La loro comparsa in un santuario abbandonato o in una rovina corrotta è quasi sempre segno che qualcuno ha chiamato forze sbagliate. Sono aggressivi, territoriali e poco inclini a qualsiasi forma di esitazione. Non possiedono la disciplina dei Dremora, ma hanno l'istinto feroce di una bestia nata per l'attacco. Obbediscono quando sono costretti o addestrati magicamente, ma restano creature pericolose anche per chi le ha evocate. Il loro corpo ricorda un rettile bipede, con testa corazzata, artigli e una velocità sorprendente. Attaccano con balzi, morsi e colpi improvvisi, cercando di travolgere il bersaglio prima che possa reagire. Sono particolarmente pericolosi contro avversari isolati o presi alla sprovvista.",
+        "image": "UnitLorePics/Clannfear.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 4,
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza.",
+        "effect": "Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia.",
+        "cost": "6 PA, 3 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni."
+      },
+      {
+        "sourceId": 16,
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici.",
+        "effect": "Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA.",
+        "cost": "6 PA, 4 EN.",
+        "boost": "Per 4 POW, +4 atk, +30% danno"
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Clannfear",
+    "sourceIds": [
+      1000
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene resa giocabile 1-20 senza aggiungere magie.",
+    "fantasy": "Predatore daedrico bipede che spezza la linea con cranio e coda.",
+    "combatStory": "Carica il bersaglio, usa la coda contro chi lo circonda e cresce in Furia senza magia.",
+    "siblings": [
+      {
+        "unit": "Cinghiale",
+        "relation": "nearest",
+        "mustDifferBy": "Più agile e con coda, oltre a natura daedrica."
+      },
+      {
+        "unit": "Daedroth",
+        "relation": "same-origin",
+        "mustDifferBy": "Predatore rapido non caster, meno massiccio."
+      },
+      {
+        "unit": "Crepuscolo Alato",
+        "relation": "contrast",
+        "mustDifferBy": "Terrestre e fisico, non volante e mentale."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "cranio e coda",
+        "expressedBy": "Carica e Colpo di Coda"
+      },
+      {
+        "axis": "predatore daedrico",
+        "expressedBy": "velocità/forza e res_fuoco"
+      }
+    ],
+    "must": [
+      "carica",
+      "coda",
+      "Furia",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "incantesimi",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "predatore rapido",
+      "5": "coda online",
+      "10": "Furia",
+      "15": "cacciatore daedrico",
+      "20": "Clannfear maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Clannfear",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "mana 0 e res_fuoco positiva"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "incantesimi",
+      "volo"
+    ],
+    "differsFrom": {
+      "Cinghiale": "Più agile e con coda, oltre a natura daedrica.",
+      "Daedroth": "Predatore rapido non caster, meno massiccio."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 82
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1000"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1000"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Clannfear",
+    "category": "Daedra",
+    "archetypeDescription": "Predatore daedrico rapido da carica e controllo ravvicinato.",
+    "loreDescription": "I Clannfear si trovano nei piani di Oblivion e nei luoghi di Nirn dove vengono evocati da congiuratori, cultisti o poteri daedrici. Sono Daedra bestiali, spesso impiegati come guardiani, predatori o strumenti d'assalto. La loro comparsa in un santuario abbandonato o in una rovina corrotta è quasi sempre segno che qualcuno ha chiamato forze sbagliate. Sono aggressivi, territoriali e poco inclini a qualsiasi forma di esitazione. Non possiedono la disciplina dei Dremora, ma hanno l'istinto feroce di una bestia nata per l'attacco. Obbediscono quando sono costretti o addestrati magicamente, ma restano creature pericolose anche per chi le ha evocate. Il loro corpo ricorda un rettile bipede, con testa corazzata, artigli e una velocità sorprendente. Attaccano con balzi, morsi e colpi improvvisi, cercando di travolgere il bersaglio prima che possa reagire. Sono particolarmente pericolosi contro avversari isolati o presi alla sprovvista.",
+    "notes": "Batch 2 v2: conversione Elder [1000]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-4",
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza. Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia. Boost Elder: Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-16",
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici. Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA. Boost Elder: Per 4 POW, +4 atk, +30% danno",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 29
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "tier",
+          "profile": "high",
+          "level1": 5,
+          "level20": 15
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:517c085452ddc6b4588a480f223838f6a0f2de4f573d9d95f10502fc57a0ac5d",
+  "charterHash": "sha256:b3a9c7ac1e76cbcca28e88bcce3a684728da50619d6ad9e0905e64b882eeae76",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene resa giocabile 1-20 senza aggiungere magie."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:bff7473754ea7a8cedace536da93ce21d3c5d536d4d3207c1d67b80eb80840b7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:840ab7d867c047cb16036d4d0e079a0bebea57c0a53ae3375e1bb0461b9ec92c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:3fe77d4690c4ea162d5599637a1e6a983c0e00c184d0e2e34f321a781de2e5e8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:e9af2db52bf7d443139afa5508359b86ff464d1e8dc720b6c193d3536c2ab094",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:4d391f96a95b8f02f58dd79ae11adb6a4f51c058ad2814dfda024caafb2e9ae3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Clannfear",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

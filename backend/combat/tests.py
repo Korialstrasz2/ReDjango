@@ -1221,6 +1221,27 @@ class UnitGenerationTests(CombatTestCase):
         self.assertIn(character.razza_2, {"Retaggio Mago", "Retaggio Guerriero", "Nobile di Vvardenfell", "Esule di Solstheim", "Servo del Tribunale"})
         self.assertEqual(character.metadata["unitGeneration"]["race"]["allowed"], ["Dunmer"])
 
+    def test_humanoid_unit_can_lock_dremora_to_rank_and_file_subraces(self):
+        self.perk_catalog()
+        unit, _catalog = self.humanoid_unit()
+        unit.generation_rules = {
+            **unit.generation_rules,
+            "allowedRaces": ["Dremora"],
+            "allowedSubraces": ["Churl", "Caitiff", "Kynval"],
+        }
+        unit.save(update_fields=["generation_rules", "updated_at"])
+
+        characters = [
+            create_unit_character(unit, 1, variant)
+            for variant in ("dremora-a", "dremora-b", "dremora-c")
+        ]
+
+        self.assertEqual({character.razza_1 for character in characters}, {"Dremora"})
+        self.assertTrue(
+            {character.razza_2 for character in characters}
+            <= {"Churl", "Caitiff", "Kynval"}
+        )
+
     def test_same_variant_is_reproducible_and_combat_action_attaches_the_result(self):
         self.perk_catalog()
         unit, catalog = self.humanoid_unit()

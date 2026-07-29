@@ -1,0 +1,1240 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:977",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      977
+    ],
+    "normalizedName": "pesce carnefice",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 977,
+        "levels": [
+          20
+        ],
+        "nome": "Pesce Carnefice",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            3,
+            "linear"
+          ],
+          "resistenza_tot": [
+            4,
+            "linear"
+          ],
+          "velocita_tot": [
+            6,
+            "linear"
+          ],
+          "agilita_tot": [
+            6,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            3,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "2"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-1"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            4,
+            "0"
+          ],
+          "res_elettro_tot": [
+            3,
+            "linear"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            4,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            3,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            3,
+            "linear"
+          ],
+          "attacco_tot": [
+            4,
+            "linear"
+          ],
+          "difesa_tot": [
+            3,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 25,
+        "skill_2_id": 28,
+        "skill_3_id": 50,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 94,
+        "unitId": 977,
+        "name": "Pesce Carnefice",
+        "description": "I Pesci Carnefice vivono nei fiumi, nelle paludi e nelle acque costiere di molte province, soprattutto dove la visibilità è scarsa e le rive offrono nascondigli. Sono temuti da pescatori, contrabbandieri e viaggiatori costretti ad attraversare corsi d'acqua infestati. La superficie calma spesso nasconde il loro vero vantaggio. Sono predatori semplici, aggressivi e territoriali. Non possiedono astuzia raffinata, ma reagiscono rapidamente a sangue, movimento e vibrazioni nell'acqua. Una volta iniziato l'attacco, è difficile convincerli a desistere. Hanno denti affilati, mascelle potenti e una rapidità che in acqua li rende molto più pericolosi di quanto sarebbero sulla terra. Possono attaccare in gruppo e mutilare una vittima prima che riesca a raggiungere la riva. Contro di loro, l'errore più comune è pensare che un fiume basso sia un fiume sicuro.",
+        "image": "UnitLorePics/Pesce_Carnefice.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 25,
+        "name": "Morso Infettivo",
+        "description": "Morsi che trasportano una malattia virulenta.",
+        "effect": "Gli attacchi in mischia hanno il 25% di possibilità di infettare il bersaglio con una malattia che riduce la resistenza di 2 per 3 turni.",
+        "cost": "N/A (Passiva).",
+        "boost": "N/A (Passiva)."
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      },
+      {
+        "sourceId": 50,
+        "name": "Divorare",
+        "description": "Consuma un nemico sconfitto per recuperare forze.",
+        "effect": "Può bersagliare solo un nemico caduto; recupera (livello nemico*2) Punti Ferita e guadagna +2 forza per 3 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, recupera anche LV/2 EN e LV/2 POW."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Pesce Carnefice",
+    "sourceIds": [
+      977
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint livello 20 vengono linearizzati senza aumentare la protezione fisica.",
+    "fantasy": "Predatore acquatico che ferisce, indebolisce e divora chi cade nell'acqua.",
+    "combatStory": "Logora con il morso, entra in Furia e recupera solo divorando un nemico già caduto.",
+    "siblings": [
+      {
+        "unit": "Tigre denti a Sciabola",
+        "relation": "nearest",
+        "mustDifferBy": "Predazione acquatica e Divorare invece di balzo e carica."
+      },
+      {
+        "unit": "Nix-Hound",
+        "relation": "same-role",
+        "mustDifferBy": "Mischia pura e recupero su caduto invece di controllo a distanza."
+      },
+      {
+        "unit": "Dreugh",
+        "relation": "contrast",
+        "mustDifferBy": "Animale predatore, non creatura anfibia corazzata."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "predatore acquatico",
+        "expressedBy": "velocità e chassis fragile"
+      },
+      {
+        "axis": "alimentazione brutale",
+        "expressedBy": "Morso, Furia e Divorare"
+      }
+    ],
+    "must": [
+      "morso",
+      "Furia",
+      "Divorare",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "sputo",
+      "Carica",
+      "armatura"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "predatore acquatico",
+      "5": "Furia",
+      "10": "morso debilitante",
+      "15": "Divorare",
+      "20": "carnefice delle acque"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Pesce Carnefice",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Morso Infettivo presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "sputo",
+      "Carica",
+      "armatura"
+    ],
+    "differsFrom": {
+      "Tigre denti a Sciabola": "Predazione acquatica e Divorare invece di balzo e carica.",
+      "Nix-Hound": "Mischia pura e recupero su caduto invece di controllo a distanza."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:977"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:977"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Pesce Carnefice",
+    "category": "Natura",
+    "archetypeDescription": "Predatore acquatico rapido con morso debilitante, Furia e Divorare.",
+    "loreDescription": "I Pesci Carnefice vivono nei fiumi, nelle paludi e nelle acque costiere di molte province, soprattutto dove la visibilità è scarsa e le rive offrono nascondigli. Sono temuti da pescatori, contrabbandieri e viaggiatori costretti ad attraversare corsi d'acqua infestati. La superficie calma spesso nasconde il loro vero vantaggio. Sono predatori semplici, aggressivi e territoriali. Non possiedono astuzia raffinata, ma reagiscono rapidamente a sangue, movimento e vibrazioni nell'acqua. Una volta iniziato l'attacco, è difficile convincerli a desistere. Hanno denti affilati, mascelle potenti e una rapidità che in acqua li rende molto più pericolosi di quanto sarebbero sulla terra. Possono attaccare in gruppo e mutilare una vittima prima che riesca a raggiungere la riva. Contro di loro, l'errore più comune è pensare che un fiume basso sia un fiume sicuro.",
+    "notes": "Batch 5 v2: conversione Elder [977]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-25",
+        "name": "Morso Infettivo",
+        "description": "Passiva. Dopo un morso riuscito, il bersaglio subisce una riduzione temporanea di Resistenza; la penalità usa una variabile già supportata.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 4,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-50",
+        "name": "Divorare",
+        "description": "Consuma un nemico sconfitto per recuperare forze. Può bersagliare solo un nemico caduto; recupera (livello nemico*2) Punti Ferita e guadagna +2 forza per 3 turni. Boost Elder: Per 5 POW, recupera anche LV/2 EN e LV/2 POW.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -3,
+          "level20": 1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "low",
+          "level1": 3,
+          "level20": 9
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:c2e623167d66ae33ab8af13a79edae1ba4fc53f4652a36f228ae25db6a1f79fc",
+  "charterHash": "sha256:17e14221bc805ce275221755c8853a20bdbc66dcb2007d5d9a4f9262fb7122a8",
+  "converterVersion": "elder-unit-charter-v2-batch5",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Morso Infettivo"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint livello 20 vengono linearizzati senza aumentare la protezione fisica."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Morso Infettivo']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:4fe60705f10e3aea42ab7ea092d29e63640db7894fb7bf1b7e221c09a786264f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:889cc721cffe000aba143cc582760adc7d7ac8e77c6ff7251a29c7facd5c9ab6",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:fa84b2a286578fcd5785817d9425517b45c55318e3236d5ca748ee9c92c1b352",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:1f375697510d119fb6c6017e3907ab63f02416d6ad93ecfccc473e5f107a5ad3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:1eb9f3e36500ffa3f1bf0ef9146dc6724572c96f4e244414a24a34a1d7a151a9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Morso Infettivo",
+          "Furia",
+          "Divorare"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Pesce Carnefice",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch5-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T09:47:56.992038+00:00",
+    "notes": "Standing authorization from Ale; final 10 humanoids and 10 creatures reviewed against the conversion guide and best practices. All 20 pass static gates and 800 deterministic previews. Poison mechanics use only supported vocabulary; Netch flight and Studioso Altmer specialization were explicitly reviewed."
+  }
+}

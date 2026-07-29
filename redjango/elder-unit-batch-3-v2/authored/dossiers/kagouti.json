@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:974",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      974
+    ],
+    "normalizedName": "kagouti",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 974,
+        "levels": [
+          20
+        ],
+        "nome": "Kagouti",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            6,
+            "linear"
+          ],
+          "agilita_tot": [
+            5,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "2"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-1"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "1"
+          ],
+          "res_gelo_tot": [
+            5,
+            "-1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "2"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "1"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 4,
+        "skill_2_id": 25,
+        "skill_3_id": 28,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 68,
+        "unitId": 974,
+        "name": "Kagouti",
+        "description": "I Kagouti vivono nelle terre aride e nelle distese selvagge di Morrowind, dove ceneri, pietra e scarsa vegetazione favoriscono predatori robusti e aggressivi. Sono particolarmente temuti da viaggiatori, pastori di guar e tribù ashlander che devono attraversare territori aperti. La loro presenza è spesso annunciata troppo tardi, quando la carica è già partita. Sono territoriali, irritabili e molto più audaci di molte altre bestie. Non sempre attaccano per fame: a volte basta invadere il loro spazio o sembrare una minaccia. Gli Ashlander li rispettano come creature dure della terra dura, ma questo rispetto non impedisce di cacciarli quando serve. Hanno corpo possente, zampe forti e una testa adatta a caricare e mordere con violenza. La loro pelle è resistente, le zanne sono apprezzate come trofei e parti del corpo possono avere usi alchemici o artigianali. In campo aperto sono pericolosi perché possono chiudere rapidamente la distanza e travolgere un avversario impreparato.",
+        "image": "UnitLorePics/Kagouti.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 4,
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza.",
+        "effect": "Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia.",
+        "cost": "6 PA, 3 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni."
+      },
+      {
+        "sourceId": 25,
+        "name": "Morso Infettivo",
+        "description": "Morsi che trasportano una malattia virulenta.",
+        "effect": "Gli attacchi in mischia hanno il 25% di possibilità di infettare il bersaglio con una malattia che riduce la resistenza di 2 per 3 turni.",
+        "cost": "N/A (Passiva).",
+        "boost": "N/A (Passiva)."
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Kagouti",
+    "sourceIds": [
+      974
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene estesa mantenendo Mana zero e debolezze elementali.",
+    "fantasy": "Predatore territoriale delle terre di cenere, costruito per travolgere e lacerare.",
+    "combatStory": "Carica, infetta col morso e usa Furia quando lo scontro non termina subito.",
+    "siblings": [
+      {
+        "unit": "Guar",
+        "relation": "nearest",
+        "mustDifferBy": "Predazione e furia invece di utilità da soma."
+      },
+      {
+        "unit": "Cinghiale",
+        "relation": "same-role",
+        "mustDifferBy": "Morso infettivo e chassis alieno invece di zanne."
+      },
+      {
+        "unit": "Clannfear",
+        "relation": "contrast",
+        "mustDifferBy": "Fauna di Morrowind, non Daedra."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "carica territoriale",
+        "expressedBy": "forza/velocità e Carica"
+      },
+      {
+        "axis": "ferocia ashlander",
+        "expressedBy": "Morso Infettivo e Furia"
+      }
+    ],
+    "must": [
+      "carica",
+      "morso",
+      "Furia",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "magia",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "predatore delle ceneri",
+      "5": "carica",
+      "10": "morso",
+      "15": "Furia",
+      "20": "Kagouti dominante"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Kagouti",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "mana 0 e res_gelo negativa"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "magia",
+      "volo"
+    ],
+    "differsFrom": {
+      "Guar": "Predazione e furia invece di utilità da soma.",
+      "Cinghiale": "Morso infettivo e chassis alieno invece di zanne."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:974"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:974"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Kagouti",
+    "category": "Animale",
+    "archetypeDescription": "Bestia massiccia da carica, morso e furia senza Mana.",
+    "loreDescription": "I Kagouti vivono nelle terre aride e nelle distese selvagge di Morrowind, dove ceneri, pietra e scarsa vegetazione favoriscono predatori robusti e aggressivi. Sono particolarmente temuti da viaggiatori, pastori di guar e tribù ashlander che devono attraversare territori aperti. La loro presenza è spesso annunciata troppo tardi, quando la carica è già partita. Sono territoriali, irritabili e molto più audaci di molte altre bestie. Non sempre attaccano per fame: a volte basta invadere il loro spazio o sembrare una minaccia. Gli Ashlander li rispettano come creature dure della terra dura, ma questo rispetto non impedisce di cacciarli quando serve. Hanno corpo possente, zampe forti e una testa adatta a caricare e mordere con violenza. La loro pelle è resistente, le zanne sono apprezzate come trofei e parti del corpo possono avere usi alchemici o artigianali. In campo aperto sono pericolosi perché possono chiudere rapidamente la distanza e travolgere un avversario impreparato.",
+    "notes": "Batch 3 v2: conversione Elder [974]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-4",
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza. Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia. Boost Elder: Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-25",
+        "name": "Morso Infettivo",
+        "description": "Morsi che trasportano una malattia virulenta. Gli attacchi in mischia hanno il 25% di possibilità di infettare il bersaglio con una malattia che riduce la resistenza di 2 per 3 turni. Boost Elder: N/A (Passiva).",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:7a9b12931a92ba5aceca2949498b6500873c9227a293a7cec3be0ab6a8ca3705",
+  "charterHash": "sha256:c8210dcb307885c4de934b0ad3bc0f768100cbd868efd50c4e2c57182cdc6fb4",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene estesa mantenendo Mana zero e debolezze elementali."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:f8d4aba9c3aa57b9a4e1b84f92f426a997b2389ec5f81b7c4a41457305384430",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:2734bdd85392b50ad892fa533b854d4e554c5eb31d169a505155e660009fa4ff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:93537ea997ddcc8f35f911084974cd422a5f7fb5185c3cb38b4ec812ee1acefe",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:ff187f49c2bb09ae82f4c90617e49f244f45446a681b0b101e137ffe60d76548",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:88a3d1edc1c0e8e84b588433337f6c78ab40bdd1b612849641dc8434d853c12a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Morso Infettivo",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Kagouti",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

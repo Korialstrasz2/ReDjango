@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:998",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      998
+    ],
+    "normalizedName": "hunger",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 998,
+        "levels": [
+          20
+        ],
+        "nome": "Hunger",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            6,
+            "linear"
+          ],
+          "resistenza_tot": [
+            5,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            5,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            6,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            4,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            6,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "linear"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "linear"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            5,
+            "linear"
+          ],
+          "pa_tot": [
+            6,
+            "linear"
+          ],
+          "pf_tot": [
+            5,
+            "linear"
+          ],
+          "mana_tot": [
+            6,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            6,
+            "linear"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            6,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 18,
+        "skill_2_id": 36,
+        "skill_3_id": 25,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 67,
+        "unitId": 998,
+        "name": "Hunger",
+        "description": "Gli Hunger sono Daedra famelici associati soprattutto a Boethiah e ad alcuni reami inquieti dell'Oblivion, anche se possono apparire a Nirn tramite evocazioni o varchi instabili. Le storie dunmer li descrivono come creature da incubo, emerse da luoghi dove fame, predazione e disprezzo per la debolezza diventano forma vivente. Non sono comuni, e chi li evoca spesso sopravvaluta la propria capacità di controllarli. Sono crudeli, voraci e dotati di un'intelligenza bestiale ma non stupida. Osservano la preda con un desiderio che sembra fisico e spirituale insieme, come se volessero consumare non solo carne ma forza, coraggio e volontà. La loro presenza mette a disagio perché comunica fame pura, senza bisogno di parole. Hanno arti lunghi, artigli, lingua prensile e capacità innaturali legate al drenaggio della forza vitale. Sono rapidi, sgradevoli da affrontare da vicino e spesso dotati di poteri debilitanti. Un Hunger non cerca uno scontro onorevole: cerca il momento in cui la vittima è più vulnerabile.",
+        "image": "UnitLorePics/Hunger.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 18,
+        "name": "Sottrai Vita",
+        "description": "Draga l'energia vitale dal bersaglio.",
+        "effect": "Riduce il bersaglio di (2d6 + livello) Punti Ferita e cura la creatura dello stesso ammontare.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d8."
+      },
+      {
+        "sourceId": 36,
+        "name": "Sottrazione Spirituale",
+        "description": "Assorbe energia spirituale dai nemici.",
+        "effect": "Infligge (2d6 + livello) danni e riduce la saggezza del bersaglio di 2 per 2 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 4 POW, colpisce fino a 2 bersagli entro la portata."
+      },
+      {
+        "sourceId": 25,
+        "name": "Morso Infettivo",
+        "description": "Morsi che trasportano una malattia virulenta.",
+        "effect": "Gli attacchi in mischia hanno il 25% di possibilità di infettare il bersaglio con una malattia che riduce la resistenza di 2 per 3 turni.",
+        "cost": "N/A (Passiva).",
+        "boost": "N/A (Passiva)."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Hunger",
+    "sourceIds": [
+      998
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve vengono linearizzate preservando velocità e risorse magiche.",
+    "fantasy": "Daedra emaciato che trasforma ogni contatto in sottrazione di vita e spirito.",
+    "combatStory": "Chiude rapidamente la distanza, morde e drena risorse per sostenere una pressione prolungata.",
+    "siblings": [
+      {
+        "unit": "Daedroth",
+        "relation": "nearest",
+        "mustDifferBy": "Drenaggio e velocità invece di massa e fuoco."
+      },
+      {
+        "unit": "Clannfear",
+        "relation": "same-origin",
+        "mustDifferBy": "Sostentamento soprannaturale invece di carica."
+      },
+      {
+        "unit": "Fantasma",
+        "relation": "contrast",
+        "mustDifferBy": "Predatore corporeo, non difesa incorporea."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "fame daedrica",
+        "expressedBy": "Sottrai Vita/Sottrazione Spirituale"
+      },
+      {
+        "axis": "predatore emaciato",
+        "expressedBy": "velocità e Morso Infettivo"
+      }
+    ],
+    "must": [
+      "drenaggio",
+      "morso",
+      "Mana",
+      "velocità"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "fuoco dominante",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "predatore famelico",
+      "5": "drenaggio vitale",
+      "10": "drenaggio spirituale",
+      "15": "pressione sostenuta",
+      "20": "Hunger maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Hunger",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "due azioni di sottrazione presenti"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "fuoco dominante",
+      "volo"
+    ],
+    "differsFrom": {
+      "Daedroth": "Drenaggio e velocità invece di massa e fuoco.",
+      "Clannfear": "Sostentamento soprannaturale invece di carica."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 72
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:998"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:998"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Hunger",
+    "category": "Daedra",
+    "archetypeDescription": "Predatore Daedra rapido con doppio drenaggio e morso infettivo.",
+    "loreDescription": "Gli Hunger sono Daedra famelici associati soprattutto a Boethiah e ad alcuni reami inquieti dell'Oblivion, anche se possono apparire a Nirn tramite evocazioni o varchi instabili. Le storie dunmer li descrivono come creature da incubo, emerse da luoghi dove fame, predazione e disprezzo per la debolezza diventano forma vivente. Non sono comuni, e chi li evoca spesso sopravvaluta la propria capacità di controllarli. Sono crudeli, voraci e dotati di un'intelligenza bestiale ma non stupida. Osservano la preda con un desiderio che sembra fisico e spirituale insieme, come se volessero consumare non solo carne ma forza, coraggio e volontà. La loro presenza mette a disagio perché comunica fame pura, senza bisogno di parole. Hanno arti lunghi, artigli, lingua prensile e capacità innaturali legate al drenaggio della forza vitale. Sono rapidi, sgradevoli da affrontare da vicino e spesso dotati di poteri debilitanti. Un Hunger non cerca uno scontro onorevole: cerca il momento in cui la vittima è più vulnerabile.",
+    "notes": "Batch 3 v2: conversione Elder [998]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-18",
+        "name": "Sottrai Vita",
+        "description": "Draga l'energia vitale dal bersaglio. Riduce il bersaglio di (2d6 + livello) Punti Ferita e cura la creatura dello stesso ammontare. Boost Elder: Per 5 POW, aumenta i dadi del danno a d8.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-36",
+        "name": "Sottrazione Spirituale",
+        "description": "Assorbe energia spirituale dai nemici. Infligge (2d6 + livello) danni e riduce la saggezza del bersaglio di 2 per 2 turni. Boost Elder: Per 4 POW, colpisce fino a 2 bersagli entro la portata.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-25",
+        "name": "Morso Infettivo",
+        "description": "Morsi che trasportano una malattia virulenta. Gli attacchi in mischia hanno il 25% di possibilità di infettare il bersaglio con una malattia che riduce la resistenza di 2 per 3 turni. Boost Elder: N/A (Passiva).",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "medium",
+          "level1": 1,
+          "level20": 3
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 29
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:650e10621f0c71ae59b721ffe2ab83ca7037d84ee3f277f687f5d9c94fb77df6",
+  "charterHash": "sha256:94c46bda64e68e5275930f7f49fffbc4cde15b3eb33a419da81fa7e21b175073",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve vengono linearizzate preservando velocità e risorse magiche."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:86447b71eb87c7904efac09ceafd2c4f15b671b0cf8e53557d55cf6a20522267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:b2fa7a4f806b23908d8c3b3cae207ab08e22025b43f0e895bd2c8bbb7b306bc4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:5f01c4f233d5fcd4bad83c09482d07d3f4bcd65feac4ebcd795a2a1c7d27f6bd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:dcacd17f2453fdb6eefa2bbdf0d7a69323075e9c6a9b7c812209f8d81a0a418d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:46763b6fa6433ebc1510c4fcdf779a802219b5e22b988640b333716f2eb62e47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sottrai Vita",
+          "Sottrazione Spirituale",
+          "Morso Infettivo"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Hunger",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

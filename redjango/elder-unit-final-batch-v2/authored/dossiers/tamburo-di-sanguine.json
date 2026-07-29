@@ -1,0 +1,1173 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1051",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1051
+    ],
+    "normalizedName": "tamburo di sanguine",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1051,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Tamburo di Sanguine",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            4,
+            "exponential"
+          ],
+          "mana_tot": [
+            3,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "pa_tot": [
+            7,
+            "linear"
+          ],
+          "ap_tot": [
+            2,
+            "0"
+          ],
+          "tier_tot": [
+            5,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            4,
+            "5"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-2"
+          ],
+          "res_perforante_tot": [
+            3,
+            "-2"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "-2"
+          ],
+          "res_gelo_tot": [
+            4,
+            "-1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "3"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            4,
+            "linear"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            4,
+            "linear"
+          ],
+          "sconto_mana_per_potere_tot": [
+            3,
+            "linear"
+          ],
+          "sconto_pa_per_potere_tot": [
+            3,
+            "linear"
+          ]
+        },
+        "razza": "entità",
+        "scudo": [],
+        "skill_1_id": 149,
+        "skill_2_id": 150,
+        "skill_3_id": 151,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 125,
+        "unitId": 1051,
+        "name": "Tamburo di Sanguine",
+        "description": "I Tamburi di Sanguine compaiono quasi esclusivamente nei reami del Principe dell'Eccesso, dove musica, desiderio e perdita di controllo sono parti naturali del paesaggio daedrico. Su Tamriel dovrebbero apparire solo in circostanze eccezionali: un culto che li ha evocati, un portale temporaneo o una festa consacrata a Sanguine e ormai fuori controllo. Non sono strumenti esotici da taverna, ma oggetti viventi del suo dominio. Non hanno una personalità umana, ma sembrano possedere un gusto crudele per la tentazione. Il loro ritmo invita, trascina e corrompe, trasformando desideri innocui in impulsi sempre più difficili da governare. Non costringono con catene: fanno sembrare la catena una scelta piacevole. Il loro suono può confondere, eccitare, spingere alla violenza o dissolvere inibizioni e prudenza. Distruggerli richiede forza di volontà oltre che forza fisica, perché avvicinarsi significa esporsi al loro richiamo. Sono perfetti per Sanguine: non uccidono subito, ma convincono le vittime a partecipare alla propria rovina.",
+        "image": "UnitLorePics/Tamburo_di_Sanguine_DkzCUBF.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 149,
+        "name": "Danza continua",
+        "description": "",
+        "effect": "3 PA. In questo turno i personaggi entro 5 metri devono passare CD 8 concentrazione. Se falliscono, passano il turno a danzare e cantare. L'unico controllo che si ha è movimento per metà dei PA, il resto dei PA è ballo.",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 150,
+        "name": "Bacchetta Deviatrice",
+        "description": "",
+        "effect": "2 PA, anche fuori turno. CD 8 Velocità per deviare una freccia o incantesimo in arrivo. Se passa, tira CD 8 Agilità per rispedirlo al lanciatore.",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 151,
+        "name": "Colpo Sonico",
+        "description": "",
+        "effect": "Spende tutto il turno a suonare. Rigenera il 20% dei PF. Infligge 1d10 + lv danno puro entro un metro, 1d6 +lv/2 entro 2 metri, 1d4 + lv/3 entro 3 metri.",
+        "cost": "",
+        "boost": ""
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Tamburo di Sanguine",
+    "sourceIds": [
+      1051
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve 1-20 sono preservate; il controllo viene espresso con Concentrazione e PA.",
+    "fantasy": "Strumento daedrico vivente il cui ritmo trasforma piacere, danza e perdita di controllo in un'arma.",
+    "combatStory": "Sottrae PA in area, devia proiettili e sprigiona un colpo sonico Puro che recupera PF.",
+    "siblings": [
+      {
+        "unit": "Nebbia di zucchero lunare",
+        "relation": "nearest",
+        "mustDifferBy": "Controllo sonoro stazionario invece di foschia mobile."
+      },
+      {
+        "unit": "Bocca Vorace di Sanguine",
+        "relation": "same-plane",
+        "mustDifferBy": "Controllo e deviazione invece di massa frontale."
+      },
+      {
+        "unit": "Anomalia Magica di Sanguine",
+        "relation": "contrast",
+        "mustDifferBy": "Ritmo ad area invece di teletrasporto e Mana burn."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "ritmo corruttore",
+        "expressedBy": "Danza continua e perdita di PA"
+      },
+      {
+        "axis": "strumento vivente",
+        "expressedBy": "Bacchetta Deviatrice e Colpo Sonico"
+      }
+    ],
+    "must": [
+      "Sanguine",
+      "danza",
+      "suono",
+      "Puro"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "equipment",
+      "Skill",
+      "controllo mentale permanente",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "tamburo vivente",
+      "5": "danza",
+      "10": "deviazione",
+      "15": "colpo sonico",
+      "20": "ritmo della rovina"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Tamburo di Sanguine",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Danza continua presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "equipment",
+      "Skill",
+      "controllo mentale permanente",
+      "volo"
+    ],
+    "differsFrom": {
+      "Nebbia di zucchero lunare": "Controllo sonoro stazionario invece di foschia mobile.",
+      "Bocca Vorace di Sanguine": "Controllo e deviazione invece di massa frontale."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 61
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1051"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1051"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Tamburo di Sanguine",
+    "category": "Daedra",
+    "archetypeDescription": "Controllore sonoro di Sanguine con danza, reazione difensiva e onda Puro.",
+    "loreDescription": "I Tamburi di Sanguine compaiono quasi esclusivamente nei reami del Principe dell'Eccesso, dove musica, desiderio e perdita di controllo sono parti naturali del paesaggio daedrico. Su Tamriel dovrebbero apparire solo in circostanze eccezionali: un culto che li ha evocati, un portale temporaneo o una festa consacrata a Sanguine e ormai fuori controllo. Non sono strumenti esotici da taverna, ma oggetti viventi del suo dominio. Non hanno una personalità umana, ma sembrano possedere un gusto crudele per la tentazione. Il loro ritmo invita, trascina e corrompe, trasformando desideri innocui in impulsi sempre più difficili da governare. Non costringono con catene: fanno sembrare la catena una scelta piacevole. Il loro suono può confondere, eccitare, spingere alla violenza o dissolvere inibizioni e prudenza. Distruggerli richiede forza di volontà oltre che forza fisica, perché avvicinarsi significa esporsi al loro richiamo. Sono perfetti per Sanguine: non uccidono subito, ma convincono le vittime a partecipare alla propria rovina.",
+    "notes": "Final Batch v2: conversione Elder [1051]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-149",
+        "name": "Danza continua",
+        "description": "Tutti i nemici entro 5 esagoni effettuano una prova di Concentrazione. Chi fallisce può usare soltanto metà dei propri PA per muoversi nel turno successivo; i PA restanti vengono persi nel ritmo.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 3,
+          "mana": 2
+        },
+        "trigger": "Azione",
+        "duration": "1 turno",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-150",
+        "name": "Bacchetta Deviatrice",
+        "description": "Quando riceve un attacco a distanza, il Tamburo tenta una prova di Velocità per deviarlo; con una successiva prova di Agilità può rispedirlo al lanciatore.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 2
+        },
+        "trigger": "Reazione",
+        "duration": "Istantanea",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-151",
+        "name": "Colpo Sonico",
+        "description": "Area concentrica entro 3 esagoni. Il Tamburo recupera il 20% dei PF e infligge danni Puro, più intensi contro i bersagli adiacenti.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "mana": 4
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 18,
+          "level20": 108
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 32
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 11
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 5
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 3
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:c60f472650da0f6b657c6e5574061d6a7aaf7aab29a1ad23422f70587d0f3332",
+  "charterHash": "sha256:91ef026f1f95c413716707e8f23e5f0add7814f61dcaabc9e7682c10da12696f",
+  "converterVersion": "elder-unit-charter-v2-final",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve 1-20 sono preservate; il controllo viene espresso con Concentrazione e PA."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:d2282d5b1b09691596abe2f2e88a98c70a01801cbf4f5383944c47f3cb9e0b31",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:dd95479f31da436a3a34b9dfe91971a4d30579b95f7d5dc7616f9ee57f7e658e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:4d9d9b6941dcaccc07e2f8f28b4365f6cb1a61639928eb1c8302dd48ab6f984a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:7524c84dc0af49b65f1d5208d03e108bc4b304f65a5f54f02248b2f4a0335186",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:53c7a661a04cc842ca034fee02312b2c1f3ea005ce6ca3d43ad66c0194d7a606",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Danza continua",
+          "Bacchetta Deviatrice",
+          "Colpo Sonico"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Tamburo di Sanguine",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "final-batch-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:50:35.334810+00:00",
+    "notes": "Standing authorization granted by Ale for all remaining coherent Elder unit conversions after prior batch approvals."
+  }
+}

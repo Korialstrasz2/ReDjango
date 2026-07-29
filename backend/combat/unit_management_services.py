@@ -10,7 +10,7 @@ from backend.characters.services.inventory_rules import (
     EQUIPMENT_SLOT_LABELS,
     item_compatible_with_equipment_slot,
 )
-from backend.characters.race_rules import RACE_NAMES
+from backend.characters.race_rules import RACE_NAMES, subraces_for
 from backend.core.api import ApiError
 from backend.core.competence_defaults import default_competence_state
 from backend.core.models import Giocatore, Oggetto, Skill, Unit
@@ -707,6 +707,15 @@ def _clean_unit_values(values: Mapping[str, Any]) -> dict[str, Any]:
                 if str(value).strip()
             )
             if race in RACE_NAMES
+        ],
+        "allowedSubraces": [
+            subrace
+            for subrace in dict.fromkeys(
+                str(value).strip()
+                for value in _list(generation.get("allowedSubraces"))
+                if str(value).strip()
+            )
+            if any(subrace in subraces_for(race) for race in RACE_NAMES)
         ],
         "allowHumanoidStatGrowth": bool(generation.get("allowHumanoidStatGrowth")),
     }

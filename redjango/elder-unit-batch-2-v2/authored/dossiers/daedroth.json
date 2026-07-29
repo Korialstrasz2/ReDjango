@@ -1,0 +1,1303 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:999",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      999
+    ],
+    "normalizedName": "daedroth",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 999,
+        "levels": [
+          20
+        ],
+        "nome": "Daedroth",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            8,
+            "linear"
+          ],
+          "resistenza_tot": [
+            8,
+            "linear"
+          ],
+          "velocita_tot": [
+            5,
+            "linear"
+          ],
+          "agilita_tot": [
+            5,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            6,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            6,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            5,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            6,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_gelo_tot": [
+            4,
+            "linear"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            7,
+            "hi_hi"
+          ],
+          "rd_gelo_tot": [
+            4,
+            "linear"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            6,
+            "linear"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            8,
+            "linear"
+          ],
+          "mana_tot": [
+            6,
+            "linear"
+          ],
+          "energia_tot": [
+            7,
+            "linear"
+          ],
+          "potere_tot": [
+            7,
+            "linear"
+          ],
+          "tier_tot": [
+            8,
+            "linear"
+          ],
+          "attacco_tot": [
+            8,
+            "linear"
+          ],
+          "difesa_tot": [
+            7,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 52,
+        "skill_2_id": 9,
+        "skill_3_id": 16,
+        "skill_4_id": 28,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 45,
+        "unitId": 999,
+        "name": "Daedroth",
+        "description": "I Daedroth si trovano nei piani di Oblivion e nei luoghi di Nirn dove una presenza daedrica ha preso abbastanza forza da trascinare con sé creature maggiori. Sono spesso associati a Molag Bal, ma possono comparire al servizio di diversi poteri. La loro apparizione in un santuario o in una rovina è quasi sempre segno che la situazione è già degenerata. Sono brutali, aggressivi e dotati di una cattiveria più istintiva che raffinata. Non hanno la disciplina dei Dremora né l'astuzia di certe entità superiori, ma possiedono una sicurezza feroce nella propria forza. Guardano i mortali come prede rumorose e fragili. Il loro corpo rettiliano, la testa simile a quella di un coccodrillo e la massa muscolare li rendono avversari terrificanti nel corpo a corpo. Possono mordere, travolgere e in alcuni casi sputare o evocare fiamme. Sono difficili da fermare, e ancora più difficili da affrontare in spazi stretti.",
+        "image": "UnitLorePics/Daedroth.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 52,
+        "name": "Soffio Pestilenziale",
+        "description": "Espira un gas tossico che indebolisce i nemici.",
+        "effect": "I nemici entro 3 esagoni perdono 2 forza e resistenza per 2 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 4 POW, riduce anche l'agilità dei nemici di 2."
+      },
+      {
+        "sourceId": 9,
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici.",
+        "effect": "Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni."
+      },
+      {
+        "sourceId": 16,
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici.",
+        "effect": "Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA.",
+        "cost": "6 PA, 4 EN.",
+        "boost": "Per 4 POW, +4 atk, +30% danno"
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Daedroth",
+    "sourceIds": [
+      999
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene distribuita senza ridurlo a un Atronach di Fuoco.",
+    "fantasy": "Bruto daedrico rettiliano che combina zanne, fuoco e furia.",
+    "combatStory": "Preme in melee, usa coda e fiato pestilenziale e può proiettare fuoco quando il bersaglio arretra.",
+    "siblings": [
+      {
+        "unit": "Clannfear",
+        "relation": "nearest",
+        "mustDifferBy": "Più lento, resistente e capace di attacchi a distanza."
+      },
+      {
+        "unit": "Atronach di Fuoco",
+        "relation": "same-element",
+        "mustDifferBy": "Bruto fisico con fuoco secondario, non elemento puro."
+      },
+      {
+        "unit": "Dreugh",
+        "relation": "contrast",
+        "mustDifferBy": "Daedra offensivo, non predatore acquatico rigenerante."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "bruto rettiliano",
+        "expressedBy": "Forza, PF, coda e Furia"
+      },
+      {
+        "axis": "fiato daedrico",
+        "expressedBy": "Soffio Pestilenziale e Palla di Fuoco"
+      }
+    ],
+    "must": [
+      "coda",
+      "fuoco",
+      "Furia",
+      "forza"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "volo",
+      "controllo mentale"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "bruto daedrico",
+      "5": "fiato",
+      "10": "coda",
+      "15": "Furia",
+      "20": "Daedroth maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Daedroth",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "azione fisica e azione a distanza"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "volo",
+      "controllo mentale"
+    ],
+    "differsFrom": {
+      "Clannfear": "Più lento, resistente e capace di attacchi a distanza.",
+      "Atronach di Fuoco": "Bruto fisico con fuoco secondario, non elemento puro."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 103
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:999"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:999"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Daedroth",
+    "category": "Daedra",
+    "archetypeDescription": "Bruto Daedra ibrido con coda, fuoco e pressione ravvicinata.",
+    "loreDescription": "I Daedroth si trovano nei piani di Oblivion e nei luoghi di Nirn dove una presenza daedrica ha preso abbastanza forza da trascinare con sé creature maggiori. Sono spesso associati a Molag Bal, ma possono comparire al servizio di diversi poteri. La loro apparizione in un santuario o in una rovina è quasi sempre segno che la situazione è già degenerata. Sono brutali, aggressivi e dotati di una cattiveria più istintiva che raffinata. Non hanno la disciplina dei Dremora né l'astuzia di certe entità superiori, ma possiedono una sicurezza feroce nella propria forza. Guardano i mortali come prede rumorose e fragili. Il loro corpo rettiliano, la testa simile a quella di un coccodrillo e la massa muscolare li rendono avversari terrificanti nel corpo a corpo. Possono mordere, travolgere e in alcuni casi sputare o evocare fiamme. Sono difficili da fermare, e ancora più difficili da affrontare in spazi stretti.",
+    "notes": "Batch 2 v2: conversione Elder [999]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-52",
+        "name": "Soffio Pestilenziale",
+        "description": "Espira un gas tossico che indebolisce i nemici. I nemici entro 3 esagoni perdono 2 forza e resistenza per 2 turni. Boost Elder: Per 4 POW, riduce anche l'agilità dei nemici di 2.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-9",
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici. Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti. Boost Elder: Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-16",
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici. Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA. Boost Elder: Per 4 POW, +4 atk, +30% danno",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "medium",
+          "level1": 1,
+          "level20": 3
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "tier",
+          "profile": "high",
+          "level1": 5,
+          "level20": 15
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 83
+        },
+        {
+          "key": "difesa",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:4867c9e39cd81d308b883898503badbcfb5a7d2932f4e1c32aa896c832eb70cf",
+  "charterHash": "sha256:59277fb222a0dd878bf119d88403eb595c34b732b3fb210f0ac5efff659ea589",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene distribuita senza ridurlo a un Atronach di Fuoco."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:3615771dc1cff1767a2cd4e4cafdd02caaf05c0e4b9ab2b8a8f1b01a8522aff8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:1cd79de09849036bd4715a962916a0746dc61368772375194c7ecb0add070b91",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:3bc7b1adcee7b487bdae8fd0e8ccdd08d92ad883b7d3ed34b8b128610b8737b8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:2f376ae3b0dc22965d945d784ddd0897d8541aa5346aa734b05dd16a62430aa1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:f297f08b58fa8f8d174b8e82a13297148e18b79b1a641e8e8de48a92acc806f3",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Soffio Pestilenziale",
+          "Palla di Fuoco",
+          "Colpo di Coda",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Daedroth",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

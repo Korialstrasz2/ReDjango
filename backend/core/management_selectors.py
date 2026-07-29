@@ -8,6 +8,8 @@ from django.db import models
 from django.db.models import Q
 
 from backend.characters.models import (
+    BottoneCombat,
+    ContenitoreInventario,
     EffettiPersonaggio,
     Equip,
     Faretra,
@@ -15,7 +17,18 @@ from backend.characters.models import (
     Personaggio,
     Zaino,
 )
-from backend.core.models import Effetto, Oggetto
+from backend.core.models import DatiCampagna, Effetto, Oggetto
+from backend.media_library.models import UploadedImage
+
+
+def _campaign_choices() -> list[dict[str, Any]]:
+    return [
+        {"value": "", "label": "Nessuna campagna"},
+        *(
+            {"value": str(campaign.id), "label": campaign.nome}
+            for campaign in DatiCampagna.objects.order_by("nome")
+        ),
+    ]
 
 
 PROFILE_FIELDS = [
@@ -28,6 +41,11 @@ PROFILE_FIELDS = [
         "choices": [{"value": value, "label": label} for value, label in Personaggio.TYPE_CHOICES],
     },
     {"key": "nome_interno", "label": "Nome interno", "type": "text", "group": "Identità"},
+    # The player character list is filtered by the active campaign, so a
+    # character attached to the wrong one - or to none - simply disappears from
+    # the game. Importers were the only thing that ever set this.
+    {"key": "campagna", "label": "Campagna", "type": "campaign", "group": "Identità", "nullable": True},
+    {"key": "portrait", "label": "Ritratto", "type": "image", "group": "Identità", "nullable": True},
     {"key": "razza_1", "label": "Razza 1", "type": "text", "group": "Identità"},
     {"key": "razza_2", "label": "Razza 2", "type": "text", "group": "Identità"},
     {"key": "razza_3", "label": "Razza 3", "type": "text", "group": "Identità"},
@@ -61,7 +79,14 @@ PROFILE_FIELDS = [
     {"key": "extra", "label": "Dati extra", "type": "json", "group": "Dati avanzati"},
     {"key": "bottoni", "label": "Bottoni", "type": "json", "group": "Dati avanzati"},
     {"key": "custom_overrides", "label": "Override formule", "type": "json", "group": "Dati avanzati"},
+    {"key": "impostazioni_combat", "label": "Impostazioni combattimento", "type": "json", "group": "Dati avanzati"},
+    # Recomputed by refresh_personaggio on every save: shown so a broken sheet
+    # can be diagnosed here, never edited.
+    {"key": "effetti_finali", "label": "Effetti finali (calcolato)", "type": "json", "group": "Diagnostica", "readOnly": True},
+    {"key": "tot", "label": "Totali (calcolato)", "type": "json", "group": "Diagnostica", "readOnly": True},
 ]
+
+READ_ONLY_PROFILE_KEYS = {field["key"] for field in PROFILE_FIELDS if field.get("readOnly")}
 
 
 RELATION_CONFIG = {
@@ -131,7 +156,15 @@ RELATION_FIELDS = {
 
 
 def _profile_values(character: Personaggio) -> dict[str, Any]:
-    return {field["key"]: getattr(character, field["key"]) for field in PROFILE_FIELDS}
+    values: dict[str, Any] = {}
+    for field in PROFILE_FIELDS:
+        key = field["key"]
+        if field["type"] in {"campaign", "image"}:
+            identifier = getattr(character, f"{key}_id")
+            values[key] = "" if identifier is None else str(identifier)
+        else:
+            values[key] = getattr(character, key)
+    return values
 
 
 def _relation_payload(character: Personaggio, kind: str) -> dict[str, Any]:
@@ -225,6 +258,37 @@ def _related_snapshot(character: Personaggio) -> list[dict[str, Any]]:
             ),
         },
     ])
+    # Everything below cascades on delete. It used to vanish without appearing
+    # in the preview, which made the mandatory confirmation incomplete.
+    for kind, label, count, detail in (
+        (
+            "contenitori_inventario",
+            "Contenitori inventario",
+            character.contenitori_inventario.count(),
+            "Zaino a slot e relative giacenze: eliminati con il personaggio.",
+        ),
+        (
+            "skill_sbloccate",
+            "Skill sbloccate",
+            character.skill_sbloccate.count(),
+            "Acquisti di Skill e spesa PE. Le Skill del catalogo restano.",
+        ),
+        (
+            "tiri_competenze",
+            "Tiri di competenza",
+            character.tiri_competenze.count(),
+            "Storico dei tiri: eliminato con il personaggio.",
+        ),
+    ):
+        records.append({
+            "kind": kind,
+            "label": label,
+            "id": None,
+            "name": f"{count} record",
+            "willDelete": count > 0,
+            "status": "delete" if count else "empty",
+            "detail": detail if count else "Nessun record.",
+        })
     metadata = character.metadata if isinstance(character.metadata, dict) else {}
     cloned_item_ids = [int(value) for value in metadata.get("combat_cloned_item_ids", []) if str(value).isdigit()]
     cloned_effect_ids = [int(value) for value in metadata.get("combat_cloned_effect_ids", []) if str(value).isdigit()]
@@ -287,6 +351,30 @@ def deletion_preview_payload(character: Personaggio) -> dict[str, Any]:
     }
 
 
+def _referenced_items(character: Personaggio) -> list[Oggetto]:
+    identifiers: set[int] = set()
+    for kind in RELATION_CONFIG:
+        instance = getattr(character, kind)
+        if instance is None:
+            continue
+        for spec in RELATION_FIELDS[kind]:
+            if spec["type"] == "item" and (value := getattr(instance, f"{spec['key']}_id")):
+                identifiers.add(value)
+    return list(Oggetto.objects.filter(pk__in=identifiers).order_by("nome"))
+
+
+def _referenced_effects(character: Personaggio) -> list[Effetto]:
+    identifiers: set[int] = set()
+    for kind in RELATION_CONFIG:
+        instance = getattr(character, kind)
+        if instance is None:
+            continue
+        for spec in RELATION_FIELDS[kind]:
+            if spec["type"] == "effect" and (value := getattr(instance, f"{spec['key']}_id")):
+                identifiers.add(value)
+    return list(Effetto.objects.filter(pk__in=identifiers).order_by("nome"))
+
+
 def character_management_detail(character_id: int) -> dict[str, Any]:
     character = (
         Personaggio.objects.select_related(*RELATION_CONFIG.keys())
@@ -299,17 +387,62 @@ def character_management_detail(character_id: int) -> dict[str, Any]:
         "profile": _profile_values(character),
         "relations": [_relation_payload(character, kind) for kind in RELATION_CONFIG],
         "options": {
+            # Only the items and effects this character actually references are
+            # sent. The catalogue is thousands of rows and every slot used to
+            # render the whole thing; the picker searches on demand instead.
             "items": [
                 {"id": item.id, "name": item.nome, "archived": item.archiviato}
-                for item in Oggetto.objects.order_by("nome")
+                for item in _referenced_items(character)
             ],
             "effects": [
                 {"id": effect.id, "name": effect.nome}
-                for effect in Effetto.objects.order_by("nome")
+                for effect in _referenced_effects(character)
+            ],
+            "campaigns": _campaign_choices(),
+            "images": [
+                {"id": image.id, "name": image.title}
+                for image in UploadedImage.objects.filter(
+                    pk__in=[character.portrait_id] if character.portrait_id else []
+                )
             ],
         },
+        "inventoryContainers": _inventory_containers(character),
         "deletionPreview": deletion_preview_payload(character),
     }
+
+
+def _inventory_containers(character: Personaggio) -> list[dict[str, Any]]:
+    """The slot inventory actually used in play, shown read-only.
+
+    The editor above still edits the legacy 50-slot Zaino and Faretra. Both
+    exist at once, so showing what the modern container holds is the only way to
+    tell which one a surprising sheet is really reading from. Editing belongs to
+    the inventory services, which enforce capacity and stacking rules.
+    """
+    containers = (
+        character.contenitori_inventario
+        .prefetch_related("voci__oggetto")
+        .order_by("scope", "nome")
+    )
+    return [
+        {
+            "id": container.id,
+            "name": container.nome,
+            "scope": container.get_scope_display(),
+            "capacity": container.capacita,
+            "weightless": container.senza_peso,
+            "entries": [
+                {
+                    "slot": entry.slot,
+                    "name": entry.oggetto.nome if entry.oggetto_id else entry.reagent_stock_key,
+                    "quantity": entry.quantita,
+                    "isReagent": entry.oggetto_id is None,
+                }
+                for entry in sorted(container.voci.all(), key=lambda voce: voce.slot)
+            ],
+        }
+        for container in containers
+    ]
 
 
 def _character_summary(character: Personaggio) -> dict[str, Any]:
@@ -320,29 +453,65 @@ def _character_summary(character: Personaggio) -> dict[str, Any]:
         "internalName": character.nome_interno,
         "type": character.get_tipologia_display(),
         "level": character.livello,
+        "campaignId": character.campagna_id,
+        "campaignName": character.campagna.nome if character.campagna_id else "",
         "missingRelations": missing,
         "updatedAt": character.updated_at.isoformat() if character.updated_at else None,
     }
 
 
+# Records that belong to exactly one character and can survive without one.
+# Everything else on a character cascades and can never be orphaned, so it does
+# not belong in this scan. Catalogue rows - Oggetto, Effetto, Skill - are never
+# listed here: an orphan container points at them, it does not own them.
+ORPHAN_SOURCES = {
+    **{
+        kind: {"model": config["model"], "label": config["label"], "attachable": True}
+        for kind, config in RELATION_CONFIG.items()
+    },
+    "bottoni_combat": {"model": BottoneCombat, "label": "Bottoni combat", "attachable": False},
+}
+
+
+def _orphan_contents(kind: str, instance: models.Model) -> str:
+    """Describe what the leftover holds, so it can be judged before deleting."""
+    if kind == "bottoni_combat":
+        return "Bottone pubblico" if getattr(instance, "pubblico", False) else "Bottone privato"
+    filled = sum(
+        1
+        for spec in RELATION_FIELDS.get(kind, [])
+        if spec["type"] in {"item", "effect"} and getattr(instance, f"{spec['key']}_id", None)
+    )
+    if kind == "note":
+        written = sum(1 for spec in RELATION_FIELDS.get(kind, []) if spec["type"] == "textarea" and getattr(instance, spec["key"], ""))
+        return f"{written} sezioni scritte" if written else "Nessuna nota scritta"
+    return f"{filled} caselle occupate" if filled else "Vuoto"
+
+
 def _orphan_payload(kind: str, instance: models.Model) -> dict[str, Any]:
-    owner_id = None
-    reason = "Non è collegato ad alcun personaggio."
-    if owner_id:
-        reason = f"Indica il personaggio #{owner_id} come proprietario, ma non è collegato alla sua scheda."
+    source = ORPHAN_SOURCES[kind]
     return {
         "kind": kind,
-        "label": RELATION_CONFIG[kind]["label"],
+        "label": source["label"],
         "id": instance.id,
         "name": str(instance),
-        "reason": reason,
-        "ownerCharacterId": owner_id,
+        "reason": "Non è collegato ad alcun personaggio.",
+        "contents": _orphan_contents(kind, instance),
+        "attachable": source["attachable"],
         "updatedAt": instance.updated_at.isoformat() if instance.updated_at else None,
     }
 
 
-def character_management_overview(query: str = "", orphan_kind: str = "") -> dict[str, Any]:
-    characters = Personaggio.objects.select_related(*RELATION_CONFIG.keys()).order_by("nome")
+def orphan_queryset(kind: str):
+    """Rows of `kind` that no character points at any more."""
+    source = ORPHAN_SOURCES[kind]
+    if kind == "bottoni_combat":
+        return source["model"].objects.filter(personaggio__isnull=True).order_by("nome", "id")
+    return source["model"].objects.filter(personaggi__isnull=True).distinct().order_by("nome", "id")
+
+
+def character_management_overview(query: str = "", orphan_kind: str = "", campaign_id: str = "") -> dict[str, Any]:
+    characters = Personaggio.objects.select_related("campagna", *RELATION_CONFIG.keys()).order_by("nome")
     if query:
         characters = characters.filter(
             Q(nome__icontains=query)
@@ -351,11 +520,15 @@ def character_management_overview(query: str = "", orphan_kind: str = "") -> dic
             | Q(razza_2__icontains=query)
             | Q(razza_3__icontains=query)
         )
+    if campaign_id == "none":
+        characters = characters.filter(campagna__isnull=True)
+    elif campaign_id.isdigit():
+        characters = characters.filter(campagna_id=int(campaign_id))
     orphans: list[dict[str, Any]] = []
-    for kind, config in RELATION_CONFIG.items():
+    for kind in ORPHAN_SOURCES:
         if orphan_kind and orphan_kind != kind:
             continue
-        queryset = config["model"].objects.filter(personaggi__isnull=True).distinct().order_by("nome", "id")
+        queryset = orphan_queryset(kind)
         if query:
             queryset = queryset.filter(nome__icontains=query)
         orphans.extend(_orphan_payload(kind, instance) for instance in queryset)
@@ -363,7 +536,8 @@ def character_management_overview(query: str = "", orphan_kind: str = "") -> dic
         "characters": [_character_summary(character) for character in characters],
         "orphans": orphans,
         "relationKinds": [
-            {"value": kind, "label": config["label"]}
-            for kind, config in RELATION_CONFIG.items()
+            {"value": kind, "label": source["label"], "attachable": source["attachable"]}
+            for kind, source in ORPHAN_SOURCES.items()
         ],
+        "campaigns": _campaign_choices(),
     }

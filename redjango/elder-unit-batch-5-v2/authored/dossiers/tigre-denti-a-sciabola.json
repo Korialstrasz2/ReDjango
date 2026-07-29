@@ -1,0 +1,1219 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:987",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      987
+    ],
+    "normalizedName": "tigre denti a sciabola",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 987,
+        "levels": [
+          20
+        ],
+        "nome": "Tigre denti a Sciabola",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            3,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            4,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "exponential"
+          ],
+          "res_contundente_tot": [
+            6,
+            "linear"
+          ],
+          "res_taglio_tot": [
+            6,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            6,
+            "exponential"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            4,
+            "linear"
+          ],
+          "pa_tot": [
+            6,
+            "linear"
+          ],
+          "pf_tot": [
+            6,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            3,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 62,
+        "skill_2_id": 28,
+        "skill_3_id": 4,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 126,
+        "unitId": 987,
+        "name": "Tigre denti a Sciabola",
+        "description": "Le Tigri denti a Sciabola vivono nelle tundre, nelle foreste fredde e nelle montagne di Skyrim e delle regioni settentrionali. Sono predatori antichi, più grandi e pericolosi dei comuni felini, spesso incontrati da cacciatori che cercano trofei e da viaggiatori che speravano soltanto di attraversare un passo innevato. Il loro territorio è silenzioso finché non è troppo tardi. Sono solitarie, pazienti e fiere nel modo in cui solo un grande predatore può esserlo. Non sprecano energie in attacchi inutili, ma quando scelgono una preda lo fanno con precisione brutale. I Nord le rispettano perché rappresentano una forma pura di forza selvaggia, senza malizia e senza esitazione. Hanno muscoli potenti, artigli, riflessi rapidi e lunghi canini capaci di infliggere ferite devastanti. Attaccano con balzi improvvisi e cercano il collo o i punti vitali della preda. La loro pelle e i loro denti sono trofei preziosi, ma ottenerli significa convincere una delle bestie più letali del nord a morire prima di te.",
+        "image": "UnitLorePics/Tigre_denti_a_Sciabola_e8taXJO.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 62,
+        "name": "Balzo Predatorio",
+        "description": "La creatura si lancia sulla preda con precisione letale.",
+        "effect": "Salta fino a 3 esagoni su una casella adiacente al bersaglio ed esegue un attacco con +3 all'Attacco e 1 reroll per l'attacco.",
+        "cost": "7 PA, 2 EN.",
+        "boost": "Per 5 POW, ottieni 2 reroll, e il raggio può essere di 3 o 4 esagoni."
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      },
+      {
+        "sourceId": 4,
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza.",
+        "effect": "Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia.",
+        "cost": "6 PA, 3 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Tigre denti a Sciabola",
+    "sourceIds": [
+      987
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Lo chassis livello 20 viene linearizzato preservando il ruolo di predatore apicale.",
+    "fantasy": "Grande felino preistorico che abbatte la preda con esplosività, zanne e massa.",
+    "combatStory": "Apre con Balzo, entra in Furia e usa Carica soltanto quando dispone di spazio.",
+    "siblings": [
+      {
+        "unit": "Lupo",
+        "relation": "nearest",
+        "mustDifferBy": "Predatore solitario più massiccio invece di cacciatore di branco."
+      },
+      {
+        "unit": "Orso delle Caverne",
+        "relation": "same-scale",
+        "mustDifferBy": "Velocità e balzo invece di rigenerazione."
+      },
+      {
+        "unit": "Pesce Carnefice",
+        "relation": "contrast",
+        "mustDifferBy": "Predazione terrestre esplosiva invece di logoramento acquatico."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "zanne a sciabola",
+        "expressedBy": "forza e attacco alti"
+      },
+      {
+        "axis": "esplosività felina",
+        "expressedBy": "Balzo, Furia e Carica"
+      }
+    ],
+    "must": [
+      "felino",
+      "Balzo Predatorio",
+      "Furia",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "rigenerazione",
+      "sputo",
+      "spore"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "felino predatore",
+      "5": "Balzo",
+      "10": "Furia",
+      "15": "Carica",
+      "20": "tigre apicale"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Tigre denti a Sciabola",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Balzo Predatorio presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "rigenerazione",
+      "sputo",
+      "spore"
+    ],
+    "differsFrom": {
+      "Lupo": "Predatore solitario più massiccio invece di cacciatore di branco.",
+      "Orso delle Caverne": "Velocità e balzo invece di rigenerazione."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 82
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:987"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:987"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Tigre denti a Sciabola",
+    "category": "Animale",
+    "archetypeDescription": "Predatore apicale mobile con balzo, Furia e carica.",
+    "loreDescription": "Le Tigri denti a Sciabola vivono nelle tundre, nelle foreste fredde e nelle montagne di Skyrim e delle regioni settentrionali. Sono predatori antichi, più grandi e pericolosi dei comuni felini, spesso incontrati da cacciatori che cercano trofei e da viaggiatori che speravano soltanto di attraversare un passo innevato. Il loro territorio è silenzioso finché non è troppo tardi. Sono solitarie, pazienti e fiere nel modo in cui solo un grande predatore può esserlo. Non sprecano energie in attacchi inutili, ma quando scelgono una preda lo fanno con precisione brutale. I Nord le rispettano perché rappresentano una forma pura di forza selvaggia, senza malizia e senza esitazione. Hanno muscoli potenti, artigli, riflessi rapidi e lunghi canini capaci di infliggere ferite devastanti. Attaccano con balzi improvvisi e cercano il collo o i punti vitali della preda. La loro pelle e i loro denti sono trofei preziosi, ma ottenerli significa convincere una delle bestie più letali del nord a morire prima di te.",
+    "notes": "Batch 5 v2: conversione Elder [987]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-62",
+        "name": "Balzo Predatorio",
+        "description": "La creatura si lancia sulla preda con precisione letale. Salta fino a 3 esagoni su una casella adiacente al bersaglio ed esegue un attacco con +3 all'Attacco e 1 reroll per l'attacco. Boost Elder: Per 5 POW, ottieni 2 reroll, e il raggio può essere di 3 o 4 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 7,
+          "energia": 2
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-4",
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza. Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia. Boost Elder: Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni.",
+        "minLevel": 9,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "medium",
+          "level1": 1,
+          "level20": 3
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 29
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:1c6a855551596086b39adfc409990ea4372c83487b5034694c661b6121a16178",
+  "charterHash": "sha256:409d9c6a00ce17505b9b28c416d2f42b45dff8b30dccd6dc9548e7ca9f89cb60",
+  "converterVersion": "elder-unit-charter-v2-batch5",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Lo chassis livello 20 viene linearizzato preservando il ruolo di predatore apicale."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:5a6006131f61b0b0896511e41a477bbd5a262c47565938cd04c212a947f2062f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:91769c1aed1d4ccaba778ba0e4fbf7dfae14a069c5b5ec10d6e33d4a01db457d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:9339e05e530320305517f7f3d721173a36654ef0810f52082995b00ef180784c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:bff07cef85eaf808795ad13be6d1dda845410f3d3a40e652cd2740d81cbe179a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:f178d7ea1500ce0fe6b31127db85dfbe80f08c6e728e0ad7829ef085361e11cb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Balzo Predatorio",
+          "Furia",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Tigre denti a Sciabola",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch5-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T09:47:56.992038+00:00",
+    "notes": "Standing authorization from Ale; final 10 humanoids and 10 creatures reviewed against the conversion guide and best practices. All 20 pass static gates and 800 deterministic previews. Poison mechanics use only supported vocabulary; Netch flight and Studioso Altmer specialization were explicitly reviewed."
+  }
+}

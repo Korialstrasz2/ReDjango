@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1008",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1008
+    ],
+    "normalizedName": "atronach della tempesta",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1008,
+        "levels": [
+          20
+        ],
+        "nome": "Atronach della Tempesta",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            7,
+            "linear"
+          ],
+          "velocita_tot": [
+            8,
+            "linear"
+          ],
+          "agilita_tot": [
+            5,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            7,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            8,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            7,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            7,
+            "4"
+          ],
+          "res_contundente_tot": [
+            6,
+            "linear"
+          ],
+          "res_taglio_tot": [
+            6,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            6,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            10,
+            "hi_hi"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            10,
+            "hi_hi"
+          ],
+          "ap_tot": [
+            6,
+            "linear"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            8,
+            "linear"
+          ],
+          "energia_tot": [
+            7,
+            "linear"
+          ],
+          "potere_tot": [
+            8,
+            "linear"
+          ],
+          "tier_tot": [
+            8,
+            "linear"
+          ],
+          "attacco_tot": [
+            8,
+            "linear"
+          ],
+          "difesa_tot": [
+            8,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 7,
+        "skill_2_id": 57,
+        "skill_3_id": 48,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 17,
+        "unitId": 1008,
+        "name": "Atronach della Tempesta",
+        "description": "Gli Atronach della Tempesta appaiono dove l'aria è carica di energia e la magia dell'evocatore riesce a dare forma al fulmine. Sono creature chiamate spesso da maghi potenti, perché difficili da controllare ma devastanti sul campo. La loro presenza è annunciata da elettricità nell'aria, suoni bassi e una tensione che fa rizzare la pelle. Sono agitati, violenti e quasi incapaci di quiete. Anche quando restano immobili, sembrano sul punto di esplodere in movimento. Non ragionano come mortali, ma reagiscono agli stimoli con la logica improvvisa e brutale di una tempesta. Sono fatti di vento, pietra sospesa, fulmini e pura energia elementale. Colpiscono da lontano con scariche elettriche e possono punire duramente chi si avvicina senza protezioni adeguate. Meno solidi di un Atronach del Gelo, ma molto più imprevedibili, sono tra i servitori elementali più temuti dagli evocatori inesperti.",
+        "image": "UnitLorePics/Atronach_della_Tempesta.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 7,
+        "name": "Respiro Fulmineo",
+        "description": "Scatena un fulmine dalla bocca.",
+        "effect": "Infligge (5d6 + livello) danni da shock a un bersaglio entro 6 esagoni.",
+        "cost": "7 PA, 6 EN.",
+        "boost": "Per 6 POW, aggiunge un effetto di catena fulminea fino a 2 bersagli aggiuntivi entro 2 esagoni."
+      },
+      {
+        "sourceId": 57,
+        "name": "Richiamo della Tempesta",
+        "description": "Evoca una tempesta che colpisce i nemici con fulmini.",
+        "effect": "Infligge (3d6 + livello) danni da shock fino a 3 nemici entro 6 esagoni.",
+        "cost": "6 PA, 6 EN.",
+        "boost": "Per 5 POW, il danno ignora le resistenze."
+      },
+      {
+        "sourceId": 48,
+        "name": "Scudo di Mana",
+        "description": "Converte il mana in una barriera protettiva.",
+        "effect": "Utilizza 10 Mana per assorbire 20 danni per 2 turni.",
+        "cost": "4 PA, 10 Mana.",
+        "boost": "Per 5 POW, aumenta l'assorbimento a 30 danni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Atronach della Tempesta",
+    "sourceIds": [
+      1008
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene distribuita 1-20 preservando l'asse elettrico.",
+    "fantasy": "Tempesta cosciente compressa in un corpo daedrico.",
+    "combatStory": "Controlla la media distanza con fulmini, richiama la tempesta e converte Mana in difesa.",
+    "siblings": [
+      {
+        "unit": "Atronach del Gelo",
+        "relation": "nearest",
+        "mustDifferBy": "Mobilità e fulmini sostituiscono tanking e rallentamento."
+      },
+      {
+        "unit": "Atronach di Fuoco",
+        "relation": "same-family",
+        "mustDifferBy": "Controllo elettrico e difesa Mana, non aura incendiaria."
+      },
+      {
+        "unit": "Anomalia Magica",
+        "relation": "contrast",
+        "mustDifferBy": "Elemento e corpo definiti, non distorsione instabile."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "dominio elettrico",
+        "expressedBy": "Respiro Fulmineo e res/rd elettrica"
+      },
+      {
+        "axis": "tempesta mobile",
+        "expressedBy": "velocità, Richiamo e Mana alto"
+      }
+    ],
+    "must": [
+      "elettricità",
+      "Mana",
+      "tempesta"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "fuoco dominante"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "elementale elettrico",
+      "5": "richiamo della tempesta",
+      "10": "scudo arcano",
+      "15": "caster mobile",
+      "20": "incarnazione della tempesta"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Atronach della Tempesta",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "res_elettro positiva a ogni livello"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "fuoco dominante"
+    ],
+    "differsFrom": {
+      "Atronach del Gelo": "Mobilità e fulmini sostituiscono tanking e rallentamento.",
+      "Atronach di Fuoco": "Controllo elettrico e difesa Mana, non aura incendiaria."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1008"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1008"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Atronach della Tempesta",
+    "category": "Daedra",
+    "archetypeDescription": "Caster elettrico mobile con grandi riserve arcane e resistenza elettrica.",
+    "loreDescription": "Gli Atronach della Tempesta appaiono dove l'aria è carica di energia e la magia dell'evocatore riesce a dare forma al fulmine. Sono creature chiamate spesso da maghi potenti, perché difficili da controllare ma devastanti sul campo. La loro presenza è annunciata da elettricità nell'aria, suoni bassi e una tensione che fa rizzare la pelle. Sono agitati, violenti e quasi incapaci di quiete. Anche quando restano immobili, sembrano sul punto di esplodere in movimento. Non ragionano come mortali, ma reagiscono agli stimoli con la logica improvvisa e brutale di una tempesta. Sono fatti di vento, pietra sospesa, fulmini e pura energia elementale. Colpiscono da lontano con scariche elettriche e possono punire duramente chi si avvicina senza protezioni adeguate. Meno solidi di un Atronach del Gelo, ma molto più imprevedibili, sono tra i servitori elementali più temuti dagli evocatori inesperti.",
+    "notes": "Batch 2 v2: conversione Elder [1008]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-7",
+        "name": "Respiro Fulmineo",
+        "description": "Scatena un fulmine dalla bocca. Infligge (5d6 + livello) danni da shock a un bersaglio entro 6 esagoni. Boost Elder: Per 6 POW, aggiunge un effetto di catena fulminea fino a 2 bersagli aggiuntivi entro 2 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 7,
+          "energia": 6
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-57",
+        "name": "Richiamo della Tempesta",
+        "description": "Evoca una tempesta che colpisce i nemici con fulmini. Infligge (3d6 + livello) danni da shock fino a 3 nemici entro 6 esagoni. Boost Elder: Per 5 POW, il danno ignora le resistenze.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 6
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-48",
+        "name": "Scudo di Mana",
+        "description": "Converte il mana in una barriera protettiva. Utilizza 10 Mana per assorbire 20 danni per 2 turni. Boost Elder: Per 5 POW, aumenta l'assorbimento a 30 danni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "mana": 10
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "intelligenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "very_high",
+          "level1": 2,
+          "level20": 5
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "very_high",
+          "level1": 2,
+          "level20": 7
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 36
+        },
+        {
+          "key": "tier",
+          "profile": "high",
+          "level1": 5,
+          "level20": 15
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 83
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 83
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:2b68a1f9270096ecb46d8a9b1e21d762b7243e5525e27a2ad6fef6064a1e8096",
+  "charterHash": "sha256:138ea190e9e6fd43779875237fdb0ef9fbbc450d5488e8a92d857258d7bdba99",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene distribuita 1-20 preservando l'asse elettrico."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:702b7b75535bc9f32bceec4720b1729dd8b24d0677c5f67dc0e93bd01503cc47",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:ac4916015c72a68f68b1c89f053d657f0969a6b0cce84f7f965ed881234315f1",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:f2bf2123aa302f705f9212ffc2ca37abb9636bc4234d22b93679082d3e258949",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:dfc7d972b0e85f94bcf690acb11a874f42a5938f896923bc80dc641fefd476fd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:a5adfc74fdbc1e6e600c1ad539ba1ae9ee58fab0f72095869a1dd281f9fc2d69",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Respiro Fulmineo",
+          "Richiamo della Tempesta",
+          "Scudo di Mana"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Atronach della Tempesta",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

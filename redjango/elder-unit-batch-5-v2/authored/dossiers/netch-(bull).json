@@ -1,0 +1,1301 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:991",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      991
+    ],
+    "normalizedName": "netch (bull)",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 991,
+        "levels": [
+          20
+        ],
+        "nome": "Netch (Bull)",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            7,
+            "linear"
+          ],
+          "velocita_tot": [
+            4,
+            "linear"
+          ],
+          "agilita_tot": [
+            5,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            4,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            4,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            5,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            7,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "linear"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-1"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "linear"
+          ],
+          "res_gelo_tot": [
+            6,
+            "linear"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            6,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            3,
+            "linear"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            8,
+            "linear"
+          ],
+          "mana_tot": [
+            5,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            5,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 4,
+        "skill_2_id": 2,
+        "skill_3_id": 17,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 85,
+        "unitId": 991,
+        "name": "Netch (Bull)",
+        "description": "I Bull Netch abitano le stesse regioni delle Betty, ma la loro presenza è molto meno pacifica per chi si avvicina senza prudenza. Si trovano nelle coste, nelle isole e nelle pianure di Morrowind, spesso vicino a gruppi di femmine che proteggono con istinto territoriale. I cacciatori li osservano da lontano prima di decidere se rischiare. Sono protettivi, diffidenti e facili da provocare se percepiscono una minaccia al branco. Non sono crudeli né particolarmente intelligenti, ma hanno la determinazione semplice degli animali che difendono ciò che è loro. Una distanza rispettosa basta spesso a evitare guai; l'arroganza, invece, li attira. Sono più robusti e aggressivi delle Betty, con tentacoli capaci di colpire duramente e un corpo sorprendentemente resistente. La loro pelle è molto apprezzata, ma abbatterli richiede pazienza e buone armi. Un Bull Netch ferito può diventare più pericoloso di quanto la sua lentezza lasci immaginare.",
+        "image": "UnitLorePics/Netch_Bull.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 4,
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza.",
+        "effect": "Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia.",
+        "cost": "6 PA, 3 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni."
+      },
+      {
+        "sourceId": 2,
+        "name": "Sputo Velenoso",
+        "description": "La creatura sputa un globo di veleno verso il bersaglio.",
+        "effect": "Attacco a distanza fino a 4 esagoni che infligge (2d6 + livello) danni da veleno e infligge lo status veleno per 2 turni.",
+        "cost": "4 PA, 5 EN.",
+        "boost": "Per 4 POW, aumenta la portata a 6 esagoni e la durata del veleno a 4 turni."
+      },
+      {
+        "sourceId": 17,
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti.",
+        "effect": "Riduce tutti i danni in arrivo del 50% per 3 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, riflette anche il 10% dei danni agli attaccanti."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Netch (Bull)",
+    "sourceIds": [
+      991
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La curva livello 20 viene linearizzata mantenendo il netto vantaggio di PF sulla Betty.",
+    "fantasy": "Netch maschio enorme che protegge il branco con massa, carica e carapace.",
+    "combatStory": "Entra con Carica, assorbe la risposta con Pelle di Pietra e usa lo sputo solo come opzione tardiva.",
+    "siblings": [
+      {
+        "unit": "Netch (Betty)",
+        "relation": "nearest",
+        "mustDifferBy": "Massa e Carica invece di controllo gelido."
+      },
+      {
+        "unit": "Kagouti",
+        "relation": "same-role",
+        "mustDifferBy": "Levitazione e Mana invece di bestia terrestre."
+      },
+      {
+        "unit": "Cliff Racer",
+        "relation": "contrast",
+        "mustDifferBy": "Bruto sospeso, non predatore da tuffo."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "Bull massiccio",
+        "expressedBy": "PF, forza e resistenza superiori"
+      },
+      {
+        "axis": "protezione del branco",
+        "expressedBy": "Carica e Pelle di Pietra"
+      }
+    ],
+    "must": [
+      "Netch",
+      "Volo",
+      "Carica",
+      "Pelle di Pietra",
+      "PF elevati"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "iniezione gelida",
+      "ragnatela",
+      "Furia"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Bull riconoscibile",
+      "5": "Carica",
+      "10": "Pelle di Pietra",
+      "15": "sputo tardivo",
+      "20": "Bull dominante"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Netch (Bull)",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Carica presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "iniezione gelida",
+      "ragnatela",
+      "Furia"
+    ],
+    "differsFrom": {
+      "Netch (Betty)": "Massa e Carica invece di controllo gelido.",
+      "Kagouti": "Levitazione e Mana invece di bestia terrestre."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 103
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:991"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:991"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Netch (Bull)",
+    "category": "Natura",
+    "archetypeDescription": "Netch bruto con PF elevati, carica e difesa temporanea.",
+    "loreDescription": "I Bull Netch abitano le stesse regioni delle Betty, ma la loro presenza è molto meno pacifica per chi si avvicina senza prudenza. Si trovano nelle coste, nelle isole e nelle pianure di Morrowind, spesso vicino a gruppi di femmine che proteggono con istinto territoriale. I cacciatori li osservano da lontano prima di decidere se rischiare. Sono protettivi, diffidenti e facili da provocare se percepiscono una minaccia al branco. Non sono crudeli né particolarmente intelligenti, ma hanno la determinazione semplice degli animali che difendono ciò che è loro. Una distanza rispettosa basta spesso a evitare guai; l'arroganza, invece, li attira. Sono più robusti e aggressivi delle Betty, con tentacoli capaci di colpire duramente e un corpo sorprendentemente resistente. La loro pelle è molto apprezzata, ma abbatterli richiede pazienza e buone armi. Un Bull Netch ferito può diventare più pericoloso di quanto la sua lentezza lasci immaginare.",
+    "notes": "Batch 5 v2: conversione Elder [991]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch5-netch-volo",
+        "name": "Volo",
+        "description": "Passiva. Il Netch levita e può attraversare il campo in volo; la capacità usa l'azione Volo già presente nel vocabolario delle Unit.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-4",
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza. Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia. Boost Elder: Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-2",
+        "name": "Sputo Velenoso",
+        "description": "Bersaglio entro 4 esagoni. La secrezione corrosiva infligge danni Perforante; il nome conserva la firma biologica senza introdurre elementi fuori vocabolario.",
+        "minLevel": 9,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-17",
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti. Riduce tutti i danni in arrivo del 50% per 3 turni. Boost Elder: Per 5 POW, riflette anche il 10% dei danni agli attaccanti.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:08d2d218dfd61160bcf235497feb2301d76fc0e71cc9275c9c88ee10a421c849",
+  "charterHash": "sha256:9fd82a8e352041c73db3766d97b34c570d090fb41a51fdcdb00c1f7fa619da0a",
+  "converterVersion": "elder-unit-charter-v2-batch5",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Sputo Velenoso"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La curva livello 20 viene linearizzata mantenendo il netto vantaggio di PF sulla Betty."
+    },
+    {
+      "what": "locomozione Netch",
+      "from": "nessuna azione di volo elencata nella riga Elder 991",
+      "to": "Volo innato dal livello 1",
+      "why": "La levitazione è anatomia identitaria del Netch e usa un'azione già implementata."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Sputo Velenoso']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:833370d255d52069e48d2595c9fa408419ae6c62015c8f8a239bba5a89033069",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:eba362525a99b12f2e9b292877190247693ef7d28830f728b1341232fa1cb68f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:51b27b73adf8fc1b585a6919587fe1e89e796f62e472b6475987cd5394c5b84d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:306bd784048c925f918d98f917a027c5c7dff842d21dff949d67d35a604b44dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:d30a2eae6b6b3e7f8059c53999d48d8751b8c9d56e8455173b79558e8a887aff",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Carica",
+          "Sputo Velenoso",
+          "Pelle di Pietra"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Netch (Bull)",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch5-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T09:47:56.992038+00:00",
+    "notes": "Standing authorization from Ale; final 10 humanoids and 10 creatures reviewed against the conversion guide and best practices. All 20 pass static gates and 800 deterministic previews. Poison mechanics use only supported vocabulary; Netch flight and Studioso Altmer specialization were explicitly reviewed."
+  }
+}

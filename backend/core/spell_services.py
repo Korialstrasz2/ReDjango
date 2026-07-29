@@ -125,7 +125,7 @@ def spell_fixed_costs(definition: SpellDefinition) -> dict[str, int]:
 
 def _readable(value: Decimal) -> str:
     """Cut the long tail that dividing by a stored ratio produces (6,999999… → 7)."""
-    normalized = Decimal(value).quantize(Decimal("0.0001")).normalize()
+    normalized = Decimal(value).quantize(Decimal("0.001")).normalize()
     return format(normalized, "f")
 
 
@@ -229,7 +229,11 @@ def spell_cast_breakdown(
     # dal database, quindi vengono normalizzati prima di qualunque calcolo.
     fixed_mana = max(Decimal("0"), Decimal(definition.base_mana))
     variable_mana = max(Decimal("0"), Decimal(effect)) / Decimal(definition.effect_per_mana)
-    required_mana = max(Decimal(definition.minimum_mana), fixed_mana + variable_mana)
+    # Il Mana richiesto viene arrotondato una volta sola: Energia e PA si convertono
+    # dallo stesso intero mostrato nella modale, così i conti tornano a vista.
+    required_mana = Decimal(
+        _ceil(max(Decimal(definition.minimum_mana), fixed_mana + variable_mana))
+    )
     total_power = max(Decimal("0"), Decimal(power_used)) + max(Decimal("0"), Decimal(free_power))
     spent_power = max(Decimal("0"), Decimal(power_used))
 
@@ -254,8 +258,8 @@ def spell_cast_breakdown(
     return {
         "fixedMana": float(fixed_mana),
         "variableMana": float(variable_mana),
-        "requiredMana": _ceil(required_mana),
-        "minimumApplied": required_mana > fixed_mana + variable_mana,
+        "requiredMana": int(required_mana),
+        "minimumApplied": Decimal(definition.minimum_mana) > fixed_mana + variable_mana,
         "manaDiscount": float(mana_discount),
         "actionPointDiscount": float(action_discount),
         "convertedEnergy": converted_energy,
@@ -264,10 +268,7 @@ def spell_cast_breakdown(
         "costs": costs,
         "projectedEffect": float(
             _round_effect(
-                max(
-                    Decimal("0"),
-                    (Decimal(_ceil(required_mana)) - fixed_mana) * Decimal(definition.effect_per_mana),
-                ),
+                max(Decimal("0"), (required_mana - fixed_mana) * Decimal(definition.effect_per_mana)),
                 definition.rounding,
             )
         ),

@@ -1368,6 +1368,13 @@ def create_unit_character(unit: Unit, level: int, variant: str = "") -> Personag
     allowed_races = [race for race in _list(rules.get("allowedRaces")) if race in RACE_NAMES]
     selected_race = race_rng.choice(allowed_races or list(RACE_NAMES)) if humanoid else ""
     available_subraces = list(subraces_for(selected_race))
+    allowed_subraces = [
+        subrace
+        for subrace in _list(rules.get("allowedSubraces"))
+        if subrace in available_subraces
+    ]
+    if allowed_subraces:
+        available_subraces = allowed_subraces
     selected_subrace = race_rng.choice(available_subraces) if available_subraces else ""
     competence_state, competence_report = (
         _generated_competences(unit, level, rules, rng)

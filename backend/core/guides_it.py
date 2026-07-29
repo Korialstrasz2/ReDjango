@@ -14,8 +14,80 @@ WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
 
 RACE_GUIDE_RACES = (
     "Bosmer", "Dunmer", "Orsimer", "Altmer", "Imperiale", "Bretone",
-    "Redguard", "Argoniano", "Khajiit", "Nord", "Falmer",
+    "Redguard", "Argoniano", "Khajiit", "Nord", "Falmer", "Dremora", "Xivilai",
+    "Non morto",
 )
+
+_DREMORA_GUIDE_HTML = """
+<section class="redjango-race-supplement">
+<h3>Dremora</h3>
+<p><strong>Tipo:</strong> Daedra umanoide. I Dremora sono guerrieri immortali organizzati
+in clan e caste militari; considerano rango, disciplina e forza di volontà prove di valore.</p>
+<h4>Modificatori</h4>
+<p>Forza +2, Resistenza +2, Concentrazione +1; Personalità −2, Fortuna −2, Saggezza −1.</p>
+<h4>Tratto razziale — Sangue dell'Oblivion</h4>
+<p>Resistenza al fuoco +1 e RD fuoco +2. Una volta al giorno il Dremora può ripetere
+una prova di Intimidire contro una creatura mortale.</p>
+<h4>Sottorazze e ranghi</h4>
+<ul>
+<li><strong>Churl:</strong> Energia +1.</li>
+<li><strong>Caitiff:</strong> Velocità +1.</li>
+<li><strong>Kynval:</strong> Attacco +1.</li>
+<li><strong>Kynreeve:</strong> Difesa +1.</li>
+<li><strong>Kynmarcher:</strong> Concentrazione +1.</li>
+<li><strong>Markynaz:</strong> Potere +1.</li>
+<li><strong>Valkynaz:</strong> Resistenza +1.</li>
+</ul>
+<p class="guide-implementation-note guide-status-implemented"><strong>Nota ReDjango:</strong>
+razza, tratto e sottorazze sono applicati automaticamente e sono disponibili anche
+nel generatore delle Unit umanoidi.</p>
+</section>
+"""
+
+_XIVILAI_GUIDE_HTML = """
+<section class="redjango-race-supplement">
+<h3>Xivilai</h3>
+<p><strong>Tipo:</strong> Daedra maggiore umanoide. Gli Xivilai sono esseri potenti,
+intelligenti e indipendenti, distinti dalle caste militari dei Dremora.</p>
+<h4>Modificatori</h4>
+<p>Forza +2, Resistenza +2, Intelligenza +1; Personalità −2, Fortuna −2, Saggezza −1.</p>
+<h4>Tratto razziale — Sangue dell'Oblivion</h4>
+<p>Resistenza al fuoco +1 e RD fuoco +2. La loro natura daedrica e la loro forza
+arcana sono rappresentate direttamente dai modificatori e dal tratto automatico.</p>
+<h4>Sottorazze</h4>
+<p>Nessuna. Xivilai è una specie daedrica autonoma e non usa i ranghi dei Dremora.</p>
+<p class="guide-implementation-note guide-status-implemented"><strong>Nota ReDjango:</strong>
+la razza e il tratto sono applicati automaticamente e sono disponibili nel generatore
+delle Unit umanoidi.</p>
+</section>
+"""
+
+_UNDEAD_GUIDE_HTML = """
+<section class="redjango-race-supplement">
+<h3>Non morto</h3>
+<p><strong>Tipo:</strong> creatura animata dopo la morte da magia, volontà, maledizione o legame spirituale.
+La razza copre non morti coscienti e utilizzabili come personaggi; un'Unit puramente bestiale può restare
+una Creatura senza razza primaria.</p>
+<h4>Modificatori</h4>
+<p>Forza +1, Resistenza +2, Concentrazione +1; Personalità −2, Fortuna −1, Saggezza −1.</p>
+<h4>Tratto razziale — Corpo senza vita</h4>
+<p>RD fisica +1. Il non morto non necessita di respirare, mangiare o dormire ed è immune a veleni e
+malattie; una volta al giorno può ignorare un effetto di paura.</p>
+<h4>Sottorazze</h4>
+<ul>
+<li><strong>Scheletro:</strong> Agilità +1.</li>
+<li><strong>Draugr:</strong> Resistenza al gelo +1.</li>
+<li><strong>Revenant:</strong> Forza +1.</li>
+<li><strong>Mummia:</strong> RD fisica +1.</li>
+<li><strong>Vampiro:</strong> Velocità +1.</li>
+<li><strong>Lich:</strong> Potere +1.</li>
+<li><strong>Spettro:</strong> Difesa +1.</li>
+</ul>
+<p class="guide-implementation-note guide-status-implemented"><strong>Nota ReDjango:</strong>
+la RD e le sottorazze sono applicate automaticamente. Immunità, fame, sonno e paura restano regole
+narrative finché non esiste un motore completo per quelle condizioni.</p>
+</section>
+"""
 
 
 CHARACTER_VARIABLE_GROUPS = (
@@ -553,6 +625,12 @@ def _heading_text(raw_heading: str) -> str:
 
 def race_guide_html(source: str) -> str:
     """Add stable race anchors and a compact table of contents to Elder's HTML guide."""
+    if not re.search(r"<h3[^>]*>\s*Dremora\s*</h3>", source, flags=re.IGNORECASE):
+        source = f"{source}\n{_DREMORA_GUIDE_HTML}"
+    if not re.search(r"<h3[^>]*>\s*Xivilai\s*</h3>", source, flags=re.IGNORECASE):
+        source = f"{source}\n{_XIVILAI_GUIDE_HTML}"
+    if not re.search(r"<h3[^>]*>\s*Non morto\s*</h3>", source, flags=re.IGNORECASE):
+        source = f"{source}\n{_UNDEAD_GUIDE_HTML}"
     races: list[tuple[str, str]] = []
 
     def add_anchor(match: re.Match[str]) -> str:
@@ -689,7 +767,7 @@ V2_GUIDE_DEFAULTS = [
             {
                 "type": "list",
                 "items": [
-                    "weapon_profile — assi dell'arma, modalità di combattimento, munizioni e ricarica. Vedi la Guida Armi.",
+                    "weapon_profile — override per singolo oggetto di assi, modalità di combattimento, munizioni e ricarica. Oggi nessun oggetto ne salva uno: il profilo effettivo arriva dalle regole del Tipo arma. Compilalo solo per un'arma che deve discostarsi dal suo tipo.",
                     "alchemy_profile — dati del banco alchemico.",
                     "crafting_profile — dati di forgiatura, ancora in ricostruzione.",
                     "tipo_arma collega l'oggetto a un Tipo arma del catalogo; pa_per_attacco salva il costo in PA.",

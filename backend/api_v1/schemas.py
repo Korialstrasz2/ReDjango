@@ -336,6 +336,12 @@ class ItemCatalogDataSchema(Schema):
     effectConfiguration: EffectConfigurationSchema
     weaponTypes: list[WeaponTypeSchema]
     weaponConfiguration: dict[str, Any]
+    total: int = 0
+    offset: int = 0
+    limit: int = 0
+    hasMore: bool = False
+    regions: list[str] = []
+    specialCount: int = 0
 
 
 class ItemCatalogEnvelopeSchema(Schema):

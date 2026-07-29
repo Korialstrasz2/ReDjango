@@ -14,7 +14,7 @@ from .selectors import _character_appearance
 from .selectors import _effects
 from .selectors import serialize_item
 from .services.item_icons import special_icon_directory
-from .race_rules import subraces_for
+from .race_rules import RACE_CATALOG, RACE_NAMES, automatic_race_effects, race_configuration_payload, subraces_for
 from .services.refresh_personaggio import (
     apply_equipment_specializations,
     calculate_personaggio_totals,
@@ -79,6 +79,68 @@ class CharacterRaceRulesTests(TestCase):
     def test_subrace_catalog_is_dependent_on_primary_race(self):
         self.assertIn("Retaggio Mago", subraces_for("Dunmer"))
         self.assertNotIn("Retaggio Mago", subraces_for("Nord"))
+
+    def test_dremora_matches_existing_race_budget_and_exposes_rank_subraces(self):
+        modifiers = RACE_CATALOG["Dremora"]["modifiers"]
+
+        self.assertIn("Dremora", RACE_NAMES)
+        self.assertEqual(sum(value for value in modifiers.values() if value > 0), 5)
+        self.assertEqual(sum(value for value in modifiers.values() if value < 0), -5)
+        self.assertEqual(
+            subraces_for("Dremora"),
+            ("Churl", "Caitiff", "Kynval", "Kynreeve", "Kynmarcher", "Markynaz", "Valkynaz"),
+        )
+        configuration = race_configuration_payload()
+        dremora = next(entry for entry in configuration["races"] if entry["value"] == "Dremora")
+        self.assertEqual(len(dremora["subraces"]), 7)
+
+        effects = automatic_race_effects("Dremora", "Kynval")
+        self.assertEqual(
+            [effect["name"] for effect in effects],
+            ["RAZZA: Dremora", "Dremora: tratto razziale", "SUBRAZZA: Kynval"],
+        )
+        self.assertIn(
+            {"target": "attacco", "operation": "add", "value": "1"},
+            effects[-1]["operations"],
+        )
+
+    def test_xivilai_is_a_distinct_balanced_daedric_race_without_dremora_ranks(self):
+        modifiers = RACE_CATALOG["Xivilai"]["modifiers"]
+
+        self.assertIn("Xivilai", RACE_NAMES)
+        self.assertEqual(sum(value for value in modifiers.values() if value > 0), 5)
+        self.assertEqual(sum(value for value in modifiers.values() if value < 0), -5)
+        self.assertEqual(subraces_for("Xivilai"), ())
+
+        effects = automatic_race_effects("Xivilai", "")
+        self.assertEqual(
+            [effect["name"] for effect in effects],
+            ["RAZZA: Xivilai", "Xivilai: tratto razziale"],
+        )
+        self.assertEqual(
+            effects[1]["operations"],
+            [
+                {"target": "res_fuoco", "operation": "add", "value": "1"},
+                {"target": "rd_fuoco", "operation": "add", "value": "2"},
+            ],
+        )
+
+    def test_undead_race_covers_skeletons_draugr_and_other_undead_forms(self):
+        modifiers = RACE_CATALOG["Non morto"]["modifiers"]
+
+        self.assertIn("Non morto", RACE_NAMES)
+        self.assertEqual(sum(value for value in modifiers.values() if value > 0), 4)
+        self.assertEqual(sum(value for value in modifiers.values() if value < 0), -4)
+        self.assertEqual(
+            subraces_for("Non morto"),
+            ("Scheletro", "Draugr", "Revenant", "Mummia", "Vampiro", "Lich", "Spettro"),
+        )
+        effects = automatic_race_effects("Non morto", "Draugr")
+        self.assertEqual(effects[1]["operations"], [{"target": "rd_fis", "operation": "add", "value": "1"}])
+        self.assertIn(
+            {"target": "res_gelo", "operation": "add", "value": "1"},
+            effects[-1]["operations"],
+        )
 
 
 class CharacterAppearanceTests(TestCase):

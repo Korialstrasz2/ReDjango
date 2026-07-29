@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:997",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      997
+    ],
+    "normalizedName": "scamp",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 997,
+        "levels": [
+          20
+        ],
+        "nome": "Scamp",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            4,
+            "linear"
+          ],
+          "resistenza_tot": [
+            4,
+            "linear"
+          ],
+          "velocita_tot": [
+            5,
+            "linear"
+          ],
+          "agilita_tot": [
+            5,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            5,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            5,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            4,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            5,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            5,
+            "0"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_gelo_tot": [
+            4,
+            "linear"
+          ],
+          "res_elettro_tot": [
+            4,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            7,
+            "hi_hi"
+          ],
+          "rd_gelo_tot": [
+            4,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            0,
+            "linear"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            5,
+            "linear"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            5,
+            "linear"
+          ],
+          "tier_tot": [
+            4,
+            "linear"
+          ],
+          "attacco_tot": [
+            5,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 9,
+        "skill_2_id": 32,
+        "skill_3_id": 28,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 103,
+        "unitId": 997,
+        "name": "Scamp",
+        "description": "Gli Scamp si trovano nei piani di Oblivion e nei luoghi di Nirn dove maghi, cultisti o incidenti daedrici li richiamano. Sono tra i Daedra minori più comuni, spesso usati come servitori, famigli, guardiani scadenti o piccoli strumenti di disturbo. La loro presenza è raramente nobile, ma quasi sempre fastidiosa. Sono codardi, dispettosi e più intelligenti di quanto convenga ammettere. Amano infastidire, rubacchiare, ridere nei momenti sbagliati e scappare appena la situazione diventa troppo seria. Se protetti da un padrone più potente, però, diventano molto più audaci e insopportabili. Combattono con artigli, piccoli incantesimi, morsi e movimenti rapidi. Singolarmente non sono grandi minacce per un avventuriero esperto, ma in gruppo o come supporto a un evocatore possono diventare irritanti e pericolosi. Il loro vero talento è distrarre, indebolire e far perdere tempo.",
+        "image": "UnitLorePics/Scamp.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 9,
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici.",
+        "effect": "Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni."
+      },
+      {
+        "sourceId": 32,
+        "name": "Bruciatura di Mana",
+        "description": "Brucia le riserve di mana del bersaglio.",
+        "effect": "Infligge (2d6 + livello) danni e riduce il mana del bersaglio di (livello)d4.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 4 POW, raddoppia la riduzione del mana."
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Scamp",
+    "sourceIds": [
+      997
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint vengono linearizzati senza elevarlo al rango di Atronach.",
+    "fantasy": "Daedra minore dispettoso che compensa fragilità con fuoco e sabotaggio delle risorse.",
+    "combatStory": "Resta a media distanza, lancia fuoco, brucia Mana e usa Furia soltanto quando viene chiuso.",
+    "siblings": [
+      {
+        "unit": "Atronach di Fuoco",
+        "relation": "nearest",
+        "mustDifferBy": "Più fragile e opportunista, con sabotaggio Mana invece di aura."
+      },
+      {
+        "unit": "Clannfear",
+        "relation": "same-rank",
+        "mustDifferBy": "Caster minore invece di predatore fisico."
+      },
+      {
+        "unit": "Hunger",
+        "relation": "contrast",
+        "mustDifferBy": "Fuoco e disturbo, non drenaggio sostenuto."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "piromante minore",
+        "expressedBy": "Palla di Fuoco e Mana"
+      },
+      {
+        "axis": "sabotatore",
+        "expressedBy": "Bruciatura di Mana"
+      }
+    ],
+    "must": [
+      "Daedra",
+      "fuoco",
+      "Bruciatura di Mana",
+      "fragilità"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "volo",
+      "armatura elementale"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Scamp riconoscibile",
+      "5": "fuoco",
+      "10": "bruciatura Mana",
+      "15": "Furia d'emergenza",
+      "20": "Scamp veterano"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Scamp",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Palla di Fuoco e Bruciatura di Mana presenti"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "volo",
+      "armatura elementale"
+    ],
+    "differsFrom": {
+      "Atronach di Fuoco": "Più fragile e opportunista, con sabotaggio Mana invece di aura.",
+      "Clannfear": "Caster minore invece di predatore fisico."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:997"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:997"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Scamp",
+    "category": "Daedra",
+    "archetypeDescription": "Caster Daedra minore con Palla di Fuoco e Bruciatura di Mana.",
+    "loreDescription": "Gli Scamp si trovano nei piani di Oblivion e nei luoghi di Nirn dove maghi, cultisti o incidenti daedrici li richiamano. Sono tra i Daedra minori più comuni, spesso usati come servitori, famigli, guardiani scadenti o piccoli strumenti di disturbo. La loro presenza è raramente nobile, ma quasi sempre fastidiosa. Sono codardi, dispettosi e più intelligenti di quanto convenga ammettere. Amano infastidire, rubacchiare, ridere nei momenti sbagliati e scappare appena la situazione diventa troppo seria. Se protetti da un padrone più potente, però, diventano molto più audaci e insopportabili. Combattono con artigli, piccoli incantesimi, morsi e movimenti rapidi. Singolarmente non sono grandi minacce per un avventuriero esperto, ma in gruppo o come supporto a un evocatore possono diventare irritanti e pericolosi. Il loro vero talento è distrarre, indebolire e far perdere tempo.",
+    "notes": "Batch 4 v2: conversione Elder [997]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-9",
+        "name": "Palla di Fuoco",
+        "description": "Conjura una palla di fuoco da lanciare ai nemici. Infligge (3d6 + livello) danni da fuoco a un bersaglio entro 6 esagoni; danni ad area di (livello)d4 agli esagoni adiacenti. Boost Elder: Per 5 POW, aumenta i dadi del danno a d8 e il raggio dell'area a 2 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-32",
+        "name": "Bruciatura di Mana",
+        "description": "Brucia le riserve di mana del bersaglio. Infligge (2d6 + livello) danni e riduce il mana del bersaglio di (livello)d4. Boost Elder: Per 4 POW, raddoppia la riduzione del mana.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "very_low",
+          "level1": 0,
+          "level20": 1
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 10
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:a450d8db739c785393defc357ca21fd06b6b3307c4e4ed8032c7b92a35678dec",
+  "charterHash": "sha256:577eeaf40225791ebc811f5146604b09bdbee3706272b1fbbd20b4040aedfba4",
+  "converterVersion": "elder-unit-charter-v2-batch4",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint vengono linearizzati senza elevarlo al rango di Atronach."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:e9b037f64c0e59cf65b92c883ad26f8cf1eb42460e609c034fb0e05b0bd10b75",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:5977189d0d8f73251bf7a198dad19930ae1033ecb9a3574178663129e1250cfa",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:38e8a23364fd41f8b08da1e97ad66641b15c8014511d3746f76795eaa3c67840",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:fedf6b6d3ceec134f18ac3acf880940ed080198253b1782e643f85aafe29db6d",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:396ea240eb2d5b961297a0242434a9203e31c7a6bb0fcdf564649f44777cbf9b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Palla di Fuoco",
+          "Bruciatura di Mana",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Scamp",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch4-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:59:53.280132+00:00",
+    "notes": "Standing authorization: user requested 20 more Units and explicitly asked for careful, thorough adherence to the V2 guide, best practices, and sibling coherence. Applied only after final subrace constraints, 20/20 static validation, a fresh 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 final review samples."
+  }
+}

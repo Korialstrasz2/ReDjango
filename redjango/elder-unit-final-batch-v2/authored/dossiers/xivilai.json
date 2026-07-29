@@ -1,0 +1,1434 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:946",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      946
+    ],
+    "normalizedName": "xivilai",
+    "rows": [
+      {
+        "archetipo": "guerriero",
+        "arma": [
+          "Martello da guerra (daedrico)"
+        ],
+        "armatura": [
+          "Vuoto"
+        ],
+        "categoria": "Daedra",
+        "chainmail": [
+          "Vuoto"
+        ],
+        "id": 946,
+        "levels": [
+          20
+        ],
+        "nome": "Xivilai",
+        "preset": "Heavy",
+        "profili_attributi_formule": {},
+        "razza": "Entità",
+        "scudo": [
+          "Vuoto"
+        ],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [
+          "Vuoto"
+        ],
+        "vestito": [
+          "Vuoto"
+        ]
+      }
+    ],
+    "lore": [
+      {
+        "id": 130,
+        "unitId": 946,
+        "name": "Xivilai",
+        "description": "Gli Xivilai sono Daedra potenti che si incontrano nei reami di Oblivion, soprattutto dove Principi come Mehrunes Dagon o Molag Bal impiegano servitori forti, intelligenti e poco inclini all'umiltà. Possono apparire a Nirn durante invasioni, evocazioni particolarmente ambiziose o missioni daedriche di alto livello. La loro presenza indica sempre un pericolo superiore a quello di un semplice Daedra minore. Sono orgogliosi, arroganti e molto consapevoli della propria forza. A differenza dei Dremora, non sembrano sempre legati a una disciplina di casta rigida, e questo li rende più imprevedibili. Possono servire, tradire, negoziare o dominare a seconda di chi hanno davanti e di quanto si sentano rispettati. Combattono con armi pesanti, magia, evocazioni e una fisicità imponente. Sono abbastanza intelligenti da cambiare tattica e abbastanza forti da punire chiunque li affronti come semplici bruti. Con uno Xivilai il problema non è soltanto sopravvivere al suo attacco, ma non offrirgli un motivo personale per ricordarsi di te.",
+        "image": "UnitLorePics/Xivilai_L5kgp4u.png"
+      }
+    ],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Xivilai",
+    "sourceIds": [
+      946
+    ],
+    "kind": "humanoid",
+    "kindJustification": "Daedra senziente che impugna un martello e combina Skill marziali e magia: richiede il contratto humanoid e la razza Xivilai.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Specie e martello sono front-loaded; la profondità marziale e arcana scala lungo 1-20.",
+    "fantasy": "Daedra maggiore indipendente che combina forza imponente, martello daedrico e magia evocativa.",
+    "combatStory": "Spezza la linea con il martello, evoca armi o Daedra e cambia posizione con Teleport senza assumere rango Dremora.",
+    "siblings": [
+      {
+        "unit": "Signore Dremora",
+        "relation": "nearest",
+        "mustDifferBy": "Potenza indipendente ed Evocazione aggressiva invece di comando gerarchico."
+      },
+      {
+        "unit": "Principe Dremora",
+        "relation": "same-scale",
+        "mustDifferBy": "Specie Xivilai e magia invece di rango Valkynaz."
+      },
+      {
+        "unit": "Ogrim",
+        "relation": "contrast",
+        "mustDifferBy": "Intelligenza, equipment e Skill invece di chassis da creatura."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "specie Xivilai",
+        "expressedBy": "razza autonoma senza ranghi Dremora"
+      },
+      {
+        "axis": "bruto arcano",
+        "expressedBy": "martello daedrico più Evocazione/Distruzione"
+      }
+    ],
+    "must": [
+      "Xivilai",
+      "martello daedrico",
+      "Evocazione",
+      "forza"
+    ],
+    "mustNot": [
+      "razza Dremora",
+      "razza mortale",
+      "scudo",
+      "azioni innate"
+    ],
+    "rigidity": "path-locked",
+    "variationBudget": "manovre pesanti o magia daedrica sul martello fisso",
+    "levelCheckpoints": {
+      "1": "Xivilai completo",
+      "5": "arma evocata",
+      "10": "teletrasporto",
+      "15": "evocazione aggressiva",
+      "20": "Daedra maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Xivilai",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "humanoid",
+      "innateActionCount": 0,
+      "racePrimary": [
+        "Xivilai"
+      ]
+    },
+    "atLeastOneVariantHas": [
+      "razza Xivilai e martello daedrico in ogni variante"
+    ],
+    "allowedVariation": [
+      "manovre pesanti o magia daedrica sul martello fisso",
+      "razze: Xivilai"
+    ],
+    "forbidden": [
+      "razza Dremora",
+      "razza mortale",
+      "scudo",
+      "azioni innate"
+    ],
+    "differsFrom": {
+      "Signore Dremora": "Potenza indipendente ed Evocazione aggressiva invece di comando gerarchico.",
+      "Principe Dremora": "Specie Xivilai e magia invece di rango Valkynaz."
+    },
+    "explainedWarnings": [
+      {
+        "code": "indivisible-general-xp-residual",
+        "pattern": "^[1-9] PE generali restano disponibili: nessuna Skill configurata è acquistabile\\.$",
+        "why": "Il pool resta curato; 1-9 PE indivisibili non autorizzano l'aggiunta di una Skill incoerente."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "identità e comportamento",
+      "source": "unitlore:946"
+    },
+    {
+      "claim": "equipaggiamento",
+      "source": "django_slim_unit:946"
+    }
+  ],
+  "catalogQueries": [
+    {
+      "purpose": "Pool Skill espliciti Core/Archetipo",
+      "sql": "SELECT id,nome,famiglia_id,costo_pe FROM core_skill WHERE archived_at IS NULL AND id IN (:skill_ids)",
+      "params": {
+        "skill_ids": [
+          64,
+          65,
+          71,
+          72,
+          91,
+          92,
+          357,
+          358,
+          380,
+          93,
+          355,
+          356,
+          81,
+          82,
+          473,
+          474,
+          480,
+          481,
+          498,
+          499,
+          17,
+          15,
+          488,
+          522,
+          321,
+          330,
+          331,
+          328,
+          324,
+          333,
+          1010,
+          1011,
+          445,
+          456,
+          440,
+          442,
+          460,
+          444,
+          463
+        ]
+      },
+      "resultIds": [
+        64,
+        65,
+        71,
+        72,
+        91,
+        92,
+        357,
+        358,
+        380,
+        93,
+        355,
+        356,
+        81,
+        82,
+        473,
+        474,
+        480,
+        481,
+        498,
+        499,
+        17,
+        15,
+        488,
+        522,
+        321,
+        330,
+        331,
+        328,
+        324,
+        333,
+        1010,
+        1011,
+        445,
+        456,
+        440,
+        442,
+        460,
+        444,
+        463
+      ]
+    },
+    {
+      "purpose": "Pool equipaggiamento e identity locks",
+      "sql": "SELECT id,nome,tipo_1,tipo_2,tipo_3,tipo_4 FROM core_oggetto WHERE archived_at IS NULL AND archiviato=0 AND id IN (:item_ids)",
+      "params": {
+        "item_ids": [
+          313
+        ]
+      },
+      "resultIds": [
+        313
+      ]
+    }
+  ],
+  "proposal": {
+    "name": "Xivilai",
+    "category": "Daedra",
+    "archetypeDescription": "Xivilai ibrido guerriero-evocatore con martello daedrico e magia aggressiva.",
+    "loreDescription": "Gli Xivilai sono Daedra potenti che si incontrano nei reami di Oblivion, soprattutto dove Principi come Mehrunes Dagon o Molag Bal impiegano servitori forti, intelligenti e poco inclini all'umiltà. Possono apparire a Nirn durante invasioni, evocazioni particolarmente ambiziose o missioni daedriche di alto livello. La loro presenza indica sempre un pericolo superiore a quello di un semplice Daedra minore. Sono orgogliosi, arroganti e molto consapevoli della propria forza. A differenza dei Dremora, non sembrano sempre legati a una disciplina di casta rigida, e questo li rende più imprevedibili. Possono servire, tradire, negoziare o dominare a seconda di chi hanno davanti e di quanto si sentano rispettati. Combattono con armi pesanti, magia, evocazioni e una fisicità imponente. Sono abbastanza intelligenti da cambiare tattica e abbastanza forti da punire chiunque li affronti come semplici bruti. Con uno Xivilai il problema non è soltanto sopravvivere al suo attacco, ma non offrirgli un motivo personale per ricordarsi di te.",
+    "notes": "Final Batch v2: conversione Elder [946]; Charter, pool Skill ed estensione 1-20 sono stati curati esplicitamente.",
+    "levels": [],
+    "archetypeTags": {
+      "core_fisico": 5,
+      "core_magico": 4,
+      "focus_combat": 5,
+      "attacco": 5,
+      "natura_magica": 5,
+      "difesa": 3
+    },
+    "competenceProfile": {
+      "sapienza_magica": 5,
+      "intimidire": 5,
+      "percezione": 4,
+      "strategia_militare": 3,
+      "diplomazia": -5
+    },
+    "generation": {
+      "kind": "humanoid",
+      "coreKey": "specialist",
+      "coreShare": 0.5,
+      "startingXp": 8,
+      "xpBase": 4,
+      "xpGrowth": 0,
+      "competenceStartingXp": 5,
+      "competenceXpBase": 8,
+      "competenceXpGrowth": 0,
+      "finalSpendingPasses": 8,
+      "magicPolicy": "any",
+      "allowedClassFamilies": [],
+      "allowedReligionFamilies": [],
+      "allowedRaces": [
+        "Xivilai"
+      ],
+      "allowHumanoidStatGrowth": false
+    },
+    "skillUnlocks": [
+      {
+        "skillId": 64,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 65,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 71,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 72,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 91,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 92,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 357,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 358,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 380,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 93,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 355,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 356,
+        "pool": "core",
+        "weight": 4,
+        "minLevel": 10,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 81,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 82,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 473,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 474,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 480,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 481,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 498,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 499,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 6,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 17,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 15,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 488,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 8,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 522,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 8,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 321,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 330,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 331,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 328,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 324,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 333,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1010,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1011,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 9,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 445,
+        "pool": "archetype",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 456,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 440,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 442,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 7,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 460,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 8,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 444,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 10,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 463,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 13,
+        "maxLevel": 20
+      }
+    ],
+    "equipmentSlots": [
+      {
+        "slot": "arma",
+        "itemId": 313,
+        "minLevel": 1,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      }
+    ],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": []
+    }
+  },
+  "proposalHash": "sha256:54aeef07d30d8f3b17d63965b05670432af750eded91945f09d57a5ae8c7d5c5",
+  "charterHash": "sha256:5d541eb19dece532444a78b1584523cf88aa0d427a47f12cde038fe800a37b0b",
+  "converterVersion": "elder-unit-charter-v2-final",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "proposal": "bulk research con pool Skill vuoto"
+      },
+      "decision": "reject",
+      "reasonCode": "empty-authored-skill-pool",
+      "reason": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente."
+    },
+    {
+      "candidate": {
+        "allowedRace": "Dremora"
+      },
+      "decision": "reject",
+      "reasonCode": "distinct-daedric-species",
+      "reason": "Gli Xivilai non appartengono alla gerarchia o alla specie dei Dremora."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "livelli supportati",
+      "from": "solo livello 20",
+      "to": "1-20",
+      "why": "Specie e martello sono front-loaded; la profondità marziale e arcana scala lungo 1-20."
+    },
+    {
+      "what": "razza legacy",
+      "from": "generico Entità",
+      "to": "Xivilai",
+      "why": "Il nome e il lore identificano esplicitamente una specie daedrica senziente distinta."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "Skill attive e prerequisiti",
+      "source": "core_skill + core_skill_prerequisiti"
+    },
+    {
+      "claim": "slot e item",
+      "source": "item_compatible_with_equipment_slot"
+    },
+    {
+      "claim": "razza",
+      "source": "backend.characters.race_rules.RACE_CATALOG"
+    }
+  ],
+  "findings": [
+    {
+      "code": "empty-authored-skill-pool",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'proposal': 'bulk research con pool Skill vuoto'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente.",
+      "status": "resolved"
+    },
+    {
+      "code": "distinct-daedric-species",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'allowedRace': 'Dremora'} rischia deriva d'identità o illegalità.",
+      "resolution": "Gli Xivilai non appartengono alla gerarchia o alla specie dei Dremora.",
+      "status": "resolved"
+    },
+    {
+      "code": "indivisible-general-xp-residual",
+      "severity": "warning-audit",
+      "finding": "Il generatore può lasciare 1-9 PE quando nessun costo intero del pool curato coincide col residuo.",
+      "resolution": "Accettare soltanto l'esatto warning residuo 1-9; ogni altro warning resta un fallimento. Non allargare il pool per consumarlo.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:8295a219c3d0272b7738460f237b5d2d1642bd98719e4f4645c57a7204f88e81",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:c199e0dc28afc433048a24770bf4f0d07606e158a46056e29a951fe357423f6c",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:ffe43711f0c486a0a80e8e9a987b12c8d3912903fa341e459a536b59ae53f505",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:c13afc54ea6ad656bc00e356a3039ab06cec1781d170c0867037cdf05064d472",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:1c1565eb5927a8fff14d4ed42be6ed929533103759f0ac15732526de22262b95",
+        "skills": 5,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:43d675b32b95ffdd267f94a02ef2457b3ac4f11f9fb0e4f7cfcc1f82396356c9",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:df84b5f60f117d3a14ccd538f408473cce99e8c91426521cca12850512e8085d",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:be8bfae199090c9ab10fff649c580102e809ada4a19381a76149f2bb0c648f6c",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:e204b1837bf78971c7bc5777667e2da952932ef3dfee85061dc2f3c97d3b53d6",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:d70e6b62a19e4fe947d8f5e48e103a9df3edfdde05c926016821bb90d129358d",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:05fc824dc8f98a6395e020acdec4160662ecb646244eb4053f73a545a4c936e2",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:7f7a9f6b79028af9e6b7896f7735e5c4b9a6af56340ecc55c8c715956cfe8132",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:93c161a500b781a0a25a3c2c699ba74eb6ea3f640a0c06c29cf177603def8d37",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:284dc3874e9357b1f5036f47b1ef7646bf3bc450a05927534c365b81b10f4ee2",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:f5982f6e72f31285b26f10b4eaeee554ba80638563322a92797f35b3ae6e1d2a",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:b7802eef17e1a78cac68394ecaa244dda3dcaa8aed0e8bb9c1d73ddc1e4b29bc",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:1a02192dcd3ef484c1266a1ae4f96b20f1c5b05df376a3e0e9ce32f07cabef8f",
+        "skills": 16,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:893efb69bbcb78067ebb6d80fc6e7e4007836cf3c767fea008b1831a81b59e6e",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:4d0296304190cad0ff27aec10d25e73c4b1fa4eead8db92bfb5db40f12567bca",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:23072446d09b07f2ae9a1935ce17875fba10c4fbcd3b3dfa6017284d8eea2303",
+        "skills": 15,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:a48a951cab4ab9896d3df5ef0d1fecea0001f0bcf715df37211dbe30ed3ec824",
+        "skills": 15,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:e298819a5d9c42a3d89936682b0292f620bfe85e87f38fe0576dec743b71ce45",
+        "skills": 15,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:d1f2fdbd4c40781b21ab89881de983a29e1709f1cb97967db75ba7496627fe32",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:c077db27de1eeb06d1551e66b051fb01bfb72443ab681dd62084ecfb3c22a8d9",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:a1cc643f380185cbbdf86c68cb5084c213f58cc0fe16b550dfb9408cd05a351d",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:98dea9f8a5f601a25097e507bd2074a76370d7c78559a021c03b3185cea30dfa",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:0a7321b05565d79a82d82e6b7d53915187e6ba331fa01d2c23e7857d0bf4660d",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:c016d38454059025676294baf6790a9d8f9cb1b4fd111ada1e1513fc04dd0be3",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:0b268b5352ee14927e8cff1651027d376612c1adf812f845e5619c62f0617bb2",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:2e55afa4e102d3d42bbcdfb20bd1480dbabf6b63667aab1fc0dd0f029b942459",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:2fa436a923d3a6a29b297c876f6cc2a733c4844d89b17da358afed2d6d37210e",
+        "skills": 19,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:aa9d32e45069beadaad3ed84e2804f53a93cc12e46968b43b9ae38f0e008b60d",
+        "skills": 18,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:5fb558a28f2d773d9eaf805cca9c6c56a0648e733400a475906395f1aac6d011",
+        "skills": 22,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:7d973f9cc4a344a3322534e9dae22ed72ab9acce83227a4e460fdb78fbfc9cf2",
+        "skills": 22,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:1e55e7bd5657bfd395e621bd58159b8b4aff7804762de6164f2379801ff7e3fb",
+        "skills": 21,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:d1eda830267d228714dfee9301180c7fd0513d4ed79206d56e5a9072fb676119",
+        "skills": 21,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:600581ea5e08c1fac7366e08cfaca20cf74de7cb29ef9d9d4305d938bd8e99aa",
+        "skills": 21,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:1dc0cd0c29a0a957fd6667dd25c630bebba0a62cd17ffc5e6ab5b68682637415",
+        "skills": 22,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:129a3023b81a5c0afe7bb6eb2a195dfae65c7291c10a0cc752d54208a00f6c01",
+        "skills": 21,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:a0990145b8447a5f3b5b6ed030e10f38a736b9bc2cf5beaf1a8071c31a60e4eb",
+        "skills": 22,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            313
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      }
+    ],
+    "warnings": [
+      "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+    ],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Xivilai",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 21,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "final-batch-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:50:35.334810+00:00",
+    "notes": "Standing authorization granted by Ale for all remaining coherent Elder unit conversions after prior batch approvals."
+  }
+}

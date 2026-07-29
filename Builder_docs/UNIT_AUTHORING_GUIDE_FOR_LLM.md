@@ -56,9 +56,18 @@ Configurazione raccomandata:
   "finalSpendingPasses": 4,
   "magicPolicy": "none",
   "allowedClassFamilies": ["Ranger"],
-  "allowedReligionFamilies": []
+  "allowedReligionFamilies": [],
+  "allowedRaces": ["Bosmer"],
+  "allowedSubraces": ["Cacciatore", "Esploratore"]
 }
 ```
+
+Lasciare `allowedRaces` vuoto significa consentire tutte le razze. Quando una
+Unit richiede una razza precisa, dichiararla esplicitamente. Usare
+`allowedSubraces` per escludere sottorazze o ranghi che contraddicono il Charter;
+i valori devono appartenere ad almeno una delle razze consentite.
+Non sostituire specie daedriche distinte per comodità: una Unit Xivilai usa
+`allowedRaces: ["Xivilai"]`, non `Dremora` e non una razza mortale.
 
 La progressione perk è unica e non configurabile. A ogni livello il generatore
 sceglie con probabilità 50% una tappa della progressione originale di

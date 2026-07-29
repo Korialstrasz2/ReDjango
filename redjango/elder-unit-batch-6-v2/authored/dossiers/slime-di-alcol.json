@@ -1,0 +1,1165 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1034",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1034
+    ],
+    "normalizedName": "slime di alcol",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1034,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Slime di Alcol",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            7,
+            "exponential"
+          ],
+          "mana_tot": [
+            5,
+            "exponential"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            5,
+            "linear"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "ap_tot": [
+            5,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            2,
+            "linear"
+          ],
+          "res_taglio_tot": [
+            7,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            8,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            1,
+            "-5"
+          ],
+          "res_gelo_tot": [
+            4,
+            "2"
+          ],
+          "res_elettro_tot": [
+            4,
+            "0"
+          ],
+          "rd_fis_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            5,
+            "0"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            5,
+            "0"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            5,
+            "0"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            5,
+            "0"
+          ],
+          "sconto_mana_per_potere_tot": [
+            5,
+            "0"
+          ],
+          "sconto_pa_per_potere_tot": [
+            5,
+            "0"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ]
+        },
+        "razza": "entità",
+        "scudo": [],
+        "skill_1_id": 138,
+        "skill_2_id": 148,
+        "skill_3_id": 155,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 113,
+        "unitId": 1034,
+        "name": "Slime di Alcol",
+        "description": "Gli Slime di Alcol sono quasi sempre creature del piano di Sanguine, dove vino, eccesso, magia e degrado possono diventare materia vivente. Su Tamriel non dovrebbero essere comuni nelle taverne normali: se ne compare uno, è probabile che ci sia stata una contaminazione daedrica, una festa consacrata male o una cantina collegata per qualche ragione al Principe dell'Eccesso. Nel dominio di Sanguine, invece, possono essere una conseguenza naturale dell'abuso trasformato in mostro. Non hanno una vera mente, ma sembrano attratti da calore, musica, rumore e presenza vivente. Si muovono con una goffaggine quasi comica, ma chi ride troppo vicino smette presto di farlo. La loro stranezza li rende meno solenni di altri mostri, ma non necessariamente meno pericolosi. Il loro corpo è una massa gelatinosa impregnata di vapori alcolici e magia instabile. Il contatto può stordire, ubriacare, irritare la pelle o confondere i sensi, mentre il fuoco può distruggerli ma anche trasformarli in una minaccia esplosiva. Sono assurdi, sì, ma nei domini di Sanguine l'assurdo è spesso solo un altro modo di ferire.",
+        "image": "UnitLorePics/Slime_di_Alcol.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 138,
+        "name": "Esplosione Elementale - Fuoco",
+        "description": "La creatura esplode se muore a causa di danni da fuoco.",
+        "effect": "(Lv creatura)d6 caselle confinanti, (Lv creatura)d4 quelle successive",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 148,
+        "name": "Moltiplicazione di slime di Alcol",
+        "description": "",
+        "effect": "Se di lv 8+, quando muore da danno non da fuoco, si divide in due slime di lv -2. Non ripetibile.",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 155,
+        "name": "Assimila",
+        "description": "Ingloba in sé un nemico.",
+        "effect": "A seguito di un attacco melee può attaccarsi ad un arto del nemico, tipicamente un braccio, e poi l'intero corpo.\nTiro contrapposto di forza per resistere. La creatura inglobata non può essere più grande. Se inglobato, il nemico non può muoversi, soffoca, e riceve lv danno puro a turno.",
+        "cost": "3 PA",
+        "boost": "3pow, +1 soglia, max +3."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Slime di Alcol",
+    "sourceIds": [
+      1034
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve sorgente 1-20 sono preservate; i testi vengono ricondotti a Fuoco, Puro e PA.",
+    "fantasy": "Massa vivente del piano di Sanguine, nata da eccesso, alcol e magia daedrica fermentata.",
+    "combatStory": "Brucia, avvolge e si divide se abbattuta nel modo sbagliato; il Fuoco è insieme arma e vulnerabilità.",
+    "siblings": [
+      {
+        "unit": "Anomalia Magica di Sanguine",
+        "relation": "nearest",
+        "mustDifferBy": "Massa fisica assimilante invece di teletrasporto arcano."
+      },
+      {
+        "unit": "Atronach di Fuoco",
+        "relation": "same-element",
+        "mustDifferBy": "Vulnerabile al Fuoco nonostante lo usi, e capace di dividersi."
+      },
+      {
+        "unit": "Hunger",
+        "relation": "contrast",
+        "mustDifferBy": "Inglobamento e fermentazione invece di drenaggio predatorio."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "eccesso fermentato",
+        "expressedBy": "Assimila e Mana"
+      },
+      {
+        "axis": "slime instabile",
+        "expressedBy": "Fuoco, enorme vulnerabilità al Fuoco e moltiplicazione"
+      }
+    ],
+    "must": [
+      "Sanguine",
+      "Assimila",
+      "Fuoco",
+      "moltiplicazione"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "equipment",
+      "Skill",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "slime ardente",
+      "5": "Assimila",
+      "10": "moltiplicazione",
+      "15": "massa fermentata",
+      "20": "slime maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Slime di Alcol",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Esplosione Elementale - Fuoco presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "equipment",
+      "Skill",
+      "volo"
+    ],
+    "differsFrom": {
+      "Anomalia Magica di Sanguine": "Massa fisica assimilante invece di teletrasporto arcano.",
+      "Atronach di Fuoco": "Vulnerabile al Fuoco nonostante lo usi, e capace di dividersi."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1034"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1034"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Slime di Alcol",
+    "category": "Daedra",
+    "archetypeDescription": "Slime Daedra con assimilazione, esplosione di Fuoco e moltiplicazione condizionata.",
+    "loreDescription": "Gli Slime di Alcol sono quasi sempre creature del piano di Sanguine, dove vino, eccesso, magia e degrado possono diventare materia vivente. Su Tamriel non dovrebbero essere comuni nelle taverne normali: se ne compare uno, è probabile che ci sia stata una contaminazione daedrica, una festa consacrata male o una cantina collegata per qualche ragione al Principe dell'Eccesso. Nel dominio di Sanguine, invece, possono essere una conseguenza naturale dell'abuso trasformato in mostro. Non hanno una vera mente, ma sembrano attratti da calore, musica, rumore e presenza vivente. Si muovono con una goffaggine quasi comica, ma chi ride troppo vicino smette presto di farlo. La loro stranezza li rende meno solenni di altri mostri, ma non necessariamente meno pericolosi. Il loro corpo è una massa gelatinosa impregnata di vapori alcolici e magia instabile. Il contatto può stordire, ubriacare, irritare la pelle o confondere i sensi, mentre il fuoco può distruggerli ma anche trasformarli in una minaccia esplosiva. Sono assurdi, sì, ma nei domini di Sanguine l'assurdo è spesso solo un altro modo di ferire.",
+    "notes": "Batch 6 v2: conversione Elder [1034]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-138",
+        "name": "Esplosione Elementale - Fuoco",
+        "description": "Area adiacente. Lo Slime esplode e infligge danni da Fuoco usando il tipo implementato.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-148",
+        "name": "Moltiplicazione di slime di Alcol",
+        "description": "Passiva dal livello 8. Se distrutto senza Fuoco, genera due manifestazioni minori; usa il precedente di evocazione/minion.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-155",
+        "name": "Assimila",
+        "description": "Dopo un attacco melee, lo Slime avvolge il bersaglio: infligge danni Puro e riduce i PA finché l'avversario non si libera.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -3,
+          "level20": 1
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "high",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -5,
+          "level20": -5
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:ba4b3cf792aabeb514ddbe13d491ff26bfe1047139a58ee0002ff7a47e25391a",
+  "charterHash": "sha256:1935aa8a2747a68e9e22d0e7697d6724c86179b7d3cf530220402a48a640628a",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve sorgente 1-20 sono preservate; i testi vengono ricondotti a Fuoco, Puro e PA."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:6f3430854f4c95f7404a104cc86d37bdd7820dd80b7f6dabb6c3584ad65ec290",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:e64d511ccb7f73ef91931e964a1ad1c9fd6d8a9e30958fba429460bd45063d43",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:b32e17dca264ad32eb189e73b5f2b19f336990e39855174df15ba40c820dccdd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:037f9c54b124f64630480822b348e85b184c1276de322e82685129c249ef32bf",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:bba39a8b4723ff0ae491b569e61caa5e8c406e598f1ddfac453e0814923d679f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Esplosione Elementale - Fuoco",
+          "Moltiplicazione di slime di Alcol",
+          "Assimila"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Slime di Alcol",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

@@ -1,0 +1,1464 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1015",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1015
+    ],
+    "normalizedName": "draugr signore della morte",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [
+          "Spadone (ebano)",
+          "Martello da guerra (ebano)"
+        ],
+        "armatura": [],
+        "categoria": "Nonmorto",
+        "chainmail": [],
+        "id": 1015,
+        "levels": [
+          20
+        ],
+        "nome": "Draugr Signore della Morte",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            8,
+            "linear"
+          ],
+          "resistenza_tot": [
+            8,
+            "linear"
+          ],
+          "velocita_tot": [
+            6,
+            "linear"
+          ],
+          "agilita_tot": [
+            6,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            6,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            7,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            6,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "0"
+          ],
+          "res_perforante_tot": [
+            6,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "0"
+          ],
+          "res_gelo_tot": [
+            7,
+            "1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "2"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            5,
+            "linear"
+          ],
+          "pa_tot": [
+            6,
+            "linear"
+          ],
+          "pf_tot": [
+            8,
+            "linear"
+          ],
+          "mana_tot": [
+            6,
+            "linear"
+          ],
+          "energia_tot": [
+            7,
+            "linear"
+          ],
+          "potere_tot": [
+            7,
+            "linear"
+          ],
+          "tier_tot": [
+            8,
+            "linear"
+          ],
+          "attacco_tot": [
+            8,
+            "linear"
+          ],
+          "difesa_tot": [
+            8,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 28,
+        "skill_2_id": 17,
+        "skill_3_id": 49,
+        "skill_4_id": 42,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 50,
+        "unitId": 1015,
+        "name": "Draugr Signore della Morte",
+        "description": "I Draugr Signori della Morte riposano nelle camere più profonde dei tumuli nordici, spesso vicino ai sepolcri dei Sacerdoti Drago o ai tesori più protetti. Non sono guardiani comuni, ma campioni dell'antico Culto del Drago, preservati con rituali più forti e crudeli. Quando uno di loro si risveglia, l'intero tumulo sembra farlo con lui. Sono intelligenti abbastanza da usare tattica, pazienza e terrore. Conservano un frammento della propria autorità, e gli altri Draugr spesso sembrano muoversi intorno a loro come soldati intorno a un comandante. La loro presenza comunica una certezza semplice: per loro, la guerra non è mai finita. Sono più forti, più resistenti e meglio armati dei Draugr comuni. Molti sanno usare la Thu'um in forma limitata, disarmando, respingendo o gelando gli avversari con un comando antico. Affrontarli richiede preparazione, perché non sono solo non morti: sono veterani di un'era in cui i draghi governavano davvero.",
+        "image": "UnitLorePics/Draugr_Signore_della_Morte.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      },
+      {
+        "sourceId": 17,
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti.",
+        "effect": "Riduce tutti i danni in arrivo del 50% per 3 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, riflette anche il 10% dei danni agli attaccanti."
+      },
+      {
+        "sourceId": 49,
+        "name": "Aura della Paura",
+        "description": "La presenza incute timore nei nemici vicini.",
+        "effect": "I nemici entro 2 esagoni hanno il loro attacco e difesa ridotti di 2.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, può sopprimere l'effetto per 2 turni per causare un effetto di paura."
+      },
+      {
+        "sourceId": 42,
+        "name": "Rianima Morti",
+        "description": "Risveglia un nemico caduto per combattere come alleato.",
+        "effect": "Rianima un nemico sconfitto di livello fino a quello della creatura -2.",
+        "cost": "7 PA, 7 EN.",
+        "boost": "Per 5 POW, l'alleato rianimato guadagna +2 forza e resistenza."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Draugr Signore della Morte",
+    "sourceIds": [
+      1015
+    ],
+    "kind": "humanoid",
+    "kindJustification": "Impugna armi d'ebano, usa discipline marziali e comanda magia funebre: è un humanoid Non morto/Draugr.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Il rango resta iconico a ogni livello; la potenza cresce tramite Skill, non downgrade dell'equipaggiamento.",
+    "fantasy": "Antico signore nordico che conserva rango, forza e autorità sui morti del tumulo.",
+    "combatStory": "Avanza con arma pesante d'ebano, incute paura e usa rianimazione soltanto dopo aver stabilito il controllo fisico.",
+    "siblings": [
+      {
+        "unit": "Draugr Guerriero",
+        "relation": "nearest",
+        "mustDifferBy": "Rango, ebano e Negromanzia sostituiscono il guardiano semplice."
+      },
+      {
+        "unit": "Lich",
+        "relation": "same-origin",
+        "mustDifferBy": "Prima linea pesante invece di dominio arcano puro."
+      },
+      {
+        "unit": "Berserker Nord",
+        "relation": "contrast",
+        "mustDifferBy": "Autorità funebre e magia invece di furia viva."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "signore del tumulo",
+        "expressedBy": "Non morto/Draugr, intimidire e Negromanzia"
+      },
+      {
+        "axis": "campione d'ebano",
+        "expressedBy": "spadone o martello d'ebano"
+      }
+    ],
+    "must": [
+      "Non morto",
+      "Draugr",
+      "arma d'ebano",
+      "Negromanzia"
+    ],
+    "mustNot": [
+      "arma leggera",
+      "razza mortale",
+      "azioni innate",
+      "equipaggiamento casuale"
+    ],
+    "rigidity": "path-locked",
+    "variationBudget": "spadone o martello d'ebano e ramo marziale/necromantico",
+    "levelCheckpoints": {
+      "1": "signore Draugr completo",
+      "5": "pressione pesante",
+      "10": "aura funebre",
+      "15": "rianimazione",
+      "20": "Signore della Morte"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Draugr Signore della Morte",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "humanoid",
+      "innateActionCount": 0,
+      "racePrimary": [
+        "Non morto"
+      ],
+      "subraceIn": [
+        "Draugr"
+      ]
+    },
+    "atLeastOneVariantHas": [
+      "razza Non morto/Draugr e una Skill marziale entro il livello 1"
+    ],
+    "allowedVariation": [
+      "spadone o martello d'ebano e ramo marziale/necromantico",
+      "razze: Non morto"
+    ],
+    "forbidden": [
+      "arma leggera",
+      "razza mortale",
+      "azioni innate",
+      "equipaggiamento casuale"
+    ],
+    "differsFrom": {
+      "Draugr Guerriero": "Rango, ebano e Negromanzia sostituiscono il guardiano semplice.",
+      "Lich": "Prima linea pesante invece di dominio arcano puro."
+    },
+    "explainedWarnings": [
+      {
+        "code": "indivisible-general-xp-residual",
+        "pattern": "^[1-9] PE generali restano disponibili: nessuna Skill configurata è acquistabile\\.$",
+        "why": "Il pool resta curato; 1-9 PE indivisibili non autorizzano l'aggiunta di una Skill incoerente."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "identità e comportamento",
+      "source": "unitlore:1015"
+    },
+    {
+      "claim": "equipaggiamento",
+      "source": "django_slim_unit:1015"
+    }
+  ],
+  "catalogQueries": [
+    {
+      "purpose": "Pool Skill espliciti Core/Archetipo",
+      "sql": "SELECT id,nome,famiglia_id,costo_pe FROM core_skill WHERE archived_at IS NULL AND id IN (:skill_ids)",
+      "params": {
+        "skill_ids": [
+          64,
+          65,
+          71,
+          72,
+          91,
+          92,
+          357,
+          358,
+          380,
+          93,
+          355,
+          356,
+          321,
+          330,
+          331,
+          328,
+          324,
+          333,
+          1010,
+          1011,
+          432,
+          435,
+          437,
+          1167,
+          1311,
+          1312,
+          1449
+        ]
+      },
+      "resultIds": [
+        64,
+        65,
+        71,
+        72,
+        91,
+        92,
+        357,
+        358,
+        380,
+        93,
+        355,
+        356,
+        321,
+        330,
+        331,
+        328,
+        324,
+        333,
+        1010,
+        1011,
+        432,
+        435,
+        437,
+        1167,
+        1311,
+        1312,
+        1449
+      ]
+    },
+    {
+      "purpose": "Pool equipaggiamento e identity locks",
+      "sql": "SELECT id,nome,tipo_1,tipo_2,tipo_3,tipo_4 FROM core_oggetto WHERE archived_at IS NULL AND archiviato=0 AND id IN (:item_ids)",
+      "params": {
+        "item_ids": [
+          354,
+          312
+        ]
+      },
+      "resultIds": [
+        354,
+        312
+      ]
+    }
+  ],
+  "proposal": {
+    "name": "Draugr Signore della Morte",
+    "category": "Non morto",
+    "archetypeDescription": "Élite Draugr ibrido guerriero-negromante con armi pesanti d'ebano.",
+    "loreDescription": "I Draugr Signori della Morte riposano nelle camere più profonde dei tumuli nordici, spesso vicino ai sepolcri dei Sacerdoti Drago o ai tesori più protetti. Non sono guardiani comuni, ma campioni dell'antico Culto del Drago, preservati con rituali più forti e crudeli. Quando uno di loro si risveglia, l'intero tumulo sembra farlo con lui. Sono intelligenti abbastanza da usare tattica, pazienza e terrore. Conservano un frammento della propria autorità, e gli altri Draugr spesso sembrano muoversi intorno a loro come soldati intorno a un comandante. La loro presenza comunica una certezza semplice: per loro, la guerra non è mai finita. Sono più forti, più resistenti e meglio armati dei Draugr comuni. Molti sanno usare la Thu'um in forma limitata, disarmando, respingendo o gelando gli avversari con un comando antico. Affrontarli richiede preparazione, perché non sono solo non morti: sono veterani di un'era in cui i draghi governavano davvero.",
+    "notes": "Batch 3 v2: conversione Elder [1015]; Charter, pool Skill ed estensione 1-20 sono stati curati esplicitamente.",
+    "levels": [],
+    "archetypeTags": {
+      "core_fisico": 5,
+      "focus_combat": 5,
+      "core_magico": 3,
+      "attacco": 5,
+      "difesa": 4
+    },
+    "competenceProfile": {
+      "intimidire": 5,
+      "strategia_militare": 5,
+      "sapienza_magica": 3,
+      "percezione": 3,
+      "diplomazia": -5
+    },
+    "generation": {
+      "kind": "humanoid",
+      "coreKey": "warrior",
+      "coreShare": 0.52,
+      "startingXp": 8,
+      "xpBase": 4,
+      "xpGrowth": 0,
+      "competenceStartingXp": 5,
+      "competenceXpBase": 8,
+      "competenceXpGrowth": 0,
+      "finalSpendingPasses": 8,
+      "magicPolicy": "any",
+      "allowedClassFamilies": [],
+      "allowedReligionFamilies": [],
+      "allowedRaces": [
+        "Non morto"
+      ],
+      "allowHumanoidStatGrowth": false,
+      "allowedSubraces": [
+        "Draugr"
+      ]
+    },
+    "skillUnlocks": [
+      {
+        "skillId": 64,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 65,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 71,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 72,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 91,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 92,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 357,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 358,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 380,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 93,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 355,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 356,
+        "pool": "core",
+        "weight": 4,
+        "minLevel": 10,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 321,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 330,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 331,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 328,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 324,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 333,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1010,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1011,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 9,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 432,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 435,
+        "pool": "archetype",
+        "weight": 9,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 437,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 7,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1167,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1311,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 8,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1312,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 10,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1449,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 4,
+        "maxLevel": 20
+      }
+    ],
+    "equipmentSlots": [
+      {
+        "slot": "arma",
+        "itemId": 354,
+        "minLevel": 1,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 312,
+        "minLevel": 1,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      }
+    ],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": []
+    }
+  },
+  "proposalHash": "sha256:4885d7e2b0bd3cbb3ff2032e8a2cc1f10cfb292117fb8833fadbe97053a54541",
+  "charterHash": "sha256:688821bc7bab915058e96b2b37345711256779fad6a8a1fc049e3d326451a61a",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "proposal": "bulk research con pool Skill vuoto"
+      },
+      "decision": "reject",
+      "reasonCode": "empty-authored-skill-pool",
+      "reason": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "livelli supportati",
+      "from": "solo livello 20",
+      "to": "1-20",
+      "why": "Il rango resta iconico a ogni livello; la potenza cresce tramite Skill, non downgrade dell'equipaggiamento."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "Skill attive e prerequisiti",
+      "source": "core_skill + core_skill_prerequisiti"
+    },
+    {
+      "claim": "slot e item",
+      "source": "item_compatible_with_equipment_slot"
+    },
+    {
+      "claim": "razza",
+      "source": "backend.characters.race_rules.RACE_CATALOG"
+    }
+  ],
+  "findings": [
+    {
+      "code": "empty-authored-skill-pool",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'proposal': 'bulk research con pool Skill vuoto'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente.",
+      "status": "resolved"
+    },
+    {
+      "code": "indivisible-general-xp-residual",
+      "severity": "warning-audit",
+      "finding": "Il generatore può lasciare 1-9 PE quando nessun costo intero del pool curato coincide col residuo.",
+      "resolution": "Accettare soltanto l'esatto warning residuo 1-9; ogni altro warning resta un fallimento. Non allargare il pool per consumarlo.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:1c826ebfc11a5211a27e3d1996cf7de8b65048fea9522b0cf5357df706e66a27",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:6292f6d0e26cde5ec9f12230f095ab3156e8abbfc3a428a8addc340cb811eccd",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:21cc41519d5d3900816c9bc6a39a6619b23537cf0fab738ff8bc5e9bfaf0e1ce",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:5114bcca1d8326fccb47eea1f07bab986e273d6692a42e55cb91be4261e432b0",
+        "skills": 5,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:d9590beac6f99ee4347d552fa28229ea3805059c42784abef898edad0660d966",
+        "skills": 5,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:de9ad369242d03044b943313356d599017f183b12445301205898d7d5fbe9814",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:ca425e5fd675e5c2f8f75b2678a6d89b7d47e6c97d441fc63ddf9c8935bb3001",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:b4aac8fb06132d9cdb5097e02e5b8ce3f5fc8d1ce8a3fa5742cb5b9acb74989d",
+        "skills": 4,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:dd3a36b465894d1e9a81f896cff45bb328a85adfb1bcb1842c708643f0cc69d9",
+        "skills": 11,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:801c131e844927845e169950b842915f368806d3cced8dc345032cb101f4e23b",
+        "skills": 11,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:e255794042abcd4d86f63594b6ae18486e7c17a459c1c2e104215bca716a8c45",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:de73d4fc56ffe184f34023b9167302e3890f01742e5f03fb6a6842e2a96025ea",
+        "skills": 8,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:a60fa9a955b7e1a1c4a1b328c2b320da8b88ad761eed0b1df60c2340e993d99a",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:fc1df6b53fea258e9d0f7bfd79b7d7cbd24a13c56703e587efcdc646ee8bd252",
+        "skills": 11,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:536692624282253c1a679bb9af3f9639dd72b28864d596b4b7825baf5fffcfc0",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:0244679e6ef58a059b2cfcafce0fc4513dae8f670219feb51c14ecaa5356e0fc",
+        "skills": 10,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:1cd4a944b493905177c2a6f1ded72783a10ce6a3217faea69cb59f4c76047740",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:b6fb8eabfd25a72295ef3823f2ad28885f4f06f1273fb66f5ed6d71a38250edd",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:ab0f0f17219eaea41ebf221f6234714f5816b178c187ba760c93e76307c26882",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:9dfa80aabed60695dd6263a0c71084f0995c6d02f9336567be64519c3a712eab",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:019e36ee275213ad2a265c803412486be3523a8e70ba1cbaf9173da0557badfa",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:45886fffd666f6d160014a8793111159f6ffdb2144adf1859521b8a6eaf85d01",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:5ef716cde4e3df0a3063a34d8be088165e51f7850b2d7e607ad04a867482b39c",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:00daf7b8d56e57de95747e1a4cfeba110f4f0bc8f3be0dc65a65c80a6d9221a7",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:7fbab425981fe8ec20a2045176a7b35824c13d75f8f1d6fbc1f8a162085e7b46",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:babc6399e8808b05cb28675ff3c717bcababa308e33c64d4138e723544fa2d5f",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:91a898b84ff955381008ee3fb7f980429a6e198dd916b57dfb17fe1d708f2cad",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:f8e30346d27fb7e7c020170a2715a473052ad2ee6feaffe086524847914e523e",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:ef4f4eb4195e75953b83cee4ee2a3429ca4bc113001a883f4a4640d765e34db7",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:ba0b2f0b426f18d9f9df586e721fd04d76141a2a91ce8ffdfb3dbdcc672711ab",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:569ac5736985387f0cc0191a5fda06f70c1a798a2958e080156e679e3dc9b2b2",
+        "skills": 17,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:34057d5f65b78e8ea07d8c8fe3446150bdffd002d945255dbb49e63779102cef",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:7c267ed34bcab4ac1209671b1e2077a504b25242845781776852e0167eaafe04",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:8899d26d3fcaeae864cbb8dbb8b2cd9f6fcc94cc440a763e2c205c9ff4858138",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:c1e45260178dc943b556336c8af62d000ec7ae5b1172f8c0a266a6bf9ae9d8b1",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:a6c61f713f607d57b66587fa4aedc166e86d303a06ba9943c2a9101f4d36a2c7",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:a9f93f984c2f45d81f214f2a00e54df308ced5c2f8d67ea26540949e09582e21",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "8 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:8cfeda8d8f1185706d3b18f15b77e895bf258d847fadb90622b4f9d56af8258d",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "8 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:f1769617f25ca353b9c1e79f5f401c01ef9a250fcd7bd12151fa5ec6a488ba51",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            354
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:765624f468015470e49d45ad9d755efa908db14fd16ac1779c7270fc56d0dce1",
+        "skills": 19,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            312
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      }
+    ],
+    "warnings": [
+      "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "8 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+    ],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Draugr Signore della Morte",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 24,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

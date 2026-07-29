@@ -1,0 +1,1827 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:903,904,905,906",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      903,
+      904,
+      905,
+      906
+    ],
+    "normalizedName": "ladro (standard)",
+    "rows": [
+      {
+        "archetipo": "assassino",
+        "arma": [
+          "Daga (ferro)",
+          "Shiv (ferro)"
+        ],
+        "armatura": [
+          "Armatura (pelle)"
+        ],
+        "categoria": "Umano",
+        "chainmail": [],
+        "id": 903,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "nome": "Ladro (standard)",
+        "preset": "Light",
+        "profili_attributi_formule": {},
+        "razza": "Random",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": [
+          "Vestiti da ladro"
+        ]
+      },
+      {
+        "archetipo": "assassino",
+        "arma": [
+          "Daga (acciaio)",
+          "Shiv (acciaio)"
+        ],
+        "armatura": [
+          "Armatura (chitina)"
+        ],
+        "categoria": "Umano",
+        "chainmail": [],
+        "id": 904,
+        "levels": [
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "nome": "Ladro (standard)",
+        "preset": "Light",
+        "profili_attributi_formule": {},
+        "razza": "Random",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": [
+          "Vestiti da ladro"
+        ]
+      },
+      {
+        "archetipo": "assassino",
+        "arma": [
+          "Daga (elfico)",
+          "Shiv (elfico)"
+        ],
+        "armatura": [
+          "Armatura (elfico)"
+        ],
+        "categoria": "Umano",
+        "chainmail": [],
+        "id": 905,
+        "levels": [
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "nome": "Ladro (standard)",
+        "preset": "Light",
+        "profili_attributi_formule": {},
+        "razza": "Random",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": [
+          "Vestiti da assassino"
+        ]
+      },
+      {
+        "archetipo": "assassino",
+        "arma": [
+          "Daga (vetro)",
+          "Shiv (vetro)"
+        ],
+        "armatura": [
+          "Armatura (vetro)"
+        ],
+        "categoria": "Umano",
+        "chainmail": [],
+        "id": 906,
+        "levels": [
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Ladro (standard)",
+        "preset": "Light",
+        "profili_attributi_formule": {},
+        "razza": "Random",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": [
+          "Vestiti da assassino"
+        ]
+      }
+    ],
+    "lore": [
+      {
+        "id": 69,
+        "unitId": 903,
+        "name": "Ladro (standard)",
+        "description": "I Ladri comuni si trovano nelle città, nei porti, nei mercati e nei villaggi dove la povertà, l'avidità o l'occasione rendono il furto una professione possibile. Non tutti appartengono a una gilda, e molti lavorano da soli o in piccoli gruppi senza regole stabili. Dove c'è folla, ricchezza o distrazione, c'è spazio per un ladro. Sono opportunisti, cauti e abituati a leggere le persone più che i libri. Alcuni rubano per sopravvivere, altri per abitudine, altri ancora perché amano il rischio. Un ladro intelligente evita la violenza quando può, perché un borsello tagliato porta meno problemi di un cadavere. Usano furtività, mani rapide, grimaldelli, coltelli e una buona conoscenza delle vie di fuga. In combattimento raramente cercano uno scontro leale: preferiscono colpire di sorpresa, accecare, scappare o chiamare complici. Il loro vero talento sta nel prendere qualcosa e far sì che la vittima se ne accorga troppo tardi.",
+        "image": "UnitLorePics/Ladro_standard.png"
+      }
+    ],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Ladro (standard)",
+    "sourceIds": [
+      903,
+      904,
+      905,
+      906
+    ],
+    "kind": "humanoid",
+    "kindJustification": "Usa equipaggiamento e progressione Skill: contratto humanoid.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le quattro righe Elder coprono 1-20.",
+    "fantasy": "Professionista dell'accesso illecito che vince con posizione, strumenti e fuga.",
+    "combatStory": "Evita lo scontro onesto, colpisce quando ha vantaggio e conserva sempre una via d'uscita.",
+    "siblings": [
+      {
+        "unit": "Agente Morag Tong",
+        "relation": "nearest",
+        "mustDifferBy": "Furto e fuga sostituiscono omicidio e sangue."
+      },
+      {
+        "unit": "Arciere Bandito",
+        "relation": "same-space",
+        "mustDifferBy": "Lame corte e accesso, non tiro e agguato."
+      },
+      {
+        "unit": "Guerriero (standard)",
+        "relation": "contrast",
+        "mustDifferBy": "Rifiuta lo scontro frontale."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "accesso illecito",
+        "expressedBy": "Attrezzi del Mestiere e Manolesta"
+      },
+      {
+        "axis": "fuga",
+        "expressedBy": "Fuga Rapida, Blink e acrobazia"
+      }
+    ],
+    "must": [
+      "furtività",
+      "lame corte",
+      "strumenti",
+      "fuga"
+    ],
+    "mustNot": [
+      "magia",
+      "armatura pesante",
+      "scudo",
+      "assassino rituale"
+    ],
+    "rigidity": "path-locked",
+    "variationBudget": "daga o stiletto nella fascia",
+    "levelCheckpoints": {
+      "1": "scassinatore mobile",
+      "5": "fuga affidabile",
+      "10": "ladro acrobata",
+      "15": "infiltratore esperto",
+      "20": "maestro neutrale del furto"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Ladro (standard)",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "humanoid",
+      "innateActionCount": 0,
+      "racePrimary": [
+        "Bosmer",
+        "Dunmer",
+        "Orsimer",
+        "Altmer",
+        "Imperiale",
+        "Bretone",
+        "Redguard",
+        "Argoniano",
+        "Khajiit",
+        "Nord",
+        "Falmer"
+      ]
+    },
+    "atLeastOneVariantHas": [
+      "Attrezzi del Mestiere o Fuga Rapida entro il livello 5"
+    ],
+    "allowedVariation": [
+      "daga o stiletto nella fascia",
+      "razze: Bosmer, Dunmer, Orsimer, Altmer, Imperiale, Bretone, Redguard, Argoniano, Khajiit, Nord, Falmer"
+    ],
+    "forbidden": [
+      "magia",
+      "armatura pesante",
+      "scudo",
+      "assassino rituale"
+    ],
+    "differsFrom": {
+      "Agente Morag Tong": "Furto e fuga sostituiscono omicidio e sangue.",
+      "Arciere Bandito": "Lame corte e accesso, non tiro e agguato."
+    },
+    "explainedWarnings": [
+      {
+        "code": "indivisible-general-xp-residual",
+        "pattern": "^[1-9] PE generali restano disponibili: nessuna Skill configurata è acquistabile\\.$",
+        "why": "Il pool resta curato; 1-9 PE indivisibili non autorizzano l'aggiunta di una Skill incoerente."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "identità e comportamento",
+      "source": "unitlore:903-904-905-906"
+    },
+    {
+      "claim": "equipaggiamento",
+      "source": "django_slim_unit:903-904-905-906"
+    }
+  ],
+  "catalogQueries": [
+    {
+      "purpose": "Pool Skill espliciti Core/Archetipo",
+      "sql": "SELECT id,nome,famiglia_id,costo_pe FROM core_skill WHERE archived_at IS NULL AND id IN (:skill_ids)",
+      "params": {
+        "skill_ids": [
+          64,
+          71,
+          93,
+          94,
+          380,
+          381,
+          383,
+          384,
+          99,
+          100,
+          811,
+          812,
+          814,
+          815,
+          819,
+          822,
+          991,
+          994,
+          996
+        ]
+      },
+      "resultIds": [
+        64,
+        71,
+        93,
+        94,
+        380,
+        381,
+        383,
+        384,
+        99,
+        100,
+        811,
+        812,
+        814,
+        815,
+        819,
+        822,
+        991,
+        994,
+        996
+      ]
+    },
+    {
+      "purpose": "Pool equipaggiamento e identity locks",
+      "sql": "SELECT id,nome,tipo_1,tipo_2,tipo_3,tipo_4 FROM core_oggetto WHERE archived_at IS NULL AND archiviato=0 AND id IN (:item_ids)",
+      "params": {
+        "item_ids": [
+          111,
+          153,
+          112,
+          154,
+          106,
+          148,
+          109,
+          151,
+          595,
+          596,
+          597,
+          600,
+          5278,
+          5279
+        ]
+      },
+      "resultIds": [
+        111,
+        153,
+        112,
+        154,
+        106,
+        148,
+        109,
+        151,
+        595,
+        596,
+        597,
+        600,
+        5278,
+        5279
+      ]
+    }
+  ],
+  "proposal": {
+    "name": "Ladro (standard)",
+    "category": "Umano",
+    "archetypeDescription": "Ladro generalista con lame corte, strumenti, acrobazia e infiltrazione.",
+    "loreDescription": "I Ladri comuni si trovano nelle città, nei porti, nei mercati e nei villaggi dove la povertà, l'avidità o l'occasione rendono il furto una professione possibile. Non tutti appartengono a una gilda, e molti lavorano da soli o in piccoli gruppi senza regole stabili. Dove c'è folla, ricchezza o distrazione, c'è spazio per un ladro. Sono opportunisti, cauti e abituati a leggere le persone più che i libri. Alcuni rubano per sopravvivere, altri per abitudine, altri ancora perché amano il rischio. Un ladro intelligente evita la violenza quando può, perché un borsello tagliato porta meno problemi di un cadavere. Usano furtività, mani rapide, grimaldelli, coltelli e una buona conoscenza delle vie di fuga. In combattimento raramente cercano uno scontro leale: preferiscono colpire di sorpresa, accecare, scappare o chiamare complici. Il loro vero talento sta nel prendere qualcosa e far sì che la vittima se ne accorga troppo tardi.",
+    "notes": "Batch 2 v2: conversione Elder [903, 904, 905, 906]; Charter, pool Skill ed estensione 1-20 sono stati curati esplicitamente.",
+    "levels": [],
+    "archetypeTags": {
+      "core_fisico": 2,
+      "focus_combat": 3,
+      "attacco": 3,
+      "difesa": 1,
+      "esplorazione_infiltrazione": 5,
+      "tecnica_crafting": 3,
+      "core_magico": -5
+    },
+    "competenceProfile": {
+      "furtivita": 5,
+      "rapidita_di_mano": 5,
+      "raggirare": 4,
+      "percezione": 3,
+      "strategia_militare": -4
+    },
+    "generation": {
+      "kind": "humanoid",
+      "coreKey": "stealth",
+      "coreShare": 0.48,
+      "startingXp": 8,
+      "xpBase": 4,
+      "xpGrowth": 0,
+      "competenceStartingXp": 5,
+      "competenceXpBase": 8,
+      "competenceXpGrowth": 0,
+      "finalSpendingPasses": 8,
+      "magicPolicy": "none",
+      "allowedClassFamilies": [
+        "Ladro"
+      ],
+      "allowedReligionFamilies": [],
+      "allowedRaces": [
+        "Bosmer",
+        "Dunmer",
+        "Orsimer",
+        "Altmer",
+        "Imperiale",
+        "Bretone",
+        "Redguard",
+        "Argoniano",
+        "Khajiit",
+        "Nord",
+        "Falmer"
+      ],
+      "allowHumanoidStatGrowth": false
+    },
+    "skillUnlocks": [
+      {
+        "skillId": 64,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 71,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 93,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 94,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 380,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 381,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 3,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 383,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 384,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 6,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 99,
+        "pool": "core",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 100,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 6,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 811,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 812,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 814,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 815,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 819,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 822,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 991,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 994,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 6,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 996,
+        "pool": "archetype",
+        "weight": 6,
+        "minLevel": 4,
+        "maxLevel": 20
+      }
+    ],
+    "equipmentSlots": [
+      {
+        "slot": "arma",
+        "itemId": 111,
+        "minLevel": 1,
+        "maxLevel": 5,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 153,
+        "minLevel": 1,
+        "maxLevel": 5,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 112,
+        "minLevel": 6,
+        "maxLevel": 10,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 154,
+        "minLevel": 6,
+        "maxLevel": 10,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 106,
+        "minLevel": 11,
+        "maxLevel": 15,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 148,
+        "minLevel": 11,
+        "maxLevel": 15,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 109,
+        "minLevel": 16,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 151,
+        "minLevel": 16,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "armatura",
+        "itemId": 595,
+        "minLevel": 1,
+        "maxLevel": 5,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "armatura",
+        "itemId": 596,
+        "minLevel": 6,
+        "maxLevel": 10,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "armatura",
+        "itemId": 597,
+        "minLevel": 11,
+        "maxLevel": 15,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "armatura",
+        "itemId": 600,
+        "minLevel": 16,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "vestiti",
+        "itemId": 5278,
+        "minLevel": 1,
+        "maxLevel": 10,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "vestiti",
+        "itemId": 5279,
+        "minLevel": 11,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      }
+    ],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": []
+    }
+  },
+  "proposalHash": "sha256:7b3a1627b0d3f0b3e6e32d4844f1b0e1425ad3db5daa5a53782ff73b3a4a63a9",
+  "charterHash": "sha256:c8e8aaead7512479d522c9f1f832e04b7de15278fcc654232e333f65c37a0156",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "proposal": "bulk research con pool Skill vuoto"
+      },
+      "decision": "reject",
+      "reasonCode": "empty-authored-skill-pool",
+      "reason": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "livelli supportati",
+      "from": "1-20",
+      "to": "1-20",
+      "why": "Le quattro righe Elder coprono 1-20."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "Skill attive e prerequisiti",
+      "source": "core_skill + core_skill_prerequisiti"
+    },
+    {
+      "claim": "slot e item",
+      "source": "item_compatible_with_equipment_slot"
+    },
+    {
+      "claim": "razza",
+      "source": "backend.characters.race_rules.RACE_CATALOG"
+    }
+  ],
+  "findings": [
+    {
+      "code": "empty-authored-skill-pool",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'proposal': 'bulk research con pool Skill vuoto'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente.",
+      "status": "resolved"
+    },
+    {
+      "code": "indivisible-general-xp-residual",
+      "severity": "warning-audit",
+      "finding": "Il generatore può lasciare 1-9 PE quando nessun costo intero del pool curato coincide col residuo.",
+      "resolution": "Accettare soltanto l'esatto warning residuo 1-9; ogni altro warning resta un fallimento. Non allargare il pool per consumarlo.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:b7db821f3d8ce65da4c3edaab18ab1cc44c7aefbf7c28d1a2c2f0cd3eb3e6328",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:39ceacd41341fa3e506ed448e4704ff2c74374c6afe096e52eaeec0485c3299b",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:9a2e2dbd11b33dbddd1f4868ac5a359f6791610993fd7049d709ff42b762bced",
+        "skills": 2,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:c9c551e154a5df789c9e5587d672c6f641d17561b11ec5624e821d2243c5f535",
+        "skills": 2,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:1adba845f8049de692d5052aced37701abe98ffbdcbd254691f3acdb07a5d096",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:a99db166f381eb24d32d826c9a18f5bf523958bda0592c4909f770e05ad3c73d",
+        "skills": 2,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:fe23d108722f1f8be3eb3636d2d080f00c393d24311643c55f1b571359f77bf7",
+        "skills": 2,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:a0f6c65ea50f6f953e539df3e4713d104de53f9592cf2b74fab7829c873ee587",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:e7173127a2882e060368b7912ecf2aa9c62bf8e7a5c04b3220b1091ad4d36a15",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:0ad6cdc11a6a530a030a7d30580661e0d81953a64cc5953e8dda6d29aa635e70",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:7039bbd52eeae8921700abb76757e97aec9970b7c0c7b7ff64f505304327c524",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:865592bc3fb2a3f4810eecd055fa7f8ca109b50fa2492847d62ff99e394bbf12",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:a4e8a957af9be8c17a75698a305cb535389bf3801af0c77313438bedd2f7bad5",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "3 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:9a63eb58761bf8784a59a6bbf65733aa97a196cb76736c9bfa557e808e438088",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:abeca8da3075b68c9987d99448ea67bc61cdbb9d709efa09f4468dd4728a014e",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            153
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:3895247d2a4df8ab0e9690dd6e3318908b8eac46642833ae7ca6110ed2875cca",
+        "skills": 7,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            111
+          ],
+          [
+            "armatura",
+            595
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:a3b45fd53a31bc6c54d974beb370e636d133d7226bee9b8749b437d82a5142bc",
+        "skills": 11,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            112
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:0887267d3c4789bff67ecce77a397c8853d7c63395360fa8d4bbb521faa2965c",
+        "skills": 11,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            154
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:4263495118f26c976a41ec36e0a208d4647c43ba342bdb0e9156c4582c6ad908",
+        "skills": 11,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            154
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:69b9a7bafedacd0d6c8ef2fbb75b25a1efce604ce1fb4996fe3337063dea27d8",
+        "skills": 10,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            154
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:2d05c38a17021ec509378f6424ad33112d2ae567d1bc337dad60ce2ed38f5bae",
+        "skills": 10,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            154
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:b3605822f222a0009b25101e828679a459f3f656b2cb873ab864270cc08b69cd",
+        "skills": 11,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            154
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:f063e1a2893449a8193ae75665c35097a91d46289251795bcc46d487f523c48b",
+        "skills": 10,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            112
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:94d25b4bc2c473e5e1b96dbbc3b3d0b37441a1a3899c692cc3e453501379e1f8",
+        "skills": 10,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            112
+          ],
+          [
+            "armatura",
+            596
+          ],
+          [
+            "vestiti",
+            5278
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:c044cd5b91d0b196b7ad40aa4ebf0038189a2d66413b48792a7f6d77debc1ff9",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            148
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:3ecbf363065d8f1a63d3b8e963d1c3ea1d45062b7004d5214602762f4ef42681",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            148
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:215f8897dbb34768d84f3478461ef1f63b21fd6aee051f3fe9e2343d28222f81",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            106
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:68ac123ac358bec026b6b4f209d7765054db3697e77ec16fb4847ca58b6b2c17",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            106
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:8c417867aa9a614afe75ab6f108936360053746816b2e6c42c4e17a743e6ffd9",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            106
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:7edb0bafeb9f2d3dec533fd44b60a4deb0a476b469f741de7b1efbfca983f8c2",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            106
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:12c863657ec584c1ed934ac9666dd1469f6152084b0c5a1e9eb43ae589208c15",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            148
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:ddecadf06a9425b79efa3fe6d3760ae76c767ab11fd3b79d15e007a3461d43f8",
+        "skills": 13,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            148
+          ],
+          [
+            "armatura",
+            597
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:150977d932a0f7553cb0c9f19a1f1d179eede92beea6a7690064895dd19dc590",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            109
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:42996b8b84724ff6bb70819baaf0b4a6303b1fea89cc329b150cdeb1136f3597",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            109
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "8 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:326736ab1262e86dad6d92989655cb578097426fba7b07a2c254349f54fbe702",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            151
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:39953c8787286f2ef90930ecdbb8d499c8a3d7c77d67cfacf45d26a634ba2ac3",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            151
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "6 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:7943d5f2e5f894ea8f1b1a09add87cb315cfd7c64d6939551084d8269b1398dc",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            109
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:a7886f1abfabbf6e2ecfc111d1ad1e57119729210200eaea3ad7a8cffd0a6ccf",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            151
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:dfb2d207ce24c5bc7537b2be9c007652c2cb60ea728fdf9a8e043889eac31028",
+        "skills": 15,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            109
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "6 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:b7b47f7a295817ce9460b05377b26ef042c3e58710fdd35048b1cb8f9e44212c",
+        "skills": 16,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            109
+          ],
+          [
+            "armatura",
+            600
+          ],
+          [
+            "vestiti",
+            5279
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [
+      "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "3 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "8 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "6 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+    ],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Ladro (standard)",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 23,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

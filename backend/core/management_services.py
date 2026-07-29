@@ -7,15 +7,19 @@ from django.db import models, transaction
 from backend.characters.models import Personaggio
 from backend.characters.services.refresh_personaggio import refresh_personaggio
 from backend.core.api import ApiError
-from backend.core.models import Effetto, Giocatore, Oggetto
+from backend.core.models import DatiCampagna, Effetto, Giocatore, Oggetto
 from backend.core.security import effective_role, has_minimum_role
+from backend.media_library.models import UploadedImage
 
 from .management_selectors import (
+    ORPHAN_SOURCES,
     PROFILE_FIELDS,
+    READ_ONLY_PROFILE_KEYS,
     RELATION_CONFIG,
     RELATION_FIELDS,
     character_management_detail,
     deletion_preview_token,
+    orphan_queryset,
 )
 
 
@@ -40,13 +44,28 @@ def _integer_value(raw: Any, *, nullable: bool, field: str) -> int | None:
         raise ApiError("management.integer_required", "Inserisci un numero intero valido.", field) from exc
 
 
+def _related_instance(model, raw: Any, field: str, missing_message: str):
+    if raw in (None, "", 0, "0"):
+        return None
+    try:
+        return model.objects.get(pk=int(raw))
+    except (TypeError, ValueError, model.DoesNotExist) as exc:
+        raise ApiError("management.related_not_found", missing_message, field, 404) from exc
+
+
 def _clean_profile_values(values: dict[str, Any]) -> dict[str, Any]:
     cleaned: dict[str, Any] = {}
     for key, raw in values.items():
         spec = PROFILE_SPEC_BY_KEY.get(key)
-        if spec is None:
+        if spec is None or key in READ_ONLY_PROFILE_KEYS:
             continue
         field_type = spec["type"]
+        if field_type == "campaign":
+            cleaned[key] = _related_instance(DatiCampagna, raw, key, "Campagna non trovata.")
+            continue
+        if field_type == "image":
+            cleaned[key] = _related_instance(UploadedImage, raw, key, "Immagine non trovata.")
+            continue
         if field_type == "integer":
             value = _integer_value(raw, nullable=bool(spec.get("nullable")), field=key)
             if value is not None and spec.get("minimum") is not None and value < spec["minimum"]:
@@ -207,6 +226,45 @@ def attach_orphan_record(
     character.save(update_fields=[kind, "updated_at"])
     refresh_personaggio(character.pk)
     return character_management_detail(character.pk)
+
+
+@transaction.atomic
+def delete_orphan_record(user, giocatore: Giocatore, kind: str, record_id: int) -> dict[str, Any]:
+    """Delete one leftover record that no character points at any more.
+
+    Migrations and half-finished edits leave behind Zaino, Equip, Faretra, Note,
+    effect blocks and combat buttons that belong to nobody. They are invisible in
+    the game and only grow, so the Orfani tab has to be able to remove them.
+
+    Two guarantees make that safe. The ownership check is repeated here under a
+    row lock, so a record attached to a character between listing and clicking is
+    refused rather than deleted. And only the container itself is removed: its
+    slots reference Oggetto and Effetto with SET_NULL, so the catalogue and the
+    Skill list cannot be reached from this operation at all.
+    """
+    require_game_manager(user, giocatore)
+    source = ORPHAN_SOURCES.get(kind)
+    if source is None:
+        raise ApiError("management.relation_unknown", "Tipo di record non riconosciuto.", "kind")
+    try:
+        record = source["model"].objects.select_for_update().get(pk=record_id)
+    except source["model"].DoesNotExist as exc:
+        raise ApiError("management.resource_not_found", "Record non trovato.", status=404) from exc
+
+    if kind == "bottoni_combat":
+        owner = record.personaggio.nome if record.personaggio_id else ""
+    else:
+        owner = next((character.nome for character in record.personaggi.all()), "")
+    if owner:
+        raise ApiError(
+            "management.relation_not_orphan",
+            f"Il record è collegato a {owner}: non è un orfano e non viene eliminato.",
+            status=409,
+        )
+
+    label = str(record)
+    record.delete()
+    return {"kind": kind, "label": source["label"], "name": label}
 
 
 @transaction.atomic

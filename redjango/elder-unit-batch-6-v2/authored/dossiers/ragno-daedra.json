@@ -1,0 +1,1288 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1001",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1001
+    ],
+    "normalizedName": "ragno daedra",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1001,
+        "levels": [
+          20
+        ],
+        "nome": "Ragno Daedra",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            6,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            6,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            6,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            7,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            6,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            0,
+            "0"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "0"
+          ],
+          "res_perforante_tot": [
+            6,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "1"
+          ],
+          "res_gelo_tot": [
+            7,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "1"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            2,
+            "linear"
+          ],
+          "pa_tot": [
+            7,
+            "linear"
+          ],
+          "pf_tot": [
+            8,
+            "linear"
+          ],
+          "mana_tot": [
+            7,
+            "linear"
+          ],
+          "energia_tot": [
+            7,
+            "linear"
+          ],
+          "potere_tot": [
+            7,
+            "linear"
+          ],
+          "tier_tot": [
+            4,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 5,
+        "skill_2_id": 11,
+        "skill_3_id": 2,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 97,
+        "unitId": 1001,
+        "name": "Ragno Daedra",
+        "description": "I Ragni Daedra si trovano nei reami di Oblivion, soprattutto dove intrigo, tela e predazione spirituale si intrecciano. Sono spesso associati a Mephala, ma possono comparire anche in altri contesti daedrici legati a segreti, trappole e manipolazione. La loro tana non è mai soltanto un luogo fisico: è una rete. Sono intelligenti, crudeli e pazienti. A differenza di bestie più semplici, osservano le vittime e sembrano godere della confusione che precede la cattura. Hanno un modo quasi elegante di essere mostruosi, come se ogni filo teso fosse parte di un discorso. Hanno corpo aracnide, tratti daedrici e spesso capacità velenose o magiche. Possono intrappolare, rallentare e colpire da posizioni difficili da raggiungere. Combatterli richiede attenzione al terreno, perché spesso lo scontro è già iniziato prima che la vittima veda il ragno.",
+        "image": "UnitLorePics/Ragno_Daedra.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 5,
+        "name": "Trappola di Ragnatela",
+        "description": "La creatura lancia una ragnatela appiccicosa per immobilizzare i nemici.",
+        "effect": "Il bersaglio entro 5 esagoni deve effettuare un controllo di agilità pari a 5+lv/2 o avere metà PA per un turno. Può anche metterla a terra, e colpisce chi ci cammina su.",
+        "cost": "2 PA, 4 EN.",
+        "boost": "Per 3 POW, colpisce fino a 2 bersagli entro la portata."
+      },
+      {
+        "sourceId": 11,
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante.",
+        "effect": "Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo",
+        "cost": "5 PA, 3 EN.",
+        "boost": "Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni."
+      },
+      {
+        "sourceId": 2,
+        "name": "Sputo Velenoso",
+        "description": "La creatura sputa un globo di veleno verso il bersaglio.",
+        "effect": "Attacco a distanza fino a 4 esagoni che infligge (2d6 + livello) danni da veleno e infligge lo status veleno per 2 turni.",
+        "cost": "4 PA, 5 EN.",
+        "boost": "Per 4 POW, aumenta la portata a 6 esagoni e la durata del veleno a 4 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Ragno Daedra",
+    "sourceIds": [
+      1001
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint vengono linearizzati; Passo d'Ombra usa un'azione Daedra già implementata.",
+    "fantasy": "Predatore intelligente di Oblivion legato a reti, segreti e trappole di Mephala.",
+    "combatStory": "Prepara ragnatele, si riposiziona nell'ombra e combina gelo e secrezione corrosiva con pazienza sovrannaturale.",
+    "siblings": [
+      {
+        "unit": "Ragno Gigante",
+        "relation": "nearest",
+        "mustDifferBy": "Mana, intelligenza e Passo d'Ombra sostituiscono biologia naturale."
+      },
+      {
+        "unit": "Segugio di Xivilai",
+        "relation": "same-origin",
+        "mustDifferBy": "Trappole e controllo invece di inseguimento."
+      },
+      {
+        "unit": "Crepuscolo Alato",
+        "relation": "contrast",
+        "mustDifferBy": "Rete terrestre, non volo e coercizione mentale."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "rete di Mephala",
+        "expressedBy": "ragnatela e intelligenza elevata"
+      },
+      {
+        "axis": "predatore di Oblivion",
+        "expressedBy": "Mana, resistenza al Fuoco e Passo d'Ombra"
+      }
+    ],
+    "must": [
+      "Daedra",
+      "ragnatela",
+      "Mana",
+      "Passo d'Ombra"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "volo",
+      "Carica",
+      "Furia"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "ragno daedrico",
+      "5": "iniezione",
+      "10": "Passo d'Ombra",
+      "15": "sputo",
+      "20": "tessitore di Mephala"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Ragno Daedra",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Trappola di Ragnatela presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "volo",
+      "Carica",
+      "Furia"
+    ],
+    "differsFrom": {
+      "Ragno Gigante": "Mana, intelligenza e Passo d'Ombra sostituiscono biologia naturale.",
+      "Segugio di Xivilai": "Trappole e controllo invece di inseguimento."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 103
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1001"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1001"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Ragno Daedra",
+    "category": "Daedra",
+    "archetypeDescription": "Controllore Daedra aracnide con Mana, Passo d'Ombra e ragnatela.",
+    "loreDescription": "I Ragni Daedra si trovano nei reami di Oblivion, soprattutto dove intrigo, tela e predazione spirituale si intrecciano. Sono spesso associati a Mephala, ma possono comparire anche in altri contesti daedrici legati a segreti, trappole e manipolazione. La loro tana non è mai soltanto un luogo fisico: è una rete. Sono intelligenti, crudeli e pazienti. A differenza di bestie più semplici, osservano le vittime e sembrano godere della confusione che precede la cattura. Hanno un modo quasi elegante di essere mostruosi, come se ogni filo teso fosse parte di un discorso. Hanno corpo aracnide, tratti daedrici e spesso capacità velenose o magiche. Possono intrappolare, rallentare e colpire da posizioni difficili da raggiungere. Combatterli richiede attenzione al terreno, perché spesso lo scontro è già iniziato prima che la vittima veda il ragno.",
+    "notes": "Batch 6 v2: conversione Elder [1001]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-5",
+        "name": "Trappola di Ragnatela",
+        "description": "La creatura lancia una ragnatela appiccicosa per immobilizzare i nemici. Il bersaglio entro 5 esagoni deve effettuare un controllo di agilità pari a 5+lv/2 o avere metà PA per un turno. Può anche metterla a terra, e colpisce chi ci cammina su. Boost Elder: Per 3 POW, colpisce fino a 2 bersagli entro la portata.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 2,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-11",
+        "name": "Inietta veleno gelido",
+        "description": "Dopo un attacco riuscito, il bersaglio subisce danni da Gelo e perde PA nel turno successivo. Usa soltanto il tipo Gelo e la risorsa PA già implementati.",
+        "minLevel": 4,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-2",
+        "name": "Sputo Velenoso",
+        "description": "Bersaglio entro 4 esagoni. La secrezione corrosiva infligge danni Perforante; il nome conserva la firma biologica senza introdurre elementi fuori vocabolario.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "batch6-ragno-daedra-passo-ombra",
+        "name": "Passo d'Ombra",
+        "description": "La creatura si riposiziona attraverso una piega d'ombra usando PA ed Energia; non introduce danni o risorse fuori vocabolario.",
+        "minLevel": 6,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "concentrazione",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 32
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 10
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:3caf9c6ae4e6a3e55145e66fadda3a56bf93272f566aa3f72f4a0b849f70a8a8",
+  "charterHash": "sha256:0f4d57c5eddab14e1597a7cd051107d6774688f456bff0b89189c051ef087aec",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Inietta veleno gelido",
+          "Sputo Velenoso"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint vengono linearizzati; Passo d'Ombra usa un'azione Daedra già implementata."
+    },
+    {
+      "what": "mobilità daedrica",
+      "from": "nessuna mobilità speciale nella riga Elder",
+      "to": "Passo d'Ombra dal livello 6",
+      "why": "Lore di Mephala, Mana elevato e precedente Daedra implementato sostengono il riposizionamento."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Inietta veleno gelido', 'Sputo Velenoso']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:4128b9d862dca69f0356d5e6cdfecca01b46a089646291a07068170d6934e9a0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:cef2067596bcc9210f23dea5b59e14ad72d02b76a1051cb20d6d0f5d9a161e0a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:dd8df9552894ac72106cb5b5c8151ce6530f2f6f174413b9655399f63205b079",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:9bd866d3ef307736c5f17e05ca81eacd8b6f1c75629e75dbad4861264084cb62",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:86f68dddd6124e73c6a37b15a9751ae31d64a0e0db1766f13b369b479438cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido",
+          "Sputo Velenoso",
+          "Passo d'Ombra"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Ragno Daedra",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

@@ -409,9 +409,59 @@
             "in": "query",
             "name": "limit",
             "schema": {
-              "default": 1000,
+              "default": 100,
               "title": "Limit",
               "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_1",
+            "schema": {
+              "default": "",
+              "title": "Type 1",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "region",
+            "schema": {
+              "default": "",
+              "title": "Region",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "schema": {
+              "default": "",
+              "title": "State",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "special",
+            "schema": {
+              "default": "",
+              "title": "Special",
+              "type": "string"
             },
             "required": false
           }
@@ -3527,6 +3577,39 @@
             "additionalProperties": true,
             "title": "Weaponconfiguration",
             "type": "object"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "hasMore": {
+            "default": false,
+            "title": "Hasmore",
+            "type": "boolean"
+          },
+          "regions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Regions",
+            "type": "array"
+          },
+          "specialCount": {
+            "default": 0,
+            "title": "Specialcount",
+            "type": "integer"
           }
         },
         "required": [

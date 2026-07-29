@@ -23,13 +23,57 @@ function draftValues(fields: ManagementField[], values: Record<string, unknown>)
 }
 
 function parsedValues(fields: ManagementField[], values: Draft): Record<string, unknown> {
-  return Object.fromEntries(fields.map((field) => {
+  // Calculated fields are shown for diagnosis only; sending them back would be
+  // pointless work the server discards anyway.
+  return Object.fromEntries(fields.filter((field) => !field.readOnly).map((field) => {
     const value = values[field.key];
     if (field.type === "json") return [field.key, JSON.parse(String(value || "{}"))];
     if (field.type === "integer") return [field.key, value === "" && field.nullable ? null : Number(value)];
-    if (field.type === "item" || field.type === "effect") return [field.key, value === "" ? null : Number(value)];
+    if (field.type === "item" || field.type === "effect" || field.type === "campaign" || field.type === "image") {
+      return [field.key, value === "" || value == null ? null : Number(value)];
+    }
     return [field.key, value];
   }));
+}
+
+// The catalogue has thousands of rows and a character sheet has well over a
+// hundred slots. Rendering every option in every slot is what made this editor
+// heavy, so a slot shows only its current item and searches for the rest.
+function ItemSlotPicker({ value, options, onChange }: {
+  value: unknown;
+  options: Array<{ id: number; name: string; archived: boolean }>;
+  onChange: (value: unknown) => void;
+}) {
+  const [term, setTerm] = useState("");
+  const [open, setOpen] = useState(false);
+  const search = useQuery({
+    queryKey: ["management-slot-items", term],
+    queryFn: () => getData<{ items: Array<{ id: number; name: string; archived: boolean }> }>(
+      `/api/v1/management/items?limit=25&query=${encodeURIComponent(term)}`,
+    ),
+    enabled: open && term.trim().length >= 2,
+  });
+  const current = options.find((item) => String(item.id) === String(value ?? ""));
+  if (!open) {
+    return <span className="slot-picker">
+      <button type="button" className="slot-picker-current" onClick={() => setOpen(true)}>
+        {current ? `${current.name}${current.archived ? " · archiviato" : ""}` : "Vuoto"}
+      </button>
+      {value !== "" && value != null && <button type="button" className="icon-button" aria-label="Svuota casella" onClick={() => onChange("")}>×</button>}
+    </span>;
+  }
+  return <span className="slot-picker open">
+    <input autoFocus value={term} placeholder="Cerca un oggetto…" onChange={(event) => setTerm(event.target.value)} />
+    <button type="button" className="icon-button" aria-label="Chiudi ricerca" onClick={() => { setOpen(false); setTerm(""); }}>×</button>
+    {search.isFetching && <small>Ricerca…</small>}
+    {search.data && <div className="slot-picker-results">
+      <button type="button" onClick={() => { onChange(""); setOpen(false); setTerm(""); }}>Svuota</button>
+      {search.data.items.map((item) => <button key={item.id} type="button" onClick={() => { onChange(String(item.id)); setOpen(false); setTerm(""); }}>
+        {item.name}{item.archived ? " · archiviato" : ""}
+      </button>)}
+      {!search.data.items.length && <small>Nessun risultato.</small>}
+    </div>}
+  </span>;
 }
 
 function FieldControl({
@@ -43,6 +87,21 @@ function FieldControl({
   detail: CharacterManagementDetail;
   onChange: (value: unknown) => void;
 }) {
+  if (field.readOnly) {
+    return <textarea className="code-input" rows={8} readOnly value={typeof value === "string" ? value : JSON.stringify(value ?? {}, null, 2)} />;
+  }
+  if (field.type === "campaign") {
+    return <select value={String(value ?? "")} onChange={(event) => onChange(event.target.value)}>
+      {detail.options.campaigns.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
+    </select>;
+  }
+  if (field.type === "image") {
+    const known = detail.options.images.find((image) => String(image.id) === String(value ?? ""));
+    return <span className="portrait-field">
+      <input value={String(value ?? "")} placeholder="ID immagine" onChange={(event) => onChange(event.target.value.trim())} />
+      <small>{known ? known.name : value ? "Immagine non trovata" : "Nessun ritratto"}</small>
+    </span>;
+  }
   if (field.type === "boolean") {
     return <input type="checkbox" checked={Boolean(value)} onChange={(event) => onChange(event.target.checked)} />;
   }
@@ -61,10 +120,7 @@ function FieldControl({
     </select>;
   }
   if (field.type === "item") {
-    return <select value={String(value ?? "")} onChange={(event) => onChange(event.target.value)}>
-      <option value="">Vuoto</option>
-      {detail.options.items.map((item) => <option key={item.id} value={item.id}>{item.name}{item.archived ? " · archiviato" : ""}</option>)}
-    </select>;
+    return <ItemSlotPicker value={value} options={detail.options.items} onChange={onChange} />;
   }
   if (field.type === "effect") {
     return <select value={String(value ?? "")} onChange={(event) => onChange(event.target.value)}>
@@ -193,6 +249,7 @@ function CharacterEditor({ detail, onDeleted }: { detail: CharacterManagementDet
     <nav className="management-record-tabs" aria-label="Record del personaggio">
       <button className={section === "profile" ? "active" : ""} onClick={() => setSection("profile")}>Dati personaggio</button>
       {detail.relations.map((relation) => <button key={relation.kind} className={section === relation.kind ? "active" : ""} data-state={relation.present ? "ready" : "missing"} onClick={() => setSection(relation.kind)}>{relation.label}{!relation.present && " · mancante"}</button>)}
+      <button className={section === "containers" ? "active" : ""} onClick={() => setSection("containers")}>Contenitori{detail.inventoryContainers.length ? ` · ${detail.inventoryContainers.length}` : ""}</button>
       <button className={section === "danger" ? "active danger" : "danger"} onClick={() => setSection("danger")}>Eliminazione</button>
     </nav>
 
@@ -208,6 +265,15 @@ function CharacterEditor({ detail, onDeleted }: { detail: CharacterManagementDet
       values={relations[activeRelation.kind] || {}}
       onChange={(key, value) => setRelations((current) => ({ ...current, [activeRelation.kind]: { ...current[activeRelation.kind], [key]: value } }))}
     />}
+    {section === "containers" && <section className="inventory-container-view" data-component-type="panel" data-theme="parchment">
+      <header><p className="eyebrow">Sola lettura</p><h3>Contenitori inventario</h3><p>Questo è lo zaino a slot usato in gioco, con capienza e giacenze. Le schede Zaino e Faretra qui sopra modificano invece i vecchi record a 50 caselle: se una scheda mostra oggetti inattesi, confronta le due.</p></header>
+      {detail.inventoryContainers.length ? detail.inventoryContainers.map((container) => <article key={container.id} data-component-type="card" data-theme="default">
+        <header><strong>{container.name}</strong><small>{container.scope} · {container.entries.length}/{container.capacity} caselle{container.weightless ? " · senza peso" : ""}</small></header>
+        {container.entries.length ? <ul className="inventory-container-entries">{container.entries.map((entry) => <li key={entry.slot}>
+          <span>{entry.slot}</span><strong>{entry.name}</strong>{entry.isReagent && <em>reagente</em>}<b>×{entry.quantity}</b>
+        </li>)}</ul> : <p className="muted-copy">Contenitore vuoto.</p>}
+      </article>) : <div className="management-empty-state"><strong>Nessun contenitore</strong><p>Questo personaggio non ha ancora uno zaino a slot: usa solo i record legacy.</p></div>}
+    </section>}
     {section === "danger" && <section className="deletion-preview" data-component-type="panel" data-theme="danger">
       <header><p className="eyebrow">Anteprima obbligatoria</p><h3>Record interessati dall'eliminazione</h3><p>I record rossi saranno eliminati. Quelli condivisi restano nel database.</p></header>
       <div className="deletion-records">{detail.deletionPreview.records.map((record) => <article key={`${record.kind}:${record.id ?? "none"}`} data-state={record.status}>
@@ -223,8 +289,7 @@ function OrphanRow({ record, overview }: { record: OrphanRecord; overview: Chara
   const { notify } = useApp();
   const queryClient = useQueryClient();
   const candidates = overview.characters.filter((character) => character.missingRelations.includes(record.kind));
-  const initial = candidates.some((character) => character.id === record.ownerCharacterId) ? record.ownerCharacterId : candidates[0]?.id;
-  const [characterId, setCharacterId] = useState<number | undefined>(initial || undefined);
+  const [characterId, setCharacterId] = useState<number | undefined>(candidates[0]?.id);
   const mutation = useMutation({
     mutationFn: () => command<ManagedActionData>("management.characters.attach", { characterId, kind: record.kind, recordId: record.id }, "management-characters"),
     onSuccess: async () => {
@@ -237,9 +302,22 @@ function OrphanRow({ record, overview }: { record: OrphanRecord; overview: Chara
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
+  const deleteMutation = useMutation({
+    mutationFn: () => command<ManagedActionData>("management.characters.deleteOrphan", { kind: record.kind, recordId: record.id }, "management-characters"),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["management-characters"] });
+      notify(`${record.label} eliminato.`);
+    },
+    onError: (error: Error) => notify(error.message, "error"),
+  });
   return <article className="orphan-row" data-component-type="card" data-theme="muted">
-    <div><span>{record.label} · #{record.id}</span><strong>{record.name}</strong><p>{record.reason}</p></div>
-    <div className="orphan-attach"><select value={characterId || ""} onChange={(event) => setCharacterId(Number(event.target.value) || undefined)}><option value="">Nessun personaggio compatibile</option>{candidates.map((character) => <option key={character.id} value={character.id}>{character.name}</option>)}</select><button className="button secondary small" disabled={!characterId || mutation.isPending} onClick={() => mutation.mutate()}>Collega</button></div>
+    <div><span>{record.label} · #{record.id}</span><strong>{record.name}</strong><p>{record.reason}</p><small>{record.contents}</small></div>
+    <div className="orphan-attach">
+      {record.attachable && <><select value={characterId || ""} onChange={(event) => setCharacterId(Number(event.target.value) || undefined)}><option value="">Nessun personaggio compatibile</option>{candidates.map((character) => <option key={character.id} value={character.id}>{character.name}</option>)}</select><button className="button secondary small" disabled={!characterId || mutation.isPending} onClick={() => mutation.mutate()}>Collega</button></>}
+      <button className="button danger small" disabled={deleteMutation.isPending} onClick={() => {
+        if (window.confirm(`Eliminare definitivamente ${record.label.toLocaleLowerCase("it")} «${record.name}»?\n\nViene rimosso solo questo record. Gli oggetti e gli effetti che contiene restano nel catalogo.`)) deleteMutation.mutate();
+      }}>Elimina</button>
+    </div>
   </article>;
 }
 
@@ -248,8 +326,12 @@ export function CharacterManagementPage() {
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState("");
   const [onlyIncomplete, setOnlyIncomplete] = useState(false);
+  const [campaignFilter, setCampaignFilter] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const overviewQuery = useQuery({ queryKey: ["management-characters"], queryFn: () => getData<CharacterManagementOverview>("/api/v1/management/characters") });
+  const overviewQuery = useQuery({
+    queryKey: ["management-characters", campaignFilter],
+    queryFn: () => getData<CharacterManagementOverview>(`/api/v1/management/characters?campaign=${encodeURIComponent(campaignFilter)}`),
+  });
   const detailQuery = useQuery({
     queryKey: ["management-character", selectedId],
     queryFn: () => getData<CharacterManagementDetail>(`/api/v1/management/characters/${selectedId}`),
@@ -272,11 +354,11 @@ export function CharacterManagementPage() {
   return <div className="page management-page">
     <header className="page-header"><div><p className="eyebrow">Gestione del gioco</p><h1>Personaggi e record collegati</h1></div><Link className="button secondary" to="/tools">Tutti gli strumenti</Link></header>
     <div className="management-mode-tabs" role="tablist"><button role="tab" aria-selected={mode === "characters"} className={mode === "characters" ? "active" : ""} onClick={() => setMode("characters")}>Personaggi</button><button role="tab" aria-selected={mode === "orphans"} className={mode === "orphans" ? "active" : ""} onClick={() => setMode("orphans")}>Record orfani <span>{overview?.orphans.length || 0}</span></button></div>
-    <section className="panel management-filterbar" data-component-type="toolbar" data-theme="default"><label>Cerca<input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nome, tipo o identificativo…" /></label>{mode === "characters" ? <label className="inline-check"><input type="checkbox" checked={onlyIncomplete} onChange={(event) => setOnlyIncomplete(event.target.checked)} /> Solo con record mancanti</label> : <label>Tipo record<select value={kind} onChange={(event) => setKind(event.target.value)}><option value="">Tutti</option>{overview?.relationKinds.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label>}</section>
+    <section className="panel management-filterbar" data-component-type="toolbar" data-theme="default"><label>Cerca<input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nome, tipo o identificativo…" /></label>{mode === "characters" ? <><label>Campagna<select value={campaignFilter} onChange={(event) => setCampaignFilter(event.target.value)}><option value="">Tutte</option><option value="none">Senza campagna</option>{(overview?.campaigns || []).filter((entry) => entry.value).map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label><label className="inline-check"><input type="checkbox" checked={onlyIncomplete} onChange={(event) => setOnlyIncomplete(event.target.checked)} /> Solo con record mancanti</label></> : <label>Tipo record<select value={kind} onChange={(event) => setKind(event.target.value)}><option value="">Tutti</option>{overview?.relationKinds.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label>}</section>
     {overviewQuery.isLoading && <section className="panel"><p>Caricamento archivio personaggi…</p></section>}
     {overviewQuery.error && <section className="panel danger-panel"><p>{(overviewQuery.error as Error).message}</p></section>}
     {mode === "characters" && overview && <div className="character-management-layout">
-      <aside className="panel managed-character-list"><header><strong>{characters.length} personaggi</strong><small>Seleziona una scheda da gestire</small></header>{characters.map((character) => <button key={character.id} className={selectedId === character.id ? "active" : ""} onClick={() => setSelectedId(character.id)}><span><strong>{character.name}</strong><small>{character.type} · livello {character.level}</small></span>{character.missingRelations.length > 0 && <b title="Record mancanti">{character.missingRelations.length}</b>}</button>)}</aside>
+      <aside className="panel managed-character-list"><header><strong>{characters.length} personaggi</strong><small>Seleziona una scheda da gestire</small></header>{characters.map((character) => <button key={character.id} className={selectedId === character.id ? "active" : ""} onClick={() => setSelectedId(character.id)}><span><strong>{character.name}</strong><small>{character.type} · livello {character.level} · {character.campaignName || "senza campagna"}</small></span>{character.missingRelations.length > 0 && <b title="Record mancanti">{character.missingRelations.length}</b>}</button>)}</aside>
       <div>{detailQuery.isLoading && <section className="panel"><p>Caricamento dati e relazioni…</p></section>}{detailQuery.data && <CharacterEditor key={`${detailQuery.data.character.id}:${detailQuery.data.character.updatedAt}`} detail={detailQuery.data} onDeleted={() => setSelectedId(null)} />}</div>
     </div>}
     {mode === "orphans" && overview && <section className="orphan-workspace"><div className="orphan-explanation"><strong>Che cosa significa “orfano”?</strong><p>È un record previsto per un personaggio ma non collegato ad alcuna scheda. Puoi filtrarlo, controllarlo e collegarlo solo a un personaggio che ne è privo.</p></div>{orphans.length ? <div className="orphan-list">{orphans.map((record) => <OrphanRow key={`${record.kind}:${record.id}`} record={record} overview={overview} />)}</div> : <div className="management-empty-state"><strong>Nessun record orfano trovato</strong><p>Il filtro corrente non mostra anomalie.</p></div>}</section>}

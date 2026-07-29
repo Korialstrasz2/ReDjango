@@ -1,0 +1,1241 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1004",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1004
+    ],
+    "normalizedName": "ogrim",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1004,
+        "levels": [
+          20
+        ],
+        "nome": "Ogrim",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            9,
+            "linear"
+          ],
+          "resistenza_tot": [
+            9,
+            "linear"
+          ],
+          "velocita_tot": [
+            3,
+            "linear"
+          ],
+          "agilita_tot": [
+            3,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            3,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            3,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            8,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_taglio_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_perforante_tot": [
+            7,
+            "hi_hi"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "1"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            4,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "1"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            4,
+            "0"
+          ],
+          "ap_tot": [
+            3,
+            "linear"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "pf_tot": [
+            9,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            5,
+            "linear"
+          ],
+          "tier_tot": [
+            8,
+            "linear"
+          ],
+          "attacco_tot": [
+            8,
+            "linear"
+          ],
+          "difesa_tot": [
+            7,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 20,
+        "skill_2_id": 17,
+        "skill_3_id": 28,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 88,
+        "unitId": 1004,
+        "name": "Ogrim",
+        "description": "Gli Ogrim sono Daedra massicci e grotteschi, incontrati nei piani di Oblivion e talvolta evocati a Nirn da cultisti o stregoni poco prudenti. Vengono associati a diversi Principi, ma compaiono spesso dove la brutalità, l'eccesso o la degradazione fisica hanno valore simbolico. La loro presenza rende qualunque spazio più stretto e più sgradevole. Sono ottusi, violenti e difficili da intimidire. Non hanno l'eleganza crudele dei Dremora né l'astuzia dei Daedra più sottili, ma possiedono una fiducia enorme nella propria massa. Sembrano capire poche cose, e una di queste è che quasi tutto può essere schiacciato. Hanno corpo enorme, pelle spessa e una forza capace di travolgere porte, scudi e uomini. Possono rigenerarsi o resistere a ferite che fermerebbero creature più piccole. Non sono raffinati, ma quando un Ogrim entra in combattimento spesso la tattica migliore diventa semplicemente non stare davanti a lui.",
+        "image": "UnitLorePics/Ogrim.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 20,
+        "name": "Pestone Tonante",
+        "description": "Colpisce il suolo causando un piccolo terremoto.",
+        "effect": "I nemici entro 2 esagoni subiscono (3d6 + livello) danni contundenti e possono essere storditi per 1 turno.",
+        "cost": "7 PA, 6 EN.",
+        "boost": "Per 5 POW, aumenta la durata dello stordimento a 2 turni."
+      },
+      {
+        "sourceId": 17,
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti.",
+        "effect": "Riduce tutti i danni in arrivo del 50% per 3 turni.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, riflette anche il 10% dei danni agli attaccanti."
+      },
+      {
+        "sourceId": 28,
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica.",
+        "effect": "Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2.",
+        "cost": "4 PA, 4 EN.",
+        "boost": "Per 4 POW, aumenta la durata a 5 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Ogrim",
+    "sourceIds": [
+      1004
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene linearizzata conservando lentezza e vulnerabilità elettrica.",
+    "fantasy": "Daedra enorme e grottesco che usa massa e ostinazione come unica strategia.",
+    "combatStory": "Occupa spazio, pesta un'area, indurisce la pelle e usa Furia per chiudere lo scontro.",
+    "siblings": [
+      {
+        "unit": "Daedroth",
+        "relation": "nearest",
+        "mustDifferBy": "Più lento e difensivo, privo di fuoco a distanza."
+      },
+      {
+        "unit": "Atronach di Carne",
+        "relation": "same-scale",
+        "mustDifferBy": "Pietra e Furia invece di rigenerazione organica."
+      },
+      {
+        "unit": "Colosso d’Ossa",
+        "relation": "contrast",
+        "mustDifferBy": "Daedra vivo, non fortezza necromantica."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "massa grottesca",
+        "expressedBy": "PF/forza e Pestone Tonante"
+      },
+      {
+        "axis": "ostinazione daedrica",
+        "expressedBy": "Pelle di Pietra e Furia"
+      }
+    ],
+    "must": [
+      "pestone",
+      "pelle di pietra",
+      "Furia",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "volo",
+      "magia a distanza"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "bruto Ogrim",
+      "5": "pestone",
+      "10": "pelle di pietra",
+      "15": "Furia",
+      "20": "Ogrim maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Ogrim",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "res_elettro negativa"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "volo",
+      "magia a distanza"
+    ],
+    "differsFrom": {
+      "Daedroth": "Più lento e difensivo, privo di fuoco a distanza.",
+      "Atronach di Carne": "Pietra e Furia invece di rigenerazione organica."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 114
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1004"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1004"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Ogrim",
+    "category": "Daedra",
+    "archetypeDescription": "Bruto Daedra lento con pestone, pelle di pietra e Furia.",
+    "loreDescription": "Gli Ogrim sono Daedra massicci e grotteschi, incontrati nei piani di Oblivion e talvolta evocati a Nirn da cultisti o stregoni poco prudenti. Vengono associati a diversi Principi, ma compaiono spesso dove la brutalità, l'eccesso o la degradazione fisica hanno valore simbolico. La loro presenza rende qualunque spazio più stretto e più sgradevole. Sono ottusi, violenti e difficili da intimidire. Non hanno l'eleganza crudele dei Dremora né l'astuzia dei Daedra più sottili, ma possiedono una fiducia enorme nella propria massa. Sembrano capire poche cose, e una di queste è che quasi tutto può essere schiacciato. Hanno corpo enorme, pelle spessa e una forza capace di travolgere porte, scudi e uomini. Possono rigenerarsi o resistere a ferite che fermerebbero creature più piccole. Non sono raffinati, ma quando un Ogrim entra in combattimento spesso la tattica migliore diventa semplicemente non stare davanti a lui.",
+    "notes": "Batch 3 v2: conversione Elder [1004]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-20",
+        "name": "Pestone Tonante",
+        "description": "Colpisce il suolo causando un piccolo terremoto. I nemici entro 2 esagoni subiscono (3d6 + livello) danni contundenti e possono essere storditi per 1 turno. Boost Elder: Per 5 POW, aumenta la durata dello stordimento a 2 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 7,
+          "energia": 6
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-17",
+        "name": "Pelle di Pietra",
+        "description": "La pelle si indurisce come la pietra, riducendo i danni subiti. Riduce tutti i danni in arrivo del 50% per 3 turni. Boost Elder: Per 5 POW, riflette anche il 10% dei danni agli attaccanti.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-28",
+        "name": "Furia",
+        "description": "Entra in uno stato di rabbia, aumentando la potenza fisica. Aumenta la forza di 4 e l'attacco di 3 per 3 turni; riduce la difesa di 2. Boost Elder: Per 4 POW, aumenta la durata a 5 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 14,
+          "level20": 37
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 14,
+          "level20": 37
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 6
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 32,
+          "level20": 206
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "tier",
+          "profile": "high",
+          "level1": 5,
+          "level20": 15
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 83
+        },
+        {
+          "key": "difesa",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:903063e76655dd5044d1f0814ac452eaac9ddc25fccfcfc84eb21826231d75f4",
+  "charterHash": "sha256:784fb871da0d5dbd6ae6ad1011622234150f136c68fd6f545dc80c4626c3dcfd",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene linearizzata conservando lentezza e vulnerabilità elettrica."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:caa281fe7e718c4b601ad101f8d2547858c170adf633eeaacb10af96aabd079b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:f592de8e89b36a851794adeff5d81323e08acba2921add1e4da944eb2257ef74",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:79545812ab81586f0483792ec2c74892f6584fb256bb5703c3203c75bf39233f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:cb6653bfce34395a1294c3abe812e1bb0872fae05e43b0cb790d26805ebfee52",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:1a4f650f12d6abdedbd13267b0338792574b8a4b96f292c27e19d6f1adc86460",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pestone Tonante",
+          "Pelle di Pietra",
+          "Furia"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Ogrim",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

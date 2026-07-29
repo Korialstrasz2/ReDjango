@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1047",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1047
+    ],
+    "normalizedName": "nebbia di zucchero lunare",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1047,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Nebbia di zucchero lunare",
+        "preset": "Randomized",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            9,
+            "linear"
+          ],
+          "mana_tot": [
+            3,
+            "linear"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "ap_tot": [
+            1,
+            "linear"
+          ],
+          "tier_tot": [
+            2,
+            "linear"
+          ],
+          "attacco_tot": [
+            2,
+            "linear"
+          ],
+          "difesa_tot": [
+            2,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            1,
+            "0"
+          ],
+          "res_taglio_tot": [
+            5,
+            "0"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            1,
+            "-1"
+          ],
+          "res_gelo_tot": [
+            5,
+            "1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-4"
+          ],
+          "rd_fuoco_tot": [
+            1,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            1,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            1,
+            "0"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            5,
+            "linear"
+          ],
+          "sconto_mana_per_potere_tot": [
+            5,
+            "linear"
+          ],
+          "sconto_pa_per_potere_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "entità",
+        "scudo": [],
+        "skill_1_id": 144,
+        "skill_2_id": 152,
+        "skill_3_id": 153,
+        "skill_4_id": 154,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 83,
+        "unitId": 1047,
+        "name": "Nebbia di zucchero lunare",
+        "description": "La Nebbia di Zucchero Lunare, in questa forma mostruosa, non è una normale creatura di Elsweyr ma una perversione quasi esclusiva del piano di Sanguine. Nei suoi domini può apparire come parodia dei piaceri khajiiti, una foschia dolce e lunare che imita il Moon Sugar senza conservarne il valore sacro. Su Tamriel dovrebbe manifestarsi solo in casi rarissimi, quando un rituale di Sanguine sporca sostanze, desideri e vapori alchemici. Sembra priva di mente, eppure reagisce ai viventi come se cercasse respiro, attenzione e abbandono. Non aggredisce con rabbia: avvolge, consola, confonde e invita a restare. Il suo pericolo sta proprio nella dolcezza, perché chi la respira può convincersi che la minaccia sia una benedizione. Non può essere affrontata facilmente con armi comuni, perché il suo corpo è vapore, luce e sostanza allucinogena. Può disorientare, indebolire e imprigionare le vittime in visioni piacevoli o sacre, consumando lentamente lucidità e volontà. Per disperderla servono vento, purificazione o protezioni contro l'Illusione e l'influenza daedrica.",
+        "image": "UnitLorePics/Nebbia_di_zucchero_lunare.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 144,
+        "name": "Volo",
+        "description": "Questa Unità può volare.",
+        "effect": "",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 152,
+        "name": "Nebbia",
+        "description": "",
+        "effect": "50% di evitare danno fisico, può teletrasportarsi entro 4 metri instant una volta a turno durante il turno degli altri con 2 pow. Non genera att di opp.",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 153,
+        "name": "Assorbimento droga",
+        "description": "",
+        "effect": "4 PA. Entro 4 metri. Somma tiro res + tiro conc.  CD 7 - comando, CD 11 - frenesia, CD 15 - paralisi, CD 19 - stordito",
+        "cost": "",
+        "boost": ""
+      },
+      {
+        "sourceId": 154,
+        "name": "Esplosione Nube di Droga",
+        "description": "",
+        "effect": "Alla morte, esplode facendo Assorbimento Droga su tutti i personaggi confinanti. A terra, rimane 3 zucchero lunare.",
+        "cost": "",
+        "boost": ""
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Nebbia di zucchero lunare",
+    "sourceIds": [
+      1047
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve 1-20 sono preservate e gli status legacy vengono ricondotti a PA e prove supportate.",
+    "fantasy": "Foschia daedrica di Sanguine che seduce, disorienta e si sottrae agli attacchi come vapore.",
+    "combatStory": "Levità, reagisce con un breve teletrasporto e sottrae PA prima di esplodere alla sconfitta.",
+    "siblings": [
+      {
+        "unit": "Anomalia Magica di Sanguine",
+        "relation": "nearest",
+        "mustDifferBy": "Controllo morbido e corpo di vapore invece di bruciatura di Mana."
+      },
+      {
+        "unit": "Spettro",
+        "relation": "same-form",
+        "mustDifferBy": "Seduzione daedrica e PA invece di non morte."
+      },
+      {
+        "unit": "Tamburo di Sanguine",
+        "relation": "contrast",
+        "mustDifferBy": "Mobilità incorporea invece di oggetto sonoro stazionario."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "corpo di foschia",
+        "expressedBy": "Volo, reazione Nebbia e difese incorporee"
+      },
+      {
+        "axis": "zucchero lunare corrotto",
+        "expressedBy": "perdita di PA e nube alla sconfitta"
+      }
+    ],
+    "must": [
+      "Sanguine",
+      "foschia",
+      "teletrasporto",
+      "PA"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "equipment",
+      "Skill",
+      "oggetti automatici",
+      "danni da veleno"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "foschia volante",
+      "5": "Nebbia evasiva",
+      "10": "assorbimento",
+      "15": "nube finale",
+      "20": "miraggio di Sanguine"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Nebbia di zucchero lunare",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Volo e Nebbia presenti dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "equipment",
+      "Skill",
+      "oggetti automatici",
+      "danni da veleno"
+    ],
+    "differsFrom": {
+      "Anomalia Magica di Sanguine": "Controllo morbido e corpo di vapore invece di bruciatura di Mana.",
+      "Spettro": "Seduzione daedrica e PA invece di non morte."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 114
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1047"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1047"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Nebbia di zucchero lunare",
+    "category": "Daedra",
+    "archetypeDescription": "Entità incorporea mobile con controllo dei PA, reazione evasiva ed esplosione finale.",
+    "loreDescription": "La Nebbia di Zucchero Lunare, in questa forma mostruosa, non è una normale creatura di Elsweyr ma una perversione quasi esclusiva del piano di Sanguine. Nei suoi domini può apparire come parodia dei piaceri khajiiti, una foschia dolce e lunare che imita il Moon Sugar senza conservarne il valore sacro. Su Tamriel dovrebbe manifestarsi solo in casi rarissimi, quando un rituale di Sanguine sporca sostanze, desideri e vapori alchemici. Sembra priva di mente, eppure reagisce ai viventi come se cercasse respiro, attenzione e abbandono. Non aggredisce con rabbia: avvolge, consola, confonde e invita a restare. Il suo pericolo sta proprio nella dolcezza, perché chi la respira può convincersi che la minaccia sia una benedizione. Non può essere affrontata facilmente con armi comuni, perché il suo corpo è vapore, luce e sostanza allucinogena. Può disorientare, indebolire e imprigionare le vittime in visioni piacevoli o sacre, consumando lentamente lucidità e volontà. Per disperderla servono vento, purificazione o protezioni contro l'Illusione e l'influenza daedrica.",
+    "notes": "Final Batch v2: conversione Elder [1047]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "final-batch-volo",
+        "name": "Volo",
+        "description": "Passiva. La creatura può attraversare il campo in volo; usa l'azione Volo già presente nel vocabolario delle Unit.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-152",
+        "name": "Nebbia",
+        "description": "Una volta per turno, quando viene bersagliata, la Nebbia può spendere Potere per teletrasportarsi entro 4 esagoni senza generare attacchi di opportunità. La sua natura incorporea è espressa dalle curve difensive.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "potere": 2
+        },
+        "trigger": "Reazione",
+        "duration": "Istantanea",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-153",
+        "name": "Assorbimento droga",
+        "description": "Bersaglio entro 4 esagoni. Una prova di Resistenza e Concentrazione contrasta la foschia; in caso di fallimento il bersaglio perde PA nel turno successivo. Non introduce una nuova condizione persistente.",
+        "minLevel": 4,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "mana": 2
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-154",
+        "name": "Esplosione Nube di Droga",
+        "description": "Alla sconfitta, tutti i bersagli adiacenti risolvono Assorbimento droga. La nube residua è narrativa e non genera automaticamente oggetti.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Alla sconfitta",
+        "duration": "Istantanea",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 32,
+          "level20": 206
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "ap",
+          "profile": "very_low",
+          "level1": 0,
+          "level20": 1
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 7
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 33
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 33
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -4,
+          "level20": -4
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:202200d949900da3dbb8fb5db840a66a7f99ba6275dd0d606b0a155946bc6f55",
+  "charterHash": "sha256:fb101b43c174c23704408578e9a7f2503f01f2ff15f32a9c7f1a293f22d0b72a",
+  "converterVersion": "elder-unit-charter-v2-final",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve 1-20 sono preservate e gli status legacy vengono ricondotti a PA e prove supportate."
+    },
+    {
+      "what": "condizioni da droga",
+      "from": "comando, frenesia, paralisi e stordimento a soglie",
+      "to": "perdita di PA su prova fallita",
+      "why": "Evita condizioni non gestite automaticamente conservando il ruolo di controllo."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:d13007b2f37f8260ac7f268da912194f6e7f2123107d0f7adea7bcc2181d87f8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:436d0bdd2e1f9c8af93de39fbac475af642c686b479c8914db545d18d008bc6f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:79201f923f6a6be280d0d6e02ea4eef88751d595e8a3ef64b7489c520f0f23c4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:c5d7502e94f8b954960ad7614f8dcd802f06312a65a410456d7279fad2b5120b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:393635ce902cf94acbcfcadf58ab4dcd5eb8b5888e70e9d528735c5fbe98827f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Nebbia",
+          "Assorbimento droga",
+          "Esplosione Nube di Droga"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Nebbia di zucchero lunare",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "final-batch-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:50:35.334810+00:00",
+    "notes": "Standing authorization granted by Ale for all remaining coherent Elder unit conversions after prior batch approvals."
+  }
+}

@@ -22,10 +22,21 @@ def _catalog_queryset(
     types: tuple[str, str, str],
     rarity: int | None,
     weapon_type_id: int | None,
+    special: bool | None = None,
+    region: str = "",
+    state: str = "",
 ):
     queryset = Oggetto.objects.select_related("tipo_arma", "media")
     if not include_archived:
         queryset = queryset.filter(archiviato=False, archived_at__isnull=True)
+    elif state == "archived":
+        queryset = queryset.filter(Q(archiviato=True) | Q(archived_at__isnull=False))
+    elif state == "active":
+        queryset = queryset.filter(archiviato=False, archived_at__isnull=True)
+    if special is not None:
+        queryset = queryset.filter(speciale=special)
+    if region:
+        queryset = queryset.filter(regione_loot__iexact=region)
     if query:
         queryset = queryset.filter(
             Q(nome__icontains=query)
@@ -44,7 +55,7 @@ def _catalog_queryset(
     return queryset.order_by("numero_ordine", "nome")
 
 
-def _catalog_rows(queryset, *, limit: int, group: str, slot: str) -> list[Oggetto]:
+def _catalog_rows(queryset, *, limit: int, offset: int, group: str, slot: str) -> list[Oggetto]:
     """Read the catalogue lazily so a slot-scoped search stops at the first `limit` matches.
 
     Compatibility depends on type aliases stored in `metadata`, so it cannot become a
@@ -52,9 +63,9 @@ def _catalog_rows(queryset, *, limit: int, group: str, slot: str) -> list[Oggett
     while still serializing only the rows the caller asked for.
     """
     if not group:
-        return list(queryset[:limit])
+        return list(queryset[offset:offset + limit])
     matching = (item for item in queryset.iterator(chunk_size=500) if item_fits_container(item, group, slot))
-    return list(islice(matching, limit))
+    return list(islice(matching, offset, offset + limit))
 
 
 def item_catalog_payload(
@@ -62,11 +73,15 @@ def item_catalog_payload(
     *,
     include_archived: bool = False,
     limit: int = 100,
+    offset: int = 0,
     type_1: str = "",
     type_2: str = "",
     type_3: str = "",
     rarity: int | None = None,
     weapon_type_id: int | None = None,
+    special: bool | None = None,
+    region: str = "",
+    state: str = "",
     group: str = "",
     slot: str = "",
 ) -> dict:
@@ -76,10 +91,29 @@ def item_catalog_payload(
         types=(type_1, type_2, type_3),
         rarity=rarity,
         weapon_type_id=weapon_type_id,
+        special=special,
+        region=region,
+        state=state,
     )
-    rows = _catalog_rows(queryset, limit=min(limit, 10000), group=group, slot=slot)
+    page_size = min(limit, 10000)
+    offset = max(0, offset)
+    rows = _catalog_rows(queryset, limit=page_size, offset=offset, group=group, slot=slot)
+    # A slot-scoped search is decided in Python, so only the unscoped catalogue
+    # can report a trustworthy total; the picker does not use one anyway.
+    total = queryset.count() if not group else offset + len(rows)
     return {
         "items": [serialize_item(item, detailed=True) for item in rows],
+        "total": total,
+        "offset": offset,
+        "limit": page_size,
+        "hasMore": offset + len(rows) < total,
+        "regions": sorted(
+            value
+            for value in Oggetto.objects.exclude(regione_loot="")
+            .values_list("regione_loot", flat=True)
+            .distinct()
+        ),
+        "specialCount": Oggetto.objects.filter(speciale=True).count(),
         "typeOptions": [
             {
                 "position": option.posizione,

@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:981",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      981
+    ],
+    "normalizedName": "guerriero kwama",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 981,
+        "levels": [
+          20
+        ],
+        "nome": "Guerriero Kwama",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            6,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            4,
+            "linear"
+          ],
+          "agilita_tot": [
+            4,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            3,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "0"
+          ],
+          "res_perforante_tot": [
+            6,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            6,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            5,
+            "linear"
+          ],
+          "attacco_tot": [
+            5,
+            "linear"
+          ],
+          "difesa_tot": [
+            7,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 4,
+        "skill_2_id": 11,
+        "skill_3_id": 6,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 65,
+        "unitId": 981,
+        "name": "Guerriero Kwama",
+        "description": "I Guerrieri Kwama vivono nelle colonie sotterranee di Morrowind, soprattutto nelle miniere di uova che sostengono una parte importante dell'economia dunmer. Difendono tunnel, regina, operai e nidi dagli intrusi, dai predatori e da chiunque porti odori estranei alla colonia. Per i minatori esperti sono una presenza da rispettare, non solo un pericolo da evitare. Non hanno una personalità individuale comprensibile, ma agiscono con disciplina istintiva. Reagiscono alla minaccia in modo rapido e coordinato, come se l'intera colonia pensasse attraverso di loro. Non sono crudeli, ma sono completamente indifferenti alle ragioni di chi entra nel loro territorio. Hanno corpo insettoide, corazza resistente e attacchi potenti, spesso accompagnati da sostanze irritanti o velenose. Sono più grandi e aggressivi degli operai, e il loro ruolo è chiaramente quello di soldati della colonia. In uno spazio stretto, con altri Kwama intorno, possono bloccare l'avanzata di un gruppo intero.",
+        "image": "UnitLorePics/Guerriero_Kwama.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 4,
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza.",
+        "effect": "Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia.",
+        "cost": "6 PA, 3 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni."
+      },
+      {
+        "sourceId": 11,
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante.",
+        "effect": "Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo",
+        "cost": "5 PA, 3 EN.",
+        "boost": "Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni."
+      },
+      {
+        "sourceId": 6,
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori.",
+        "effect": "Recupera (livello)d4 Punti Ferita alla fine di ogni turno.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, può raddoppiare la guarigione per un turno."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Guerriero Kwama",
+    "sourceIds": [
+      981
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint 20 diventano una progressione leggibile della casta.",
+    "fantasy": "Casta guerriera della colonia Kwama, nata per proteggere regina e nido.",
+    "combatStory": "Carica l'intruso, inocula gelo debilitante e continua a combattere grazie alla pelle rigenerativa.",
+    "siblings": [
+      {
+        "unit": "Regina Kwama",
+        "relation": "nearest",
+        "mustDifferBy": "Guardia da prima linea, non controllo della covata."
+      },
+      {
+        "unit": "Operaio Kwama",
+        "relation": "same-colony",
+        "mustDifferBy": "Più forza, corazza e aggressione."
+      },
+      {
+        "unit": "Ragno Frostbite",
+        "relation": "contrast",
+        "mustDifferBy": "Carica frontale invece di ragnatele."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "casta guerriera",
+        "expressedBy": "forza/PF e Carica"
+      },
+      {
+        "axis": "difesa del nido",
+        "expressedBy": "veleno gelido e rigenerazione"
+      }
+    ],
+    "must": [
+      "Kwama",
+      "carica",
+      "veleno gelido",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "evocazione",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "guardia Kwama",
+      "5": "carica",
+      "10": "veleno gelido",
+      "15": "corazza del nido",
+      "20": "guerriero maturo"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Guerriero Kwama",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Carica e Inietta veleno gelido presenti"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "evocazione",
+      "volo"
+    ],
+    "differsFrom": {
+      "Regina Kwama": "Guardia da prima linea, non controllo della covata.",
+      "Operaio Kwama": "Più forza, corazza e aggressione."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 82
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:981"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:981"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Guerriero Kwama",
+    "category": "Animale",
+    "archetypeDescription": "Difensore d'alveare corazzato con carica e veleno gelido.",
+    "loreDescription": "I Guerrieri Kwama vivono nelle colonie sotterranee di Morrowind, soprattutto nelle miniere di uova che sostengono una parte importante dell'economia dunmer. Difendono tunnel, regina, operai e nidi dagli intrusi, dai predatori e da chiunque porti odori estranei alla colonia. Per i minatori esperti sono una presenza da rispettare, non solo un pericolo da evitare. Non hanno una personalità individuale comprensibile, ma agiscono con disciplina istintiva. Reagiscono alla minaccia in modo rapido e coordinato, come se l'intera colonia pensasse attraverso di loro. Non sono crudeli, ma sono completamente indifferenti alle ragioni di chi entra nel loro territorio. Hanno corpo insettoide, corazza resistente e attacchi potenti, spesso accompagnati da sostanze irritanti o velenose. Sono più grandi e aggressivi degli operai, e il loro ruolo è chiaramente quello di soldati della colonia. In uno spazio stretto, con altri Kwama intorno, possono bloccare l'avanzata di un gruppo intero.",
+    "notes": "Batch 3 v2: conversione Elder [981]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-4",
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza. Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia. Boost Elder: Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-11",
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante. Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo Boost Elder: Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-6",
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori. Recupera (livello)d4 Punti Ferita alla fine di ogni turno. Boost Elder: Per 5 POW, può raddoppiare la guarigione per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 11
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "difesa",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:eff1d8daba783a3ec093c6cb9c07d8a030376b929f0ed1ed86a6fef3aa62d931",
+  "charterHash": "sha256:438b369ac7b23d42da0915eabd17e64e28263045edadbd788ff2cd410e69b64c",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint 20 diventano una progressione leggibile della casta."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:962c06613be6cfa82cd9e5f3383e745711a2534a05789b60f2a9821c7e15df1b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:c825ae4f40d8ff7981337538a058aff7877d10940da7ef85547522146bfb2649",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:4dd4fcf16efb1011d8aca14bbfbe6d3cb8ecdcdc50afe756e53731469c52628a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:4dafd84309090a1bdcc6a8e3ceab698cf30752d5cbfa44d15531e80accdac123",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:8b7e2228e32573c0c1d850fadf4aaff106750e890bb782e183e70ecda3a24b5c",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Inietta veleno gelido",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Guerriero Kwama",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

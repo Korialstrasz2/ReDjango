@@ -120,6 +120,18 @@ solo le Skill curate e i loro prerequisiti reali possono essere acquistati.
 Questo impedisce, per esempio, che un arciere riceva tecniche melee soltanto
 per un alto `core_fisico`.
 
+`allowedRaces` limita le razze primarie ammesse. `allowedSubraces` può
+restringere ulteriormente le sottorazze appartenenti alla razza estratta; se è
+vuoto, il generatore usa l'intero catalogo della razza. Per esempio, il
+`Soldato Dremora` ammette soltanto `Churl`, `Caitiff` e `Kynval`, evitando che
+una Unit di fanteria venga generata come ufficiale o principe Dremora.
+Una Unit umanoide non morta può usare `allowedRaces: ["Non morto"]` e limitare
+la sottorazza al suo modello reale, per esempio `Scheletro` o `Draugr`. Le
+Creature senza equipaggiamento e senza Skill restano invece nel contratto
+`creature`, anche quando sono non morte.
+Gli Xivilai usano `allowedRaces: ["Xivilai"]`: sono Daedra umanoidi distinti
+dai Dremora e non possiedono ranghi-sottorazza.
+
 Un Core di campagna può essere definito direttamente sulla Unit senza cambiare
 il database:
 

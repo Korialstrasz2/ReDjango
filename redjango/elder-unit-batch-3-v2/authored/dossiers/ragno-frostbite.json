@@ -1,0 +1,1179 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:993",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      993
+    ],
+    "normalizedName": "ragno frostbite",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 993,
+        "levels": [
+          20
+        ],
+        "nome": "Ragno Frostbite",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            4,
+            "linear"
+          ],
+          "resistenza_tot": [
+            4,
+            "linear"
+          ],
+          "velocita_tot": [
+            5,
+            "linear"
+          ],
+          "agilita_tot": [
+            6,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            4,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            4,
+            "linear"
+          ],
+          "res_taglio_tot": [
+            5,
+            "0"
+          ],
+          "res_perforante_tot": [
+            6,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "linear"
+          ],
+          "res_gelo_tot": [
+            7,
+            "2"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-2"
+          ],
+          "rd_fuoco_tot": [
+            3,
+            "linear"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "hi_hi"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            1,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            4,
+            "linear"
+          ],
+          "attacco_tot": [
+            5,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "entità",
+        "scudo": [],
+        "skill_1_id": 5,
+        "skill_2_id": 11,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 98,
+        "unitId": 993,
+        "name": "Ragno Frostbite",
+        "description": "I Ragni Frostbite abitano caverne, foreste fredde, miniere e rovine di Skyrim. Sono tra i predatori più comuni e odiati dai viaggiatori del nord, perché annidano in luoghi che sembrano ripari sicuri. Molti avventurieri imparano a temere le ragnatele prima ancora di vedere la creatura. Sono aggressivi, pazienti e guidati da un istinto predatorio molto efficace. Restano nascosti finché la preda non si avvicina abbastanza, poi attaccano con rapidità disgustosa. Non sono intelligenti come un nemico umano, ma il loro modo di cacciare è perfettamente adatto all'ambiente. Hanno veleno debilitante, zampe rapide e una capacità notevole di muoversi su pareti e soffitti. Gli esemplari più grandi possono bloccare passaggi interi con ragnatele e corpi delle vittime. In gruppo o in spazi chiusi diventano una minaccia molto più seria di quanto suggerisca la loro diffusione.",
+        "image": "UnitLorePics/Ragno_Frostbite.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 5,
+        "name": "Trappola di Ragnatela",
+        "description": "La creatura lancia una ragnatela appiccicosa per immobilizzare i nemici.",
+        "effect": "Il bersaglio entro 5 esagoni deve effettuare un controllo di agilità pari a 5+lv/2 o avere metà PA per un turno. Può anche metterla a terra, e colpisce chi ci cammina su.",
+        "cost": "2 PA, 4 EN.",
+        "boost": "Per 3 POW, colpisce fino a 2 bersagli entro la portata."
+      },
+      {
+        "sourceId": 11,
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante.",
+        "effect": "Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo",
+        "cost": "5 PA, 3 EN.",
+        "boost": "Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Ragno Frostbite",
+    "sourceIds": [
+      993
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint vengono linearizzati mantenendo le polarità elementali.",
+    "fantasy": "Predatore di caverna che prepara il terreno con ragnatele e chiude col veleno gelido.",
+    "combatStory": "Riduce la mobilità da lontano, attacca da pareti e soffitti e punisce chi resta intrappolato.",
+    "siblings": [
+      {
+        "unit": "Ragno Daedra",
+        "relation": "nearest",
+        "mustDifferBy": "Animale e gelo invece di evocazione daedrica."
+      },
+      {
+        "unit": "Guerriero Kwama",
+        "relation": "same-space",
+        "mustDifferBy": "Controllo e imboscata invece di carica."
+      },
+      {
+        "unit": "Lupo delle Nevi",
+        "relation": "contrast",
+        "mustDifferBy": "Trappola statica invece di inseguimento."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "trappola di ragnatela",
+        "expressedBy": "riduzione PA e controllo del terreno"
+      },
+      {
+        "axis": "veleno gelido",
+        "expressedBy": "morso e res_gelo costante"
+      }
+    ],
+    "must": [
+      "ragnatela",
+      "veleno gelido",
+      "gelo",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "evocazione",
+      "volo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "predatore di caverna",
+      "5": "ragnatela",
+      "10": "morso gelido",
+      "15": "controllore maturo",
+      "20": "matriarca Frostbite"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Ragno Frostbite",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Trappola di Ragnatela presente"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "evocazione",
+      "volo"
+    ],
+    "differsFrom": {
+      "Ragno Daedra": "Animale e gelo invece di evocazione daedrica.",
+      "Guerriero Kwama": "Controllo e imboscata invece di carica."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:993"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:993"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Ragno Frostbite",
+    "category": "Animale",
+    "archetypeDescription": "Controllore animale con ragnatela, morso gelido e resistenza al gelo.",
+    "loreDescription": "I Ragni Frostbite abitano caverne, foreste fredde, miniere e rovine di Skyrim. Sono tra i predatori più comuni e odiati dai viaggiatori del nord, perché annidano in luoghi che sembrano ripari sicuri. Molti avventurieri imparano a temere le ragnatele prima ancora di vedere la creatura. Sono aggressivi, pazienti e guidati da un istinto predatorio molto efficace. Restano nascosti finché la preda non si avvicina abbastanza, poi attaccano con rapidità disgustosa. Non sono intelligenti come un nemico umano, ma il loro modo di cacciare è perfettamente adatto all'ambiente. Hanno veleno debilitante, zampe rapide e una capacità notevole di muoversi su pareti e soffitti. Gli esemplari più grandi possono bloccare passaggi interi con ragnatele e corpi delle vittime. In gruppo o in spazi chiusi diventano una minaccia molto più seria di quanto suggerisca la loro diffusione.",
+    "notes": "Batch 3 v2: conversione Elder [993]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-5",
+        "name": "Trappola di Ragnatela",
+        "description": "La creatura lancia una ragnatela appiccicosa per immobilizzare i nemici. Il bersaglio entro 5 esagoni deve effettuare un controllo di agilità pari a 5+lv/2 o avere metà PA per un turno. Può anche metterla a terra, e colpisce chi ci cammina su. Boost Elder: Per 3 POW, colpisce fino a 2 bersagli entro la portata.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 2,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-11",
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante. Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo Boost Elder: Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "medium",
+          "level1": 1,
+          "level20": 3
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 10
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:f202415d46630b225eaa86ba754c01c9a9e6f0c8eaa4d66a585b999dfd117a64",
+  "charterHash": "sha256:729ee7ea688d2afca098948241be880fdaee0428599fbaba73c3437ada70022f",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint vengono linearizzati mantenendo le polarità elementali."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:a7886ae1022267f7ae366fa60fc42c1c02c9799fc9844344116dd41c704e31fb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:c7e8229ba14d6f6fccc0509e4babb9207b9e47604a5d1182fed3c930c5efa17b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:5928b10ba515c6ea6c1f10208fbb93980f57a16bd391f2146558b0ae83381591",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:0f1f58ab727329c5c5bd69a073167b3d8f3cf481bb4f8962a4a8c005add12a7e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:e7e3b5de6b68d063ec8041003915ac0f80c2e1db53cbfa23dc8e9f23fd6b42ce",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Trappola di Ragnatela",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Ragno Frostbite",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

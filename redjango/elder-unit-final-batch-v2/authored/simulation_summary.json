@@ -1,0 +1,186 @@
+{
+  "validation": {
+    "passed": 11,
+    "failed": 0,
+    "results": [
+      {
+        "unit": "Amazzone di Sanguine",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\amazzone-di-sanguine.json"
+      },
+      {
+        "unit": "Assassino dei Tsaesci",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\assassino-dei-tsaesci.json"
+      },
+      {
+        "unit": "Bocca Vorace di Sanguine",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\bocca-vorace-di-sanguine.json"
+      },
+      {
+        "unit": "Nebbia di zucchero lunare",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\nebbia-di-zucchero-lunare.json"
+      },
+      {
+        "unit": "Pene Volante",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\pene-volante.json"
+      },
+      {
+        "unit": "Signore Dremora",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\signore-dremora.json"
+      },
+      {
+        "unit": "Spadaccino Telvanni",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\spadaccino-telvanni.json"
+      },
+      {
+        "unit": "Stregone Bandito",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\stregone-bandito.json"
+      },
+      {
+        "unit": "Tamburo di Sanguine",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\tamburo-di-sanguine.json"
+      },
+      {
+        "unit": "Verme Penico di Sanguine",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\verme-penico-di-sanguine.json"
+      },
+      {
+        "unit": "Xivilai",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-final-batch-v2\\authored\\dossiers\\xivilai.json"
+      }
+    ]
+  },
+  "simulations": [
+    {
+      "unit": "Amazzone di Sanguine",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Assassino dei Tsaesci",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 29,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Bocca Vorace di Sanguine",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Nebbia di zucchero lunare",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Pene Volante",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Signore Dremora",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 23,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Spadaccino Telvanni",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 21,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Stregone Bandito",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Tamburo di Sanguine",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Verme Penico di Sanguine",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Xivilai",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 21,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    }
+  ]
+}

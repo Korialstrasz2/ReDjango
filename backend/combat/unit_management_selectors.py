@@ -5,7 +5,7 @@ from typing import Any
 from django.db.models import Q
 
 from backend.characters.services.inventory_rules import EQUIPMENT_SLOT_LABELS
-from backend.characters.race_rules import RACE_NAMES
+from backend.characters.race_rules import RACE_NAMES, subraces_for
 from backend.core.competence_defaults import COMPETENCE_DEFINITIONS
 from backend.core.models import FamigliaSkill, Oggetto, Skill, Unit
 
@@ -130,7 +130,17 @@ def unit_management_overview() -> dict[str, Any]:
                     archived_at__isnull=True,
                 ).order_by("gruppo__ordine", "ordine", "nome")
             ],
-            "races": [{"value": race, "label": race} for race in RACE_NAMES],
+            "races": [
+                {
+                    "value": race,
+                    "label": race,
+                    "subraces": [
+                        {"value": subrace, "label": subrace}
+                        for subrace in subraces_for(race)
+                    ],
+                }
+                for race in RACE_NAMES
+            ],
             "statCurveProfiles": [
                 {"value": key, "label": label}
                 for key, label in UNIT_STAT_PROFILE_LABELS.items()
@@ -282,6 +292,7 @@ def serialize_managed_unit(unit: Unit) -> dict[str, Any]:
             "allowedClassFamilies": _list(rules.get("allowedClassFamilies")),
             "allowedReligionFamilies": _list(rules.get("allowedReligionFamilies")),
             "allowedRaces": _list(rules.get("allowedRaces")),
+            "allowedSubraces": _list(rules.get("allowedSubraces")),
             "allowHumanoidStatGrowth": bool(rules.get("allowHumanoidStatGrowth")),
         },
         "metadata": _mapping(unit.metadata),

@@ -1,0 +1,1638 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:929,930",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      929,
+      930
+    ],
+    "normalizedName": "sacerdote del tribunale",
+    "rows": [
+      {
+        "archetipo": "mago",
+        "arma": [
+          "Bastone qualificato (Re)"
+        ],
+        "armatura": [],
+        "categoria": "Umano",
+        "chainmail": [],
+        "id": 929,
+        "levels": [
+          10,
+          11,
+          12,
+          13,
+          14
+        ],
+        "nome": "Sacerdote del Tribunale",
+        "preset": "Any",
+        "profili_attributi_formule": {},
+        "razza": "Dunmer",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [
+          "Veste qualificato (Re)"
+        ],
+        "vestito": [
+          "Vestiti regali"
+        ]
+      },
+      {
+        "archetipo": "mago",
+        "arma": [
+          "Bastone maestro (Re)"
+        ],
+        "armatura": [],
+        "categoria": "Umano",
+        "chainmail": [],
+        "id": 930,
+        "levels": [
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Sacerdote del Tribunale",
+        "preset": "Any",
+        "profili_attributi_formule": {},
+        "razza": "Dunmer",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [
+          "Veste maestro (Re)"
+        ],
+        "vestito": [
+          "Vestiti regali"
+        ]
+      }
+    ],
+    "lore": [
+      {
+        "id": 101,
+        "unitId": 929,
+        "name": "Sacerdote del Tribunale",
+        "description": "I Sacerdoti del Tribunale servono nei templi, nei santuari e nelle città sacre di Morrowind, dove la fede negli dei viventi ha plasmato per secoli la società dunmer. Anche dopo la caduta del potere divino del Tribunale, molti riti, gerarchie e memorie restano vivi nelle comunità. Un sacerdote non è solo guida spirituale, ma custode di identità, legge e tradizione. Sono solenni, istruiti e spesso combattuti tra fede antica e realtà presente. Alcuni continuano a venerare Almalexia, Sotha Sil e Vivec con devozione ostinata; altri hanno reinterpretato il proprio ruolo alla luce del ritorno del culto degli Antenati. In entrambi i casi, portano il peso di una religione che ha governato un popolo intero. Usano preghiere, conoscenze rituali, Restaurazione e talvolta altre scuole di magia apprese nei templi. Non sono sempre guerrieri, ma possono difendere un santuario con sorprendente determinazione. Il loro potere più grande, però, è la capacità di dare senso al dolore storico dei Dunmer.",
+        "image": "UnitLorePics/Sacerdote_del_Tribunale.png"
+      }
+    ],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Sacerdote del Tribunale",
+    "sourceIds": [
+      929,
+      930
+    ],
+    "kind": "humanoid",
+    "kindJustification": "Usa equipaggiamento e progressione Skill: contratto humanoid.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La dotazione rituale iniziale viene estesa senza aggiungere armi offensive.",
+    "fantasy": "Custode della fede del Tribunale che sostiene comunità e fedeli attraverso rito, cura e autorità.",
+    "combatStory": "Stabilizza, cura e rimuove condizioni dalla seconda linea, usando staff e veste come segni liturgici.",
+    "siblings": [
+      {
+        "unit": "Guaritore",
+        "relation": "nearest",
+        "mustDifferBy": "Autorità religiosa Dunmer e rito sostituiscono neutralità clinica."
+      },
+      {
+        "unit": "Ordinatore",
+        "relation": "same-faith",
+        "mustDifferBy": "Cura e parola invece di scudo e repressione."
+      },
+      {
+        "unit": "Mago Telvanni",
+        "relation": "contrast",
+        "mustDifferBy": "Servizio comunitario invece di ambizione personale."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "voce del Tribunale",
+        "expressedBy": "Dunmer, religioni e diplomazia"
+      },
+      {
+        "axis": "rito di Recupero",
+        "expressedBy": "staff/veste e Skill di cura"
+      }
+    ],
+    "must": [
+      "Dunmer",
+      "Tribunale",
+      "Recupero",
+      "supporto"
+    ],
+    "mustNot": [
+      "magia offensiva",
+      "armatura",
+      "assassinio",
+      "azioni innate"
+    ],
+    "rigidity": "path-locked",
+    "variationBudget": "staff qualificato o maestro con cure diverse",
+    "levelCheckpoints": {
+      "1": "sacerdote completo",
+      "5": "stabilizzazione",
+      "10": "Cura",
+      "15": "rimozione status",
+      "20": "alto officiante"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Sacerdote del Tribunale",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "humanoid",
+      "innateActionCount": 0,
+      "racePrimary": [
+        "Dunmer"
+      ],
+      "subraceIn": [
+        "Servo del Tribunale"
+      ]
+    },
+    "atLeastOneVariantHas": [
+      "Stabilizza o Cicatrizza entro il livello 1"
+    ],
+    "allowedVariation": [
+      "staff qualificato o maestro con cure diverse",
+      "razze: Dunmer"
+    ],
+    "forbidden": [
+      "magia offensiva",
+      "armatura",
+      "assassinio",
+      "azioni innate"
+    ],
+    "differsFrom": {
+      "Guaritore": "Autorità religiosa Dunmer e rito sostituiscono neutralità clinica.",
+      "Ordinatore": "Cura e parola invece di scudo e repressione."
+    },
+    "explainedWarnings": [
+      {
+        "code": "indivisible-general-xp-residual",
+        "pattern": "^[1-9] PE generali restano disponibili: nessuna Skill configurata è acquistabile\\.$",
+        "why": "Il pool resta curato; 1-9 PE indivisibili non autorizzano l'aggiunta di una Skill incoerente."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "identità e comportamento",
+      "source": "unitlore:929-930"
+    },
+    {
+      "claim": "equipaggiamento",
+      "source": "django_slim_unit:929-930"
+    }
+  ],
+  "catalogQueries": [
+    {
+      "purpose": "Pool Skill espliciti Core/Archetipo",
+      "sql": "SELECT id,nome,famiglia_id,costo_pe FROM core_skill WHERE archived_at IS NULL AND id IN (:skill_ids)",
+      "params": {
+        "skill_ids": [
+          71,
+          72,
+          81,
+          82,
+          403,
+          404,
+          395,
+          396,
+          397,
+          1302,
+          417,
+          1310,
+          1309,
+          419,
+          420,
+          424,
+          425,
+          1452,
+          1442
+        ]
+      },
+      "resultIds": [
+        71,
+        72,
+        81,
+        82,
+        403,
+        404,
+        395,
+        396,
+        397,
+        1302,
+        417,
+        1310,
+        1309,
+        419,
+        420,
+        424,
+        425,
+        1452,
+        1442
+      ]
+    },
+    {
+      "purpose": "Pool equipaggiamento e identity locks",
+      "sql": "SELECT id,nome,tipo_1,tipo_2,tipo_3,tipo_4 FROM core_oggetto WHERE archived_at IS NULL AND archiviato=0 AND id IN (:item_ids)",
+      "params": {
+        "item_ids": [
+          5178,
+          5194,
+          654,
+          670,
+          5275
+        ]
+      },
+      "resultIds": [
+        5178,
+        5194,
+        654,
+        670,
+        5275
+      ]
+    }
+  ],
+  "proposal": {
+    "name": "Sacerdote del Tribunale",
+    "category": "Dunmer",
+    "archetypeDescription": "Sacerdote Dunmer di supporto con Recupero, medicina e dotazione rituale.",
+    "loreDescription": "I Sacerdoti del Tribunale servono nei templi, nei santuari e nelle città sacre di Morrowind, dove la fede negli dei viventi ha plasmato per secoli la società dunmer. Anche dopo la caduta del potere divino del Tribunale, molti riti, gerarchie e memorie restano vivi nelle comunità. Un sacerdote non è solo guida spirituale, ma custode di identità, legge e tradizione. Sono solenni, istruiti e spesso combattuti tra fede antica e realtà presente. Alcuni continuano a venerare Almalexia, Sotha Sil e Vivec con devozione ostinata; altri hanno reinterpretato il proprio ruolo alla luce del ritorno del culto degli Antenati. In entrambi i casi, portano il peso di una religione che ha governato un popolo intero. Usano preghiere, conoscenze rituali, Restaurazione e talvolta altre scuole di magia apprese nei templi. Non sono sempre guerrieri, ma possono difendere un santuario con sorprendente determinazione. Il loro potere più grande, però, è la capacità di dare senso al dolore storico dei Dunmer.",
+    "notes": "Batch 4 v2: conversione Elder [929, 930]; Charter, pool Skill ed estensione 1-20 sono stati curati esplicitamente.",
+    "levels": [],
+    "archetypeTags": {
+      "supporto_party": 5,
+      "core_magico": 4,
+      "sociale": 5,
+      "difesa": 2,
+      "attacco": -4
+    },
+    "competenceProfile": {
+      "conoscenze_religioni": 5,
+      "diplomazia": 5,
+      "sapienza_magica": 4,
+      "intuizione": 4,
+      "intimidire": -3
+    },
+    "generation": {
+      "kind": "humanoid",
+      "coreKey": "support",
+      "coreShare": 0.46,
+      "startingXp": 8,
+      "xpBase": 4,
+      "xpGrowth": 0,
+      "competenceStartingXp": 5,
+      "competenceXpBase": 8,
+      "competenceXpGrowth": 0,
+      "finalSpendingPasses": 8,
+      "magicPolicy": "any",
+      "allowedClassFamilies": [],
+      "allowedReligionFamilies": [],
+      "allowedRaces": [
+        "Dunmer"
+      ],
+      "allowHumanoidStatGrowth": false,
+      "allowedSubraces": [
+        "Servo del Tribunale"
+      ]
+    },
+    "skillUnlocks": [
+      {
+        "skillId": 71,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 72,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 81,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 82,
+        "pool": "core",
+        "weight": 5,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 403,
+        "pool": "core",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 404,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 395,
+        "pool": "core",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 396,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 397,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 6,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1302,
+        "pool": "core",
+        "weight": 6,
+        "minLevel": 7,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 417,
+        "pool": "archetype",
+        "weight": 10,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1310,
+        "pool": "archetype",
+        "weight": 9,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1309,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 1,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 419,
+        "pool": "archetype",
+        "weight": 10,
+        "minLevel": 4,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 420,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 6,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 424,
+        "pool": "archetype",
+        "weight": 7,
+        "minLevel": 8,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 425,
+        "pool": "archetype",
+        "weight": 8,
+        "minLevel": 10,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1452,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 5,
+        "maxLevel": 20
+      },
+      {
+        "skillId": 1442,
+        "pool": "archetype",
+        "weight": 5,
+        "minLevel": 8,
+        "maxLevel": 20
+      }
+    ],
+    "equipmentSlots": [
+      {
+        "slot": "arma",
+        "itemId": 5178,
+        "minLevel": 1,
+        "maxLevel": 14,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "arma",
+        "itemId": 5194,
+        "minLevel": 15,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "veste",
+        "itemId": 654,
+        "minLevel": 1,
+        "maxLevel": 14,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "veste",
+        "itemId": 670,
+        "minLevel": 15,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      },
+      {
+        "slot": "vestiti",
+        "itemId": 5275,
+        "minLevel": 1,
+        "maxLevel": 20,
+        "weight": 1,
+        "chance": 1
+      }
+    ],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": []
+    }
+  },
+  "proposalHash": "sha256:c0c08ff6c5813d97f0d79624ce245d7b66ea5cd7c8299974a09b1d18690963ce",
+  "charterHash": "sha256:27a4677a4cdef381745d1e9e39bae2825cb4279b821210efbf31157901adbdd7",
+  "converterVersion": "elder-unit-charter-v2-batch4",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "proposal": "bulk research con pool Skill vuoto"
+      },
+      "decision": "reject",
+      "reasonCode": "empty-authored-skill-pool",
+      "reason": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "livelli supportati",
+      "from": "10-20",
+      "to": "1-20",
+      "why": "La dotazione rituale iniziale viene estesa senza aggiungere armi offensive."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "Skill attive e prerequisiti",
+      "source": "core_skill + core_skill_prerequisiti"
+    },
+    {
+      "claim": "slot e item",
+      "source": "item_compatible_with_equipment_slot"
+    },
+    {
+      "claim": "razza",
+      "source": "backend.characters.race_rules.RACE_CATALOG"
+    }
+  ],
+  "findings": [
+    {
+      "code": "empty-authored-skill-pool",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'proposal': 'bulk research con pool Skill vuoto'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il payload pubblicato usa pool Core/archetipo verificati nel catalogo corrente.",
+      "status": "resolved"
+    },
+    {
+      "code": "indivisible-general-xp-residual",
+      "severity": "warning-audit",
+      "finding": "Il generatore può lasciare 1-9 PE quando nessun costo intero del pool curato coincide col residuo.",
+      "resolution": "Accettare soltanto l'esatto warning residuo 1-9; ogni altro warning resta un fallimento. Non allargare il pool per consumarlo.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:d5378f6387d28bfc1b402a5bcb012a2f36c2e498b07f09e8563f2bdea23c511d",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:c7689db4588c305017b650f679e44cbfc6b12cad7dd249155d22bdd9a0bd1907",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:9a059e626bc932bd3394d37db98fd7133536bf1a359c0836d6b889fc82e218b6",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:cdbc2f010af0c77fff4b63bbe122383bba2f9fdf49b35e6e7b0ef4afe53ff572",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:a30bd7f5e6c856565a1e42fec42604d31971005c19d3dd39523f6317320302ac",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:962d44e6e0e48cfed09469cc44e974fb16d23246425e558b70ea7ad2de0f438f",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:dc399e100335391ae993b5a7ae7350485e22af29dfe4ba0836cfb24d386c3435",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:2e3e7d1c86ca1d576dabb697769d947e2d6c72a25084771d1049d597cc13ce5c",
+        "skills": 3,
+        "perks": 1,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:d56ce6acaa8499c9b80089cfb86b6bdf43973fe382408403d67b038c5ba2b605",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:3bc3202685bcd35e2d7c9e7a2c6b823e740259242c279bb3c42a6fe814ac45de",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:cd90a306060e230f0cf07be5533f5e02d4a2f9826ba0c739312c11659537eee0",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:78886e9be2dd563f08612237c29f0123c45c823d5aec4a42b5d0a217306af745",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:52e392a81d344160a5398ab1c853c2b10d69082bcb4a55269a8f6c0a43a1b14b",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:3aefeb753edfa9c408e0cc8edbae01fea09b00a4d5d145abfe3a6880c3c374b4",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:ed603c702d1d1026b430bf24ce05690feb6cdb2e0019bc210bf09d7ee3531fcf",
+        "skills": 8,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:df7ad142da3ea4209b0bb7f42135474c7e473369e4fce920a2eb17be30a45fc0",
+        "skills": 9,
+        "perks": 7,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:4c13c33903db27da31edf2666b7fac06e37a6f9ba63c4b249b6fde022236d6b9",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:2a49f53ae7fe0e8444679ac15fc81005a02662b502ad94f095f7cd412e109e81",
+        "skills": 13,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:8a8c014f4a3b9fd81afaac93ca31eef09234a1d97ab6fb2739a6cb1974b3c8dd",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:d631476da5a9dd6350aa41650bfbf216929b2d7647c2e26b83948d7ca06452ae",
+        "skills": 13,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:75bea749f6aec04e1ae3dfac6435e9896e32069814a652a0db7f396a591ddbbe",
+        "skills": 13,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:317b3d8f80121696ba4e2518e034d187ea787d26427910f5f698e72467bb784e",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:7a80346a9238bf512f320f5ae47795c131f9af69d041b9a775f8cc2929dce390",
+        "skills": 13,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:487b7dd03d3d7e91301ffad336314df7778d72d073e6da83fa4d1452ab9f2928",
+        "skills": 14,
+        "perks": 15,
+        "equipment": [
+          [
+            "arma",
+            5178
+          ],
+          [
+            "veste",
+            654
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:978427960fde0b5b897973f877d0daaad688710b32680e2e860de90729648cc3",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:b3c306f5ac6bfd62b9cfce3e8a017fdf76e9c8d88802127c8ba7824e3602f7df",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:9774c95708ebfeb9a566e1f2e3828324e19a01debbcb5b1559283ae6b0070f8f",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:28dcceaeeda29a7ccb74bddf3b147990a2d421f76da26c6d9082b152dd547d03",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:d1e87f11fa136f58a006666ef502e52b6ed5bc5097cb3330a005756acc08cca5",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:05e2608cf9ce5bbf061e1600ab8139513271555120d2a482875b85ba9f34907b",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:b1f04969c92f9f2b4bfe44d1dd93542082df84d0bfe119ee0db518573e3dae8d",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:1e193d21e2041ce5b8b5ee69a9b409f4ddbd65b648299749843219a97787a62f",
+        "skills": 16,
+        "perks": 22,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-1",
+        "signatureHash": "sha256:2f287d478c450eb77438fa9e872d299684369d207e0748b69dfd80c98c2e4f79",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "9 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-2",
+        "signatureHash": "sha256:3d42187f4fbab6555dd37e59b8225c413636ede9d265c7dff30a607bb0c38bea",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-3",
+        "signatureHash": "sha256:c630067d5296934df9524c61d50b9e9d7b98bb8e503c738829aa79491ce2828d",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-4",
+        "signatureHash": "sha256:6ec04e520b23c686f292a27ae4dca4d58611401ed01fcdea1f31e0547f6751cf",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-5",
+        "signatureHash": "sha256:96ce1019a1f0cbedc7f89d3b81d2f1210d35ddd45e99d5144eb6cd5a70d92b64",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-6",
+        "signatureHash": "sha256:5286aba4b2acdf9bda2cb1654d5f74c01555fe4b49baee1dc90b22a47e66b055",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "9 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-7",
+        "signatureHash": "sha256:5de66e0ff06ef92cff8fc670c144f95e2dcd4821ff7c9599e3fc83d78c5eb9d0",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch4-v2-8",
+        "signatureHash": "sha256:f40ade95974ae6ac8de01186c64a2f6bbaff31852278be02c35b0b9e445baff9",
+        "skills": 18,
+        "perks": 30,
+        "equipment": [
+          [
+            "arma",
+            5194
+          ],
+          [
+            "veste",
+            670
+          ],
+          [
+            "vestiti",
+            5275
+          ]
+        ],
+        "innateActions": [],
+        "warnings": [
+          "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+        ],
+        "errors": []
+      }
+    ],
+    "warnings": [
+      "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "9 PE generali restano disponibili: nessuna Skill configurata è acquistabile.",
+      "7 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+    ],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Sacerdote del Tribunale",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 22,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch4-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:59:53.280132+00:00",
+    "notes": "Standing authorization: user requested 20 more Units and explicitly asked for careful, thorough adherence to the V2 guide, best practices, and sibling coherence. Applied only after final subrace constraints, 20/20 static validation, a fresh 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 final review samples."
+  }
+}

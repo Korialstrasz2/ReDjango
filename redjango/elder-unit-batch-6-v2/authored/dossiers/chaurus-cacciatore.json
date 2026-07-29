@@ -1,0 +1,1301 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:996",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      996
+    ],
+    "normalizedName": "chaurus cacciatore",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 996,
+        "levels": [
+          20
+        ],
+        "nome": "Chaurus Cacciatore",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            6,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            3,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            6,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "-1"
+          ],
+          "res_taglio_tot": [
+            6,
+            "1"
+          ],
+          "res_perforante_tot": [
+            6,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            4,
+            "linear"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            4,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            3,
+            "linear"
+          ],
+          "pa_tot": [
+            6,
+            "linear"
+          ],
+          "pf_tot": [
+            6,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            7,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            6,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 2,
+        "skill_2_id": 51,
+        "skill_3_id": 11,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 32,
+        "unitId": 996,
+        "name": "Chaurus Cacciatore",
+        "description": "I Chaurus Cacciatori si trovano nelle stesse profondità dei Chaurus comuni, ma rappresentano uno stadio più avanzato e inquietante del loro ciclo vitale. Emergono dopo la metamorfosi, lasciandosi dietro il guscio precedente come una promessa di qualcosa di peggiore. Le rovine Falmer più antiche e infestate sono i luoghi in cui è più probabile incontrarli. Sono più mobili, più aggressivi e meno prevedibili dei Chaurus ordinari. Dove il Chaurus comune preme e morde, il Cacciatore si sposta, aggira e sorprende. Il suo comportamento dà l'impressione di una creatura che ha imparato a usare la paura del buio contro chi la prova. Possiedono ali o appendici che permettono brevi voli e movimenti improvvisi, rendendoli difficili da contenere. Mantengono veleno, mandibole e chitina resistente, ma aggiungono una mobilità molto più pericolosa. In un tunnel alto o in una grotta aperta, possono attaccare da angoli che un guerriero non controlla facilmente.",
+        "image": "UnitLorePics/Chaurus_Cacciatore.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 2,
+        "name": "Sputo Velenoso",
+        "description": "La creatura sputa un globo di veleno verso il bersaglio.",
+        "effect": "Attacco a distanza fino a 4 esagoni che infligge (2d6 + livello) danni da veleno e infligge lo status veleno per 2 turni.",
+        "cost": "4 PA, 5 EN.",
+        "boost": "Per 4 POW, aumenta la portata a 6 esagoni e la durata del veleno a 4 turni."
+      },
+      {
+        "sourceId": 51,
+        "name": "Tuffo Aereo",
+        "description": "Si libra in cielo e si tuffa su un nemico.",
+        "effect": "Infligge (4d6 + livello) danni perforanti a un bersaglio entro 6 esagoni; ignora i bonus di difesa dall'armatura.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, stordisce il bersaglio per 1 turno."
+      },
+      {
+        "sourceId": 11,
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante.",
+        "effect": "Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo",
+        "cost": "5 PA, 3 EN.",
+        "boost": "Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Chaurus Cacciatore",
+    "sourceIds": [
+      996
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve vengono linearizzate e Volo è esplicitato perché necessario a Tuffo Aereo.",
+    "fantasy": "Forma alata nata dalla metamorfosi Chaurus, rapida e capace di colpire dall'alto.",
+    "combatStory": "Vola dal primo livello, apre con Tuffo Aereo e usa gelo o sputo per impedire alla preda di riorganizzarsi.",
+    "siblings": [
+      {
+        "unit": "Chaurus",
+        "relation": "nearest",
+        "mustDifferBy": "Volo e Tuffo sostituiscono ragnatela e pressione di corridoio."
+      },
+      {
+        "unit": "Chaurus Mietitore",
+        "relation": "same-family",
+        "mustDifferBy": "Mobilità aerea invece di massa e Furia."
+      },
+      {
+        "unit": "Cliff Racer",
+        "relation": "contrast",
+        "mustDifferBy": "Carapace e secrezioni Chaurus, non predatore aviario."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "metamorfosi alata",
+        "expressedBy": "Volo e velocità/agilità 30"
+      },
+      {
+        "axis": "tuffo Chaurus",
+        "expressedBy": "Tuffo Aereo più gelo"
+      }
+    ],
+    "must": [
+      "Chaurus",
+      "Volo",
+      "Tuffo Aereo",
+      "Gelo"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "ragnatela",
+      "Furia",
+      "Mana"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Cacciatore alato",
+      "5": "Tuffo",
+      "10": "iniezione",
+      "15": "sputo",
+      "20": "predatore della colonia"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Chaurus Cacciatore",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Volo e Tuffo Aereo presenti dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "ragnatela",
+      "Furia",
+      "Mana"
+    ],
+    "differsFrom": {
+      "Chaurus": "Volo e Tuffo sostituiscono ragnatela e pressione di corridoio.",
+      "Chaurus Mietitore": "Mobilità aerea invece di massa e Furia."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 82
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:996"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:996"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Chaurus Cacciatore",
+    "category": "Natura",
+    "archetypeDescription": "Chaurus volante con tuffo, velocità e pressione biologica.",
+    "loreDescription": "I Chaurus Cacciatori si trovano nelle stesse profondità dei Chaurus comuni, ma rappresentano uno stadio più avanzato e inquietante del loro ciclo vitale. Emergono dopo la metamorfosi, lasciandosi dietro il guscio precedente come una promessa di qualcosa di peggiore. Le rovine Falmer più antiche e infestate sono i luoghi in cui è più probabile incontrarli. Sono più mobili, più aggressivi e meno prevedibili dei Chaurus ordinari. Dove il Chaurus comune preme e morde, il Cacciatore si sposta, aggira e sorprende. Il suo comportamento dà l'impressione di una creatura che ha imparato a usare la paura del buio contro chi la prova. Possiedono ali o appendici che permettono brevi voli e movimenti improvvisi, rendendoli difficili da contenere. Mantengono veleno, mandibole e chitina resistente, ma aggiungono una mobilità molto più pericolosa. In un tunnel alto o in una grotta aperta, possono attaccare da angoli che un guerriero non controlla facilmente.",
+    "notes": "Batch 6 v2: conversione Elder [996]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch6-volo",
+        "name": "Volo",
+        "description": "Passiva. La creatura può attraversare il campo in volo; usa l'azione Volo già presente nel vocabolario delle Unit.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-2",
+        "name": "Sputo Velenoso",
+        "description": "Bersaglio entro 4 esagoni. La secrezione corrosiva infligge danni Perforante; il nome conserva la firma biologica senza introdurre elementi fuori vocabolario.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-51",
+        "name": "Tuffo Aereo",
+        "description": "Si libra in cielo e si tuffa su un nemico. Infligge (4d6 + livello) danni perforanti a un bersaglio entro 6 esagoni; ignora i bonus di difesa dall'armatura. Boost Elder: Per 5 POW, stordisce il bersaglio per 1 turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-11",
+        "name": "Inietta veleno gelido",
+        "description": "Dopo un attacco riuscito, il bersaglio subisce danni da Gelo e perde PA nel turno successivo. Usa soltanto il tipo Gelo e la risorsa PA già implementati.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 29
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 33
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:99e60d8a66c5f5e2bdf11712e85127569dc7856d801eb0d0222c03fbae33bf8f",
+  "charterHash": "sha256:5262d405dfb2fc80cbeb8b05a8a163bb67c704520e92bce6c6c1f85ac79ef0cd",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve vengono linearizzate e Volo è esplicitato perché necessario a Tuffo Aereo."
+    },
+    {
+      "what": "locomozione del Cacciatore",
+      "from": "Tuffo Aereo senza azione Volo separata",
+      "to": "Volo innato dal livello 1",
+      "why": "La metamorfosi alata è esplicita nel lore e Volo è già implementato."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Sputo Velenoso', 'Inietta veleno gelido']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:af7fb441d4ac8931eebe6b65909ea59ffee8f4726707e0f994ab85547b20596e",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:587a83b1b3a379b985ae7dcce30fd8611b1856730e8159993f164e07bb919394",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:e3af7382c3761d12d513a127da4ab66d26f0a4c4767d677540555b69798b469b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:d88a6b36fc614314c1b883e36c6569dfcf0a2fae30113192e54fb364f4e24ad7",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:aa292f2cd7e797ebbdfb97fa611f9ba45e4dbd7de3a688ad9729e69b3b291f48",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Sputo Velenoso",
+          "Tuffo Aereo",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Chaurus Cacciatore",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

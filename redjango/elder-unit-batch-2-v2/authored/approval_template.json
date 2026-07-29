@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 2,
+  "approvals": [
+    {
+      "conversionKey": "elder-unit:django_slim_unit:895,896,897,898",
+      "proposalHash": "sha256:4e6ef2df6dc4ccd1de87b960cbfb059953ce2c49b509bf524bd2cab26b5f6ef5",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:858,859,860,861",
+      "proposalHash": "sha256:e974f32d5bfac56673ce7b93a6559ed8d234d6c1a9dadf18f8c7bde010263173",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:899,900,901,902",
+      "proposalHash": "sha256:8eda3df75028e4549dccac23a25c84cd7379c1d04a7e3721f83e1af7195b59ff",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:841,842,843,844",
+      "proposalHash": "sha256:4a7b4ccbf200932ea3f8587a5f4b8b89304d264d3996da89ed1cd4c6ab18b29c",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:864,865,866,867",
+      "proposalHash": "sha256:d864ef11b440a50d95a17e57b416f7fe4d531c3d1266560132a42af7eaf40826",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:903,904,905,906",
+      "proposalHash": "sha256:7b3a1627b0d3f0b3e6e32d4844f1b0e1425ad3db5daa5a53782ff73b3a4a63a9",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:868,869,870,871",
+      "proposalHash": "sha256:9bde451b982f4f5fef0f30d6cc1975c64496c6e89ecd4d8d8f38fb8bf719f313",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:913,914,915,916",
+      "proposalHash": "sha256:973c1dc8bdaa9c78d149f8608e1af47517a587a1edd09b045f271295bae9101f",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1010",
+      "proposalHash": "sha256:27cec7ef41800590250f7dd36d791f5ba55e63f26a98fda7b78ff04da7ea0ff3",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1014",
+      "proposalHash": "sha256:684797b25ccd9ab0c22903479338d29c850774d0b6083fc7b246602799f6b43c",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1008",
+      "proposalHash": "sha256:2b68a1f9270096ecb46d8a9b1e21d762b7243e5525e27a2ad6fef6064a1e8096",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1002",
+      "proposalHash": "sha256:14b1e64609470571f9fe1f1c4b757252e30a574a84267ceb4b6bd1ca7e12d2c6",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1006",
+      "proposalHash": "sha256:164e565876e3e8e7b6135ea7ba4056bc436d7e480ae5a11a10e773ab2ef42861",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:988",
+      "proposalHash": "sha256:3147a32f8af814d1620590ccedb27dee0a22923578265acbebe7986e5180d5dd",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1000",
+      "proposalHash": "sha256:517c085452ddc6b4588a480f223838f6a0f2de4f573d9d95f10502fc57a0ac5d",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1012",
+      "proposalHash": "sha256:46d1420483db002cd04cea4435ff5bfbbf48e23b52746c22df883f0268f33d75",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1003",
+      "proposalHash": "sha256:093d0a84a2d76d64acc7997a8aa283f0b4a10ae7823b89daa6abb96464dae1b5",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:999",
+      "proposalHash": "sha256:4867c9e39cd81d308b883898503badbcfb5a7d2932f4e1c32aa896c832eb70cf",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1025",
+      "proposalHash": "sha256:f11d1719458ce25ee58f5d12e4a59cf104e4942ac47e744f4f843ffbbd1c5688",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    },
+    {
+      "conversionKey": "elder-unit:django_slim_unit:1026",
+      "proposalHash": "sha256:e080e86849788b6f43fd14f024bab51f8b94b6a31ae106e6c85bfe2b2de7a9a3",
+      "approved": false,
+      "approvedBy": "",
+      "approvedAt": "",
+      "notes": ""
+    }
+  ]
+}

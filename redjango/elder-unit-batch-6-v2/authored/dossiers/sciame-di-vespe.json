@@ -1,0 +1,1069 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1054",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1054
+    ],
+    "normalizedName": "sciame di vespe",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 1054,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Sciame di Vespe",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            2,
+            "linear"
+          ],
+          "mana_tot": [
+            1,
+            "0"
+          ],
+          "energia_tot": [
+            3,
+            "linear"
+          ],
+          "potere_tot": [
+            3,
+            "linear"
+          ],
+          "pa_tot": [
+            3,
+            "linear"
+          ],
+          "ap_tot": [
+            7,
+            "linear"
+          ],
+          "tier_tot": [
+            2,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            2,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            7,
+            "4"
+          ],
+          "res_taglio_tot": [
+            7,
+            "-2"
+          ],
+          "res_perforante_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "-3"
+          ],
+          "res_gelo_tot": [
+            5,
+            "-3"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-3"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            6,
+            "linear"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            6,
+            "linear"
+          ],
+          "sconto_mana_per_potere_tot": [
+            5,
+            "linear"
+          ],
+          "sconto_pa_per_potere_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 105,
+        "unitId": 1054,
+        "name": "Sciame di Vespe",
+        "description": "Gli Sciami di Vespe si trovano in foreste, paludi, giungle e zone calde di Tamriel, soprattutto dove nidi enormi possono crescere indisturbati. A differenza di una singola vespa, uno sciame è una minaccia collettiva, una nuvola vivente capace di trasformare un sentiero tranquillo in una fuga disperata. Molti viaggiatori imparano troppo tardi a non disturbare certi tronchi cavi. Non hanno una personalità individuale, ma reagiscono come un'unica volontà irritabile. Difendono il nido con furia immediata, senza paura e senza esitazione. La loro aggressività non è malvagia, ma naturale: chi entra nel loro territorio diventa semplicemente qualcosa da pungere finché non smette di muoversi. Attaccano in massa, colpendo occhi, mani, collo e ogni punto scoperto. Il veleno di molte punture può debilitare anche un guerriero robusto, e il panico che provocano è parte del pericolo. Contro uno sciame, la lama serve poco: fuoco, fumo e fuga sono spesso scelte più sagge.",
+        "image": "UnitLorePics/Sciame_di_Vespe.png"
+      }
+    ],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Sciame di Vespe",
+    "sourceIds": [
+      1054
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve sorgente 1-20 sono preservate; l'azione innata colma l'assenza di SkillNpc.",
+    "fantasy": "Nuvola vivente di insetti territoriali che agisce come un'unica volontà attorno al nido.",
+    "combatStory": "Avvolge un bersaglio con molte punture, è difficile da fermare con colpi contundenti ma teme gli elementi.",
+    "siblings": [
+      {
+        "unit": "Scrib",
+        "relation": "nearest",
+        "mustDifferBy": "Sciame mobile con punture invece di creatura singola da supporto."
+      },
+      {
+        "unit": "Nix-Hound",
+        "relation": "same-pressure",
+        "mustDifferBy": "Assalto collettivo melee invece di secrezioni a distanza."
+      },
+      {
+        "unit": "Cliff Racer",
+        "relation": "contrast",
+        "mustDifferBy": "Nuvola di insetti, non singolo predatore volante."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "corpo collettivo",
+        "expressedBy": "res_contundente alta e PF bassi"
+      },
+      {
+        "axis": "nuvola di punture",
+        "expressedBy": "Assalto dello Sciame Perforante"
+      }
+    ],
+    "must": [
+      "sciame",
+      "Perforante",
+      "Mana zero",
+      "equipment zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "magia",
+      "arma",
+      "sputo"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "sciame giovane",
+      "5": "assalto",
+      "10": "nido irritato",
+      "15": "sciame fitto",
+      "20": "nuvola dominante"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Sciame di Vespe",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Assalto dello Sciame presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "magia",
+      "arma",
+      "sputo"
+    ],
+    "differsFrom": {
+      "Scrib": "Sciame mobile con punture invece di creatura singola da supporto.",
+      "Nix-Hound": "Assalto collettivo melee invece di secrezioni a distanza."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 40
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1054"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1054"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Sciame di Vespe",
+    "category": "Natura",
+    "archetypeDescription": "Sciame fragile ma offensivo con attacco Perforante e resistenze collettive.",
+    "loreDescription": "Gli Sciami di Vespe si trovano in foreste, paludi, giungle e zone calde di Tamriel, soprattutto dove nidi enormi possono crescere indisturbati. A differenza di una singola vespa, uno sciame è una minaccia collettiva, una nuvola vivente capace di trasformare un sentiero tranquillo in una fuga disperata. Molti viaggiatori imparano troppo tardi a non disturbare certi tronchi cavi. Non hanno una personalità individuale, ma reagiscono come un'unica volontà irritabile. Difendono il nido con furia immediata, senza paura e senza esitazione. La loro aggressività non è malvagia, ma naturale: chi entra nel loro territorio diventa semplicemente qualcosa da pungere finché non smette di muoversi. Attaccano in massa, colpendo occhi, mani, collo e ogni punto scoperto. Il veleno di molte punture può debilitare anche un guerriero robusto, e il panico che provocano è parte del pericolo. Contro uno sciame, la lama serve poco: fuoco, fumo e fuga sono spesso scelte più sagge.",
+    "notes": "Batch 6 v2: conversione Elder [1054]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch6-assalto-dello-sciame",
+        "name": "Assalto dello Sciame",
+        "description": "Bersaglio entro 2 esagoni. Lo sciame avvolge il bersaglio e infligge danni Perforante; la dispersione collettiva è rappresentata dalle curve difensive.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "vento"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 69
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 24
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 21
+        },
+        {
+          "key": "ap",
+          "profile": "high",
+          "level1": 1,
+          "level20": 5
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 7
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 33
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 4
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -3,
+          "level20": -3
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -3,
+          "level20": -3
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -3,
+          "level20": -3
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:d817c48cbff7a1394e9c420c1e556b292698f50db9c7766a43275e344ee6ee29",
+  "charterHash": "sha256:5d4105e7a7b5ba4aeb11f87b50c96b6c4bbe61d5d118bc79b279be6854c24346",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve sorgente 1-20 sono preservate; l'azione innata colma l'assenza di SkillNpc."
+    },
+    {
+      "what": "azione offensiva",
+      "from": "nessuna SkillNpc nella sorgente",
+      "to": "Assalto dello Sciame con danno Perforante",
+      "why": "Il lore descrive punture collettive e Perforante è un tipo supportato."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:5071bb0163956086dd02a352a69ea4f59146f750071786c83e53d500625097ae",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:90ef79736dc62d5df60c7247a0c9a3e1501ea117b847771f534610f6ba6a29dd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:07cec20bac70ee657804971ce2ada6b70e0c4e6fa3461ae69ae307364d9a0b08",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:54a9185f4fd1dd9b694db93af0380d86d911223ffeb8f00b61b915571dc59c0b",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:83377684d69b03fe564b3cfa6c7861a7f1c691810b4bac625b51f2b72bd4da41",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Assalto dello Sciame"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Sciame di Vespe",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

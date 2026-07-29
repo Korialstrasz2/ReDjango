@@ -1,0 +1,1063 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1055",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1055
+    ],
+    "normalizedName": "verme penico di sanguine",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1055,
+        "levels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "nome": "Verme Penico di Sanguine",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "pf_tot": [
+            3,
+            "linear"
+          ],
+          "mana_tot": [
+            3,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            4,
+            "linear"
+          ],
+          "pa_tot": [
+            7,
+            "linear"
+          ],
+          "ap_tot": [
+            2,
+            "0"
+          ],
+          "tier_tot": [
+            5,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            4,
+            "5"
+          ],
+          "res_taglio_tot": [
+            5,
+            "-2"
+          ],
+          "res_perforante_tot": [
+            3,
+            "-2"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "-2"
+          ],
+          "res_gelo_tot": [
+            4,
+            "-1"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "3"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ogni_en_x_mana_ordine_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_pa_x_mana_ordine_tot": [
+            4,
+            "linear"
+          ],
+          "ogni_en_x_mana_caos_tot": [
+            5,
+            "linear"
+          ],
+          "ogni_pa_x_mana_caos_tot": [
+            4,
+            "linear"
+          ],
+          "sconto_mana_per_potere_tot": [
+            3,
+            "linear"
+          ],
+          "sconto_pa_per_potere_tot": [
+            3,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": null,
+        "skill_2_id": null,
+        "skill_3_id": null,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [],
+    "legacyActions": []
+  },
+  "charter": {
+    "unit": "Verme Penico di Sanguine",
+    "sourceIds": [
+      1055
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Le curve 1-20 sorgente sono preservate; una singola azione conservativa colma l'assenza totale di SkillNpc e lore.",
+    "fantasy": "Verme grottesco del piano di Sanguine, rapido e invasivo, più umiliante che intelligente.",
+    "combatStory": "Avanza a terra e si avvolge al bersaglio, infliggendo Contundente e sottraendo PA con energia daedrica.",
+    "siblings": [
+      {
+        "unit": "Pene Volante",
+        "relation": "nearest",
+        "mustDifferBy": "Avvolgimento terrestre invece di volo, tiro e carica."
+      },
+      {
+        "unit": "Slime di Alcol",
+        "relation": "same-plane",
+        "mustDifferBy": "Corpo vermiforme rapido invece di massa assimilante."
+      },
+      {
+        "unit": "Scrib",
+        "relation": "contrast",
+        "mustDifferBy": "Aberrazione daedrica e Mana invece di fauna minore."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "verme di Sanguine",
+        "expressedBy": "identità grottesca e natura daedrica"
+      },
+      {
+        "axis": "presa terrestre",
+        "expressedBy": "Avvolgimento con Contundente e PA"
+      }
+    ],
+    "must": [
+      "Sanguine",
+      "verme",
+      "Contundente",
+      "PA"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "equipment",
+      "Skill",
+      "volo",
+      "lore inventato complesso"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "verme daedrico",
+      "5": "avvolgimento",
+      "10": "presa persistente",
+      "15": "aberrazione rapida",
+      "20": "verme maggiore"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Verme Penico di Sanguine",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Avvolgimento di Sanguine presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "equipment",
+      "Skill",
+      "volo",
+      "lore inventato complesso"
+    ],
+    "differsFrom": {
+      "Pene Volante": "Avvolgimento terrestre invece di volo, tiro e carica.",
+      "Slime di Alcol": "Corpo vermiforme rapido invece di massa assimilante."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 51
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1055"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1055"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Verme Penico di Sanguine",
+    "category": "Daedra",
+    "archetypeDescription": "Aberrazione terrestre di Sanguine con avvolgimento fisico e controllo dei PA.",
+    "loreDescription": "Verme grottesco del piano di Sanguine, rapido e invasivo, più umiliante che intelligente.",
+    "notes": "Final Batch v2: conversione Elder [1055]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "final-batch-avvolgimento-sanguine",
+        "name": "Avvolgimento di Sanguine",
+        "description": "Bersaglio adiacente. Il verme si avvolge con uno spasmo daedrico, infligge danni Contundente e riduce i PA del bersaglio nel turno successivo. Questa azione usa soltanto variabili e tipi di danno già supportati.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "mana": 2
+        },
+        "trigger": "Azione",
+        "duration": "Istantanea",
+        "icon": "tentacolo"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 16,
+          "level20": 89
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 27
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 32
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 11
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 5
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -2,
+          "level20": -2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 3,
+          "level20": 3
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:5fad301c18aa7df94c00bc0fbdd3db953be96b120e683744ca146783c90d7ddd",
+  "charterHash": "sha256:9cc43b9b14e00d3e4eaa7c67f4eb53f9e876fae46da699219f294eda1e976365",
+  "converterVersion": "elder-unit-charter-v2-final",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Le curve 1-20 sorgente sono preservate; una singola azione conservativa colma l'assenza totale di SkillNpc e lore."
+    },
+    {
+      "what": "azione offensiva minima",
+      "from": "nessuna SkillNpc e nessun lore nella sorgente",
+      "to": "Avvolgimento con Contundente e riduzione PA",
+      "why": "Il nome e la famiglia di Sanguine sostengono soltanto un attacco vermiforme conservativo; non vengono inventate capacità ulteriori."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:66940cf1d97cf2e5b6f94cb683cf25518fee215afbfd8a8bfde0f3e6251cc5c9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:bf5c765174b966a18275f916278e592b6d9feaeb4d2ff64e1af002fe396b02b2",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:5b58a28f720f8791cf2265f169c7aa3786301a9243ec74a8d732163d49fa474f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:389225386667ee4e053bfc3c33b7c107701df2f7e38f506b4c26e93300ddb3ca",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-1",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-2",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-3",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-4",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-5",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-6",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-7",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "final-batch-v2-8",
+        "signatureHash": "sha256:e606f16fbeffddfe5a1fe93803c3b4dd37684c0f4838d8afc9610efd57695198",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Avvolgimento di Sanguine"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Verme Penico di Sanguine",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "final-batch-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:50:35.334810+00:00",
+    "notes": "Standing authorization granted by Ale for all remaining coherent Elder unit conversions after prior batch approvals."
+  }
+}

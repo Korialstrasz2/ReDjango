@@ -1,0 +1,1245 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:975",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      975
+    ],
+    "normalizedName": "nix-hound",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 975,
+        "levels": [
+          20
+        ],
+        "nome": "Nix-Hound",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            4,
+            "linear"
+          ],
+          "resistenza_tot": [
+            4,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            2,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            4,
+            "linear"
+          ],
+          "res_taglio_tot": [
+            6,
+            "linear"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            6,
+            "0"
+          ],
+          "res_gelo_tot": [
+            4,
+            "0"
+          ],
+          "res_elettro_tot": [
+            6,
+            "linear"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            3,
+            "linear"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            4,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            2,
+            "linear"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            4,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 2,
+        "skill_2_id": 11,
+        "skill_3_id": 19,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 86,
+        "unitId": 975,
+        "name": "Nix-Hound",
+        "description": "I Nix-Hound si trovano nelle terre selvagge di Morrowind, tra ashland, coste e regioni dove insetti, cenere e predatori si contendono ogni spazio. Alcuni vivono allo stato selvatico, altri vengono addomesticati dai Dunmer come cani da guardia o compagni da caccia. La loro presenza è comune, ma non per questo rassicurante. Sono vigili, nervosi e molto legati al gruppo o al padrone quando addestrati. Da selvatici sono predatori rapidi e ostinati; da domestici possono mostrare una fedeltà sorprendente. Restano comunque creature strane agli occhi degli stranieri, più insettoidi che canine nell'aspetto e nei movimenti. Attaccano in modo rapido, usando morso, proboscide e mobilità per indebolire la preda. Non sono grandi come un kagouti, ma possono essere molto più difficili da colpire. In branco diventano pericolosi perché circondano, pungono e arretrano prima della risposta.",
+        "image": "UnitLorePics/Nix-Hound.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 2,
+        "name": "Sputo Velenoso",
+        "description": "La creatura sputa un globo di veleno verso il bersaglio.",
+        "effect": "Attacco a distanza fino a 4 esagoni che infligge (2d6 + livello) danni da veleno e infligge lo status veleno per 2 turni.",
+        "cost": "4 PA, 5 EN.",
+        "boost": "Per 4 POW, aumenta la portata a 6 esagoni e la durata del veleno a 4 turni."
+      },
+      {
+        "sourceId": 11,
+        "name": "Inietta veleno gelido",
+        "description": "Morde il bersaglio, iniettando un veleno rallentante.",
+        "effect": "Da aggiungere dopo aver colpito. Il nemico prende (livello + 2) danno da gelo, e ha -(1 + lv/2) PA il turno successivo",
+        "cost": "5 PA, 3 EN.",
+        "boost": "Per 3 POW, il veleno infligge il doppio dei danni, per 2 turni."
+      },
+      {
+        "sourceId": 19,
+        "name": "Nuvola di Spore",
+        "description": "Rilascia una nuvola di spore tossiche.",
+        "effect": "Tutti i nemici entro 2 esagoni devono effettuare un controllo di resistenza o essere avvelenati e accecati per 2 turni.",
+        "cost": "6 PA, 6 EN.",
+        "boost": "Per 5 POW, aumenta la portata a 3 esagoni."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Nix-Hound",
+    "sourceIds": [
+      975
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Gli endpoint livello 20 sono distribuiti 1-20 mantenendo lo chassis veloce.",
+    "fantasy": "Cacciatore rapido di Morrowind che logora la preda con secrezioni, gelo e spore.",
+    "combatStory": "Resta mobile, riduce PA con l'iniezione e crea una nuvola che punisce gruppi troppo vicini.",
+    "siblings": [
+      {
+        "unit": "Alit",
+        "relation": "nearest",
+        "mustDifferBy": "Velocità e spore invece di massa e Carica."
+      },
+      {
+        "unit": "Scrib",
+        "relation": "same-biome",
+        "mustDifferBy": "Predatore mobile invece di creatura debole da colonia."
+      },
+      {
+        "unit": "Lupo",
+        "relation": "contrast",
+        "mustDifferBy": "Controllo biologico a distanza invece di balzo e Furia."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "caccia rapida",
+        "expressedBy": "velocità/agilità superiori"
+      },
+      {
+        "axis": "pressione di spore",
+        "expressedBy": "Puro e perdita PA ad area"
+      }
+    ],
+    "must": [
+      "velocità",
+      "Gelo",
+      "spore",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "Carica",
+      "pelle di pietra",
+      "ragnatela"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Nix-Hound giovane",
+      "5": "iniezione",
+      "10": "sputo",
+      "15": "nuvola di spore",
+      "20": "cacciatore ashland"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Nix-Hound",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Inietta veleno gelido presente dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "Carica",
+      "pelle di pietra",
+      "ragnatela"
+    ],
+    "differsFrom": {
+      "Alit": "Velocità e spore invece di massa e Carica.",
+      "Scrib": "Predatore mobile invece di creatura debole da colonia."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 61
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:975"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:975"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Nix-Hound",
+    "category": "Natura",
+    "archetypeDescription": "Predatore ashland veloce con controllo PA e nuvola di spore.",
+    "loreDescription": "I Nix-Hound si trovano nelle terre selvagge di Morrowind, tra ashland, coste e regioni dove insetti, cenere e predatori si contendono ogni spazio. Alcuni vivono allo stato selvatico, altri vengono addomesticati dai Dunmer come cani da guardia o compagni da caccia. La loro presenza è comune, ma non per questo rassicurante. Sono vigili, nervosi e molto legati al gruppo o al padrone quando addestrati. Da selvatici sono predatori rapidi e ostinati; da domestici possono mostrare una fedeltà sorprendente. Restano comunque creature strane agli occhi degli stranieri, più insettoidi che canine nell'aspetto e nei movimenti. Attaccano in modo rapido, usando morso, proboscide e mobilità per indebolire la preda. Non sono grandi come un kagouti, ma possono essere molto più difficili da colpire. In branco diventano pericolosi perché circondano, pungono e arretrano prima della risposta.",
+    "notes": "Batch 5 v2: conversione Elder [975]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-2",
+        "name": "Sputo Velenoso",
+        "description": "Bersaglio entro 4 esagoni. La secrezione corrosiva infligge danni Perforante; il nome conserva la firma biologica senza introdurre elementi fuori vocabolario.",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-11",
+        "name": "Inietta veleno gelido",
+        "description": "Dopo un attacco riuscito, il bersaglio subisce danni da Gelo e perde PA nel turno successivo. Usa soltanto il tipo Gelo e la risorsa PA già implementati.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-19",
+        "name": "Nuvola di Spore",
+        "description": "Tutti i nemici entro 2 esagoni subiscono danni Puro dalle spore e perdono PA nel turno successivo; nessun nuovo status o tipo di danno viene introdotto.",
+        "minLevel": 9,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 6
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -2,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 3
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 18,
+          "level20": 108
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 22
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:5866f5980b2443c103747e5e19308cbe916f45ced445e2b84b64b7a7680d55aa",
+  "charterHash": "sha256:f8af08e3bfc893af442f1f75234fa781b2f56d1fed8ffe150a09e54894a21a9a",
+  "converterVersion": "elder-unit-charter-v2-batch5",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Gli endpoint livello 20 sono distribuiti 1-20 mantenendo lo chassis veloce."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Sputo Velenoso', 'Inietta veleno gelido', 'Nuvola di Spore']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:0c937ea773084961e1ded72d0f974cc62e191d7f7bf44b4b8cc651bdd6a67947",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:ed12982276166f534d586f8f156890be16ce2589e7a3cacb702fc4f6c6ccafb8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:444202e45d6c77eb52ad48c80e5f0ff0beea4b744f1f8ab98fdc02fd4da9c243",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:989fd0186396ce0c29d20220b0249faaff720c61ca71ecdbdb65b29c5badf642",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-1",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-2",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-3",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-4",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-5",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-6",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-7",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch5-v2-8",
+        "signatureHash": "sha256:9bf191af06db2f3ef0aa96a9e3c2a5d750fc70b9876eb89292cb2b4aa81c99cd",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Sputo Velenoso",
+          "Inietta veleno gelido",
+          "Nuvola di Spore"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Nix-Hound",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch5-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T09:47:56.992038+00:00",
+    "notes": "Standing authorization from Ale; final 10 humanoids and 10 creatures reviewed against the conversion guide and best practices. All 20 pass static gates and 800 deterministic previews. Poison mechanics use only supported vocabulary; Netch flight and Studioso Altmer specialization were explicitly reviewed."
+  }
+}

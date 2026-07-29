@@ -1,0 +1,1300 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1024",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1024
+    ],
+    "normalizedName": "viverna",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 1024,
+        "levels": [
+          20
+        ],
+        "nome": "Viverna",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            7,
+            "linear"
+          ],
+          "resistenza_tot": [
+            7,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            6,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            5,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            5,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            5,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            5,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "hi_hi"
+          ],
+          "res_taglio_tot": [
+            5,
+            "hi_hi"
+          ],
+          "res_perforante_tot": [
+            5,
+            "hi_hi"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "linear"
+          ],
+          "res_gelo_tot": [
+            5,
+            "linear"
+          ],
+          "res_elettro_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fuoco_tot": [
+            9,
+            "2"
+          ],
+          "rd_gelo_tot": [
+            7,
+            "2"
+          ],
+          "rd_elettro_tot": [
+            7,
+            "2"
+          ],
+          "ap_tot": [
+            4,
+            "linear"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            8,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            6,
+            "linear"
+          ],
+          "tier_tot": [
+            6,
+            "linear"
+          ],
+          "attacco_tot": [
+            6,
+            "linear"
+          ],
+          "difesa_tot": [
+            6,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 51,
+        "skill_2_id": 2,
+        "skill_3_id": 16,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 129,
+        "unitId": 1024,
+        "name": "Viverna",
+        "description": "Le Viverne sono creature rare e quasi leggendarie, più spesso citate in racconti di cacciatori e bestiari dubbi che incontrate davvero sulle strade di Tamriel. Se esistono in forma stabile, abitano montagne remote, gole ventose e regioni dove la vicinanza a draghi, wyrm o magie antiche ha lasciato tracce strane nella fauna. Molti studiosi preferiscono parlarne come di parenti minori o imitazioni imperfette dei draghi, non come veri Dovah. Sono aggressive, territoriali e molto meno intelligenti dei draghi. Non possiedono la maestà verbale né la volontà dominatrice dei Dovah, ma hanno l'istinto feroce di un predatore alato che conosce bene il proprio vantaggio. Chi le scambia per draghi deboli commette un errore: non sono nobili, ma sono rapide, velenose e difficili da prevedere. Hanno ali, due zampe robuste, artigli e spesso una coda dotata di pungiglione o veleno. Attaccano dall'alto, cercando di isolare e trascinare via le prede più esposte. Per renderle più coerenti con Tamriel, conviene trattarle come creature rarissime, forse nate da leggende vere a metà, piuttosto che come parte comune della fauna.",
+        "image": "UnitLorePics/Viverna_anGfEGz.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 51,
+        "name": "Tuffo Aereo",
+        "description": "Si libra in cielo e si tuffa su un nemico.",
+        "effect": "Infligge (4d6 + livello) danni perforanti a un bersaglio entro 6 esagoni; ignora i bonus di difesa dall'armatura.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, stordisce il bersaglio per 1 turno."
+      },
+      {
+        "sourceId": 2,
+        "name": "Sputo Velenoso",
+        "description": "La creatura sputa un globo di veleno verso il bersaglio.",
+        "effect": "Attacco a distanza fino a 4 esagoni che infligge (2d6 + livello) danni da veleno e infligge lo status veleno per 2 turni.",
+        "cost": "4 PA, 5 EN.",
+        "boost": "Per 4 POW, aumenta la portata a 6 esagoni e la durata del veleno a 4 turni."
+      },
+      {
+        "sourceId": 16,
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici.",
+        "effect": "Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA.",
+        "cost": "6 PA, 4 EN.",
+        "boost": "Per 4 POW, +4 atk, +30% danno"
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Viverna",
+    "sourceIds": [
+      1024
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga livello 20 viene linearizzata e Volo esplicita il requisito di Tuffo Aereo.",
+    "fantasy": "Parente minore e imperfetto dei draghi, territoriale, alato e privo della loro intelligenza.",
+    "combatStory": "Vola, apre con Tuffo, usa la coda contro chi la circonda e sputa secrezione corrosiva senza impiegare Thu'um.",
+    "siblings": [
+      {
+        "unit": "Drago",
+        "relation": "nearest",
+        "mustDifferBy": "Nessun Thu'um, respiro elementale o intelligenza draconica."
+      },
+      {
+        "unit": "Chaurus Cacciatore",
+        "relation": "same-mobility",
+        "mustDifferBy": "Più massa e coda, senza gelo Chaurus."
+      },
+      {
+        "unit": "Manticora",
+        "relation": "contrast",
+        "mustDifferBy": "Linea draconica minore invece di chimera alchemica."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "drago imperfetto",
+        "expressedBy": "grande Mana/PF ma nessun respiro draconico"
+      },
+      {
+        "axis": "predatore aereo",
+        "expressedBy": "Volo, Tuffo e Colpo di Coda"
+      }
+    ],
+    "must": [
+      "Volo",
+      "Tuffo Aereo",
+      "Colpo di Coda",
+      "sputo"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "Thu'um",
+      "respiri elementali",
+      "Pelle di Pietra"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Viverna alata",
+      "5": "Tuffo",
+      "10": "coda",
+      "15": "sputo",
+      "20": "predatore delle gole"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Viverna",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Volo e Tuffo Aereo presenti dal livello 1"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "Thu'um",
+      "respiri elementali",
+      "Pelle di Pietra"
+    ],
+    "differsFrom": {
+      "Drago": "Nessun Thu'um, respiro elementale o intelligenza draconica.",
+      "Chaurus Cacciatore": "Più massa e coda, senza gelo Chaurus."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1024"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1024"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Viverna",
+    "category": "Natura",
+    "archetypeDescription": "Grande predatore volante con tuffo, coda e attacco corrosivo.",
+    "loreDescription": "Le Viverne sono creature rare e quasi leggendarie, più spesso citate in racconti di cacciatori e bestiari dubbi che incontrate davvero sulle strade di Tamriel. Se esistono in forma stabile, abitano montagne remote, gole ventose e regioni dove la vicinanza a draghi, wyrm o magie antiche ha lasciato tracce strane nella fauna. Molti studiosi preferiscono parlarne come di parenti minori o imitazioni imperfette dei draghi, non come veri Dovah. Sono aggressive, territoriali e molto meno intelligenti dei draghi. Non possiedono la maestà verbale né la volontà dominatrice dei Dovah, ma hanno l'istinto feroce di un predatore alato che conosce bene il proprio vantaggio. Chi le scambia per draghi deboli commette un errore: non sono nobili, ma sono rapide, velenose e difficili da prevedere. Hanno ali, due zampe robuste, artigli e spesso una coda dotata di pungiglione o veleno. Attaccano dall'alto, cercando di isolare e trascinare via le prede più esposte. Per renderle più coerenti con Tamriel, conviene trattarle come creature rarissime, forse nate da leggende vere a metà, piuttosto che come parte comune della fauna.",
+    "notes": "Batch 6 v2: conversione Elder [1024]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "batch6-volo",
+        "name": "Volo",
+        "description": "Passiva. La creatura può attraversare il campo in volo; usa l'azione Volo già presente nel vocabolario delle Unit.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-51",
+        "name": "Tuffo Aereo",
+        "description": "Si libra in cielo e si tuffa su un nemico. Infligge (4d6 + livello) danni perforanti a un bersaglio entro 6 esagoni; ignora i bonus di difesa dall'armatura. Boost Elder: Per 5 POW, stordisce il bersaglio per 1 turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-2",
+        "name": "Sputo Velenoso",
+        "description": "Bersaglio entro 4 esagoni. La secrezione corrosiva infligge danni Perforante; il nome conserva la firma biologica senza introdurre elementi fuori vocabolario.",
+        "minLevel": 8,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 4,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-16",
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici. Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA. Boost Elder: Per 4 POW, +4 atk, +30% danno",
+        "minLevel": 5,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "resistenza",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": 2
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "ap",
+          "profile": "medium",
+          "level1": 1,
+          "level20": 3
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 29,
+          "level20": 186
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 13
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 11,
+          "level20": 67
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:3a718d510be9bb2204ac1c2486e9fddfe284389c134c2bf1d2b96015b9ea95c5",
+  "charterHash": "sha256:b43696f24b1bb0b64487eb1515936a068e2912613f4a0b042cb4f64d8d01ee41",
+  "converterVersion": "elder-unit-charter-v2-batch6",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    },
+    {
+      "candidate": {
+        "mechanic": "danni da veleno legacy",
+        "actions": [
+          "Sputo Velenoso"
+        ]
+      },
+      "decision": "reject",
+      "reasonCode": "unsupported-poison-damage-reauthored",
+      "reason": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga livello 20 viene linearizzata e Volo esplicita il requisito di Tuffo Aereo."
+    },
+    {
+      "what": "locomozione",
+      "from": "Tuffo Aereo senza Volo separato",
+      "to": "Volo innato dal livello 1",
+      "why": "Anatomia e lore alata; azione già implementata."
+    },
+    {
+      "what": "meccaniche veleno legacy",
+      "from": "danni da veleno o status non verificati",
+      "to": "Perforante/Puro/Gelo e penalità PA o Resistenza",
+      "why": "DAMAGE_TYPES consente soltanto Contundente, Perforante, Taglio, Gelo, Fuoco, Elettro e Puro."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    },
+    {
+      "code": "unsupported-poison-damage-reauthored",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'mechanic': 'danni da veleno legacy', 'actions': ['Sputo Velenoso']} rischia deriva d'identità o illegalità.",
+      "resolution": "ReDjango non possiede il tipo di danno Veleno: le azioni usano Perforante, Puro, Gelo o penalità a variabili supportate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:eed944f4099804f8ca673fbf7e48f592e5a6a8348686c6d33c927b7c345904b0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:22a496bc010d96c769c03d18b841e28cdd64544ad815d612fbbdab5f6789f120",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:31060f78af6367f81fa1cf28f9bb57330e4d57445e58cd0b113f9240fce2e267",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:f7fcaf308ec8645e3f93746b8c7e767156c4f6ec512634533a91b8d2dee85010",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-1",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-2",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-3",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-4",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-5",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-6",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-7",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch6-v2-8",
+        "signatureHash": "sha256:b74a4c977234e61e696c2ef08f4171f1b90385029a1e89f1462f3d6e4b4feb4f",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Volo",
+          "Tuffo Aereo",
+          "Sputo Velenoso",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Viverna",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch6-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T10:18:30.821298+00:00",
+    "notes": "Standing authorization granted by Ale for subsequent coherent Elder unit batches after approval of the first 19."
+  }
+}

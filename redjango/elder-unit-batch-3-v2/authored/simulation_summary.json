@@ -1,0 +1,330 @@
+{
+  "validation": {
+    "passed": 20,
+    "failed": 0,
+    "results": [
+      {
+        "unit": "Agente Hlaalu",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\agente-hlaalu.json"
+      },
+      {
+        "unit": "Agente Thalmor",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\agente-thalmor.json"
+      },
+      {
+        "unit": "Arciere Redoran",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\arciere-redoran.json"
+      },
+      {
+        "unit": "Bandito Capo",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\bandito-capo.json"
+      },
+      {
+        "unit": "Berserker Nord",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\berserker-nord.json"
+      },
+      {
+        "unit": "Berserker Orco",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\berserker-orco.json"
+      },
+      {
+        "unit": "Capra dei Ghiacciai",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\capra-dei-ghiacciai.json"
+      },
+      {
+        "unit": "Draugr Signore della Morte",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\draugr-signore-della-morte.json"
+      },
+      {
+        "unit": "Duellante",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\duellante.json"
+      },
+      {
+        "unit": "Fantasma",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\fantasma.json"
+      },
+      {
+        "unit": "Guar",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\guar.json"
+      },
+      {
+        "unit": "Guerriero Forsworn",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\guerriero-forsworn.json"
+      },
+      {
+        "unit": "Guerriero Kwama",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\guerriero-kwama.json"
+      },
+      {
+        "unit": "Hunger",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\hunger.json"
+      },
+      {
+        "unit": "Kagouti",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\kagouti.json"
+      },
+      {
+        "unit": "Lupo delle Nevi",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\lupo-delle-nevi.json"
+      },
+      {
+        "unit": "Mago Scheletro",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\mago-scheletro.json"
+      },
+      {
+        "unit": "Ogrim",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\ogrim.json"
+      },
+      {
+        "unit": "Ragno Frostbite",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\ragno-frostbite.json"
+      },
+      {
+        "unit": "Sfera Dwemer",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-3-v2\\authored\\dossiers\\sfera-dwemer.json"
+      }
+    ]
+  },
+  "simulations": [
+    {
+      "unit": "Agente Hlaalu",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 23,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Agente Thalmor",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 26,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Arciere Redoran",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 27,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Bandito Capo",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 29,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Berserker Nord",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Berserker Orco",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Capra dei Ghiacciai",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Draugr Signore della Morte",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 24,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Duellante",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 13,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Fantasma",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Guar",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Guerriero Forsworn",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Guerriero Kwama",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Hunger",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Kagouti",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Lupo delle Nevi",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Mago Scheletro",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 20,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Ogrim",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Ragno Frostbite",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Sfera Dwemer",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    }
+  ]
+}

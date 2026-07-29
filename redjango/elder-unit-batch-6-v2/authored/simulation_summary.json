@@ -1,0 +1,330 @@
+{
+  "validation": {
+    "passed": 20,
+    "failed": 0,
+    "results": [
+      {
+        "unit": "Anomalia Magica di Sanguine",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\anomalia-magica-di-sanguine.json"
+      },
+      {
+        "unit": "Ascoltatore della Confraternita Oscura",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\ascoltatore-della-confraternita-oscura.json"
+      },
+      {
+        "unit": "Briarheart Forsworn",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\briarheart-forsworn.json"
+      },
+      {
+        "unit": "Chaurus Cacciatore",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\chaurus-cacciatore.json"
+      },
+      {
+        "unit": "Chaurus Mietitore",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\chaurus-mietitore.json"
+      },
+      {
+        "unit": "Cultista Daedrico",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\cultista-daedrico.json"
+      },
+      {
+        "unit": "Cultista di Mehrunes Dagon",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\cultista-di-mehrunes-dagon.json"
+      },
+      {
+        "unit": "Cultista di Molag Bal",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\cultista-di-molag-bal.json"
+      },
+      {
+        "unit": "Esploratore Ashlander",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\esploratore-ashlander.json"
+      },
+      {
+        "unit": "Esploratore Dres",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\esploratore-dres.json"
+      },
+      {
+        "unit": "Goblin",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\goblin.json"
+      },
+      {
+        "unit": "Guerriero Scheletro",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\guerriero-scheletro.json"
+      },
+      {
+        "unit": "Ladro della Gilda",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\ladro-della-gilda.json"
+      },
+      {
+        "unit": "Maestro della Gilda dei Ladri",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\maestro-della-gilda-dei-ladri.json"
+      },
+      {
+        "unit": "Manticora",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\manticora.json"
+      },
+      {
+        "unit": "Ragno Daedra",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\ragno-daedra.json"
+      },
+      {
+        "unit": "Saggia Ashlander",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\saggia-ashlander.json"
+      },
+      {
+        "unit": "Sciame di Vespe",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\sciame-di-vespe.json"
+      },
+      {
+        "unit": "Slime di Alcol",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\slime-di-alcol.json"
+      },
+      {
+        "unit": "Viverna",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-6-v2\\authored\\dossiers\\viverna.json"
+      }
+    ]
+  },
+  "simulations": [
+    {
+      "unit": "Anomalia Magica di Sanguine",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Ascoltatore della Confraternita Oscura",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 34,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Briarheart Forsworn",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Chaurus Cacciatore",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Chaurus Mietitore",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Cultista Daedrico",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 18,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Cultista di Mehrunes Dagon",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 15,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Cultista di Molag Bal",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 20,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Esploratore Ashlander",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 30,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Esploratore Dres",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 23,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Goblin",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Guerriero Scheletro",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Ladro della Gilda",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 31,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Maestro della Gilda dei Ladri",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 27,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Manticora",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Ragno Daedra",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Saggia Ashlander",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 21,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Sciame di Vespe",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Slime di Alcol",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Viverna",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    }
+  ]
+}

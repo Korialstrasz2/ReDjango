@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:972",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      972
+    ],
+    "normalizedName": "guar",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Natura",
+        "chainmail": [],
+        "id": 972,
+        "levels": [
+          20
+        ],
+        "nome": "Guar",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            4,
+            "linear"
+          ],
+          "resistenza_tot": [
+            6,
+            "linear"
+          ],
+          "velocita_tot": [
+            5,
+            "linear"
+          ],
+          "agilita_tot": [
+            4,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            2,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            2,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            3,
+            "linear"
+          ],
+          "res_contundente_tot": [
+            5,
+            "0"
+          ],
+          "res_taglio_tot": [
+            5,
+            "0"
+          ],
+          "res_perforante_tot": [
+            5,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            1,
+            "0"
+          ],
+          "pa_tot": [
+            4,
+            "linear"
+          ],
+          "pf_tot": [
+            6,
+            "linear"
+          ],
+          "mana_tot": [
+            0,
+            "0"
+          ],
+          "energia_tot": [
+            5,
+            "linear"
+          ],
+          "potere_tot": [
+            1,
+            "0"
+          ],
+          "tier_tot": [
+            3,
+            "linear"
+          ],
+          "attacco_tot": [
+            3,
+            "linear"
+          ],
+          "difesa_tot": [
+            4,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 4,
+        "skill_2_id": 16,
+        "skill_3_id": 6,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 60,
+        "unitId": 972,
+        "name": "Guar",
+        "description": "I Guar sono tra gli animali più tipici di Morrowind, allevati dai Dunmer come bestie da soma, cavalcature e fonte di carne e pelle. Li si trova nelle fattorie, nelle carovane, nei villaggi ashlander e lungo le piste polverose che attraversano Vvardenfell e la terraferma. In una regione ostile come Morrowind, un Guar affidabile vale più di molti cavalli. Sono docili, resistenti e più intelligenti di quanto il loro aspetto lasci immaginare. Tendono ad affezionarsi a chi li nutre e li guida con pazienza, ma possono diventare testardi se trattati male. Gli Ashlander e molti contadini dunmer li considerano quasi compagni di lavoro, non semplici animali. Hanno corpo robusto, passo stabile e una buona resistenza a caldo, polvere e terreni difficili. Non sono predatori, ma un Guar spaventato o addestrato alla guerra può travolgere un uomo con il peso del corpo. La loro utilità quotidiana li rende una delle creature più importanti della vita comune di Morrowind.",
+        "image": "UnitLorePics/Guar.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 4,
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza.",
+        "effect": "Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia.",
+        "cost": "6 PA, 3 EN.",
+        "boost": "Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni."
+      },
+      {
+        "sourceId": 16,
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici.",
+        "effect": "Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA.",
+        "cost": "6 PA, 4 EN.",
+        "boost": "Per 4 POW, +4 atk, +30% danno"
+      },
+      {
+        "sourceId": 6,
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori.",
+        "effect": "Recupera (livello)d4 Punti Ferita alla fine di ogni turno.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, può raddoppiare la guarigione per un turno."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Guar",
+    "sourceIds": [
+      972
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene estesa mantenendo il profilo naturale.",
+    "fantasy": "Bestia da soma di Morrowind, docile finché minacciata e sorprendentemente tenace.",
+    "combatStory": "Carica per aprirsi spazio, spazza con la coda e recupera lentamente senza alcuna magia.",
+    "siblings": [
+      {
+        "unit": "Kagouti",
+        "relation": "nearest",
+        "mustDifferBy": "Più docile e difensivo, meno predatorio."
+      },
+      {
+        "unit": "Cinghiale",
+        "relation": "same-role",
+        "mustDifferBy": "Coda e utilità da soma invece di furia."
+      },
+      {
+        "unit": "Clannfear",
+        "relation": "contrast",
+        "mustDifferBy": "Animale domestico, non Daedra."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "bestia da soma",
+        "expressedBy": "PF e resistenza"
+      },
+      {
+        "axis": "difesa naturale",
+        "expressedBy": "Carica, coda e Pelle Rigenerativa"
+      }
+    ],
+    "must": [
+      "carica",
+      "coda",
+      "rigenerazione",
+      "Mana zero"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "magia",
+      "veleno"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "Guar riconoscibile",
+      "5": "carica",
+      "10": "coda",
+      "15": "tenacia",
+      "20": "grande bestia da soma"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Guar",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "mana 0 a ogni livello"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "magia",
+      "veleno"
+    ],
+    "differsFrom": {
+      "Kagouti": "Più docile e difensivo, meno predatorio.",
+      "Cinghiale": "Coda e utilità da soma invece di furia."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 82
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:972"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:972"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Guar",
+    "category": "Animale",
+    "archetypeDescription": "Animale resistente da carica e coda con rigenerazione naturale.",
+    "loreDescription": "I Guar sono tra gli animali più tipici di Morrowind, allevati dai Dunmer come bestie da soma, cavalcature e fonte di carne e pelle. Li si trova nelle fattorie, nelle carovane, nei villaggi ashlander e lungo le piste polverose che attraversano Vvardenfell e la terraferma. In una regione ostile come Morrowind, un Guar affidabile vale più di molti cavalli. Sono docili, resistenti e più intelligenti di quanto il loro aspetto lasci immaginare. Tendono ad affezionarsi a chi li nutre e li guida con pazienza, ma possono diventare testardi se trattati male. Gli Ashlander e molti contadini dunmer li considerano quasi compagni di lavoro, non semplici animali. Hanno corpo robusto, passo stabile e una buona resistenza a caldo, polvere e terreni difficili. Non sono predatori, ma un Guar spaventato o addestrato alla guerra può travolgere un uomo con il peso del corpo. La loro utilità quotidiana li rende una delle creature più importanti della vita comune di Morrowind.",
+    "notes": "Batch 3 v2: conversione Elder [972]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-4",
+        "name": "Carica",
+        "description": "La creatura si lancia verso il nemico con grande forza. Si muove fino a 5 esagoni in linea retta; se raggiunge un nemico, infligge (3d8 + livello) danni contundenti e lo sbilancia. Boost Elder: Per 5 POW, aumenta i dadi del danno a d10 e il movimento a 7 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 3
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-16",
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici. Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA. Boost Elder: Per 4 POW, +4 atk, +30% danno",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-6",
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori. Recupera (livello)d4 Punti Ferita alla fine di ogni turno. Boost Elder: Per 5 POW, può raddoppiare la guarigione per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 27
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 13
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "low",
+          "level1": 0,
+          "level20": 2
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 23
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 24,
+          "level20": 147
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 29
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "tier",
+          "profile": "low",
+          "level1": 3,
+          "level20": 9
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 42
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 50
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:c0104438b507941237afb0fdc883b426281c7a9231074fb585a301cfa1cca99e",
+  "charterHash": "sha256:3d41bc80d5924f88d0c553848d637826d1773567975b59aa6279cf9c30ead119",
+  "converterVersion": "elder-unit-charter-v2-batch3",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene estesa mantenendo il profilo naturale."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:55ccdf02c7aae6eef85cb474ee32ffbd1bfe5705f1f20d3872d4ad15fb072139",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:582da4ba440e36c8d336484b910dbc94fa11758c0f07e04dc61756c638520ce9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:20844d375996e672d9f90ae2f5e0d3fff6d3808e67703cb9729d918cc7f7c7d9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:6d6318c90aa043ee975007c4584c754f1ee61840273c6a619c98356a18309467",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-1",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-2",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-3",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-4",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-5",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-6",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-7",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch3-v2-8",
+        "signatureHash": "sha256:15979ce3964811c0e87e38e0d40673fa602e82a7dd6fc27a113df2cd9c9b3b96",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Carica",
+          "Colpo di Coda",
+          "Pelle Rigenerativa"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Guar",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch3-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:25:43.951613+00:00",
+    "notes": "Standing authorization: user explicitly requested 20 more Units and said go for it. Applied only after 20/20 static validation, 800 rollback previews, deterministic checks, zero preview errors, explained residual-XP warnings, and 60 review samples."
+  }
+}

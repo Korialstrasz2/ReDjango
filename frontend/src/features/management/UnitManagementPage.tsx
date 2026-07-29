@@ -61,6 +61,7 @@ const emptyUnit = (): ManagedUnitDetail => ({
     allowedClassFamilies: [],
     allowedReligionFamilies: [],
     allowedRaces: [],
+    allowedSubraces: [],
     allowHumanoidStatGrowth: false,
   },
   metadata: {},
@@ -486,6 +487,7 @@ export function UnitManagementPage() {
       kind,
       coreKey: kind === "humanoid" ? (current.generation.coreKey || "warrior") : "",
       allowedRaces: kind === "humanoid" ? current.generation.allowedRaces : [],
+      allowedSubraces: kind === "humanoid" ? current.generation.allowedSubraces : [],
     },
     skillUnlocks: kind === "humanoid" ? current.skillUnlocks : [],
     equipmentSlots: kind === "humanoid" ? current.equipmentSlots : [],
@@ -536,7 +538,7 @@ export function UnitManagementPage() {
               <label>Tipo<select value={draft.generation.kind} onChange={(event) => changeKind(event.target.value as ManagedUnitDetail["generation"]["kind"])}>{overview.configuration.kinds.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label>
               <label>Categoria<input value={draft.category} onChange={(event) => setEditedDraft((current) => ({ ...current, category: event.target.value }))} placeholder="Banditi, Animali, Daedra…" /></label>
               {draft.generation.kind === "humanoid" && <label>Core<select value={draft.generation.coreKey} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, coreKey: event.target.value } }))}>{overview.configuration.cores.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label>}
-              {draft.generation.kind === "humanoid" && <label className="wide">Razze disponibili<select multiple size={6} value={draft.generation.allowedRaces} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, allowedRaces: Array.from(event.target.selectedOptions, (option) => option.value) } }))}>{overview.configuration.races.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select><small>Nessuna selezione = tutte le razze, estratte casualmente.</small></label>}
+              {draft.generation.kind === "humanoid" && <><label className="wide">Razze disponibili<select multiple size={6} value={draft.generation.allowedRaces} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, allowedRaces: Array.from(event.target.selectedOptions, (option) => option.value), allowedSubraces: [] } }))}>{overview.configuration.races.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select><small>Nessuna selezione = tutte le razze, estratte casualmente.</small></label><label className="wide">Sottorazze disponibili<select multiple size={6} value={draft.generation.allowedSubraces} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, allowedSubraces: Array.from(event.target.selectedOptions, (option) => option.value) } }))}>{overview.configuration.races.filter((race) => draft.generation.allowedRaces.includes(race.value)).flatMap((race) => race.subraces.map((subrace) => <option key={`${race.value}:${subrace.value}`} value={subrace.value}>{race.label} · {subrace.label}</option>))}</select><small>Nessuna selezione = tutte le sottorazze delle razze consentite.</small></label></>}
               <label className="wide">Descrizione dell'archetipo<textarea rows={3} value={draft.archetypeDescription} onChange={(event) => setEditedDraft((current) => ({ ...current, archetypeDescription: event.target.value }))} /></label>
               <label className="wide">Lore<textarea rows={5} value={draft.loreDescription} onChange={(event) => setEditedDraft((current) => ({ ...current, loreDescription: event.target.value }))} /></label>
               <label className="wide">Note di authoring<textarea rows={3} value={draft.notes} onChange={(event) => setEditedDraft((current) => ({ ...current, notes: event.target.value }))} /></label>

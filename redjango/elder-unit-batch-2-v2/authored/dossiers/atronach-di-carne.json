@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1002",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1002
+    ],
+    "normalizedName": "atronach di carne",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Daedra",
+        "chainmail": [],
+        "id": 1002,
+        "levels": [
+          20
+        ],
+        "nome": "Atronach di Carne",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            8,
+            "linear"
+          ],
+          "resistenza_tot": [
+            8,
+            "linear"
+          ],
+          "velocita_tot": [
+            4,
+            "linear"
+          ],
+          "agilita_tot": [
+            4,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            3,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            4,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            3,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            7,
+            "0"
+          ],
+          "res_contundente_tot": [
+            6,
+            "0"
+          ],
+          "res_taglio_tot": [
+            6,
+            "-1"
+          ],
+          "res_perforante_tot": [
+            6,
+            "0"
+          ],
+          "res_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "res_gelo_tot": [
+            5,
+            "0"
+          ],
+          "res_elettro_tot": [
+            5,
+            "-1"
+          ],
+          "rd_fuoco_tot": [
+            5,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            5,
+            "0"
+          ],
+          "rd_elettro_tot": [
+            5,
+            "0"
+          ],
+          "ap_tot": [
+            3,
+            "0"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            5,
+            "linear"
+          ],
+          "energia_tot": [
+            6,
+            "linear"
+          ],
+          "potere_tot": [
+            6,
+            "linear"
+          ],
+          "tier_tot": [
+            5,
+            "linear"
+          ],
+          "attacco_tot": [
+            5,
+            "linear"
+          ],
+          "difesa_tot": [
+            5,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 6,
+        "skill_2_id": 13,
+        "skill_3_id": 16,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 18,
+        "unitId": 1002,
+        "name": "Atronach di Carne",
+        "description": "Gli Atronach di Carne non nascono spontaneamente: vengono creati. Si trovano nei laboratori di negromanti, nelle sale di maghi corrotti e nei luoghi dove la carne è stata trattata come materiale da costruzione invece che come vita. La loro esistenza stessa è una profanazione, e spesso il luogo che li ospita porta ancora l'odore del rituale che li ha generati. Non possiedono una vera mente, ma qualcosa in loro sembra soffrire. Si muovono con pesantezza rabbiosa, come se ogni parte del corpo volesse andare in una direzione diversa. Non parlano, ma i loro versi bastano a ricordare che sono composti da ciò che un tempo apparteneva a esseri vivi. Sono enormi, resistenti e disgustosamente difficili da abbattere. La loro forza viene dalla massa, dalla carne cucita e dalla magia che impedisce al corpo di cedere. Non sono eleganti né rapidi, ma quando colpiscono sembrano scaricare tutto l'orrore della loro creazione in un solo impatto.",
+        "image": "UnitLorePics/Atronach_di_Carne.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 6,
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori.",
+        "effect": "Recupera (livello)d4 Punti Ferita alla fine di ogni turno.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, può raddoppiare la guarigione per un turno."
+      },
+      {
+        "sourceId": 13,
+        "name": "Scoppio di Rigenerazione",
+        "description": "Canalizza energia per guarire rapidamente le ferite.",
+        "effect": "Recupera immediatamente (3d8 + livello) Punti Ferita.",
+        "cost": "5 PA, 5 EN.",
+        "boost": "Per 5 POW, rimuove anche un effetto negativo."
+      },
+      {
+        "sourceId": 16,
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici.",
+        "effect": "Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA.",
+        "cost": "6 PA, 4 EN.",
+        "boost": "Per 4 POW, +4 atk, +30% danno"
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Atronach di Carne",
+    "sourceIds": [
+      1002
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "Il profilo livello 20 viene reso lineare senza nascondere le vulnerabilità.",
+    "fantasy": "Massa cucita e animata che trasforma danno subito in rigenerazione.",
+    "combatStory": "Occupa spazio, rigenera e colpisce con peso e coda; è lento e vulnerabile a taglio ed elettricità.",
+    "siblings": [
+      {
+        "unit": "Atronach del Gelo",
+        "relation": "nearest",
+        "mustDifferBy": "Rigenerazione organica invece di armatura elementale."
+      },
+      {
+        "unit": "Colosso d’Ossa",
+        "relation": "same-scale",
+        "mustDifferBy": "Carne e guarigione invece di ossa e gelo."
+      },
+      {
+        "unit": "Cinghiale",
+        "relation": "contrast",
+        "mustDifferBy": "Costrutto magico, non bestia da carica."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "rigenerazione di carne",
+        "expressedBy": "Pelle/Scoppio di Rigenerazione"
+      },
+      {
+        "axis": "massa instabile",
+        "expressedBy": "PF e Forza alti, taglio/elettro deboli"
+      }
+    ],
+    "must": [
+      "rigenerazione",
+      "carne",
+      "forza"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "armatura elementale"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "massa resistente",
+      "5": "rigenerazione attiva",
+      "10": "coda e controllo",
+      "15": "bruto persistente",
+      "20": "abominio di carne"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Atronach di Carne",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "res_taglio o res_elettro negativa"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "armatura elementale"
+    ],
+    "differsFrom": {
+      "Atronach del Gelo": "Rigenerazione organica invece di armatura elementale.",
+      "Colosso d’Ossa": "Carne e guarigione invece di ossa e gelo."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1002"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1002"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Atronach di Carne",
+    "category": "Daedra",
+    "archetypeDescription": "Bruto rigenerante ad alti PF con debolezze fisiche leggibili.",
+    "loreDescription": "Gli Atronach di Carne non nascono spontaneamente: vengono creati. Si trovano nei laboratori di negromanti, nelle sale di maghi corrotti e nei luoghi dove la carne è stata trattata come materiale da costruzione invece che come vita. La loro esistenza stessa è una profanazione, e spesso il luogo che li ospita porta ancora l'odore del rituale che li ha generati. Non possiedono una vera mente, ma qualcosa in loro sembra soffrire. Si muovono con pesantezza rabbiosa, come se ogni parte del corpo volesse andare in una direzione diversa. Non parlano, ma i loro versi bastano a ricordare che sono composti da ciò che un tempo apparteneva a esseri vivi. Sono enormi, resistenti e disgustosamente difficili da abbattere. La loro forza viene dalla massa, dalla carne cucita e dalla magia che impedisce al corpo di cedere. Non sono eleganti né rapidi, ma quando colpiscono sembrano scaricare tutto l'orrore della loro creazione in un solo impatto.",
+    "notes": "Batch 2 v2: conversione Elder [1002]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-6",
+        "name": "Pelle Rigenerativa",
+        "description": "La pelle dura della creatura guarisce rapidamente le ferite minori. Recupera (livello)d4 Punti Ferita alla fine di ogni turno. Boost Elder: Per 5 POW, può raddoppiare la guarigione per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-13",
+        "name": "Scoppio di Rigenerazione",
+        "description": "Canalizza energia per guarire rapidamente le ferite. Recupera immediatamente (3d8 + livello) Punti Ferita. Boost Elder: Per 5 POW, rimuove anche un effetto negativo.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 5,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-16",
+        "name": "Colpo di Coda",
+        "description": "Scuote la coda in un ampio arco per colpire più nemici. Attacca con danni contundenti a tutti i PG adiacenti in un arco di ampiezza a scelta; possibilità di sbilanciare abbasstando di 2 i PA. Boost Elder: Per 4 POW, +4 atk, +30% danno",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 4
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "velocita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "agilita",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 20
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 6,
+          "level20": 17
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": -1,
+          "level20": -1
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 21,
+          "level20": 128
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 7,
+          "level20": 31
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 11
+        },
+        {
+          "key": "attacco",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        },
+        {
+          "key": "difesa",
+          "profile": "custom",
+          "level1": 10,
+          "level20": 58
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:14b1e64609470571f9fe1f1c4b757252e30a574a84267ceb4b6bd1ca7e12d2c6",
+  "charterHash": "sha256:b9326efb9bf1eea06bce80cecc48f5b1c0e9584b2709aa9787b6a70bda01a38e",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "Il profilo livello 20 viene reso lineare senza nascondere le vulnerabilità."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:d63494cba583710ee133c933170a59763bd15839b182f6ff742a053d904f02b5",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:9d8459125f6b3a7f441c1638884a6e0186be07871b190676ad4be0a8fe4a9452",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:b7da4f8e920e55dda7f4a53d0e1f828c4a34090f7e37ad2936a11a2a2436cdf9",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:50935aab026e1e6a52c1f3b522c3932ace2c15e56bd216a36ef7f311e2de0fd4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:f9f802855c5bce9e2542a35d4923b8e98a298cd8bd4fa28eb9b0e80aac7404b4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Pelle Rigenerativa",
+          "Scoppio di Rigenerazione",
+          "Colpo di Coda"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Atronach di Carne",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

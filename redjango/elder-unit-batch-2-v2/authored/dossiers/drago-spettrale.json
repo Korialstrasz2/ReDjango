@@ -1,0 +1,1238 @@
+{
+  "schemaVersion": 2,
+  "conversionKey": "elder-unit:django_slim_unit:1026",
+  "status": "applied",
+  "sourceSnapshot": {
+    "project": "the_elder_django",
+    "table": "django_slim_unit",
+    "ids": [
+      1026
+    ],
+    "normalizedName": "drago spettrale",
+    "rows": [
+      {
+        "archetipo": "Entità",
+        "arma": [],
+        "armatura": [],
+        "categoria": "Nonmorto",
+        "chainmail": [],
+        "id": 1026,
+        "levels": [
+          20
+        ],
+        "nome": "Drago Spettrale",
+        "preset": "Any",
+        "profili_attributi_formule": {
+          "forza_tot": [
+            8,
+            "linear"
+          ],
+          "resistenza_tot": [
+            8,
+            "linear"
+          ],
+          "velocita_tot": [
+            7,
+            "linear"
+          ],
+          "agilita_tot": [
+            7,
+            "linear"
+          ],
+          "intelligenza_tot": [
+            9,
+            "linear"
+          ],
+          "concentrazione_tot": [
+            9,
+            "linear"
+          ],
+          "personalita_tot": [
+            1,
+            "0"
+          ],
+          "saggezza_tot": [
+            9,
+            "linear"
+          ],
+          "fortuna_tot": [
+            5,
+            "linear"
+          ],
+          "rd_fis_tot": [
+            9,
+            "0"
+          ],
+          "res_contundente_tot": [
+            8,
+            "2"
+          ],
+          "res_taglio_tot": [
+            8,
+            "2"
+          ],
+          "res_perforante_tot": [
+            8,
+            "2"
+          ],
+          "res_fuoco_tot": [
+            8,
+            "0"
+          ],
+          "res_gelo_tot": [
+            8,
+            "4"
+          ],
+          "res_elettro_tot": [
+            8,
+            "0"
+          ],
+          "rd_fuoco_tot": [
+            8,
+            "0"
+          ],
+          "rd_gelo_tot": [
+            8,
+            "4"
+          ],
+          "rd_elettro_tot": [
+            8,
+            "0"
+          ],
+          "ap_tot": [
+            6,
+            "linear"
+          ],
+          "pa_tot": [
+            5,
+            "linear"
+          ],
+          "pf_tot": [
+            7,
+            "linear"
+          ],
+          "mana_tot": [
+            9,
+            "linear"
+          ],
+          "energia_tot": [
+            8,
+            "linear"
+          ],
+          "potere_tot": [
+            9,
+            "linear"
+          ],
+          "tier_tot": [
+            7,
+            "linear"
+          ],
+          "attacco_tot": [
+            7,
+            "linear"
+          ],
+          "difesa_tot": [
+            7,
+            "linear"
+          ]
+        },
+        "razza": "Entità",
+        "scudo": [],
+        "skill_1_id": 33,
+        "skill_2_id": 7,
+        "skill_3_id": 51,
+        "skill_4_id": null,
+        "skill_5_id": null,
+        "skill_6_id": null,
+        "skill_7_id": null,
+        "veste": [],
+        "vestito": []
+      }
+    ],
+    "lore": [
+      {
+        "id": 47,
+        "unitId": 1026,
+        "name": "Drago Spettrale",
+        "description": "I Draghi Spettrali appaiono nei luoghi dove morte, anima e memoria draconica si sono intrecciate in modo innaturale. Possono manifestarsi presso antiche tombe, rovine legate ai Sacerdoti Drago o reami come il Soul Cairn, dove le anime perdute diventano sostanza del paesaggio. Sono rari, e la loro presenza indica quasi sempre un trauma magico profondo. Non hanno la stessa vitalità arrogante dei draghi viventi, ma conservano una volontà fredda e remota. Sembrano fatti di ricordo, rabbia e potere incompleto. Alcuni agiscono come guardiani, altri come resti inquieti di una grandezza che non riesce a dissolversi. Il loro corpo è etereo, difficile da colpire con armi comuni e spesso accompagnato da gelo, luce spettrale o energia necromantica. Possono ancora usare parte della forza draconica, anche se in forma distorta. Affrontarli richiede armi incantate, magia adatta e il coraggio di combattere qualcosa che non è del tutto presente.",
+        "image": "UnitLorePics/Drago_Spettrale.png"
+      }
+    ],
+    "legacyActions": [
+      {
+        "sourceId": 33,
+        "name": "Forma Eterea",
+        "description": "La creatura può entrare in uno stato etereo.",
+        "effect": "Ottiene resistenza al danno fisico del 50%, ma subisce il 25% di danno magico in più.",
+        "cost": "N/A (Passiva).",
+        "boost": "Per 5 POW, annulla la penalità al danno magico per un turno."
+      },
+      {
+        "sourceId": 7,
+        "name": "Respiro Fulmineo",
+        "description": "Scatena un fulmine dalla bocca.",
+        "effect": "Infligge (5d6 + livello) danni da shock a un bersaglio entro 6 esagoni.",
+        "cost": "7 PA, 6 EN.",
+        "boost": "Per 6 POW, aggiunge un effetto di catena fulminea fino a 2 bersagli aggiuntivi entro 2 esagoni."
+      },
+      {
+        "sourceId": 51,
+        "name": "Tuffo Aereo",
+        "description": "Si libra in cielo e si tuffa su un nemico.",
+        "effect": "Infligge (4d6 + livello) danni perforanti a un bersaglio entro 6 esagoni; ignora i bonus di difesa dall'armatura.",
+        "cost": "6 PA, 5 EN.",
+        "boost": "Per 5 POW, stordisce il bersaglio per 1 turno."
+      }
+    ]
+  },
+  "charter": {
+    "unit": "Drago Spettrale",
+    "sourceIds": [
+      1026
+    ],
+    "kind": "creature",
+    "kindJustification": "Nessun inventario o percorso Skill: azioni innate e curve definiscono il chassis.",
+    "authoredLevels": [
+      1,
+      20
+    ],
+    "authoredLevelJustification": "La riga 20 viene estesa mantenendo identità incorporea a ogni checkpoint.",
+    "fantasy": "Memoria draconica incorporea che attraversa materia e colpisce con gelo e fulmine.",
+    "combatStory": "Usa forma eterea per negare il contatto, poi picchia o scarica elettricità da quota sicura.",
+    "siblings": [
+      {
+        "unit": "Drago d’Ossa",
+        "relation": "nearest",
+        "mustDifferBy": "Etereo, arcano e fulmineo invece di corporeo e pestilenziale."
+      },
+      {
+        "unit": "Drago",
+        "relation": "same-chassis",
+        "mustDifferBy": "Spettro gelido, non creatura viva di Fuoco."
+      },
+      {
+        "unit": "Crepuscolo Alato",
+        "relation": "contrast",
+        "mustDifferBy": "Chassis draconico e potenza superiore, meno furtivo."
+      }
+    ],
+    "signatureAxes": [
+      {
+        "axis": "incorporeità",
+        "expressedBy": "Forma Eterea e resistenze fisiche"
+      },
+      {
+        "axis": "tempesta funebre",
+        "expressedBy": "Respiro Fulmineo, Mana e gelo"
+      }
+    ],
+    "must": [
+      "forma eterea",
+      "volo",
+      "fulmine",
+      "gelo"
+    ],
+    "mustNot": [
+      "equipment",
+      "Skill",
+      "competenceProfile",
+      "corpo osseo",
+      "fuoco dominante"
+    ],
+    "rigidity": "none",
+    "variationBudget": "azioni sbloccate per livello e progressione lineare del chassis",
+    "levelCheckpoints": {
+      "1": "drago spettrale",
+      "5": "tuffo",
+      "10": "forma eterea",
+      "15": "respiro fulmineo",
+      "20": "ombra draconica antica"
+    },
+    "openQuestions": []
+  },
+  "expectations": {
+    "unit": "Drago Spettrale",
+    "levels": [
+      1,
+      5,
+      10,
+      15,
+      20
+    ],
+    "variantsPerLevel": 8,
+    "allVariants": {
+      "generationKind": "creature",
+      "equipmentSlotCount": 0,
+      "skillUnlockCount": 0,
+      "competenceCount": 0,
+      "warningCount": 0
+    },
+    "atLeastOneVariantHas": [
+      "Forma Eterea e res_gelo positiva"
+    ],
+    "allowedVariation": [
+      "azioni in finestra",
+      "curve lineari"
+    ],
+    "forbidden": [
+      "equipment",
+      "Skill",
+      "corpo osseo",
+      "fuoco dominante"
+    ],
+    "differsFrom": {
+      "Drago d’Ossa": "Etereo, arcano e fulmineo invece di corporeo e pestilenziale.",
+      "Drago": "Spettro gelido, non creatura viva di Fuoco."
+    },
+    "curveAssertions": [
+      {
+        "key": "pf",
+        "level": 10,
+        "expected": 93
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "claim": "profilo e azioni",
+      "source": "django_slim_unit/skillnpc:1026"
+    },
+    {
+      "claim": "fantasy",
+      "source": "unitlore:1026"
+    }
+  ],
+  "catalogQueries": [],
+  "proposal": {
+    "name": "Drago Spettrale",
+    "category": "Non morto",
+    "archetypeDescription": "Drago incorporeo ad alto Mana con forma eterea, volo e fulmini.",
+    "loreDescription": "I Draghi Spettrali appaiono nei luoghi dove morte, anima e memoria draconica si sono intrecciate in modo innaturale. Possono manifestarsi presso antiche tombe, rovine legate ai Sacerdoti Drago o reami come il Soul Cairn, dove le anime perdute diventano sostanza del paesaggio. Sono rari, e la loro presenza indica quasi sempre un trauma magico profondo. Non hanno la stessa vitalità arrogante dei draghi viventi, ma conservano una volontà fredda e remota. Sembrano fatti di ricordo, rabbia e potere incompleto. Alcuni agiscono come guardiani, altri come resti inquieti di una grandezza che non riesce a dissolversi. Il loro corpo è etereo, difficile da colpire con armi comuni e spesso accompagnato da gelo, luce spettrale o energia necromantica. Possono ancora usare parte della forza draconica, anche se in forma distorta. Affrontarli richiede armi incantate, magia adatta e il coraggio di combattere qualcosa che non è del tutto presente.",
+    "notes": "Batch 2 v2: conversione Elder [1026]; endpoint sorgente arrotondati e linearizzati, azioni innate preservate dal dossier verificato.",
+    "levels": [],
+    "archetypeTags": {},
+    "competenceProfile": {},
+    "generation": {
+      "kind": "creature"
+    },
+    "skillUnlocks": [],
+    "equipmentSlots": [],
+    "equipmentGroups": [],
+    "accessoryCountByLevel": [],
+    "innateActions": [
+      {
+        "key": "elder-skillnpc-33",
+        "name": "Forma Eterea",
+        "description": "La creatura può entrare in uno stato etereo. Ottiene resistenza al danno fisico del 50%, ma subisce il 25% di danno magico in più. Boost Elder: Per 5 POW, annulla la penalità al danno magico per un turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {},
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-7",
+        "name": "Respiro Fulmineo",
+        "description": "Scatena un fulmine dalla bocca. Infligge (5d6 + livello) danni da shock a un bersaglio entro 6 esagoni. Boost Elder: Per 6 POW, aggiunge un effetto di catena fulminea fino a 2 bersagli aggiuntivi entro 2 esagoni.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 7,
+          "energia": 6
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      },
+      {
+        "key": "elder-skillnpc-51",
+        "name": "Tuffo Aereo",
+        "description": "Si libra in cielo e si tuffa su un nemico. Infligge (4d6 + livello) danni perforanti a un bersaglio entro 6 esagoni; ignora i bonus di difesa dall'armatura. Boost Elder: Per 5 POW, stordisce il bersaglio per 1 turno.",
+        "minLevel": 1,
+        "maxLevel": 20,
+        "costs": {
+          "pa": 6,
+          "energia": 5
+        },
+        "trigger": "Azione",
+        "duration": "",
+        "icon": "runa"
+      }
+    ],
+    "statProfile": {
+      "baseModifiers": {},
+      "perLevelModifiers": {},
+      "milestones": [],
+      "curves": [
+        {
+          "key": "forza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "resistenza",
+          "profile": "custom",
+          "level1": 13,
+          "level20": 33
+        },
+        {
+          "key": "velocita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "agilita",
+          "profile": "high",
+          "level1": 11,
+          "level20": 30
+        },
+        {
+          "key": "intelligenza",
+          "profile": "custom",
+          "level1": 14,
+          "level20": 37
+        },
+        {
+          "key": "concentrazione",
+          "profile": "custom",
+          "level1": 14,
+          "level20": 37
+        },
+        {
+          "key": "personalita",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "saggezza",
+          "profile": "custom",
+          "level1": 14,
+          "level20": 37
+        },
+        {
+          "key": "fortuna",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 23
+        },
+        {
+          "key": "rd_fis",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_contundente",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_taglio",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_perforante",
+          "profile": "custom",
+          "level1": 2,
+          "level20": 2
+        },
+        {
+          "key": "res_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "res_gelo",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 4
+        },
+        {
+          "key": "res_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_fuoco",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "rd_gelo",
+          "profile": "custom",
+          "level1": 4,
+          "level20": 4
+        },
+        {
+          "key": "rd_elettro",
+          "profile": "custom",
+          "level1": 0,
+          "level20": 0
+        },
+        {
+          "key": "ap",
+          "profile": "custom",
+          "level1": 1,
+          "level20": 4
+        },
+        {
+          "key": "pa",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 26
+        },
+        {
+          "key": "pf",
+          "profile": "custom",
+          "level1": 27,
+          "level20": 167
+        },
+        {
+          "key": "mana",
+          "profile": "custom",
+          "level1": 32,
+          "level20": 206
+        },
+        {
+          "key": "energia",
+          "profile": "custom",
+          "level1": 8,
+          "level20": 36
+        },
+        {
+          "key": "potere",
+          "profile": "custom",
+          "level1": 9,
+          "level20": 38
+        },
+        {
+          "key": "tier",
+          "profile": "custom",
+          "level1": 5,
+          "level20": 14
+        },
+        {
+          "key": "attacco",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        },
+        {
+          "key": "difesa",
+          "profile": "high",
+          "level1": 12,
+          "level20": 75
+        }
+      ]
+    }
+  },
+  "proposalHash": "sha256:e080e86849788b6f43fd14f024bab51f8b94b6a31ae106e6c85bfe2b2de7a9a3",
+  "charterHash": "sha256:9fc7bf0fbbfec040510afc1fe25b67cae316a01640eea0179bafbfa85be707f3",
+  "converterVersion": "elder-unit-charter-v2-batch2",
+  "rejectedCandidates": [
+    {
+      "candidate": {
+        "system": "equipment o Skill da umanoide"
+      },
+      "decision": "reject",
+      "reasonCode": "creature-contract-separation",
+      "reason": "Il contratto creature ammette soltanto curve e azioni innate."
+    }
+  ],
+  "deviations": [
+    {
+      "what": "curve legacy",
+      "from": "endpoint normalizzati con valori frazionari",
+      "to": "endpoint interi e interpolazione lineare 1-20",
+      "why": "La riga 20 viene estesa mantenendo identità incorporea a ogni checkpoint."
+    }
+  ],
+  "legalityReceipts": [
+    {
+      "claim": "curve",
+      "source": "UNIT_STAT_CURVE_VARIABLES"
+    },
+    {
+      "claim": "azioni innate",
+      "source": "backend.combat.unit_generation._level_actions"
+    }
+  ],
+  "findings": [
+    {
+      "code": "creature-contract-separation",
+      "severity": "reject-if-present",
+      "finding": "Il candidato {'system': 'equipment o Skill da umanoide'} rischia deriva d'identità o illegalità.",
+      "resolution": "Il contratto creature ammette soltanto curve e azioni innate.",
+      "status": "resolved"
+    }
+  ],
+  "simulation": {
+    "previews": [
+      {
+        "level": 1,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 1,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:317bf60fc6efb0c25ad8b7e54792e68481eab90647d657a81e6b737555583bcb",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 5,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:3c2d3fc65a1105f8c3b633f9a29a6cd397f7e2e8f4d432de0efb54ae7f6a3da8",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 10,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:dacac5376768febd46418319ca9c96f0899144400fa13645ccf26ea06ba462d4",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 15,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:458cd89fed2a103681c680769292dc33c26fe16c06ed4ec110e18a13352997e0",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-1",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-2",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-3",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-4",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-5",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-6",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-7",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      },
+      {
+        "level": 20,
+        "variant": "batch2-v2-8",
+        "signatureHash": "sha256:8b97e9bed3db8b511131ed2eb777f2ceb8c526407b7b913014c4c1bad98ee08a",
+        "skills": 0,
+        "perks": 0,
+        "equipment": [],
+        "innateActions": [
+          "Forma Eterea",
+          "Respiro Fulmineo",
+          "Tuffo Aereo"
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    ],
+    "warnings": [],
+    "completed": 40,
+    "previewErrors": []
+  },
+  "scorecard": {
+    "unit": "Drago Spettrale",
+    "hardGates": {
+      "passed": 16,
+      "failed": 0
+    },
+    "previews": {
+      "levels": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ],
+      "variantsPerLevel": 8,
+      "completed": 40,
+      "warnings": 0,
+      "unexplainedWarnings": 0
+    },
+    "determinism": {
+      "variant": "batch2-v2-1",
+      "match": true
+    },
+    "qualitative": {
+      "identity": {
+        "score": 5,
+        "why": "must/mustNot sono espressi da campi concreti."
+      },
+      "sourceFidelity": {
+        "score": 4,
+        "why": "gli anchor sorgente sono preservati e le deviazioni dichiarate."
+      },
+      "familyCoherence": {
+        "score": 4,
+        "why": "curve e azioni sono confrontate con tre sibling nominati."
+      },
+      "meaningfulVariety": {
+        "score": 4,
+        "why": "la variazione resta dentro il budget del Charter."
+      },
+      "siblingDistinctness": {
+        "score": 5,
+        "why": "ogni sibling ha un mustDifferBy testabile."
+      }
+    },
+    "decision": "ready-for-human-approval"
+  },
+  "approval": {
+    "approvedBy": "Ale",
+    "approvedAt": "2026-07-29T08:00:53.394353+00:00",
+    "notes": "Standing authorization: user is satisfied with the first batch and explicitly requested 20 more Units without another approval pause. Applied only after 20/20 validation, 800 previews, deterministic checks and review samples."
+  }
+}

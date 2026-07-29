@@ -1,9 +1,10 @@
 export type ManagementField = {
   key: string;
   label: string;
-  type: "text" | "textarea" | "integer" | "boolean" | "select" | "json" | "item" | "effect";
+  type: "text" | "textarea" | "integer" | "boolean" | "select" | "json" | "item" | "effect" | "campaign" | "image";
   group: string;
   nullable?: boolean;
+  readOnly?: boolean;
   minimum?: number;
   choices?: Array<{ value: string; label: string }>;
 };
@@ -14,6 +15,8 @@ export type ManagedCharacterSummary = {
   internalName: string;
   type: string;
   level: number;
+  campaignId: number | null;
+  campaignName: string;
   missingRelations: string[];
   updatedAt: string | null;
 };
@@ -24,14 +27,16 @@ export type OrphanRecord = {
   id: number;
   name: string;
   reason: string;
-  ownerCharacterId: number | null;
+  contents: string;
+  attachable: boolean;
   updatedAt: string | null;
 };
 
 export type CharacterManagementOverview = {
   characters: ManagedCharacterSummary[];
   orphans: OrphanRecord[];
-  relationKinds: Array<{ value: string; label: string }>;
+  relationKinds: Array<{ value: string; label: string; attachable: boolean }>;
+  campaigns: Array<{ value: string; label: string }>;
 };
 
 export type ManagedRelation = {
@@ -62,7 +67,17 @@ export type CharacterManagementDetail = {
   options: {
     items: Array<{ id: number; name: string; archived: boolean }>;
     effects: Array<{ id: number; name: string }>;
+    campaigns: Array<{ value: string; label: string }>;
+    images: Array<{ id: number; name: string }>;
   };
+  inventoryContainers: Array<{
+    id: number;
+    name: string;
+    scope: string;
+    capacity: number;
+    weightless: boolean;
+    entries: Array<{ slot: number; name: string; quantity: number; isReagent: boolean }>;
+  }>;
   deletionPreview: {
     token: string;
     confirmation: string;
@@ -201,6 +216,7 @@ export type UnitGenerationDraft = {
   allowedClassFamilies: string[];
   allowedReligionFamilies: string[];
   allowedRaces: string[];
+  allowedSubraces: string[];
   allowHumanoidStatGrowth: boolean;
 };
 
@@ -303,7 +319,11 @@ export type UnitManagementOverview = {
     magicPolicies: Array<{ value: "none" | "any"; label: string }>;
     classFamilies: Array<{ value: string; label: string }>;
     religionFamilies: Array<{ value: string; label: string }>;
-    races: Array<{ value: string; label: string }>;
+    races: Array<{
+      value: string;
+      label: string;
+      subraces: Array<{ value: string; label: string }>;
+    }>;
     statCurveProfiles: Array<{ value: UnitStatCurve["profile"]; label: string }>;
     statCurveVariables: Array<{
       key: string;

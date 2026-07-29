@@ -1,0 +1,4311 @@
+{
+  "generatedAt": "2026-07-29T10:49:52.406027+00:00",
+  "variant": "final-batch-v2-1",
+  "levels": [
+    1,
+    10,
+    20
+  ],
+  "units": [
+    {
+      "unit": "Amazzone di Sanguine",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "arena di Sanguine",
+          "expressedBy": "presenza sociale e armatura leggera iconica"
+        },
+        {
+          "axis": "tiro mobile",
+          "expressedBy": "arco corto elfico e tecniche a distanza"
+        }
+      ],
+      "mustNot": [
+        "magia",
+        "scudo",
+        "arma pesante",
+        "azioni innate"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Di Città",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Schiva 1",
+              "source": "core",
+              "level": 1,
+              "cost": 5
+            },
+            {
+              "name": "Tiro Attento",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Arco corto (elfico)",
+              "itemId": 512
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura (pelle)",
+              "itemId": 595
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Di Città",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Tiro Rapido",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Focus 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Tiro Attento",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Osservatore 1",
+              "source": "core",
+              "level": 3,
+              "cost": 4
+            },
+            {
+              "name": "Doppio Missile",
+              "source": "archetype",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Bersaglio mobile",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Bruciapelo 1",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Osservatore 2",
+              "source": "core",
+              "level": 6,
+              "cost": 5
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 7,
+              "cost": 3
+            },
+            {
+              "name": "Triplo Missile",
+              "source": "archetype",
+              "level": 8,
+              "cost": 3
+            },
+            {
+              "name": "Rimbalzo",
+              "source": "archetype",
+              "level": 9,
+              "cost": 3
+            },
+            {
+              "name": "Bruciapelo 2",
+              "source": "archetype",
+              "level": 9,
+              "cost": 3
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 ai tiri agilità",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "Inizi il combat con 3 pa",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Sangue di Antenato",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "le skill Resistenza hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "Il primo tiro 1 della giornata è rerollato gratuitamente.",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Battlemage",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "+1 mod carico",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 ai tiri velocità",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Esperto (3)",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Arco corto (elfico)",
+              "itemId": 512
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura (chitina)",
+              "itemId": 596
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Di Città",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Tiro Attento",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Tiro Rapido",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Focus 1",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Osservatore 1",
+              "source": "core",
+              "level": 3,
+              "cost": 4
+            },
+            {
+              "name": "Doppio Missile",
+              "source": "archetype",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Bruciapelo 1",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Bersaglio mobile",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Inafferrabile 1",
+              "source": "core",
+              "level": 6,
+              "cost": 5
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 7,
+              "cost": 3
+            },
+            {
+              "name": "Rimbalzo",
+              "source": "archetype",
+              "level": 8,
+              "cost": 3
+            },
+            {
+              "name": "Bruciapelo 2",
+              "source": "archetype",
+              "level": 9,
+              "cost": 3
+            },
+            {
+              "name": "Triplo Missile",
+              "source": "archetype",
+              "level": 9,
+              "cost": 3
+            },
+            {
+              "name": "Cecchino",
+              "source": "archetype",
+              "level": 11,
+              "cost": 8
+            },
+            {
+              "name": "Focus 2",
+              "source": "archetype",
+              "level": 12,
+              "cost": 4
+            },
+            {
+              "name": "Osservatore 2",
+              "source": "core",
+              "level": 14,
+              "cost": 7
+            },
+            {
+              "name": "Controincantesimo",
+              "source": "archetype",
+              "level": 15,
+              "cost": 4
+            },
+            {
+              "name": "Attaccante 1",
+              "source": "core",
+              "level": 17,
+              "cost": 9
+            },
+            {
+              "name": "Mira rapida",
+              "source": "archetype",
+              "level": 19,
+              "cost": 7
+            }
+          ],
+          "perks": [
+            {
+              "name": "Il primo tiro 1 della giornata è rerollato gratuitamente.",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "le skill Saggezza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Maglie del destino",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 ai tiri agilità",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "+1 slot orecchino disponibile",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "le skill Agilità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Sfuggente 2",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Seconda Chance",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "+25 mod peso equip",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            },
+            {
+              "name": "Quando dormi recuperi anche il 100% dei punti energia. Se eri già full en, hai +20% en al risveglio.",
+              "tier": "minor",
+              "level": 11
+            },
+            {
+              "name": "sblocca una skill di qualsiasi costo. Scrivi (skill 123)",
+              "tier": "minor",
+              "level": 12
+            },
+            {
+              "name": "Battlemage",
+              "tier": "major",
+              "level": 12
+            },
+            {
+              "name": "estrarre da zaino costa 1 pa non 3",
+              "tier": "minor",
+              "level": 13
+            },
+            {
+              "name": "+1 ai tiri resistenza",
+              "tier": "minor",
+              "level": 14
+            },
+            {
+              "name": "Ira degli antichi 2",
+              "tier": "major",
+              "level": 14
+            },
+            {
+              "name": "+1 ai tiri forza",
+              "tier": "minor",
+              "level": 15
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 16
+            },
+            {
+              "name": "Sfuggente 1",
+              "tier": "major",
+              "level": 16
+            },
+            {
+              "name": "+1 fortuna.",
+              "tier": "minor",
+              "level": 17
+            },
+            {
+              "name": "puoi avere 2 slot armi, cambiare con l’altra arma costa 1 pa(2 pa senza atk di opp)",
+              "tier": "minor",
+              "level": 18
+            },
+            {
+              "name": "Agile (3)",
+              "tier": "major",
+              "level": 18
+            },
+            {
+              "name": "le skill Velocità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 19
+            },
+            {
+              "name": "le skill Intelligenza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 20
+            },
+            {
+              "name": "Vita maggiore",
+              "tier": "major",
+              "level": 20
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Arco corto (elfico)",
+              "itemId": 512
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura (pelle)",
+              "itemId": 595
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Assassino dei Tsaesci",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "disciplina tsaesci",
+          "expressedBy": "katana/kriss e autocontrollo"
+        },
+        {
+          "axis": "esecuzione precisa",
+          "expressedBy": "Assassino più Parata/Affondo"
+        }
+      ],
+      "mustNot": [
+        "magia",
+        "scudo",
+        "veleno inventato",
+        "azioni innate"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Di Città",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Schiva 1",
+              "source": "core",
+              "level": 1,
+              "cost": 5
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Katana Akaviri (ebano)",
+              "itemId": 5733
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura Akaviri (ebano)",
+              "itemId": 5786
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti elastici",
+              "itemId": 5277
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Di Città",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Affondo",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Parata",
+              "source": "archetype",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 2,
+              "cost": 0
+            },
+            {
+              "name": "Osservatore 1",
+              "source": "core",
+              "level": 3,
+              "cost": 4
+            },
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Doppio attacco 1",
+              "source": "archetype",
+              "level": 5,
+              "cost": 5
+            },
+            {
+              "name": "Schiva 1",
+              "source": "core",
+              "level": 7,
+              "cost": 7
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 8,
+              "cost": 3
+            },
+            {
+              "name": "Colpo nascosto",
+              "source": "archetype",
+              "level": 9,
+              "cost": 6
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 ai tiri concentrazione",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "le skill Forza hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 ai tiri velocità",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Vita maggiore",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "le skill Saggezza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Seconda Chance",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 res e rd elettro e fuoco",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Ira degli antichi 3",
+              "tier": "major",
+              "level": 10
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Kriss (ebano)",
+              "itemId": 172
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura Akaviri (ebano)",
+              "itemId": 5786
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti elastici",
+              "itemId": 5277
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Di Città",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Killer mode",
+              "source": "archetype",
+              "level": 1,
+              "cost": 5
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Osservatore 1",
+              "source": "core",
+              "level": 2,
+              "cost": 4
+            },
+            {
+              "name": "Parata",
+              "source": "archetype",
+              "level": 3,
+              "cost": 4
+            },
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Affondo",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Vista del sangue",
+              "source": "archetype",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Osservatore 2",
+              "source": "core",
+              "level": 8,
+              "cost": 6
+            },
+            {
+              "name": "Colpo fantasma",
+              "source": "archetype",
+              "level": 9,
+              "cost": 5
+            },
+            {
+              "name": "Primo sangue",
+              "source": "archetype",
+              "level": 10,
+              "cost": 5
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 11,
+              "cost": 4
+            },
+            {
+              "name": "Inafferrabile 1",
+              "source": "core",
+              "level": 13,
+              "cost": 7
+            },
+            {
+              "name": "Schiva 1",
+              "source": "core",
+              "level": 15,
+              "cost": 9
+            },
+            {
+              "name": "Colpo nascosto",
+              "source": "archetype",
+              "level": 17,
+              "cost": 8
+            },
+            {
+              "name": "Più Danno 1",
+              "source": "archetype",
+              "level": 19,
+              "cost": 7
+            }
+          ],
+          "perks": [
+            {
+              "name": "le skill Saggezza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "estrarre da zaino costa 1 pa non 3",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "+1 ai tiri forza",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Abile",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "le skill Agilità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 slot orecchino disponibile",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Sangue di Antenato",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            },
+            {
+              "name": "Se fai 1 a competenze, spendi 2 en per rerollare",
+              "tier": "minor",
+              "level": 11
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 12
+            },
+            {
+              "name": "Organizzato",
+              "tier": "major",
+              "level": 12
+            },
+            {
+              "name": "+1 ai tiri agilità",
+              "tier": "minor",
+              "level": 13
+            },
+            {
+              "name": "le skill Velocità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 14
+            },
+            {
+              "name": "Agile (3)",
+              "tier": "major",
+              "level": 14
+            },
+            {
+              "name": "+1 res e rd fuoco e gelo",
+              "tier": "minor",
+              "level": 15
+            },
+            {
+              "name": "+1 slot non free",
+              "tier": "minor",
+              "level": 16
+            },
+            {
+              "name": "Pressante",
+              "tier": "major",
+              "level": 16
+            },
+            {
+              "name": "+1 fortuna.",
+              "tier": "minor",
+              "level": 17
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 18
+            },
+            {
+              "name": "Sfuggente 2",
+              "tier": "major",
+              "level": 18
+            },
+            {
+              "name": "Quando dormi recuperi anche il 100% dei punti energia. Se eri già full en, hai +20% en al risveglio.",
+              "tier": "minor",
+              "level": 19
+            },
+            {
+              "name": "le skill Forza hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 20
+            },
+            {
+              "name": "Vita maggiore",
+              "tier": "major",
+              "level": 20
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Kriss (ebano)",
+              "itemId": 172
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura Akaviri (ebano)",
+              "itemId": 5786
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti elastici",
+              "itemId": 5277
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "5 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Bocca Vorace di Sanguine",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "fame di Sanguine",
+          "expressedBy": "Inghiotti pericolo e PF elevati"
+        },
+        {
+          "axis": "eccesso corrosivo",
+          "expressedBy": "Vomito Acido con danno Puro"
+        }
+      ],
+      "mustNot": [
+        "equipment",
+        "Skill",
+        "competenceProfile",
+        "equipment",
+        "Skill",
+        "volo",
+        "distruzione permanente di oggetti"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Inghiotti pericolo"
+          ],
+          "statCurves": {
+            "pf": 27,
+            "mana": 16,
+            "energia": 7,
+            "potere": 5,
+            "pa": 7,
+            "ap": 1,
+            "tier": 4,
+            "attacco": 12,
+            "difesa": 9,
+            "res_contundente": 0,
+            "res_taglio": 0,
+            "res_perforante": 0,
+            "rd_fis": 1,
+            "res_fuoco": 0,
+            "res_gelo": 0,
+            "res_elettro": 0,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Inghiotti pericolo",
+            "Vomito Acido"
+          ],
+          "statCurves": {
+            "pf": 93,
+            "mana": 51,
+            "energia": 18,
+            "potere": 15,
+            "pa": 15,
+            "ap": 2,
+            "tier": 8,
+            "attacco": 42,
+            "difesa": 28,
+            "res_contundente": 0,
+            "res_taglio": 0,
+            "res_perforante": 0,
+            "rd_fis": 2,
+            "res_fuoco": 0,
+            "res_gelo": 0,
+            "res_elettro": 0,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Inghiotti pericolo",
+            "Vomito Acido"
+          ],
+          "statCurves": {
+            "pf": 167,
+            "mana": 89,
+            "energia": 31,
+            "potere": 27,
+            "pa": 23,
+            "ap": 4,
+            "tier": 13,
+            "attacco": 75,
+            "difesa": 50,
+            "res_contundente": 0,
+            "res_taglio": 0,
+            "res_perforante": 0,
+            "rd_fis": 4,
+            "res_fuoco": 0,
+            "res_gelo": 0,
+            "res_elettro": 0,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "unit": "Nebbia di zucchero lunare",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "corpo di foschia",
+          "expressedBy": "Volo, reazione Nebbia e difese incorporee"
+        },
+        {
+          "axis": "zucchero lunare corrotto",
+          "expressedBy": "perdita di PA e nube alla sconfitta"
+        }
+      ],
+      "mustNot": [
+        "equipment",
+        "Skill",
+        "competenceProfile",
+        "equipment",
+        "Skill",
+        "oggetti automatici",
+        "danni da veleno"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Volo",
+            "Nebbia"
+          ],
+          "statCurves": {
+            "pf": 32,
+            "mana": 16,
+            "energia": 6,
+            "potere": 5,
+            "pa": 7,
+            "ap": 0,
+            "tier": 2,
+            "attacco": 7,
+            "difesa": 7,
+            "res_contundente": 0,
+            "res_taglio": 0,
+            "res_perforante": 0,
+            "rd_fis": 1,
+            "res_fuoco": -1,
+            "res_gelo": 1,
+            "res_elettro": -4,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Volo",
+            "Nebbia",
+            "Assorbimento droga",
+            "Esplosione Nube di Droga"
+          ],
+          "statCurves": {
+            "pf": 114,
+            "mana": 51,
+            "energia": 17,
+            "potere": 15,
+            "pa": 15,
+            "ap": 0,
+            "tier": 4,
+            "attacco": 19,
+            "difesa": 19,
+            "res_contundente": 0,
+            "res_taglio": 0,
+            "res_perforante": 0,
+            "rd_fis": 2,
+            "res_fuoco": -1,
+            "res_gelo": 1,
+            "res_elettro": -4,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Volo",
+            "Nebbia",
+            "Assorbimento droga",
+            "Esplosione Nube di Droga"
+          ],
+          "statCurves": {
+            "pf": 206,
+            "mana": 89,
+            "energia": 29,
+            "potere": 27,
+            "pa": 23,
+            "ap": 1,
+            "tier": 7,
+            "attacco": 33,
+            "difesa": 33,
+            "res_contundente": 0,
+            "res_taglio": 0,
+            "res_perforante": 0,
+            "rd_fis": 4,
+            "res_fuoco": -1,
+            "res_gelo": 1,
+            "res_elettro": -4,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "unit": "Pene Volante",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "aberrazione di Sanguine",
+          "expressedBy": "identità grottesca preservata senza nuove regole"
+        },
+        {
+          "axis": "assalto aereo",
+          "expressedBy": "Volo, Sparo Bianco e Carica"
+        }
+      ],
+      "mustNot": [
+        "equipment",
+        "Skill",
+        "competenceProfile",
+        "equipment",
+        "Skill",
+        "seduzione sociale",
+        "danni fuori vocabolario"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Volo"
+          ],
+          "statCurves": {
+            "forza": 8,
+            "resistenza": 6,
+            "velocita": 9,
+            "agilita": 9,
+            "intelligenza": 5,
+            "concentrazione": 5,
+            "personalita": 0,
+            "saggezza": 5,
+            "fortuna": 9,
+            "rd_fis": 2,
+            "res_contundente": -1,
+            "res_taglio": 1,
+            "res_perforante": 0,
+            "res_fuoco": 1,
+            "res_gelo": 1,
+            "res_elettro": -1,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0,
+            "ap": 0,
+            "pa": 8,
+            "pf": 16,
+            "mana": 16,
+            "energia": 6,
+            "potere": 5,
+            "tier": 4,
+            "attacco": 10,
+            "difesa": 10
+          },
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Volo",
+            "Sparo Bianco",
+            "Carica del Pene"
+          ],
+          "statCurves": {
+            "forza": 14,
+            "resistenza": 11,
+            "velocita": 16,
+            "agilita": 16,
+            "intelligenza": 9,
+            "concentrazione": 9,
+            "personalita": 0,
+            "saggezza": 9,
+            "fortuna": 16,
+            "rd_fis": 2,
+            "res_contundente": -1,
+            "res_taglio": 1,
+            "res_perforante": 0,
+            "res_fuoco": 1,
+            "res_gelo": 1,
+            "res_elettro": -1,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0,
+            "ap": 0,
+            "pa": 17,
+            "pf": 51,
+            "mana": 51,
+            "energia": 17,
+            "potere": 14,
+            "tier": 7,
+            "attacco": 33,
+            "difesa": 33
+          },
+          "warnings": []
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Volo",
+            "Sparo Bianco",
+            "Carica del Pene"
+          ],
+          "statCurves": {
+            "forza": 20,
+            "resistenza": 17,
+            "velocita": 23,
+            "agilita": 23,
+            "intelligenza": 13,
+            "concentrazione": 13,
+            "personalita": 0,
+            "saggezza": 13,
+            "fortuna": 23,
+            "rd_fis": 2,
+            "res_contundente": -1,
+            "res_taglio": 1,
+            "res_perforante": 0,
+            "res_fuoco": 1,
+            "res_gelo": 1,
+            "res_elettro": -1,
+            "rd_fuoco": 0,
+            "rd_gelo": 0,
+            "rd_elettro": 0,
+            "ap": 0,
+            "pa": 26,
+            "pf": 89,
+            "mana": 89,
+            "energia": 29,
+            "potere": 24,
+            "tier": 11,
+            "attacco": 58,
+            "difesa": 58
+          },
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "unit": "Signore Dremora",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "rango Markynaz",
+          "expressedBy": "sottorazza bloccata, strategia e comando"
+        },
+        {
+          "axis": "signore dell'Oblivion",
+          "expressedBy": "set daedrico e sigilli/teletrasporto"
+        }
+      ],
+      "mustNot": [
+        "razza mortale",
+        "scudo con arma a due mani",
+        "magia di cura",
+        "azioni innate"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Dremora",
+            "subrace": "Markynaz",
+            "allowed": [
+              "Dremora"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Spadone (daedrico)",
+              "itemId": 355
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura (daedrico)",
+              "itemId": 608
+            },
+            {
+              "slot": "chainmail",
+              "name": "Chainmail (daedrico)",
+              "itemId": 636
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti isolanti",
+              "itemId": 5284
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Dremora",
+            "subrace": "Markynaz",
+            "allowed": [
+              "Dremora"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 3,
+              "cost": 2
+            },
+            {
+              "name": "Sigilli",
+              "source": "archetype",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 2",
+              "source": "core",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Maestro d’arme 1",
+              "source": "archetype",
+              "level": 5,
+              "cost": 4
+            },
+            {
+              "name": "In due si sta meglio",
+              "source": "archetype",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 7,
+              "cost": 3
+            },
+            {
+              "name": "Più Danno 1",
+              "source": "archetype",
+              "level": 8,
+              "cost": 4
+            },
+            {
+              "name": "Veterano 1",
+              "source": "core",
+              "level": 10,
+              "cost": 6
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 res e rd elettro e fuoco",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "Inizi il combat con 3 pa",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "sblocca una skill di qualsiasi costo. Scrivi (skill 123)",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Sfuggente 2",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "+1 ai tiri agilità",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Ira degli antichi 2",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "le skill Velocità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 res e rd fuoco e gelo",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Pressante",
+              "tier": "major",
+              "level": 10
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Martello da guerra (daedrico)",
+              "itemId": 313
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura (daedrico)",
+              "itemId": 608
+            },
+            {
+              "slot": "chainmail",
+              "name": "Chainmail (daedrico)",
+              "itemId": 636
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti isolanti",
+              "itemId": 5284
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "3 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Dremora",
+            "subrace": "Markynaz",
+            "allowed": [
+              "Dremora"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Roccia 1",
+              "source": "core",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 2,
+              "cost": 4
+            },
+            {
+              "name": "Sigilli",
+              "source": "archetype",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "In due si sta meglio",
+              "source": "archetype",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Vitale 2",
+              "source": "core",
+              "level": 7,
+              "cost": 3
+            },
+            {
+              "name": "Più Danno 1",
+              "source": "archetype",
+              "level": 8,
+              "cost": 4
+            },
+            {
+              "name": "Maestro d’arme 1",
+              "source": "archetype",
+              "level": 9,
+              "cost": 5
+            },
+            {
+              "name": "Attaccante 1",
+              "source": "core",
+              "level": 11,
+              "cost": 8
+            },
+            {
+              "name": "Doppio attacco 1",
+              "source": "archetype",
+              "level": 13,
+              "cost": 7
+            },
+            {
+              "name": "Veterano 1",
+              "source": "core",
+              "level": 15,
+              "cost": 8
+            },
+            {
+              "name": "Maestro d’arme 2",
+              "source": "archetype",
+              "level": 17,
+              "cost": 8
+            },
+            {
+              "name": "Veterano 2",
+              "source": "core",
+              "level": 19,
+              "cost": 9
+            }
+          ],
+          "perks": [
+            {
+              "name": "Il primo tiro 1 della giornata è rerollato gratuitamente.",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "le skill Agilità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Sangue di Antenato",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 ai tiri velocità",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "guarisci da malattie con 1 pt stanch",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "Ogni giorno, 20% di annullare un attacco fisico o magico.",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Gregario",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Seconda Chance",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "Nel combat, la prima azione di supporto fatta costa la metà delle risorse",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Vitale (1)",
+              "tier": "major",
+              "level": 10
+            },
+            {
+              "name": "puoi avere 2 slot armi, cambiare con l’altra arma costa 1 pa(2 pa senza atk di opp)",
+              "tier": "minor",
+              "level": 11
+            },
+            {
+              "name": "+1 tier danno",
+              "tier": "minor",
+              "level": 12
+            },
+            {
+              "name": "Vita maggiore",
+              "tier": "major",
+              "level": 12
+            },
+            {
+              "name": "+1 slot anello disponibile",
+              "tier": "minor",
+              "level": 13
+            },
+            {
+              "name": "+1 fortuna.",
+              "tier": "minor",
+              "level": 14
+            },
+            {
+              "name": "Pressante",
+              "tier": "major",
+              "level": 14
+            },
+            {
+              "name": "+4 punti exp generali",
+              "tier": "minor",
+              "level": 15
+            },
+            {
+              "name": "le skill Velocità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 16
+            },
+            {
+              "name": "Esperto (3)",
+              "tier": "major",
+              "level": 16
+            },
+            {
+              "name": "le skill Forza hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 17
+            },
+            {
+              "name": "+1 res e rd fuoco e gelo",
+              "tier": "minor",
+              "level": 18
+            },
+            {
+              "name": "Agile (3)",
+              "tier": "major",
+              "level": 18
+            },
+            {
+              "name": "+1 slot orecchino disponibile",
+              "tier": "minor",
+              "level": 19
+            },
+            {
+              "name": "estrarre da zaino costa 1 pa non 3",
+              "tier": "minor",
+              "level": 20
+            },
+            {
+              "name": "Riposo Rigenerante",
+              "tier": "major",
+              "level": 20
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Martello da guerra (daedrico)",
+              "itemId": 313
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura (daedrico)",
+              "itemId": 608
+            },
+            {
+              "slot": "chainmail",
+              "name": "Chainmail (daedrico)",
+              "itemId": 636
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti isolanti",
+              "itemId": 5284
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Spadaccino Telvanni",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "duello Telvanni",
+          "expressedBy": "fioretto adamantio e Parata/Affondo"
+        },
+        {
+          "axis": "lama arcana",
+          "expressedBy": "Guida Arma e protezioni di Alterazione"
+        }
+      ],
+      "mustNot": [
+        "staff",
+        "scudo equipaggiato",
+        "Illusione primaria",
+        "azioni innate"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Dunmer",
+            "subrace": "Nobile di Vvardenfell",
+            "allowed": [
+              "Dunmer"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Inviolabile 1",
+              "source": "core",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Fioretto Telvanni (adamantio)",
+              "itemId": 5735
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura Telvanni (ossa)",
+              "itemId": 5774
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti da nobile",
+              "itemId": 5273
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Dunmer",
+            "subrace": "Nobile di Vvardenfell",
+            "allowed": [
+              "Dunmer"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Scudo",
+              "source": "archetype",
+              "level": 2,
+              "cost": 3
+            },
+            {
+              "name": "Affondo",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Scorta di Mana 1",
+              "source": "core",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Parata",
+              "source": "archetype",
+              "level": 4,
+              "cost": 5
+            },
+            {
+              "name": "Mistico 1",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Guida Arma",
+              "source": "archetype",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Cast Leggero 1",
+              "source": "core",
+              "level": 7,
+              "cost": 4
+            },
+            {
+              "name": "Alleggerisci",
+              "source": "archetype",
+              "level": 8,
+              "cost": 4
+            },
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 9,
+              "cost": 3
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 10,
+              "cost": 3
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 tier danno",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 ai tiri intelligenza",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "+1 ai tiri forza",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Ira degli antichi 3",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "sblocca una skill di qualsiasi costo. Scrivi (skill 123)",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Pressante",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "Respec 20 pe, diventano generali.",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Fioretto Telvanni (adamantio)",
+              "itemId": 5735
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura Telvanni (ossa)",
+              "itemId": 5774
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti da nobile",
+              "itemId": 5273
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "2 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Dunmer",
+            "subrace": "Nobile di Vvardenfell",
+            "allowed": [
+              "Dunmer"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Attaccante 1",
+              "source": "core",
+              "level": 1,
+              "cost": 5
+            },
+            {
+              "name": "Scudo",
+              "source": "archetype",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Affondo",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 3,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 3,
+              "cost": 2
+            },
+            {
+              "name": "Alleggerisci",
+              "source": "archetype",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Vitale 2",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Mistico 1",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Guida Arma",
+              "source": "archetype",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Doppio attacco 1",
+              "source": "archetype",
+              "level": 7,
+              "cost": 5
+            },
+            {
+              "name": "Mistico 2",
+              "source": "core",
+              "level": 8,
+              "cost": 3
+            },
+            {
+              "name": "Cast Leggero 1",
+              "source": "core",
+              "level": 9,
+              "cost": 5
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 10,
+              "cost": 3
+            },
+            {
+              "name": "Più Danno 1",
+              "source": "archetype",
+              "level": 11,
+              "cost": 5
+            },
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 12,
+              "cost": 4
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 13,
+              "cost": 4
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 15,
+              "cost": 8
+            },
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 17,
+              "cost": 6
+            },
+            {
+              "name": "Slowfall",
+              "source": "archetype",
+              "level": 19,
+              "cost": 10
+            }
+          ],
+          "perks": [
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "le skill Concentrazione hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Abile",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 slot anello disponibile",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Glass Cannon",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "Ogni giorno, 20% di annullare un attacco fisico o magico.",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            },
+            {
+              "name": "sblocca una skill di qualsiasi costo. Scrivi (skill 123)",
+              "tier": "minor",
+              "level": 11
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 12
+            },
+            {
+              "name": "Organizzato",
+              "tier": "major",
+              "level": 12
+            },
+            {
+              "name": "le skill Intelligenza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 13
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 14
+            },
+            {
+              "name": "Riposo Rigenerante",
+              "tier": "major",
+              "level": 14
+            },
+            {
+              "name": "+4 punti exp generali",
+              "tier": "minor",
+              "level": 15
+            },
+            {
+              "name": "+1 res e rd elettro e fuoco",
+              "tier": "minor",
+              "level": 16
+            },
+            {
+              "name": "Ira degli antichi 2",
+              "tier": "major",
+              "level": 16
+            },
+            {
+              "name": "+1 fortuna.",
+              "tier": "minor",
+              "level": 17
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 18
+            },
+            {
+              "name": "Sfuggente 2",
+              "tier": "major",
+              "level": 18
+            },
+            {
+              "name": "Quando dormi recuperi anche il 100% dei punti energia. Se eri già full en, hai +20% en al risveglio.",
+              "tier": "minor",
+              "level": 19
+            },
+            {
+              "name": "le skill Resistenza hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 20
+            },
+            {
+              "name": "Vita maggiore",
+              "tier": "major",
+              "level": 20
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Fioretto Telvanni (adamantio)",
+              "itemId": 5735
+            },
+            {
+              "slot": "armatura",
+              "name": "Armatura Telvanni (ossa)",
+              "itemId": 5774
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti da nobile",
+              "itemId": 5273
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "4 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Stregone Bandito",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "mago fuorilegge",
+          "expressedBy": "vestiti da ladro e competenze pragmatiche"
+        },
+        {
+          "axis": "artiglieria elementale",
+          "expressedBy": "Distruzione pura e staff Ne"
+        }
+      ],
+      "mustNot": [
+        "Evocazione",
+        "cura",
+        "armatura",
+        "azioni innate"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Apprendista",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Inviolabile 1",
+              "source": "core",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Raggio",
+              "source": "archetype",
+              "level": 1,
+              "cost": 3
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Bastone apprendista (Ne)",
+              "itemId": 5172
+            },
+            {
+              "slot": "veste",
+              "name": "Veste apprendista (Ne)",
+              "itemId": 648
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti da ladro",
+              "itemId": 5278
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Apprendista",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Tocco",
+              "source": "archetype",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Scorta di Mana 1",
+              "source": "core",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Gelo 1",
+              "source": "archetype",
+              "level": 2,
+              "cost": 3
+            },
+            {
+              "name": "Concentrato",
+              "source": "core",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Mistico 1",
+              "source": "core",
+              "level": 3,
+              "cost": 2
+            },
+            {
+              "name": "Fuoco 1",
+              "source": "archetype",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Elettricità 1",
+              "source": "archetype",
+              "level": 5,
+              "cost": 4
+            },
+            {
+              "name": "Cast Leggero 1",
+              "source": "core",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Raggio",
+              "source": "archetype",
+              "level": 7,
+              "cost": 4
+            },
+            {
+              "name": "Cast Leggero 2",
+              "source": "core",
+              "level": 8,
+              "cost": 4
+            },
+            {
+              "name": "Scorta di Mana 2",
+              "source": "core",
+              "level": 9,
+              "cost": 5
+            },
+            {
+              "name": "Mistico 2",
+              "source": "core",
+              "level": 10,
+              "cost": 3
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Migliore (1)",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "Nel combat, la prima azione di supporto fatta costa la metà delle risorse",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (4)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "Inizi il combat con 3 pa",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Abile",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "1 potere gratis per ogni 10 mana di incantesimo",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 tier danno",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Ira degli antichi 2",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "+1 slot non free",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Bastone qualificato (Ne)",
+              "itemId": 5180
+            },
+            {
+              "slot": "veste",
+              "name": "Veste qualificato (Ne)",
+              "itemId": 656
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti da ladro",
+              "itemId": 5278
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Imperiale",
+            "subrace": "Apprendista",
+            "allowed": [
+              "Bosmer",
+              "Dunmer",
+              "Orsimer",
+              "Altmer",
+              "Imperiale",
+              "Bretone",
+              "Redguard",
+              "Argoniano",
+              "Khajiit",
+              "Nord"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Inviolabile 1",
+              "source": "core",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Gelo 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Raggio",
+              "source": "archetype",
+              "level": 2,
+              "cost": 3
+            },
+            {
+              "name": "Mistico 1",
+              "source": "core",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Elettricità 1",
+              "source": "archetype",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Mistico 2",
+              "source": "core",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Scorta di Mana 1",
+              "source": "core",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Tocco",
+              "source": "archetype",
+              "level": 5,
+              "cost": 4
+            },
+            {
+              "name": "Concentrato",
+              "source": "core",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Fuoco 1",
+              "source": "archetype",
+              "level": 7,
+              "cost": 4
+            },
+            {
+              "name": "Cast Leggero 1",
+              "source": "core",
+              "level": 8,
+              "cost": 4
+            },
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 9,
+              "cost": 3
+            },
+            {
+              "name": "Scorta di Mana 2",
+              "source": "core",
+              "level": 10,
+              "cost": 5
+            },
+            {
+              "name": "Runa",
+              "source": "archetype",
+              "level": 12,
+              "cost": 8
+            },
+            {
+              "name": "Inviolabile 2",
+              "source": "core",
+              "level": 14,
+              "cost": 7
+            },
+            {
+              "name": "Sfera Esplosiva",
+              "source": "archetype",
+              "level": 16,
+              "cost": 9
+            },
+            {
+              "name": "Cast Leggero 2",
+              "source": "core",
+              "level": 18,
+              "cost": 7
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "1 potere gratis per ogni 10 mana di incantesimo",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Mana maggiore",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "sblocca una skill di qualsiasi costo. Scrivi (skill 123)",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Ira degli antichi 3",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Abile",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "Nel combat, la prima azione di supporto fatta costa la metà delle risorse",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 ai tiri concentrazione",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Ira degli antichi 2",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "le skill Concentrazione hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 slot anello disponibile",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Battlemage",
+              "tier": "major",
+              "level": 10
+            },
+            {
+              "name": "+1 slot orecchino disponibile",
+              "tier": "minor",
+              "level": 11
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 12
+            },
+            {
+              "name": "Organizzato",
+              "tier": "major",
+              "level": 12
+            },
+            {
+              "name": "+1 ai tiri resistenza",
+              "tier": "minor",
+              "level": 13
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 14
+            },
+            {
+              "name": "Riposo Rigenerante",
+              "tier": "major",
+              "level": 14
+            },
+            {
+              "name": "+4 punti exp generali",
+              "tier": "minor",
+              "level": 15
+            },
+            {
+              "name": "le skill Saggezza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 16
+            },
+            {
+              "name": "Potente (2)",
+              "tier": "major",
+              "level": 16
+            },
+            {
+              "name": "+1 fortuna.",
+              "tier": "minor",
+              "level": 17
+            },
+            {
+              "name": "Inizi il combat con 3 pa",
+              "tier": "minor",
+              "level": 18
+            },
+            {
+              "name": "Gregario",
+              "tier": "major",
+              "level": 18
+            },
+            {
+              "name": "Quando dormi recuperi anche il 100% dei punti energia. Se eri già full en, hai +20% en al risveglio.",
+              "tier": "minor",
+              "level": 19
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 20
+            },
+            {
+              "name": "Agile (3)",
+              "tier": "major",
+              "level": 20
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Bastone qualificato (Ne)",
+              "itemId": 5180
+            },
+            {
+              "slot": "veste",
+              "name": "Veste qualificato (Ne)",
+              "itemId": 656
+            },
+            {
+              "slot": "vestiti",
+              "name": "Vestiti da ladro",
+              "itemId": 5278
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "9 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Tamburo di Sanguine",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "ritmo corruttore",
+          "expressedBy": "Danza continua e perdita di PA"
+        },
+        {
+          "axis": "strumento vivente",
+          "expressedBy": "Bacchetta Deviatrice e Colpo Sonico"
+        }
+      ],
+      "mustNot": [
+        "equipment",
+        "Skill",
+        "competenceProfile",
+        "equipment",
+        "Skill",
+        "controllo mentale permanente",
+        "volo"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Danza continua"
+          ],
+          "statCurves": {
+            "pf": 18,
+            "mana": 16,
+            "energia": 7,
+            "potere": 5,
+            "pa": 10,
+            "ap": 0,
+            "tier": 4,
+            "attacco": 11,
+            "difesa": 10,
+            "res_contundente": 5,
+            "res_taglio": -2,
+            "res_perforante": -2,
+            "rd_fis": 1,
+            "res_fuoco": -2,
+            "res_gelo": -1,
+            "res_elettro": 0,
+            "rd_fuoco": 3,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Danza continua",
+            "Bacchetta Deviatrice",
+            "Colpo Sonico"
+          ],
+          "statCurves": {
+            "pf": 61,
+            "mana": 51,
+            "energia": 18,
+            "potere": 15,
+            "pa": 20,
+            "ap": 0,
+            "tier": 7,
+            "attacco": 38,
+            "difesa": 33,
+            "res_contundente": 5,
+            "res_taglio": -2,
+            "res_perforante": -2,
+            "rd_fis": 2,
+            "res_fuoco": -2,
+            "res_gelo": -1,
+            "res_elettro": 0,
+            "rd_fuoco": 3,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Danza continua",
+            "Bacchetta Deviatrice",
+            "Colpo Sonico"
+          ],
+          "statCurves": {
+            "pf": 108,
+            "mana": 89,
+            "energia": 31,
+            "potere": 27,
+            "pa": 32,
+            "ap": 0,
+            "tier": 11,
+            "attacco": 67,
+            "difesa": 58,
+            "res_contundente": 5,
+            "res_taglio": -2,
+            "res_perforante": -2,
+            "rd_fis": 4,
+            "res_fuoco": -2,
+            "res_gelo": -1,
+            "res_elettro": 0,
+            "rd_fuoco": 3,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "unit": "Verme Penico di Sanguine",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "verme di Sanguine",
+          "expressedBy": "identità grottesca e natura daedrica"
+        },
+        {
+          "axis": "presa terrestre",
+          "expressedBy": "Avvolgimento con Contundente e PA"
+        }
+      ],
+      "mustNot": [
+        "equipment",
+        "Skill",
+        "competenceProfile",
+        "equipment",
+        "Skill",
+        "volo",
+        "lore inventato complesso"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Avvolgimento di Sanguine"
+          ],
+          "statCurves": {
+            "pf": 16,
+            "mana": 16,
+            "energia": 7,
+            "potere": 5,
+            "pa": 10,
+            "ap": 0,
+            "tier": 4,
+            "attacco": 11,
+            "difesa": 10,
+            "res_contundente": 5,
+            "res_taglio": -2,
+            "res_perforante": -2,
+            "rd_fis": 1,
+            "res_fuoco": -2,
+            "res_gelo": -1,
+            "res_elettro": 0,
+            "rd_fuoco": 3,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Avvolgimento di Sanguine"
+          ],
+          "statCurves": {
+            "pf": 51,
+            "mana": 51,
+            "energia": 18,
+            "potere": 15,
+            "pa": 20,
+            "ap": 0,
+            "tier": 7,
+            "attacco": 38,
+            "difesa": 33,
+            "res_contundente": 5,
+            "res_taglio": -2,
+            "res_perforante": -2,
+            "rd_fis": 2,
+            "res_fuoco": -2,
+            "res_gelo": -1,
+            "res_elettro": 0,
+            "rd_fuoco": 3,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "",
+            "subrace": "",
+            "allowed": [],
+            "allAvailable": true
+          },
+          "skills": [],
+          "perks": [],
+          "equipment": [],
+          "innateActions": [
+            "Avvolgimento di Sanguine"
+          ],
+          "statCurves": {
+            "pf": 89,
+            "mana": 89,
+            "energia": 31,
+            "potere": 27,
+            "pa": 32,
+            "ap": 0,
+            "tier": 11,
+            "attacco": 67,
+            "difesa": 58,
+            "res_contundente": 5,
+            "res_taglio": -2,
+            "res_perforante": -2,
+            "rd_fis": 4,
+            "res_fuoco": -2,
+            "res_gelo": -1,
+            "res_elettro": 0,
+            "rd_fuoco": 3,
+            "rd_gelo": 0,
+            "rd_elettro": 0
+          },
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "unit": "Xivilai",
+      "status": "ready-for-human-approval",
+      "signatureAxes": [
+        {
+          "axis": "specie Xivilai",
+          "expressedBy": "razza autonoma senza ranghi Dremora"
+        },
+        {
+          "axis": "bruto arcano",
+          "expressedBy": "martello daedrico più Evocazione/Distruzione"
+        }
+      ],
+      "mustNot": [
+        "razza Dremora",
+        "razza mortale",
+        "scudo",
+        "azioni innate"
+      ],
+      "samples": [
+        {
+          "level": 1,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Xivilai",
+            "subrace": "",
+            "allowed": [
+              "Xivilai"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Inviolabile 1",
+              "source": "core",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Martello da guerra (daedrico)",
+              "itemId": 313
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": []
+        },
+        {
+          "level": 10,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Xivilai",
+            "subrace": "",
+            "allowed": [
+              "Xivilai"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Affondo",
+              "source": "archetype",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 1,
+              "cost": 2
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 2,
+              "cost": 4
+            },
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 2,
+              "cost": 2
+            },
+            {
+              "name": "Tocco",
+              "source": "archetype",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Concentrato",
+              "source": "core",
+              "level": 4,
+              "cost": 3
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Scorta di Mana 1",
+              "source": "core",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Più Danno 1",
+              "source": "archetype",
+              "level": 7,
+              "cost": 4
+            },
+            {
+              "name": "Cast Leggero 1",
+              "source": "core",
+              "level": 8,
+              "cost": 4
+            },
+            {
+              "name": "Mistico 1",
+              "source": "core",
+              "level": 9,
+              "cost": 3
+            },
+            {
+              "name": "Più Danno 2",
+              "source": "archetype",
+              "level": 10,
+              "cost": 5
+            }
+          ],
+          "perks": [
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "sblocca una skill di qualsiasi costo. Scrivi (skill 123)",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Maglie del destino",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 tier danno",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Superdotato",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "Inizi il combat con 3 pa",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Abile",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "1 potere gratis per ogni 10 mana di incantesimo",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "una volta a combat, hai +3 PA, instant",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Vitale (1)",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "+1 res e rd gelo e elettro",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Muletto",
+              "tier": "major",
+              "level": 10
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Martello da guerra (daedrico)",
+              "itemId": 313
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": []
+        },
+        {
+          "level": 20,
+          "variant": "final-batch-v2-1",
+          "race": {
+            "primary": "Xivilai",
+            "subrace": "",
+            "allowed": [
+              "Xivilai"
+            ],
+            "allAvailable": false
+          },
+          "skills": [
+            {
+              "name": "Scattino",
+              "source": "core",
+              "level": 1,
+              "cost": 3
+            },
+            {
+              "name": "Carica 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 4
+            },
+            {
+              "name": "Opportunità 1",
+              "source": "archetype",
+              "level": 1,
+              "cost": 0
+            },
+            {
+              "name": "Inviolabile 1",
+              "source": "core",
+              "level": 2,
+              "cost": 4
+            },
+            {
+              "name": "Affondo",
+              "source": "archetype",
+              "level": 3,
+              "cost": 2
+            },
+            {
+              "name": "Tocco",
+              "source": "archetype",
+              "level": 3,
+              "cost": 3
+            },
+            {
+              "name": "Mistico 1",
+              "source": "core",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Sbilancia",
+              "source": "archetype",
+              "level": 4,
+              "cost": 2
+            },
+            {
+              "name": "Energico 1",
+              "source": "core",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Ruota",
+              "source": "archetype",
+              "level": 5,
+              "cost": 2
+            },
+            {
+              "name": "Cast Leggero 1",
+              "source": "core",
+              "level": 6,
+              "cost": 4
+            },
+            {
+              "name": "Più Danno 1",
+              "source": "archetype",
+              "level": 7,
+              "cost": 4
+            },
+            {
+              "name": "Vitale 1",
+              "source": "core",
+              "level": 8,
+              "cost": 3
+            },
+            {
+              "name": "Più Danno 2",
+              "source": "archetype",
+              "level": 9,
+              "cost": 5
+            },
+            {
+              "name": "Energico 2",
+              "source": "core",
+              "level": 10,
+              "cost": 3
+            },
+            {
+              "name": "Cast Leggero 2",
+              "source": "core",
+              "level": 11,
+              "cost": 5
+            },
+            {
+              "name": "Recupera 1",
+              "source": "core",
+              "level": 12,
+              "cost": 4
+            },
+            {
+              "name": "Mistico 2",
+              "source": "core",
+              "level": 13,
+              "cost": 4
+            },
+            {
+              "name": "Vitale 2",
+              "source": "core",
+              "level": 14,
+              "cost": 4
+            },
+            {
+              "name": "Teleport",
+              "source": "archetype",
+              "level": 16,
+              "cost": 8
+            },
+            {
+              "name": "Doppio attacco 1",
+              "source": "archetype",
+              "level": 18,
+              "cost": 8
+            },
+            {
+              "name": "Concentrato",
+              "source": "core",
+              "level": 20,
+              "cost": 7
+            }
+          ],
+          "perks": [
+            {
+              "name": "1 potere gratis per ogni 10 mana di incantesimo",
+              "tier": "minor",
+              "level": 1
+            },
+            {
+              "name": "le skill Concentrazione hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 2
+            },
+            {
+              "name": "Glass Cannon",
+              "tier": "major",
+              "level": 2
+            },
+            {
+              "name": "Inizi il combat con 3 pa",
+              "tier": "minor",
+              "level": 3
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 4
+            },
+            {
+              "name": "Migliore (2)",
+              "tier": "major",
+              "level": 4
+            },
+            {
+              "name": "Sblocca 1 classe",
+              "tier": "minor",
+              "level": 5
+            },
+            {
+              "name": "+1 fortuna.",
+              "tier": "minor",
+              "level": 6
+            },
+            {
+              "name": "Maglie del destino",
+              "tier": "major",
+              "level": 6
+            },
+            {
+              "name": "+1 ai tiri concentrazione",
+              "tier": "minor",
+              "level": 7
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 8
+            },
+            {
+              "name": "Seconda Chance",
+              "tier": "major",
+              "level": 8
+            },
+            {
+              "name": "Nel combat, la prima azione di supporto fatta costa la metà delle risorse",
+              "tier": "minor",
+              "level": 9
+            },
+            {
+              "name": "estrarre da zaino costa 1 pa non 3",
+              "tier": "minor",
+              "level": 10
+            },
+            {
+              "name": "Potente (1)",
+              "tier": "major",
+              "level": 10
+            },
+            {
+              "name": "Se fai 1 a competenze, spendi 2 en per rerollare",
+              "tier": "minor",
+              "level": 11
+            },
+            {
+              "name": "le skill Velocità hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 12
+            },
+            {
+              "name": "Mana maggiore",
+              "tier": "major",
+              "level": 12
+            },
+            {
+              "name": "le skill Saggezza hanno +1 ogni 4 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 13
+            },
+            {
+              "name": "+1 ai tiri forza",
+              "tier": "minor",
+              "level": 14
+            },
+            {
+              "name": "Esperto (3)",
+              "tier": "major",
+              "level": 14
+            },
+            {
+              "name": "+1 res e rd elettro e fuoco",
+              "tier": "minor",
+              "level": 15
+            },
+            {
+              "name": "+1 slot anello disponibile",
+              "tier": "minor",
+              "level": 16
+            },
+            {
+              "name": "Potente (2)",
+              "tier": "major",
+              "level": 16
+            },
+            {
+              "name": "+25 mod peso equip",
+              "tier": "minor",
+              "level": 17
+            },
+            {
+              "name": "le skill Resistenza hanno +1 ogni 3 mod(aggiungi a extra)",
+              "tier": "minor",
+              "level": 18
+            },
+            {
+              "name": "Vita maggiore",
+              "tier": "major",
+              "level": 18
+            },
+            {
+              "name": "Quando dormi recuperi anche il 100% dei punti energia. Se eri già full en, hai +20% en al risveglio.",
+              "tier": "minor",
+              "level": 19
+            },
+            {
+              "name": "+1 caratteristica",
+              "tier": "minor",
+              "level": 20
+            },
+            {
+              "name": "Vitale (1)",
+              "tier": "major",
+              "level": 20
+            }
+          ],
+          "equipment": [
+            {
+              "slot": "arma",
+              "name": "Martello da guerra (daedrico)",
+              "itemId": 313
+            }
+          ],
+          "innateActions": [],
+          "statCurves": {},
+          "warnings": [
+            "1 PE generali restano disponibili: nessuna Skill configurata è acquistabile."
+          ]
+        }
+      ]
+    }
+  ]
+}

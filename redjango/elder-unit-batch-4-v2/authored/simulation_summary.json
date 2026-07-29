@@ -1,0 +1,330 @@
+{
+  "validation": {
+    "passed": 20,
+    "failed": 0,
+    "results": [
+      {
+        "unit": "Alto Stregone Telvanni",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\alto-stregone-telvanni.json"
+      },
+      {
+        "unit": "Buoyant Armiger",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\buoyant-armiger.json"
+      },
+      {
+        "unit": "Comandante della Legione Imperiale",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\comandante-della-legione-imperiale.json"
+      },
+      {
+        "unit": "Combattente Ashlander",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\combattente-ashlander.json"
+      },
+      {
+        "unit": "Giustiziere Thalmor",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\giustiziere-thalmor.json"
+      },
+      {
+        "unit": "Guardia Carovana",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\guardia-carovana.json"
+      },
+      {
+        "unit": "Mago da Battaglia Imperiale",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\mago-da-battaglia-imperiale.json"
+      },
+      {
+        "unit": "Operaio Kwama",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\operaio-kwama.json"
+      },
+      {
+        "unit": "Orso delle Caverne",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\orso-delle-caverne.json"
+      },
+      {
+        "unit": "Orso delle Nevi",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\orso-delle-nevi.json"
+      },
+      {
+        "unit": "Principe Dremora",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\principe-dremora.json"
+      },
+      {
+        "unit": "Sacerdote del Tribunale",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\sacerdote-del-tribunale.json"
+      },
+      {
+        "unit": "Scamp",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\scamp.json"
+      },
+      {
+        "unit": "Segugio di Xivilai",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\segugio-di-xivilai.json"
+      },
+      {
+        "unit": "Signore della Guerra Orco",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\signore-della-guerra-orco.json"
+      },
+      {
+        "unit": "Spettro",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\spettro.json"
+      },
+      {
+        "unit": "Spriggan Bruciato",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\spriggan-bruciato.json"
+      },
+      {
+        "unit": "Steam Centurion",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\steam-centurion.json"
+      },
+      {
+        "unit": "Troll del Gelo",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\troll-del-gelo.json"
+      },
+      {
+        "unit": "Troll",
+        "status": "needs-review",
+        "passed": true,
+        "errors": [],
+        "path": "C:\\Users\\alexo\\PycharmProjects\\ReDjango\\redjango\\elder-unit-batch-4-v2\\authored\\dossiers\\troll.json"
+      }
+    ]
+  },
+  "simulations": [
+    {
+      "unit": "Alto Stregone Telvanni",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Buoyant Armiger",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 24,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Comandante della Legione Imperiale",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 22,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Combattente Ashlander",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Giustiziere Thalmor",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 20,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Guardia Carovana",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 24,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Mago da Battaglia Imperiale",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 25,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Operaio Kwama",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Orso delle Caverne",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Orso delle Nevi",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Principe Dremora",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 24,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Sacerdote del Tribunale",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 22,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Scamp",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Segugio di Xivilai",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Signore della Guerra Orco",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 23,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Spettro",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Spriggan Bruciato",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Steam Centurion",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Troll del Gelo",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    },
+    {
+      "unit": "Troll",
+      "skipped": false,
+      "completed": 40,
+      "warnings": 0,
+      "previewErrors": 0,
+      "deterministic": true,
+      "decision": "ready-for-human-approval"
+    }
+  ]
+}
