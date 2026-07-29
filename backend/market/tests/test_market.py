@@ -7,10 +7,10 @@ from backend.core.defaults import V2_SETTING_DEFAULTS
 from backend.characters.models import Personaggio, Zaino
 from backend.core.api import ApiError
 from backend.core.models import Giocatore, Negozio, Oggetto, SettingDefinition
-from backend.market.config import GENERATION_PROFILES_KEY, GENERATOR_RULES_KEY, SHOP_TYPES_KEY, get_generation_profiles, get_generator_rules, get_market_locations, get_shop_type_definitions, validate_generation_profiles, validate_market_locations
+from backend.market.config import GENERATION_PROFILES_KEY, GENERATOR_RULES_KEY, SHOP_TYPES_KEY, get_generation_profiles, get_generator_rules, get_market_locations, get_shop_type_definitions, rarity_choices, validate_generation_profiles, validate_market_locations
 from backend.market.generator import generate_stock, parse_loot_levels
-from backend.market.selectors import market_overview
-from backend.market.services import assign_generation_profile, purchase, save_market_settings
+from backend.market.selectors import _exclusion_reasons, market_overview, rollable_rarity_values
+from backend.market.services import assign_generation_profile, preview_generation_profile, purchase, save_market_settings
 
 
 class MarketConfigurationTests(TestCase):
@@ -117,6 +117,55 @@ class MarketGeneratorTests(TestCase):
         self.assertEqual(generated.entries[0]["quantity"], 2)
         self.assertEqual(generated.entries[0]["unitPrice"], 150)
         self.assertEqual(generated.diagnostics["generationProfileKey"], "test-profile")
+
+
+class MarketRarityCoverageTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        for definition in V2_SETTING_DEFAULTS:
+            if definition["key"].startswith("mercato."):
+                SettingDefinition.objects.create(**definition, value=definition["default_value"])
+
+    def test_every_catalogue_rarity_except_unico_can_be_configured(self):
+        expected = [str(value) for value in Oggetto.Rarita.values if value != Oggetto.Rarita.UNICO]
+        self.assertEqual([choice["value"] for choice in rarity_choices()], expected)
+        for profile in get_generation_profiles()["profiles"]:
+            self.assertEqual(sorted(profile["rarityProbabilities"], key=int), expected)
+
+    def test_rarity_five_item_is_generated_when_the_profile_asks_for_it(self):
+        item = Oggetto.objects.create(nome="Reliquia", tipo_1="pozione", valore=100, rarita=5, lv_loot="1", modello=True)
+        category = {"key": "test", "inventoryMultiplier": 1, "itemTypeRanks": {"pozione": 0}}
+        rules = get_generator_rules()
+        profile = {"key": "leggendario", "rarityProbabilities": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 1}}
+        generated = generate_stock(seed="rarity5", category=category, level=1, region_key="", rules=rules, candidates=[item], generation_profile=profile)
+        self.assertTrue(any(entry["itemId"] == item.id for entry in generated.entries))
+
+    def test_item_without_rarity_is_skipped_instead_of_counting_as_common(self):
+        item = Oggetto.objects.create(nome="Senza rarità", tipo_1="pozione", valore=100, rarita=None, lv_loot="1", modello=True)
+        category = {"key": "test", "inventoryMultiplier": 1, "itemTypeRanks": {"pozione": 0}}
+        rules = get_generator_rules()
+        profile = {"key": "comune", "rarityProbabilities": {"1": 1, "2": 0, "3": 0, "4": 0, "5": 0}}
+        generated = generate_stock(seed="norarity", category=category, level=1, region_key="", rules=rules, candidates=[item], generation_profile=profile)
+        self.assertEqual(generated.entries, [])
+        self.assertIn("missingRarity", _exclusion_reasons(item, {"pozione"}, rollable_rarity_values()))
+
+    def test_rarity_without_probability_anywhere_is_reported_as_excluded(self):
+        profiles = deepcopy(get_generation_profiles())
+        for profile in profiles["profiles"]:
+            share = profile["rarityProbabilities"].pop("5")
+            profile["rarityProbabilities"]["1"] = round(profile["rarityProbabilities"]["1"] + share, 4)
+        SettingDefinition.objects.filter(key=GENERATION_PROFILES_KEY).update(value=profiles)
+        item = Oggetto.objects.create(nome="Irraggiungibile", tipo_1="pozione", valore=10, rarita=5, lv_loot="1", modello=True)
+        self.assertNotIn(5, rollable_rarity_values())
+        self.assertIn("unreachableRarity", _exclusion_reasons(item, {"pozione"}, rollable_rarity_values()))
+
+    def test_profile_preview_reports_a_requested_rarity_that_produced_nothing(self):
+        Oggetto.objects.create(nome="Solo comune", tipo_1="pozione", valore=10, rarita=1, lv_loot="1", modello=True)
+        preview = preview_generation_profile({"generationProfileKey": "standard", "categoryKey": "alchimista", "level": 1, "samples": 2})
+        rarity_five = next(entry for entry in preview["rarities"] if entry["rarity"] == "5")
+        self.assertGreater(rarity_five["configured"], 0)
+        self.assertEqual(rarity_five["produced"], 0)
+        self.assertGreater(rarity_five["unfulfilled"], 0)
 
 
 class MarketPurchaseTests(TestCase):

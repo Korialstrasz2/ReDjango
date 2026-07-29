@@ -121,8 +121,6 @@ CHARACTER_VALUE_GROUPS = (
         "Magia e conversioni",
         (
             "sifone_di_mana",
-            "en_per_mana",
-            "pa_per_mana",
             "ogni_en_x_mana",
             "ogni_pa_x_mana",
             "sconto_mana_per_potere",
@@ -208,8 +206,6 @@ TOTAL_LABELS = {
     "moltiplicatore_reagenti_livello_3": "Effetto reagenti livello 3",
     "moltiplicatore_reagenti_livello_4": "Effetto reagenti livello 4",
     "sifone_di_mana": "Sifone di mana",
-    "en_per_mana": "Energia per mana",
-    "pa_per_mana": "PA per mana",
     "ogni_en_x_mana": "Mana ogni N energia",
     "ogni_pa_x_mana": "Mana ogni N PA",
     "sconto_mana_per_potere": "Sconto mana per potere",

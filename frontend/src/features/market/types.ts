@@ -102,9 +102,26 @@ export type StockEligibility = {
   eligibleCount: number;
   excludedCount: number;
   rankedTypes: string[];
+  rollableRarities: number[];
   reasons: Array<{ key: string; label: string; count: number }>;
   samples: StockExclusionSample[];
   sampleLimit: number;
+};
+
+export type RarityChoice = { value: string; label: string };
+
+export type ProfilePreview = {
+  profileKey: string;
+  profileLabel: string;
+  categoryKey: string;
+  categoryLabel: string;
+  level: number;
+  samples: number;
+  requestedRolls: number;
+  fulfilledRolls: number;
+  distinctItems: number;
+  candidatePoolSize: number;
+  rarities: Array<{ rarity: string; configured: number; produced: number; unfulfilled: number; share: number }>;
 };
 
 export type MarketData = {
@@ -131,13 +148,14 @@ export type MarketData = {
     shopTypes?: ShopTypeConfiguration | null;
     generatorRules?: Record<string, unknown> | null;
     generationProfiles?: GenerationProfilesConfiguration | null;
+    rarityChoices?: RarityChoice[];
     itemTypes?: string[];
     limits: Record<string, number>;
   };
 };
 
 export type MarketActionData = {
-  market?: MarketData;
+  market?: MarketData & { profilePreview?: ProfilePreview | null };
   marketQuote?: { total: number };
 };
 

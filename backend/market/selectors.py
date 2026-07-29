@@ -4,7 +4,7 @@ from backend.characters.selectors import serialize_item
 from backend.core.models import Giocatore, Negozio, Oggetto
 from backend.core.security import effective_role, has_minimum_role
 
-from .config import configuration_payload, get_market_locations, get_shop_type_definitions, market_settings_payload, resolve_location
+from .config import configuration_payload, get_generation_profiles, get_generator_rules, get_market_locations, get_shop_type_definitions, market_settings_payload, resolve_location
 from .generator import parse_loot_levels
 
 # Mirrors the filters in generator.generate_stock. Kept as data so the reasons a
@@ -14,9 +14,29 @@ STOCK_EXCLUSION_REASONS = (
     ("archived", "Archiviato"),
     ("special", "Marcato speciale"),
     ("unique", "Rarità Unico"),
+    ("missingRarity", "Rarità non impostata"),
+    ("unreachableRarity", "Nessun profilo attivo estrae questa rarità"),
     ("noLootLevel", "lv_loot mancante o illeggibile"),
     ("unrankedType", "tipo_1 assente o non previsto da nessuna categoria di negozio"),
 )
+
+
+def rollable_rarity_values() -> set[int]:
+    """Rarities that at least one enabled profile can actually draw.
+
+    A rarity with probability 0 everywhere excludes its items as completely as a
+    missing lv_loot does, but the generator never says so. Computing it here is
+    what turns that into a reported reason instead of an invisible one.
+    """
+    profiles = get_generation_profiles()
+    enabled = [profile for profile in profiles["profiles"] if profile["enabled"]]
+    sources = [profile["rarityProbabilities"] for profile in enabled] or [get_generator_rules()["rarityProbabilities"]]
+    return {
+        int(rarity)
+        for probabilities in sources
+        for rarity, probability in probabilities.items()
+        if probability > 0
+    }
 
 
 def normalize_stock(value: object) -> dict:
@@ -100,12 +120,13 @@ def market_overview(giocatore: Giocatore, *, selected_shop_id: int | None = None
             "shopTypes": full_configuration["shopTypes"],
             "generatorRules": full_configuration["generatorRules"] if is_admin else None,
             "generationProfiles": full_configuration["generationProfiles"],
+            "rarityChoices": full_configuration["rarityChoices"],
             "itemTypes": sorted(configured_types | catalog_types, key=str.casefold),
         })
     return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canTuneGenerator": is_admin, "canEditGenerationProfiles": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
 
 
-def _exclusion_reasons(item: Oggetto, ranked_types: set[str]) -> list[str]:
+def _exclusion_reasons(item: Oggetto, ranked_types: set[str], rollable_rarities: set[int]) -> list[str]:
     reasons = []
     if not item.modello:
         reasons.append("notTemplate")
@@ -115,6 +136,10 @@ def _exclusion_reasons(item: Oggetto, ranked_types: set[str]) -> list[str]:
         reasons.append("special")
     if item.rarita == Oggetto.Rarita.UNICO:
         reasons.append("unique")
+    elif item.rarita is None:
+        reasons.append("missingRarity")
+    elif item.rarita not in rollable_rarities:
+        reasons.append("unreachableRarity")
     if not parse_loot_levels(item.lv_loot):
         reasons.append("noLootLevel")
     if item.tipo_1.strip() not in ranked_types:
@@ -135,6 +160,7 @@ def stock_eligibility_report(*, limit: int = 200) -> dict:
         for item_type, rank in definition["itemTypeRanks"].items()
         if rank < 5
     }
+    rollable_rarities = rollable_rarity_values()
     items = Oggetto.objects.only(
         "id", "nome", "modello", "archiviato", "archived_at", "speciale",
         "rarita", "lv_loot", "tipo_1",
@@ -144,7 +170,7 @@ def stock_eligibility_report(*, limit: int = 200) -> dict:
     counts = {key: 0 for key, _label in STOCK_EXCLUSION_REASONS}
     samples: list[dict] = []
     for item in items.iterator(chunk_size=2000):
-        reasons = _exclusion_reasons(item, ranked_types)
+        reasons = _exclusion_reasons(item, ranked_types, rollable_rarities)
         if not reasons:
             eligible += 1
             continue
@@ -157,6 +183,7 @@ def stock_eligibility_report(*, limit: int = 200) -> dict:
         "eligibleCount": eligible,
         "excludedCount": excluded,
         "rankedTypes": sorted(ranked_types),
+        "rollableRarities": sorted(rollable_rarities),
         "reasons": [
             {"key": key, "label": label, "count": counts[key]}
             for key, label in STOCK_EXCLUSION_REASONS

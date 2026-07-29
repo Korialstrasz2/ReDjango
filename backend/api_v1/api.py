@@ -152,6 +152,7 @@ from backend.market.services import (
     create_batch as create_market_batch,
     preview_batch as preview_market_batch,
     preview_generation as preview_market_generation,
+    preview_generation_profile as preview_market_generation_profile,
     purchase as purchase_from_market,
     quote_purchase as quote_market_purchase,
     regenerate_shop as regenerate_market_shop,
@@ -1200,6 +1201,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             require_game_manager(user, giocatore)
             data = {"market": {"preview": preview_market_generation(payload.get("values", {}))}}
             message = "Anteprima dello stock pronta."
+        elif action == "market.profile.preview":
+            require_game_manager(user, giocatore)
+            data = {"market": {"profilePreview": preview_market_generation_profile(payload.get("values", {}))}}
+            message = "Anteprima del profilo pronta."
         elif action == "market.shop.save":
             shop, created = save_market_shop(user, giocatore, payload.get("values", {}))
             data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id, "created": created}}

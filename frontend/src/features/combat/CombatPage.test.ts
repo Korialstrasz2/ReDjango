@@ -7,6 +7,7 @@ import {
   manaForEffect,
   persistentCombatButtonIds,
   spellCastCosts,
+  spellManaBreakdown,
   toggledActionTags,
 } from "./CombatPage";
 import {
@@ -17,6 +18,15 @@ import {
 } from "./AttackPanel";
 
 const EMPTY = { pf: 0, mana: 0, energia: 0, potere: 0, pa: 0, stanchezza: 0 };
+const MIXED_SPELL = {
+  baseMana: 15,
+  effectPerMana: 1 / 3,
+  minimumMana: 0,
+  effectUnit: "turni",
+  formula: "Turni = max(0, (Mana - 15) × 0.333)",
+  costSummary: "15 Mana fissi più 3 Mana per turni",
+  fixedCosts: { ...EMPTY, energia: 2, pa: 1 },
+};
 
 describe("combat quick-action effect conversion", () => {
   it("uses one Mana for each effect point on ordinary actions", () => {
@@ -30,7 +40,25 @@ describe("combat quick-action effect conversion", () => {
       minimumMana: 8,
       effectUnit: "danni",
       formula: "Danni = max(0, (Mana - 5) × 2)",
+      costSummary: "",
+      fixedCosts: { ...EMPTY },
     })).toBe(10);
+  });
+
+  it("keeps the fixed Mana separate from the Mana bought with the effect", () => {
+    expect(spellManaBreakdown(4, MIXED_SPELL)).toEqual({
+      fixedMana: 15,
+      variableMana: 12, // 4 turni × 3 Mana
+      requiredMana: 27,
+    });
+  });
+
+  it("charges only the fixed Mana when the effect is zero", () => {
+    expect(spellManaBreakdown(0, MIXED_SPELL)).toMatchObject({ fixedMana: 15, requiredMana: 15 });
+  });
+
+  it("adds Mana declared by hand on the action to the fixed part", () => {
+    expect(spellManaBreakdown(0, MIXED_SPELL, 5)).toMatchObject({ fixedMana: 20, requiredMana: 20 });
   });
 });
 
@@ -73,6 +101,26 @@ describe("spell costs of the original rules", () => {
   it("skips a conversion the character cannot perform", () => {
     expect(spellCastCosts({ ...EMPTY }, 12, 0, 0, { ...economy, manaPerEnergy: 0, manaPerActionPoint: 0 }))
       .toMatchObject({ mana: 12, energia: 0, pa: 0 });
+  });
+
+  it("adds the fixed costs of the spell on top of the converted ones", () => {
+    expect(spellCastCosts({ ...EMPTY, pf: 3, energia: 2, pa: 1, stanchezza: 4 }, 20, 0, 0, economy)).toEqual({
+      pf: 3, // solo fisso, nessuna conversione
+      mana: 20,
+      energia: 7, // 20 / 4 convertiti più 2 fissi
+      potere: 0,
+      pa: 5, // ceil(20 / 5) più 1 fisso
+      stanchezza: 4,
+    });
+  });
+
+  it("never converts the fixed costs a second time when Potere discounts the cast", () => {
+    expect(spellCastCosts({ ...EMPTY, energia: 2, pa: 1 }, 20, 3, 2, economy)).toMatchObject({
+      mana: 10,
+      energia: 7,
+      pa: 1, // la conversione si azzera con lo sconto, il costo fisso resta
+      potere: 3,
+    });
   });
 });
 

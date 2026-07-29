@@ -609,9 +609,15 @@ class SpellDefinition(V2Model):
     tier = models.CharField(max_length=24, choices=TIER_CHOICES, default=TIER_BASE)
     range_text = models.CharField(max_length=160, blank=True)
     effect_unit = models.CharField(max_length=120, default="Effetto")
+    # Mana fisso pagato a ogni lancio, indipendente dall'intensità: è la parte
+    # "15 Mana" di una formula come "15 Mana più 3 Mana per effetto". Concorre
+    # alla conversione in Energia e PA esattamente come il Mana variabile.
     base_mana = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     effect_per_mana = models.DecimalField(max_digits=12, decimal_places=6, default=1)
     minimum_mana = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    # Costi fissi in altre risorse (pf, energia, potere, pa, stanchezza) pagati a
+    # ogni lancio e sommati ai costi convertiti dal Mana, senza essere riconvertiti.
+    fixed_costs = models.JSONField(default=dict, blank=True)
     rounding = models.CharField(max_length=24, choices=ROUNDING_CHOICES, default=ROUNDING_NONE)
     legacy_formula = models.CharField(max_length=255, blank=True)
     cost_notes = models.TextField(blank=True)

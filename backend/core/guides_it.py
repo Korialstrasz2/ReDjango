@@ -97,10 +97,8 @@ CHARACTER_VARIABLE_GROUPS = (
         "Mana e conversioni magiche",
         (
             ("sifone_di_mana", "Sifone di Mana", "Percentuale del Mana speso che il regolamento originario accumula nel sifone, arrotondata per difetto, per un successivo recupero."),
-            ("en_per_mana", "Energia per Mana", "Rapporto diretto Energia/Mana conservato per le conversioni del regolamento originario; l'anteprima magie v2 usa invece Ogni EN per X Mana."),
-            ("pa_per_mana", "PA per Mana", "Rapporto diretto PA/Mana conservato per le conversioni del regolamento originario; l'anteprima magie v2 usa invece Ogni PA per X Mana."),
-            ("ogni_en_x_mana", "Ogni EN per X Mana", "Quantità di Mana proiettato che costa 1 Energia nell'anteprima magie; il costo viene arrotondato per eccesso."),
-            ("ogni_pa_x_mana", "Ogni PA per X Mana", "Quantità di Mana proiettato che costa 1 PA nell'anteprima magie; il costo viene arrotondato per eccesso."),
+            ("ogni_en_x_mana", "Mana ogni N energia", "Quantità di Mana richiesto che costa 1 Energia quando lanci una magia; il costo viene arrotondato per eccesso."),
+            ("ogni_pa_x_mana", "Mana ogni N PA", "Quantità di Mana richiesto che costa 1 PA quando lanci una magia; il costo viene arrotondato per eccesso."),
             ("sconto_mana_per_potere", "Sconto Mana per Potere", "Mana sottratto al requisito della magia per ogni punto di Potere."),
             ("sconto_pa_per_potere", "Sconto PA per Potere", "PA sottratti al costo della magia per ogni punto di Potere."),
         ),
@@ -913,7 +911,7 @@ V2_GUIDE_DEFAULTS = [
             _difference_warning(
                 "Alcune variabili sono calcolate e mostrate ma non ancora spese automaticamente: i PA non hanno uno "
                 "storico di spesa persistente lato server, l'anteprima degli incantesimi non consuma risorse, e "
-                "Sifone di Mana, en_per_mana e pa_per_mana restano valori compatibili con Elder senza automazione attiva."
+                "il Sifone di Mana resta un valore compatibile con Elder senza automazione attiva."
             ),
         ),
     },

@@ -5970,6 +5970,14 @@
             "title": "Minimummana",
             "type": "number"
           },
+          "fixedCosts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Fixedcosts",
+            "type": "object"
+          },
           "rounding": {
             "title": "Rounding",
             "type": "string"
@@ -5990,6 +5998,11 @@
           },
           "formula": {
             "title": "Formula",
+            "type": "string"
+          },
+          "costSummary": {
+            "default": "",
+            "title": "Costsummary",
             "type": "string"
           },
           "combatConfiguration": {
@@ -6581,6 +6594,16 @@
             "title": "Effectunit",
             "type": "string"
           },
+          "fixedMana": {
+            "default": 0,
+            "title": "Fixedmana",
+            "type": "number"
+          },
+          "variableMana": {
+            "default": 0,
+            "title": "Variablemana",
+            "type": "number"
+          },
           "requiredManaBeforeDiscounts": {
             "title": "Requiredmanabeforediscounts",
             "type": "integer"
@@ -6588,6 +6611,14 @@
           "powerConsidered": {
             "title": "Powerconsidered",
             "type": "number"
+          },
+          "fixedCosts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Fixedcosts",
+            "type": "object"
           },
           "resourceOptions": {
             "additionalProperties": {
@@ -6602,6 +6633,19 @@
             },
             "title": "Resourceoptions",
             "type": "object"
+          },
+          "costs": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Costs",
+            "type": "object"
+          },
+          "costSummary": {
+            "default": "",
+            "title": "Costsummary",
+            "type": "string"
           },
           "spendsResources": {
             "default": false,

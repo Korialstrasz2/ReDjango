@@ -2509,6 +2509,13 @@ export interface components {
              * @default 0
              */
             minimumMana: number;
+            /**
+             * Fixedcosts
+             * @default {}
+             */
+            fixedCosts: {
+                [key: string]: number;
+            };
             /** Rounding */
             rounding: string;
             /** Roundinglabel */
@@ -2525,6 +2532,11 @@ export interface components {
             costNotes: string;
             /** Formula */
             formula: string;
+            /**
+             * Costsummary
+             * @default
+             */
+            costSummary: string;
             /**
              * Combatconfiguration
              * @default {}
@@ -2730,14 +2742,43 @@ export interface components {
             projectedEffect: number;
             /** Effectunit */
             effectUnit: string;
+            /**
+             * Fixedmana
+             * @default 0
+             */
+            fixedMana: number;
+            /**
+             * Variablemana
+             * @default 0
+             */
+            variableMana: number;
             /** Requiredmanabeforediscounts */
             requiredManaBeforeDiscounts: number;
             /** Powerconsidered */
             powerConsidered: number;
+            /**
+             * Fixedcosts
+             * @default {}
+             */
+            fixedCosts: {
+                [key: string]: number;
+            };
             /** Resourceoptions */
             resourceOptions: {
                 [key: string]: number | null;
             };
+            /**
+             * Costs
+             * @default {}
+             */
+            costs: {
+                [key: string]: number;
+            };
+            /**
+             * Costsummary
+             * @default
+             */
+            costSummary: string;
             /**
              * Spendsresources
              * @default false

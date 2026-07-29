@@ -61,11 +61,12 @@ OPERATION_TYPES = {
     "cap": "cap",
     "set": "set",
 }
+# Elder split every magic ratio into an Ordine and a Caos variant; ReDjango keeps
+# a single unified ratio. Both variants therefore land on the same target and the
+# resulting duplicate operations must be collapsed, or each skill tier would apply
+# twice. en_per_mana/pa_per_mana are absent on purpose: Elder deleted their
+# formulas in migration 0118 and no rule reads them any more.
 COLLAPSED_MAGIC_TARGETS = {
-    "en_per_mana_ordine": "en_per_mana",
-    "en_per_mana_caos": "en_per_mana",
-    "pa_per_mana_ordine": "pa_per_mana",
-    "pa_per_mana_caos": "pa_per_mana",
     "ogni_en_x_mana_ordine": "ogni_en_x_mana",
     "ogni_en_x_mana_caos": "ogni_en_x_mana",
     "ogni_pa_x_mana_ordine": "ogni_pa_x_mana",
@@ -581,6 +582,22 @@ def _structured_active_costs(row: dict[str, Any], blockers: list[str]) -> dict[s
     return costs
 
 
+def _merged_collapsed_value(existing: str, incoming: str) -> str:
+    """Merge the Ordine and Caos halves of one collapsed magic ratio.
+
+    They are almost always identical; when Elder gave them different numbers the
+    unified ratio takes their average, which is the same rule the character
+    importer applies to manually written Elder effects.
+    """
+    if existing == incoming:
+        return existing
+    try:
+        average = (Decimal(existing) + Decimal(incoming)) / 2
+    except (ArithmeticError, ValueError):
+        return f"(({existing}) + ({incoming})) / 2"
+    return format(average.normalize(), "f")
+
+
 def _passive(row: dict[str, Any], blockers: list[str], warnings: list[str]) -> list[dict[str, Any]]:
     payload = _json_decode(row.get("effetto_proposto"))
     if not isinstance(payload, dict) or payload.get("tipo") in (None, "nessuno"):
@@ -590,6 +607,7 @@ def _passive(row: dict[str, Any], blockers: list[str], warnings: list[str]) -> l
         return []
     extra = payload["effetto_extra"]
     operations: list[dict[str, str]] = []
+    collapsed_slots: dict[tuple[str, str], int] = {}
     for operation in extra.get("effetti") or []:
         if not isinstance(operation, dict):
             blockers.append("passive_operation_invalid")
@@ -604,10 +622,23 @@ def _passive(row: dict[str, Any], blockers: list[str], warnings: list[str]) -> l
             blockers.append("passive_operation_unsupported")
         if not value:
             blockers.append("passive_value_missing")
-        if target in effect_target_values() and mapped_operation and value:
+        if not (target in effect_target_values() and mapped_operation and value):
+            continue
+        if raw_target not in COLLAPSED_MAGIC_TARGETS:
             operations.append(
                 {"target": target, "operation": mapped_operation, "value": value, "condition": ""}
             )
+            continue
+        # Ordine and Caos both collapse onto one ReDjango target: merge them into a
+        # single operation instead of applying the same bonus twice.
+        slot = collapsed_slots.get((target, mapped_operation))
+        if slot is None:
+            collapsed_slots[(target, mapped_operation)] = len(operations)
+            operations.append(
+                {"target": target, "operation": mapped_operation, "value": value, "condition": ""}
+            )
+        else:
+            operations[slot]["value"] = _merged_collapsed_value(operations[slot]["value"], value)
     if not operations:
         blockers.append("passive_has_no_valid_operations")
         return []

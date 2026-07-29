@@ -29,9 +29,14 @@ from backend.characters.models import (
     Zaino,
 )
 from backend.characters.services.custom_effects import EFFECT_ICONS
-from backend.characters.services.refresh_personaggio import normalize_stat_key, refresh_personaggio
-from backend.core.models import DatiCampagna, Giocatore, Oggetto, Skill
+from backend.characters.services.refresh_personaggio import (
+    DEFAULT_PROFILE_NAME,
+    normalize_stat_key,
+    refresh_personaggio,
+)
+from backend.core.models import DatiCampagna, Giocatore, GlobalModifiers, Oggetto, Skill
 from backend.core.skill_services import _create_passive_instances
+from backend.core.spell_economy_repair import redundant_manual_operation, skill_derived_spell_economy
 from backend.media_library.models import DatiMappa, ImageCategory, UploadedImage
 
 
@@ -49,15 +54,23 @@ APPEARANCE_KEYS = {88: "master", 111: "illaoi", 149: "rhyss", 153: "razirr", 211
 SENTINELS = {"", "none", "null", "vuoto", "empty", "assente", "false"}
 NOTE_REPORT_START = "[Rapporto importazione Elder Django — INIZIO]"
 NOTE_REPORT_END = "[Rapporto importazione Elder Django — FINE]"
+# Elder's Ordine/Caos ratio pairs collapse onto a single ReDjango target, so the
+# two halves are merged into one operation instead of being applied twice.
+# en_per_mana/pa_per_mana are deliberately absent: Elder deleted their formulas in
+# migration 0118 and nothing has read them since.
 COLLAPSED_MAGIC_TARGETS = {
-    "en_per_mana_ordine": "en_per_mana",
-    "en_per_mana_caos": "en_per_mana",
-    "pa_per_mana_ordine": "pa_per_mana",
-    "pa_per_mana_caos": "pa_per_mana",
     "ogni_en_x_mana_ordine": "ogni_en_x_mana",
     "ogni_en_x_mana_caos": "ogni_en_x_mana",
     "ogni_pa_x_mana_ordine": "ogni_pa_x_mana",
     "ogni_pa_x_mana_caos": "ogni_pa_x_mana",
+}
+# Per-character starting values Elder stored on the NPC itself. The Ordine and Caos
+# halves are averaged, matching how their bonuses collapse onto one unified ratio.
+MAGIC_BASE_FIELDS = {
+    "ogni_en_x_mana": ("ogni_en_x_mana_ordine_base", "ogni_en_x_mana_caos_base"),
+    "ogni_pa_x_mana": ("ogni_pa_x_mana_ordine_base", "ogni_pa_x_mana_caos_base"),
+    "sconto_mana_per_potere": ("sconto_mana_per_potere_base",),
+    "sconto_pa_per_potere": ("sconto_pa_per_potere_base",),
 }
 ALCHEMY_MULTIPLIER_TARGETS = {
     "moltiplicatore_rossi": "moltiplicatore_reagenti_rossi",
@@ -678,21 +691,68 @@ class ElderCharacterImporter:
         ])
         return effect
 
+    def magic_base_operations(self, source: sqlite3.Row) -> list[dict[str, str]]:
+        """Carry over per-character magic bases that differ from the ReD global base.
+
+        Elder let every character override the starting value of its magic ratios;
+        ReDjango derives them from one shared profile. The difference is imported as
+        an explicit effect so the cast cost still matches the original character.
+        """
+        global_base = _json(
+            GlobalModifiers.objects.filter(name=DEFAULT_PROFILE_NAME).values_list("value_float", flat=True).first(),
+            {},
+        )
+        operations = []
+        for target, source_fields in MAGIC_BASE_FIELDS.items():
+            values = [value for field in source_fields if (value := _number(source[field])) is not None]
+            if not values:
+                continue
+            elder_base = sum(values) / len(values)
+            red_base = _number(global_base.get(target)) or 0
+            delta = round(elder_base - red_base, 8)
+            if delta:
+                operations.append({
+                    "target": target,
+                    "operation": "add" if delta > 0 else "subtract",
+                    "value": str(abs(delta)),
+                })
+        return operations
+
     def import_effects(self, source: sqlite3.Row, character: Personaggio, source_alchemy: sqlite3.Row | None) -> int:
         active = _json(source["act"], {})
         raw_effects = active.get("effetti_extra", []) if isinstance(active, dict) else []
         imported = 0
         used_markers = set()
+        # Elder had no automatic skill passives, so players tracked their magic
+        # bonuses with a hand-written effect summing every tier. ReDjango derives
+        # those from the owned skills; re-importing the manual copy would count
+        # them twice, so an operation matching the skill total is dropped.
+        skill_totals = skill_derived_spell_economy(character)
         for index, raw_effect in enumerate(raw_effects if isinstance(raw_effects, list) else [], start=1):
             if not isinstance(raw_effect, dict):
                 continue
             marker = f"Elder Django #{index:03d}"
-            used_markers.add(marker)
             operations, skipped = converted_effect_operations(raw_effect)
             self.skipped_operations.extend(
                 {"character": character.nome, "effect": raw_effect.get("nome"), **entry}
                 for entry in skipped
             )
+            kept = [
+                operation
+                for operation in operations
+                if not redundant_manual_operation(
+                    operation["target"], operation["operation"], operation["value"], skill_totals
+                )
+            ]
+            if operations and not kept:
+                self.warnings.append({
+                    "type": "manual_effect_already_granted_by_skills",
+                    "character": character.nome,
+                    "effect": raw_effect.get("nome"),
+                })
+                continue
+            operations = kept
+            used_markers.add(marker)
             self.upsert_custom_effect(
                 character,
                 marker=marker,
@@ -729,6 +789,27 @@ class ElderCharacterImporter:
             imported += 1
         else:
             EffettoPersonalizzato.objects.filter(personaggio=character, origine__startswith="Elder Django · alchimia").delete()
+
+        base_operations = self.magic_base_operations(source)
+        if base_operations:
+            self.upsert_custom_effect(
+                character,
+                marker="Elder Django · basi magiche",
+                name="Basi magiche Elder Django",
+                description=(
+                    "Scarto fra le basi magiche personali del personaggio Elder e la base globale ReD, "
+                    "senza il quale il costo degli incantesimi non coincide con quello originario."
+                ),
+                source_origin="Basi personaggio",
+                icon="runa",
+                operations=base_operations,
+                order=702,
+            )
+            imported += 1
+        else:
+            EffettoPersonalizzato.objects.filter(
+                personaggio=character, origine__startswith="Elder Django · basi magiche"
+            ).delete()
 
         npc_operations = []
         for source_field, target in (("attacco_npc", "attacco"), ("difesa_npc", "difesa")):

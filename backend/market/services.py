@@ -79,6 +79,78 @@ def preview_generation(values: dict) -> dict:
     return {"shop": detail, "diagnostics": diagnostics}
 
 
+def preview_generation_profile(values: dict) -> dict:
+    """Roll a profile several times without saving, and report what came out.
+
+    The eligibility report explains which items can never be picked; this
+    answers the other half of the question - given the rarities and levels that
+    actually exist, what mix does this profile really produce. A single shop is
+    too noisy to tune against, so the sample is averaged over several seeds.
+    """
+    profile = _generation_profile(str(values.get("generationProfileKey", "")).strip())
+    rules = get_generator_rules()
+    categories = [item for item in get_shop_type_definitions()["types"] if item["enabled"]]
+    if not categories:
+        raise ApiError("market.category_not_found", "Configura almeno un tipo di negozio attivo.", "categoryKey")
+    requested_category = str(values.get("categoryKey", "")).strip()
+    category = next((item for item in categories if item["key"] == requested_category), categories[0])
+    try:
+        level = int(values.get("level", rules["minLevel"]))
+    except (TypeError, ValueError) as exc:
+        raise ApiError("market.level_invalid", "Livello non valido.", "level") from exc
+    if not rules["minLevel"] <= level <= rules["maxLevel"]:
+        raise ApiError("market.level_invalid", f"Il livello deve essere tra {rules['minLevel']} e {rules['maxLevel']}.", "level")
+    samples = max(1, min(10, int(values.get("samples", 5) or 5)))
+    region_key = str(values.get("regionKey", "")).strip()
+
+    candidates = list(
+        Oggetto.objects.filter(
+            modello=True, archiviato=False, archived_at__isnull=True, speciale=False,
+        ).exclude(rarita=Oggetto.Rarita.UNICO)
+    )
+    requested = fulfilled = 0
+    produced: dict[str, int] = {}
+    unfulfilled: dict[str, int] = {}
+    distinct_items: set[int] = set()
+    pool_size = 0
+    for index in range(samples):
+        generated = generate_stock(
+            seed=f"profile-preview-{profile['key']}-{category['key']}-{level}-{index}",
+            category=category, level=level, region_key=region_key, rules=rules,
+            candidates=candidates, generation_profile=profile,
+        )
+        diagnostics = generated.diagnostics
+        requested += diagnostics["requestedRolls"]
+        fulfilled += diagnostics["fulfilledRolls"]
+        pool_size = diagnostics["candidatePoolSize"]
+        for rarity, count in diagnostics["rarityMix"].items():
+            produced[rarity] = produced.get(rarity, 0) + count
+        for key, count in diagnostics["missingByItemType"].items():
+            if key.startswith("rarity:"):
+                rarity = key.split(":", 1)[1]
+                unfulfilled[rarity] = unfulfilled.get(rarity, 0) + count
+        distinct_items.update(entry["itemId"] for entry in generated.entries)
+
+    rarities = sorted(profile["rarityProbabilities"], key=int)
+    return {
+        "profileKey": profile["key"], "profileLabel": profile["label"],
+        "categoryKey": category["key"], "categoryLabel": category["label"],
+        "level": level, "samples": samples,
+        "requestedRolls": requested, "fulfilledRolls": fulfilled,
+        "distinctItems": len(distinct_items), "candidatePoolSize": pool_size,
+        "rarities": [
+            {
+                "rarity": rarity,
+                "configured": profile["rarityProbabilities"][rarity],
+                "produced": produced.get(rarity, 0),
+                "unfulfilled": unfulfilled.get(rarity, 0),
+                "share": round(produced.get(rarity, 0) / fulfilled, 4) if fulfilled else 0,
+            }
+            for rarity in rarities
+        ],
+    }
+
+
 @transaction.atomic
 def save_shop(user, giocatore: Giocatore, values: dict) -> tuple[Negozio, bool]:
     require_game_manager(user, giocatore)

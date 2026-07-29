@@ -17,6 +17,7 @@ import type { AttackResult, Axial, CombatMap, CombatResource, CombatWorkspace, M
 
 const HEX_COLOR_PRESETS = ["#c96e3f", "#d7a63d", "#779447", "#3f8c78", "#397fa9", "#545bb2", "#8755a5", "#b64f78", "#8b6550", "#d8d1b8"] as const;
 const EMPTY_COSTS = { pf: 0, mana: 0, energia: 0, potere: 0, pa: 0, stanchezza: 0 };
+const FIXED_COST_KEYS = Object.keys(EMPTY_COSTS);
 const EMPTY_SPELL_ECONOMY: SpellEconomy = { manaDiscountPerPower: 0, actionPointDiscountPerPower: 0, manaPerEnergy: 0, manaPerActionPoint: 0 };
 
 /** "no tag" non viene mai salvato: appartiene a ogni azione rimasta senza etichette. */
@@ -25,8 +26,16 @@ export const ACTION_TAGS = ["preferito", "incantesimo", "utility", "combat", "no
 export const STORABLE_ACTION_TAGS = ACTION_TAGS.filter((tag) => tag !== UNTAGGED_ACTION_TAG);
 export const DEFAULT_ACTION_TAG_FILTERS = ["preferito", "combat", UNTAGGED_ACTION_TAG];
 
+/**
+ * Un incantesimo può costare solo Mana per effetto ("2 Mana per effetto") oppure
+ * una parte fissa più una variabile ("15 Mana più 3 Mana per effetto"). `baseMana`
+ * è la parte fissa e concorre alla conversione in Energia e PA; `fixedCosts`
+ * raccoglie invece i costi fissi nelle altre risorse, che si sommano senza essere
+ * convertiti.
+ */
 type SpellFormula = {
   baseMana: number; effectPerMana: number; minimumMana: number; effectUnit: string; formula: string;
+  costSummary: string; fixedCosts: Record<string, number>;
 };
 type ActiveOption = {
   key: string; name: string; description: string; costs: Record<string, number>;
@@ -71,13 +80,22 @@ function normalizedSpell(raw: unknown): SpellFormula | undefined {
     minimumMana: Math.max(0, Number(values.minimumMana || 0)),
     effectUnit: String(values.effectUnit || "effetto"),
     formula: String(values.formula || ""),
+    costSummary: String(values.costSummary || ""),
+    fixedCosts: normalizedCosts(values.fixedCosts),
   };
 }
 
-export function manaForEffect(effect: number, spell?: SpellFormula) {
+/** Mana fisso, Mana comprato con l'effetto e totale richiesto, tenuti distinti. */
+export function spellManaBreakdown(effect: number, spell?: SpellFormula, extraFixedMana = 0) {
   const normalizedEffect = Math.max(0, Math.round(effect || 0));
-  if (!spell) return normalizedEffect;
-  return Math.ceil(Math.max(spell.minimumMana, spell.baseMana + normalizedEffect / spell.effectPerMana));
+  const fixedMana = Math.max(0, spell?.baseMana || 0) + Math.max(0, Math.round(extraFixedMana || 0));
+  const variableMana = spell ? normalizedEffect / spell.effectPerMana : normalizedEffect;
+  const requiredMana = Math.ceil(Math.max(spell?.minimumMana || 0, fixedMana + variableMana));
+  return { fixedMana, variableMana, requiredMana };
+}
+
+export function manaForEffect(effect: number, spell?: SpellFormula, extraFixedMana = 0) {
+  return spellManaBreakdown(effect, spell, extraFixedMana).requiredMana;
 }
 
 /** Etichette mostrate per un'azione: senza etichette salvate vale "no tag". */
@@ -102,10 +120,12 @@ export function actionMatchesTagFilters(tags: string[], filters: string[]): bool
  * Costi di un incantesimo secondo il regolamento originario: Mana, Energia e PA
  * si pagano insieme. Energia e PA nascono dal Mana richiesto prima degli sconti,
  * il Potere totale (usato più gratuito) sconta soltanto Mana e PA, e solo il
- * Potere usato viene speso davvero.
+ * Potere usato viene speso davvero. I costi fissi dell'incantesimo si sommano ai
+ * valori convertiti: non li sostituiscono e non vengono riconvertiti a loro volta.
+ * `fixedCosts.mana` non compare qui perché è già dentro `requiredMana`.
  */
 export function spellCastCosts(
-  baseCosts: Record<string, number>,
+  fixedCosts: Record<string, number>,
   requiredMana: number,
   powerUsed: number,
   freePower: number,
@@ -114,15 +134,17 @@ export function spellCastCosts(
   const mana = Math.max(0, Math.round(requiredMana || 0));
   const spentPower = Math.max(0, Math.round(powerUsed || 0));
   const totalPower = spentPower + Math.max(0, Math.round(freePower || 0));
+  const fixed = (key: string) => Math.max(0, Math.round(fixedCosts?.[key] || 0));
   const actionPoints = economy.manaPerActionPoint > 0
     ? Math.ceil(Math.max(0, mana / economy.manaPerActionPoint - totalPower * economy.actionPointDiscountPerPower))
     : 0;
   return {
-    ...baseCosts,
+    pf: fixed("pf"),
     mana: Math.ceil(Math.max(0, mana - totalPower * economy.manaDiscountPerPower)),
-    energia: economy.manaPerEnergy > 0 ? Math.ceil(mana / economy.manaPerEnergy) : 0,
-    potere: spentPower,
-    pa: actionPoints,
+    energia: (economy.manaPerEnergy > 0 ? Math.ceil(mana / economy.manaPerEnergy) : 0) + fixed("energia"),
+    potere: spentPower + fixed("potere"),
+    pa: actionPoints + fixed("pa"),
+    stanchezza: fixed("stanchezza"),
   };
 }
 
@@ -140,10 +162,39 @@ export function combatEventNeedsRefresh(
   return !eventId || !cachedEvents.some((entry) => entry.id === eventId);
 }
 
+/** Riga leggibile che tiene separata la parte fissa da quella per effetto. */
+export function spellCostExplanation(
+  mana: { fixedMana: number; variableMana: number; requiredMana: number },
+  costs: Record<string, number>,
+  totalPower: number,
+  economy: SpellEconomy,
+): string[] {
+  const rounded = Math.round(mana.variableMana * 100) / 100;
+  return [
+    mana.fixedMana
+      ? `Mana richiesto ${mana.fixedMana} fissi + ${rounded} per effetto = ${mana.requiredMana}`
+      : `Mana richiesto ${mana.requiredMana} (tutto per effetto)`,
+    `Mana ${mana.requiredMana} − ${totalPower} Potere × ${economy.manaDiscountPerPower} = ${costs.mana}`,
+    economy.manaPerEnergy > 0
+      ? `Energia ${mana.requiredMana} / ${economy.manaPerEnergy} = ${costs.energia}`
+      : "Energia: nessuna conversione configurata",
+    economy.manaPerActionPoint > 0
+      ? `PA ${mana.requiredMana} / ${economy.manaPerActionPoint} − ${totalPower} × ${economy.actionPointDiscountPerPower} = ${costs.pa}`
+      : "PA: nessuna conversione configurata",
+    `Potere speso ${costs.potere}`,
+  ];
+}
+
+/** Costi fissi di partenza: la definizione dell'incantesimo vince sui promemoria. */
+function fixedCostsForOption(option: ActiveOption) {
+  return { ...EMPTY_COSTS, ...(option.spell ? option.spell.fixedCosts : option.costs) };
+}
+
+/** L'effetto parte dal minimo che l'incantesimo richiede comunque di pagare. */
 function initialEffectForOption(option: ActiveOption) {
-  const mana = Math.max(0, Number(option.costs.mana || 0));
-  if (!option.spell) return Math.round(mana);
-  return Math.max(0, Math.round((mana - option.spell.baseMana) * option.spell.effectPerMana));
+  if (!option.spell) return 0;
+  const spell = option.spell;
+  return Math.max(0, Math.round((spell.minimumMana - spell.baseMana) * spell.effectPerMana));
 }
 
 function characterActiveOptions(character: CombatMap["participants"][number]["character"] | undefined): ActiveOption[] {
@@ -840,16 +891,15 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
   const [tagsExpanded, setTagsExpanded] = useState(false);
   const selectedOption = options.find((entry) => entry.key === selectedKey);
   const activeFilters = savedFilters ?? DEFAULT_ACTION_TAG_FILTERS;
-  const requiredMana = manaForEffect(spellIntensity, selectedOption?.spell);
-  // I costi mostrati e inviati derivano dall'economia Elder solo per gli incantesimi.
+  // `costs` tiene i costi fissi dell'azione. Per un incantesimo il Mana fisso della
+  // definizione è già dentro la formula, quindi costs.mana è solo l'eventuale Mana
+  // fisso aggiuntivo dichiarato a mano, che partecipa comunque alla conversione.
+  const mana = spellManaBreakdown(spellIntensity, selectedOption?.spell, costs.mana);
+  const requiredMana = mana.requiredMana;
   const resolvedCosts = actionType === "cast"
     ? spellCastCosts(costs, requiredMana, powerUsed, freePower, economy)
     : costs;
-  const updateEffect = (next: number, spell = selectedOption?.spell) => {
-    const normalized = Math.max(0, Math.min(500, Math.round(next || 0)));
-    setSpellIntensity(normalized);
-    setCosts((current) => ({ ...current, mana: manaForEffect(normalized, spell) }));
-  };
+  const updateEffect = (next: number) => setSpellIntensity(Math.max(0, Math.min(500, Math.round(next || 0))));
   const chooseOption = (key: string) => {
     setSelectedKey(key);
     if (key === "movement") { setActionType("movement"); setName("Movimento"); setDescription(paths ? "Percorso selezionato sulla mappa" : "Movimento tattico"); setCosts({ ...EMPTY_COSTS, pa: paths?.fastest.actionPoints || 0 }); setSourceSkillId(undefined); setSpellIntensity(0); setPowerUsed(0); setFreePower(0); return; }
@@ -857,7 +907,7 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
     if (!option) return;
     const initialEffect = initialEffectForOption(option);
     setActionType(option.kind); setName(option.name); setDescription(option.description);
-    setCosts({ ...EMPTY_COSTS, ...option.costs, mana: manaForEffect(initialEffect, option.spell) });
+    setCosts(fixedCostsForOption(option));
     setSourceSkillId(option.sourceSkillId); setSpellIntensity(initialEffect); setPowerUsed(0); setFreePower(0);
   };
   const toggleFilter = (tag: string) => {
@@ -916,14 +966,10 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
         {selectedKey === "movement" ? <section className="combat-movement-cost"><label>PA utilizzati<input type="range" min="0" max={Math.max(20, character?.resources.find((resource) => resource.key === "pa")?.current || 0)} value={costs.pa || 0} onChange={(event) => setCosts({ ...EMPTY_COSTS, pa: Number(event.target.value) })} /><input type="number" min="0" value={costs.pa || 0} onChange={(event) => setCosts({ ...EMPTY_COSTS, pa: Math.max(0, Number(event.target.value)) })} /></label>{paths?.fastest.actionPoints != null && <button type="button" onClick={() => setCosts({ ...EMPTY_COSTS, pa: paths.fastest.actionPoints || 0 })}>Usa il percorso calcolato: {paths.fastest.actionPoints} PA</button>}<p>Scegli soltanto i Punti Azione consumati. Il percorso viene allegato automaticamente quando lo hai calcolato sulla mappa.</p></section> : <>
           <label>Nome azione<input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Nome breve e riconoscibile" /></label>
           <label>Promemoria<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} placeholder="Bersaglio, formula, bonus o note…" /></label>
-          <fieldset className="combat-spell-controls"><legend>{selectedOption?.spell ? "Controlli incantesimo" : "Controlli effetto"}</legend><div className="combat-effect-control" role="group" aria-label="Regola effetto"><span>Effetto{selectedOption?.spell?.effectUnit ? ` · ${selectedOption.spell.effectUnit}` : ""}</span><button type="button" disabled={spellIntensity <= 0} onClick={() => updateEffect(spellIntensity - 1)} aria-label="Riduci effetto">−</button><input aria-label="Effetto" type="range" min="0" max="500" value={spellIntensity} onChange={(event) => updateEffect(Number(event.target.value))} /><button type="button" disabled={spellIntensity >= 500} onClick={() => updateEffect(spellIntensity + 1)} aria-label="Aumenta effetto">+</button><output>{spellIntensity}</output></div>{actionType === "cast" && <><label>Potere usato<input type="range" min="0" max={Math.max(0, character?.resources.find((resource) => resource.key === "potere")?.current || 0)} value={powerUsed} onChange={(event) => setPowerUsed(Number(event.target.value))} /><output>{powerUsed}</output></label><label>Potere gratis<input type="number" min="0" max="50" value={freePower} onChange={(event) => setFreePower(Math.max(0, Number(event.target.value)))} /></label></>}<small>{selectedOption?.spell ? `${selectedOption.spell.formula || "Formula dell'incantesimo"}. Mana richiesto: ${requiredMana}.` : `Conversione generica: 1 effetto = 1 Mana. Mana richiesto: ${requiredMana}.`}</small>
-            {actionType === "cast" && <p className="combat-spell-economy">{[
-              `Mana ${requiredMana} − ${powerUsed + freePower} Potere × ${economy.manaDiscountPerPower} = ${resolvedCosts.mana} Mana`,
-              economy.manaPerEnergy > 0 ? `Energia ${requiredMana} / ${economy.manaPerEnergy} = ${resolvedCosts.energia}` : "Energia: conversione non disponibile",
-              economy.manaPerActionPoint > 0 ? `PA ${requiredMana} / ${economy.manaPerActionPoint} − ${powerUsed + freePower} × ${economy.actionPointDiscountPerPower} = ${resolvedCosts.pa}` : "PA: conversione non disponibile",
-              `Potere speso ${resolvedCosts.potere}`,
-            ].join(" · ")}</p>}</fieldset>
-          <fieldset><legend>Costi{actionType === "cast" ? " calcolati" : ""}</legend><div className="planner-costs">{Object.entries(resolvedCosts).map(([key, value]) => <label key={key}>{key}<input type="number" min="0" value={value} readOnly={actionType === "cast"} onChange={(event) => setCosts({ ...costs, [key]: Math.max(0, Number(event.target.value)) })} /></label>)}</div>{actionType === "cast" && <small>Mana, Energia e PA si pagano insieme; il Potere gratuito sconta senza essere speso.</small>}</fieldset>
+          <fieldset className="combat-spell-controls"><legend>{selectedOption?.spell ? "Controlli incantesimo" : "Controlli effetto"}</legend><div className="combat-effect-control" role="group" aria-label="Regola effetto"><span>Effetto{selectedOption?.spell?.effectUnit ? ` · ${selectedOption.spell.effectUnit}` : ""}</span><button type="button" disabled={spellIntensity <= 0} onClick={() => updateEffect(spellIntensity - 1)} aria-label="Riduci effetto">−</button><input aria-label="Effetto" type="range" min="0" max="500" value={spellIntensity} onChange={(event) => updateEffect(Number(event.target.value))} /><button type="button" disabled={spellIntensity >= 500} onClick={() => updateEffect(spellIntensity + 1)} aria-label="Aumenta effetto">+</button><output>{spellIntensity}</output></div>{actionType === "cast" && <><label>Potere usato<input type="range" min="0" max={Math.max(0, character?.resources.find((resource) => resource.key === "potere")?.current || 0)} value={powerUsed} onChange={(event) => setPowerUsed(Number(event.target.value))} /><output>{powerUsed}</output></label><label>Potere gratis<input type="number" min="0" max="50" value={freePower} onChange={(event) => setFreePower(Math.max(0, Number(event.target.value)))} /></label></>}<small>{selectedOption?.spell?.costSummary || (selectedOption?.spell ? selectedOption.spell.formula : "Conversione generica: 1 effetto = 1 Mana")}</small>
+            {actionType === "cast" && <p className="combat-spell-economy">{spellCostExplanation(mana, resolvedCosts, powerUsed + freePower, economy).join(" · ")}</p>}</fieldset>
+          {actionType === "cast" && <fieldset><legend>Costi fissi dell'azione</legend><div className="planner-costs">{FIXED_COST_KEYS.map((key) => <label key={key}>{key === "mana" ? "mana extra" : key}<input type="number" min="0" value={costs[key] || 0} onChange={(event) => setCosts({ ...costs, [key]: Math.max(0, Number(event.target.value)) })} /></label>)}</div><small>Si pagano a ogni lancio a prescindere dall'intensità. Il Mana fisso entra nella conversione in Energia e PA; le altre risorse si sommano al totale senza essere convertite.</small></fieldset>}
+          <fieldset><legend>Costi{actionType === "cast" ? " totali" : ""}</legend><div className="planner-costs">{Object.entries(resolvedCosts).map(([key, value]) => <label key={key}>{key}<input type="number" min="0" value={value} readOnly={actionType === "cast"} onChange={(event) => setCosts({ ...costs, [key]: Math.max(0, Number(event.target.value)) })} /></label>)}</div>{actionType === "cast" && <small>Mana, Energia e PA si pagano insieme; il Potere gratuito sconta senza essere speso.</small>}</fieldset>
         </>}
         <button className="button primary" disabled={busy || !characterId}>Aggiungi {selectedKey === "movement" ? "Movimento" : "alla coda"}</button>
       </form>

@@ -935,11 +935,13 @@ class SpellDefinitionSchema(Schema):
     baseMana: float = 0
     effectPerMana: float
     minimumMana: float = 0
+    fixedCosts: dict[str, int] = {}
     rounding: str
     roundingLabel: str
     legacyFormula: str = ""
     costNotes: str = ""
     formula: str
+    costSummary: str = ""
     combatConfiguration: dict[str, Any] = {}
 
 
@@ -1056,9 +1058,14 @@ class SpellCastPreviewSchema(Schema):
     requestedEffect: float
     projectedEffect: float
     effectUnit: str
+    fixedMana: float = 0
+    variableMana: float = 0
     requiredManaBeforeDiscounts: int
     powerConsidered: float
+    fixedCosts: dict[str, int] = {}
     resourceOptions: dict[str, int | None]
+    costs: dict[str, int] = {}
+    costSummary: str = ""
     spendsResources: bool = False
     combatReady: bool = False
     note: str

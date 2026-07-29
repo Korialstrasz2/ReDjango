@@ -33,9 +33,19 @@ class ElderEffectConversionTests(SimpleTestCase):
     def test_reconciliation_totals_apply_the_same_order_chaos_rule(self):
         totals = normalized_elder_totals({
             "forza_tot": 12,
-            "en_per_mana_ordine_tot": 2,
-            "en_per_mana_caos_tot": 4,
+            "ogni_pa_x_mana_ordine_tot": 2,
+            "ogni_pa_x_mana_caos_tot": 4,
             "tipo_danno_arma": "taglio",
         })
 
-        self.assertEqual(totals, {"forza": 12.0, "en_per_mana": 3.0})
+        self.assertEqual(totals, {"forza": 12.0, "ogni_pa_x_mana": 3.0})
+
+    def test_ratios_elder_stopped_calculating_are_not_reconciled(self):
+        """en_per_mana/pa_per_mana lost their Elder formulas: their totals are stale."""
+        totals = normalized_elder_totals({
+            "forza_tot": 12,
+            "en_per_mana_ordine_tot": 2,
+            "pa_per_mana_caos_tot": 4,
+        })
+
+        self.assertEqual(totals, {"forza": 12.0})

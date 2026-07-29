@@ -36,11 +36,9 @@ SIMPLE_BONUS_RE = re.compile(r"^(.+?)\s*([+\-])\s*([+\-]?\d+(?:[.,]\d+)?)\s*$")
 # ReDjango intentionally merged the legacy Ordine/Caos ratios into one value.
 # Item effects must apply that same mapping; otherwise valid bonuses
 # remain inert only because they still use their historical target name.
+# en_per_mana/pa_per_mana are not listed: Elder dropped their formulas in
+# migration 0118 and nothing reads them, so those bonuses are simply skipped.
 LEGACY_TARGET_ALIASES = {
-    "en_per_mana_ordine": "en_per_mana",
-    "en_per_mana_caos": "en_per_mana",
-    "pa_per_mana_ordine": "pa_per_mana",
-    "pa_per_mana_caos": "pa_per_mana",
     "ogni_en_x_mana_ordine": "ogni_en_x_mana",
     "ogni_en_x_mana_caos": "ogni_en_x_mana",
     "ogni_pa_x_mana_ordine": "ogni_pa_x_mana",

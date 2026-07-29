@@ -61,6 +61,11 @@ def generate_stock(
     for item in candidates:
         item_levels = parse_loot_levels(item.lv_loot)
         item_type = item.tipo_1.strip()
+        # An item without a rarity has no bucket to be drawn from. It used to be
+        # folded into rarity 1, which made a missing value look like a choice;
+        # skipping it here keeps the eligibility report the single explanation.
+        if item.rarita is None:
+            continue
         if not item_levels or item_type not in ranks or ranks[item_type] >= 5:
             continue
         usable.append((item, item_levels, ranks[item_type]))
@@ -68,9 +73,17 @@ def generate_stock(
     counts: Counter[int] = Counter()
     missing: Counter[str] = Counter()
     deltas = rules["fallbackLevelDeltas"]
-    rarity_rolls = list((profile.get("rarityProbabilities") or rules["rarityProbabilities"]).items())
+    rarity_rolls = [
+        (rarity, probability)
+        for rarity, probability in (profile.get("rarityProbabilities") or rules["rarityProbabilities"]).items()
+        if probability > 0
+    ]
+    rarity_counts: Counter[str] = Counter()
     for _ in range(target):
-        rarity_pick, roll = "1", rng.random()
+        if not rarity_rolls:
+            missing["rarity"] += 1
+            continue
+        rarity_pick, roll = rarity_rolls[0][0], rng.random()
         acc = 0.0
         for rarity, probability in rarity_rolls:
             acc += probability
@@ -79,12 +92,14 @@ def generate_stock(
                 break
         subset = []
         for delta in deltas:
-            subset = [(item, rank) for item, item_levels, rank in usable if max(0, level + delta) in item_levels and (item.rarita or 1) == int(rarity_pick) and counts[item.id] < rules["maximumCopies"]]
+            subset = [(item, rank) for item, item_levels, rank in usable if max(0, level + delta) in item_levels and item.rarita == int(rarity_pick) and counts[item.id] < rules["maximumCopies"]]
             if subset:
                 break
         if not subset:
             missing["eligible"] += 1
+            missing[f"rarity:{rarity_pick}"] += 1
             continue
+        rarity_counts[rarity_pick] += 1
         weighted = []
         for item, rank in subset:
             weight = 2.5 ** (4 - rank)
@@ -99,4 +114,4 @@ def generate_stock(
         item = next(item for item, _levels, _rank in usable if item.id == item_id)
         price = max(0, round((item.valore or 0) * (rules["priceBasePercent"] + rules["priceLevelPercent"] * level) / 100 * (1 + price_modifier_percent / 100) * price_multiplier))
         entries.append({"itemId": item_id, "quantity": quantity, "unitPrice": price, "source": "generated"})
-    return GenerationResult(seed=seed, entries=entries, diagnostics={"requestedRolls": target, "fulfilledRolls": sum(counts.values()), "missingByItemType": dict(missing), "generationProfileKey": profile.get("key", "")})
+    return GenerationResult(seed=seed, entries=entries, diagnostics={"requestedRolls": target, "fulfilledRolls": sum(counts.values()), "missingByItemType": dict(missing), "generationProfileKey": profile.get("key", ""), "rarityMix": dict(rarity_counts), "candidatePoolSize": len(usable)})

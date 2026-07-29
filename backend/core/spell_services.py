@@ -18,6 +18,14 @@ TIER_ALIASES = {
     "master": SpellDefinition.TIER_MASTER,
 }
 ROUNDING_VALUES = {value for value, _label in SpellDefinition.ROUNDING_CHOICES}
+# Risorse che un incantesimo può richiedere in modo fisso, oltre al Mana.
+FIXED_COST_RESOURCES = ("pf", "energia", "potere", "pa", "stanchezza")
+SPELL_ECONOMY_KEYS = {
+    "manaDiscountPerPower": "sconto_mana_per_potere",
+    "actionPointDiscountPerPower": "sconto_pa_per_potere",
+    "manaPerEnergy": "ogni_en_x_mana",
+    "manaPerActionPoint": "ogni_pa_x_mana",
+}
 
 
 def _decimal_field(
@@ -57,6 +65,18 @@ def validate_spell_values(raw: Any) -> dict[str, Any]:
             "La predisposizione al combattimento deve essere un oggetto.",
             "spell.combatConfiguration",
         )
+    raw_fixed_costs = raw.get("fixedCosts") or {}
+    if not isinstance(raw_fixed_costs, Mapping):
+        raise ApiError(
+            "spells.fixed_costs_invalid",
+            "I costi fissi devono essere un oggetto.",
+            "spell.fixedCosts",
+        )
+    fixed_costs = {
+        resource: float(amount)
+        for resource in FIXED_COST_RESOURCES
+        if (amount := _decimal_field(raw_fixed_costs, resource)) > 0
+    }
     return {
         "tier": tier,
         "range_text": str(raw.get("range") or "").strip()[:160],
@@ -64,6 +84,7 @@ def validate_spell_values(raw: Any) -> dict[str, Any]:
         "base_mana": _decimal_field(raw, "baseMana"),
         "effect_per_mana": _decimal_field(raw, "effectPerMana", strictly_positive=True),
         "minimum_mana": _decimal_field(raw, "minimumMana"),
+        "fixed_costs": fixed_costs,
         "rounding": rounding,
         "legacy_formula": str(raw.get("legacyFormula") or "").strip()[:255],
         "cost_notes": str(raw.get("costNotes") or "").strip(),
@@ -88,6 +109,45 @@ def spell_for_skill(skill: Skill) -> SpellDefinition | None:
         return None
 
 
+def spell_fixed_costs(definition: SpellDefinition) -> dict[str, int]:
+    """Fixed non-mana cost of one cast, normalised to the combat resource keys."""
+    stored = definition.fixed_costs if isinstance(definition.fixed_costs, dict) else {}
+    costs: dict[str, int] = {}
+    for resource in FIXED_COST_RESOURCES:
+        try:
+            amount = Decimal(str(stored.get(resource, 0) or 0))
+        except Exception:
+            continue
+        if amount > 0:
+            costs[resource] = int(amount.to_integral_value(rounding=ROUND_CEILING))
+    return costs
+
+
+def _readable(value: Decimal) -> str:
+    """Cut the long tail that dividing by a stored ratio produces (6,999999… → 7)."""
+    normalized = Decimal(value).quantize(Decimal("0.0001")).normalize()
+    return format(normalized, "f")
+
+
+def spell_cost_summary(definition: SpellDefinition) -> str:
+    """One readable line separating the fixed part of the cost from the variable one."""
+    mana_per_effect = _readable(Decimal(1) / Decimal(definition.effect_per_mana))
+    variable = f"{mana_per_effect} Mana per {definition.effect_unit.lower()}"
+    parts = (
+        [f"{_readable(definition.base_mana)} Mana fissi più {variable}"]
+        if definition.base_mana
+        else [variable]
+    )
+    if definition.minimum_mana:
+        parts.append(f"minimo {_readable(definition.minimum_mana)} Mana")
+    fixed = spell_fixed_costs(definition)
+    if fixed:
+        parts.append(
+            "costi fissi " + ", ".join(f"{amount} {resource.upper()}" for resource, amount in fixed.items())
+        )
+    return " · ".join(parts)
+
+
 def serialize_spell(skill: Skill) -> dict[str, Any] | None:
     definition = spell_for_skill(skill)
     if definition is None:
@@ -101,6 +161,7 @@ def serialize_spell(skill: Skill) -> dict[str, Any] | None:
         "baseMana": float(definition.base_mana),
         "effectPerMana": float(definition.effect_per_mana),
         "minimumMana": float(definition.minimum_mana),
+        "fixedCosts": spell_fixed_costs(definition),
         "rounding": definition.rounding,
         "roundingLabel": definition.get_rounding_display(),
         "legacyFormula": definition.legacy_formula,
@@ -109,6 +170,7 @@ def serialize_spell(skill: Skill) -> dict[str, Any] | None:
             f"{definition.effect_unit} = max(0, (Mana - {definition.base_mana:g}) "
             f"× {definition.effect_per_mana:g})"
         ),
+        "costSummary": spell_cost_summary(definition),
         "combatConfiguration": {
             **(
                 definition.combat_configuration
@@ -139,6 +201,79 @@ def _tot_value(character: Personaggio, key: str) -> Decimal:
         return Decimal("0")
 
 
+def character_spell_economy(character: Personaggio) -> dict[str, Decimal]:
+    return {name: _tot_value(character, key) for name, key in SPELL_ECONOMY_KEYS.items()}
+
+
+def _ceil(value: Decimal) -> int:
+    return int(value.to_integral_value(rounding=ROUND_CEILING))
+
+
+def spell_cast_breakdown(
+    definition: SpellDefinition,
+    effect: Decimal,
+    *,
+    economy: Mapping[str, Decimal],
+    power_used: Decimal = Decimal("0"),
+    free_power: Decimal = Decimal("0"),
+) -> dict[str, Any]:
+    """Price one cast, keeping the fixed and per-effect halves visible.
+
+    Follows the original rules: the fixed Mana and the Mana bought with the effect
+    slider are summed first, Energia and PA are converted from that total before any
+    discount, the whole Potere (spent plus free) discounts Mana and PA, and only the
+    spent Potere is actually paid. Fixed costs in other resources are added on top and
+    are never converted.
+    """
+    # I campi decimali possono arrivare come int quando l'oggetto non è stato riletto
+    # dal database, quindi vengono normalizzati prima di qualunque calcolo.
+    fixed_mana = max(Decimal("0"), Decimal(definition.base_mana))
+    variable_mana = max(Decimal("0"), Decimal(effect)) / Decimal(definition.effect_per_mana)
+    required_mana = max(Decimal(definition.minimum_mana), fixed_mana + variable_mana)
+    total_power = max(Decimal("0"), Decimal(power_used)) + max(Decimal("0"), Decimal(free_power))
+    spent_power = max(Decimal("0"), Decimal(power_used))
+
+    mana_discount = total_power * Decimal(economy.get("manaDiscountPerPower", 0))
+    action_discount = total_power * Decimal(economy.get("actionPointDiscountPerPower", 0))
+    energy_rate = Decimal(economy.get("manaPerEnergy", 0))
+    action_rate = Decimal(economy.get("manaPerActionPoint", 0))
+
+    converted_energy = _ceil(required_mana / energy_rate) if energy_rate > 0 else 0
+    converted_action = (
+        _ceil(max(Decimal("0"), required_mana / action_rate - action_discount)) if action_rate > 0 else 0
+    )
+    fixed_costs = spell_fixed_costs(definition)
+    costs = {
+        "pf": fixed_costs.get("pf", 0),
+        "mana": _ceil(max(Decimal("0"), required_mana - mana_discount)),
+        "energia": converted_energy + fixed_costs.get("energia", 0),
+        "potere": int(spent_power) + fixed_costs.get("potere", 0),
+        "pa": converted_action + fixed_costs.get("pa", 0),
+        "stanchezza": fixed_costs.get("stanchezza", 0),
+    }
+    return {
+        "fixedMana": float(fixed_mana),
+        "variableMana": float(variable_mana),
+        "requiredMana": _ceil(required_mana),
+        "minimumApplied": required_mana > fixed_mana + variable_mana,
+        "manaDiscount": float(mana_discount),
+        "actionPointDiscount": float(action_discount),
+        "convertedEnergy": converted_energy,
+        "convertedActionPoints": converted_action,
+        "fixedCosts": fixed_costs,
+        "costs": costs,
+        "projectedEffect": float(
+            _round_effect(
+                max(
+                    Decimal("0"),
+                    (Decimal(_ceil(required_mana)) - fixed_mana) * Decimal(definition.effect_per_mana),
+                ),
+                definition.rounding,
+            )
+        ),
+    }
+
+
 def preview_spell_cast(
     character: Personaggio,
     skill_id: int,
@@ -158,34 +293,8 @@ def preview_spell_cast(
         raise ApiError("spells.not_found", "Questa Skill non è un incantesimo.", status=404)
     effect = _decimal_field({"effect": raw_effect}, "effect")
     power = _decimal_field({"power": raw_power}, "power")
-    required_mana = max(
-        definition.minimum_mana,
-        definition.base_mana + (effect / definition.effect_per_mana),
-    ).to_integral_value(rounding=ROUND_CEILING)
-    # Regolamento Elder: Energia e PA si convertono dal Mana richiesto prima degli
-    # sconti, mentre il Potere sconta solo Mana e PA. Le tre voci si pagano insieme.
-    mana_discount = power * _tot_value(character, "sconto_mana_per_potere")
-    projected_mana = max(Decimal("0"), required_mana - mana_discount).to_integral_value(
-        rounding=ROUND_CEILING
-    )
-    energy_rate = _tot_value(character, "ogni_en_x_mana")
-    action_rate = _tot_value(character, "ogni_pa_x_mana")
-    action_discount = power * _tot_value(character, "sconto_pa_per_potere")
-    energy_cost = (
-        (required_mana / energy_rate).to_integral_value(rounding=ROUND_CEILING)
-        if energy_rate > 0
-        else None
-    )
-    action_cost = (
-        max(Decimal("0"), (required_mana / action_rate) - action_discount).to_integral_value(
-            rounding=ROUND_CEILING
-        )
-        if action_rate > 0
-        else None
-    )
-    projected_effect = _round_effect(
-        max(Decimal("0"), (required_mana - definition.base_mana) * definition.effect_per_mana),
-        definition.rounding,
+    breakdown = spell_cast_breakdown(
+        definition, effect, economy=character_spell_economy(character), power_used=power
     )
     return {
         "skillId": skill.id,
@@ -193,19 +302,24 @@ def preview_spell_cast(
         "tier": definition.tier,
         "tierLabel": definition.get_tier_display(),
         "requestedEffect": float(effect),
-        "projectedEffect": float(projected_effect),
+        "projectedEffect": breakdown["projectedEffect"],
         "effectUnit": definition.effect_unit,
-        "requiredManaBeforeDiscounts": int(required_mana),
+        "fixedMana": breakdown["fixedMana"],
+        "variableMana": breakdown["variableMana"],
+        "requiredManaBeforeDiscounts": breakdown["requiredMana"],
         "powerConsidered": float(power),
+        "fixedCosts": breakdown["fixedCosts"],
         "resourceOptions": {
-            "mana": int(projected_mana),
-            "energy": int(energy_cost) if energy_cost is not None else None,
-            "actionPoints": int(action_cost) if action_cost is not None else None,
+            "mana": breakdown["costs"]["mana"],
+            "energy": breakdown["costs"]["energia"],
+            "actionPoints": breakdown["costs"]["pa"],
         },
+        "costs": breakdown["costs"],
+        "costSummary": spell_cost_summary(definition),
         "spendsResources": False,
         "combatReady": False,
         "note": (
             "Anteprima soltanto: in combattimento Mana, Energia e PA si pagano insieme, "
-            "mentre il Potere usato riduce Mana e PA."
+            "il Potere usato riduce Mana e PA e i costi fissi si sommano a parte."
         ),
     }

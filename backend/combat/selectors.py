@@ -21,7 +21,7 @@ from backend.characters.services.inventory_rules import EQUIPMENT_SLOT_ORDER
 from backend.core.models import Effetto, Giocatore, Oggetto, Unit
 from backend.core.security import effective_role, has_minimum_role
 from backend.core.settings_selectors import global_setting_value
-from backend.core.spell_services import serialize_spell
+from backend.core.spell_services import SPELL_ECONOMY_KEYS, serialize_spell
 
 from .models import CharacterTemplate, CombatModifier, HexType, MapMetadata, MapType
 from .unit_generation import unit_catalog_entry
@@ -51,13 +51,6 @@ ACTION_TAGS = (
 UNTAGGED_ACTION_TAG = "no tag"
 STORABLE_ACTION_TAGS = tuple(tag for tag in ACTION_TAGS if tag != UNTAGGED_ACTION_TAG)
 DEFAULT_ACTION_TAG_FILTERS = ("preferito", "combat", UNTAGGED_ACTION_TAG)
-# Conversioni Elder lette dai totali del personaggio per il costo degli incantesimi.
-SPELL_ECONOMY_KEYS = {
-    "manaDiscountPerPower": "sconto_mana_per_potere",
-    "actionPointDiscountPerPower": "sconto_pa_per_potere",
-    "manaPerEnergy": "ogni_en_x_mana",
-    "manaPerActionPoint": "ogni_pa_x_mana",
-}
 
 
 def _number(value):

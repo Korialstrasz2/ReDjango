@@ -48,8 +48,6 @@ PERSONAGGIO_TOT_KEYS = (
     "monete_per_slot",
     "tier",
     "sifone_di_mana",
-    "en_per_mana",
-    "pa_per_mana",
     "ogni_en_x_mana",
     "ogni_pa_x_mana",
     "sconto_mana_per_potere",

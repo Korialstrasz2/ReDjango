@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from django.core.exceptions import ValidationError
 
-from backend.core.models import SettingDefinition
+from backend.core.models import Oggetto, SettingDefinition
 
 
 LOCATION_KEY = "mercato.locations"
@@ -15,6 +15,40 @@ SHOP_TYPES_KEY = "mercato.shop_types"
 GENERATOR_RULES_KEY = "mercato.generator_rules"
 GENERATION_PROFILES_KEY = "mercato.generation_profiles"
 _KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+
+
+def rollable_rarities() -> list[int]:
+    """Every catalogue rarity a shop can roll, derived from the item model.
+
+    Unico is deliberately excluded: those pieces are assigned by hand. Reading
+    the list from ``Oggetto.Rarita`` instead of hard-coding it is what keeps a
+    newly added rarity from silently becoming ungeneratable, which is exactly
+    how rarity 5 stayed out of every shop.
+    """
+    return [value for value in Oggetto.Rarita.values if value != Oggetto.Rarita.UNICO]
+
+
+def rarity_choices() -> list[dict]:
+    labels = dict(Oggetto.Rarita.choices)
+    return [{"value": str(value), "label": labels[value]} for value in rollable_rarities()]
+
+
+def _normalized_rarity_probabilities(raw: object, field: str, context: str = "") -> dict[str, float]:
+    prefix = f"{context}: " if context else ""
+    if not isinstance(raw, dict):
+        raise ValidationError({field: f"{prefix}rarityProbabilities deve essere un oggetto."})
+    try:
+        normalized = {
+            str(rarity): float(raw.get(str(rarity), raw.get(rarity, 0)) or 0)
+            for rarity in rollable_rarities()
+        }
+    except (TypeError, ValueError) as exc:
+        raise ValidationError({field: f"{prefix}probabilità di rarità non valide."}) from exc
+    if any(probability < 0 for probability in normalized.values()):
+        raise ValidationError({field: f"{prefix}le probabilità non possono essere negative."})
+    if abs(sum(normalized.values()) - 1) > .001:
+        raise ValidationError({field: f"{prefix}le probabilità di rarità devono sommare a 1."})
+    return normalized
 
 
 def _value(key: str) -> object:
@@ -121,7 +155,7 @@ def validate_shop_types(value: object) -> dict:
 def validate_generator_rules(value: object) -> dict:
     if not isinstance(value, dict):
         raise ValidationError("mercato.generator_rules deve essere un oggetto.")
-    defaults = {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "rarityProbabilities": {"1": .7, "2": .15, "3": .1, "4": .05}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25}
+    defaults = {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25}
     result = {**defaults, **value}
     for key in ("minLevel", "maxLevel", "baseCount", "countPerLevel", "countVariance", "maximumCopies", "priceBasePercent", "priceLevelPercent", "maximumNegotiationPercent"):
         try:
@@ -130,16 +164,9 @@ def validate_generator_rules(value: object) -> dict:
             raise ValidationError({key: "Deve essere un numero."}) from exc
     if result["minLevel"] < 1 or result["maxLevel"] < result["minLevel"] or result["maximumCopies"] < 1:
         raise ValidationError("Limiti del generatore non validi.")
-    probabilities = result["rarityProbabilities"]
-    if not isinstance(probabilities, dict):
-        raise ValidationError({"rarityProbabilities": "Deve essere un oggetto."})
-    try:
-        normalized_probabilities = {str(int(key)): float(probabilities.get(key, probabilities.get(str(key), 0))) for key in range(1, 5)}
-    except (ValueError, TypeError) as exc:
-        raise ValidationError({"rarityProbabilities": "Probabilità non valide."}) from exc
-    if any(probability < 0 for probability in normalized_probabilities.values()) or abs(sum(normalized_probabilities.values()) - 1) > .001:
-        raise ValidationError({"rarityProbabilities": "Le probabilità devono sommare a 1."})
-    result["rarityProbabilities"] = normalized_probabilities
+    result["rarityProbabilities"] = _normalized_rarity_probabilities(
+        result["rarityProbabilities"], "rarityProbabilities",
+    )
     if not isinstance(result["fallbackLevelDeltas"], list) or not all(isinstance(delta, int) for delta in result["fallbackLevelDeltas"]):
         raise ValidationError({"fallbackLevelDeltas": "Deve essere una lista di interi."})
     return result
@@ -166,18 +193,9 @@ def validate_generation_profiles(value: object) -> dict:
             raise ValidationError({"profiles": f"{key}: la quantità deve essere compresa tra 0,1 e 5."})
         if not .1 <= price_multiplier <= 5:
             raise ValidationError({"profiles": f"{key}: il prezzo deve essere compreso tra 0,1 e 5."})
-        probabilities = raw.get("rarityProbabilities")
-        if not isinstance(probabilities, dict):
-            raise ValidationError({"profiles": f"{key}: rarityProbabilities deve essere un oggetto."})
-        try:
-            normalized_probabilities = {
-                str(rarity): float(probabilities.get(str(rarity), probabilities.get(rarity, 0)))
-                for rarity in range(1, 5)
-            }
-        except (TypeError, ValueError) as exc:
-            raise ValidationError({"profiles": f"{key}: probabilità di rarità non valide."}) from exc
-        if any(probability < 0 for probability in normalized_probabilities.values()) or abs(sum(normalized_probabilities.values()) - 1) > .001:
-            raise ValidationError({"profiles": f"{key}: le probabilità di rarità devono sommare a 1."})
+        normalized_probabilities = _normalized_rarity_probabilities(
+            raw.get("rarityProbabilities"), "profiles", key,
+        )
         profiles.append({
             "key": key,
             "label": _label(raw.get("label"), "profile.label"),
@@ -227,7 +245,7 @@ def resolve_location(location_key: str, *, selectable: bool = False) -> dict:
 def configuration_payload() -> dict:
     locations, types, rules, profiles = get_market_locations(), get_shop_type_definitions(), get_generator_rules(), get_generation_profiles()
     canonical = json.dumps({"locations": locations, "shopTypes": types, "rules": rules, "generationProfiles": profiles}, sort_keys=True, separators=(",", ":"))
-    return {"locationsVersion": locations["version"], "shopTypesVersion": types["version"], "hash": hashlib.sha256(canonical.encode()).hexdigest()[:16], "locations": locations, "shopTypes": types, "generatorRules": rules, "generationProfiles": profiles, "limits": {"minLevel": rules["minLevel"], "maxLevel": rules["maxLevel"], "maximumNegotiationPercent": rules["maximumNegotiationPercent"], "batchMaximum": 20}}
+    return {"locationsVersion": locations["version"], "shopTypesVersion": types["version"], "hash": hashlib.sha256(canonical.encode()).hexdigest()[:16], "locations": locations, "shopTypes": types, "generatorRules": rules, "generationProfiles": profiles, "rarityChoices": rarity_choices(), "limits": {"minLevel": rules["minLevel"], "maxLevel": rules["maxLevel"], "maximumNegotiationPercent": rules["maximumNegotiationPercent"], "batchMaximum": 20}}
 
 
 def market_settings_payload() -> dict:

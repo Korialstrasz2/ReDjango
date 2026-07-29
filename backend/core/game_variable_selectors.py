@@ -47,7 +47,7 @@ NON_NEGATIVE_BASE_KEYS = {
     "pf", "mana", "energia", "potere", "pa", "attacco", "difesa",
     "rd_fis", "rd_fuoco", "rd_gelo", "rd_elettro", "ap", "ap_percento",
     "slot_magici", "slot_non_magici", "monete_per_slot", "tier",
-    "en_per_mana", "pa_per_mana", "ogni_en_x_mana", "ogni_pa_x_mana",
+    "ogni_en_x_mana", "ogni_pa_x_mana",
     "sconto_mana_per_potere", "sconto_pa_per_potere", "mod_carico",
     "mod_peso_equip", "orecchini_max", "anelli_max", "sacchi_max",
     "moltiplicatore_reagenti_livello_1", "moltiplicatore_reagenti_livello_2",

@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.sqlite3
+*.sqlite3-journal
 .venv/
 venv/
 .env
@@ -38,3 +39,4 @@ frontend/static/frontend/dist/
 redjango/e2e-results/
 shop-import-receipts/
 Builder_docs/skill_migration_output/
+redjango/elder-unit-calibration-v2/

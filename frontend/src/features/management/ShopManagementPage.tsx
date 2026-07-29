@@ -11,6 +11,8 @@ import type {
   MarketActionData,
   MarketData,
   MarketLocationConfiguration,
+  ProfilePreview,
+  RarityChoice,
   ShopSummary,
   ShopType,
   ShopTypeConfiguration,
@@ -19,6 +21,13 @@ import type {
 import { itemTypeLabel, rankOptions, shopIcon, shopIconOptions, uniqueSlug } from "../market/ui";
 
 type WorkspaceTab = "territory" | "types" | "profiles" | "eligibility" | "generator" | "batch";
+
+// Probabilities are stored as fractions and edited as percentages. Rounding to
+// whole percents would destroy the sub-1% shares the rarest tiers rely on, and
+// a distribution that no longer sums to 1 is refused on save.
+function formatPercent(value: number): number {
+  return Number((Number(value || 0) * 100).toFixed(2));
+}
 
 function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
   const target = index + direction;
@@ -205,17 +214,25 @@ function ShopTypesEditor({ configuration, itemTypes, shops, onChange }: {
   </div>;
 }
 
-function ProfilesEditor({ configuration, shops, canEdit, assigning, onChange, onAssign }: {
+function ProfilesEditor({ configuration, shops, canEdit, assigning, rarityChoices, shopTypes, limits, onChange, onAssign, onPreview, preview, previewing }: {
   configuration: GenerationProfilesConfiguration;
   shops: ShopSummary[];
   canEdit: boolean;
   assigning: boolean;
+  rarityChoices: RarityChoice[];
+  shopTypes: ShopType[];
+  limits: Record<string, number>;
   onChange: (value: GenerationProfilesConfiguration) => void;
   onAssign: (shopId: number, profileKey: string) => void;
+  onPreview: (values: Record<string, unknown>) => void;
+  preview: ProfilePreview | null;
+  previewing: boolean;
 }) {
   const [selectedKey, setSelectedKey] = useState(configuration.defaultProfileKey);
   const [newProfileName, setNewProfileName] = useState("");
   const [shopQuery, setShopQuery] = useState("");
+  const [previewCategory, setPreviewCategory] = useState(() => shopTypes.find((type) => type.enabled)?.key || "");
+  const [previewLevel, setPreviewLevel] = useState(limits.minLevel || 1);
   const selectedIndex = configuration.profiles.findIndex((profile) => profile.key === selectedKey);
   const selected = configuration.profiles[selectedIndex] || configuration.profiles[0];
   useEffect(() => {
@@ -231,7 +248,14 @@ function ProfilesEditor({ configuration, shops, canEdit, assigning, onChange, on
     const label = newProfileName.trim();
     if (!label) return;
     const key = uniqueSlug(label, configuration.profiles.map((profile) => profile.key));
-    const profile: GenerationProfile = { key, label, enabled: true, quantityMultiplier: 1, priceMultiplier: 1, rarityProbabilities: { "1": .7, "2": .15, "3": .1, "4": .05 } };
+    // Seed a new profile from the current default so every configured rarity
+    // starts with a share; an absent rarity is silently ungeneratable.
+    const template = configuration.profiles.find((profile) => profile.key === configuration.defaultProfileKey);
+    const rarityProbabilities = Object.fromEntries(rarityChoices.map((choice, index) => [
+      choice.value,
+      Number(template?.rarityProbabilities[choice.value] ?? (index === 0 ? 1 : 0)),
+    ]));
+    const profile: GenerationProfile = { key, label, enabled: true, quantityMultiplier: 1, priceMultiplier: 1, rarityProbabilities };
     onChange({ ...configuration, profiles: [...configuration.profiles, profile] });
     setSelectedKey(key);
     setNewProfileName("");
@@ -242,7 +266,8 @@ function ProfilesEditor({ configuration, shops, canEdit, assigning, onChange, on
     onChange({ ...configuration, profiles: [...configuration.profiles, { ...structuredClone(selected), key, label: `Copia di ${selected.label}` }] });
     setSelectedKey(key);
   };
-  const rarityTotal = Object.values(selected?.rarityProbabilities || {}).reduce((sum, value) => sum + Number(value || 0), 0);
+  const rarityTotal = rarityChoices.reduce((sum, choice) => sum + Number(selected?.rarityProbabilities[choice.value] || 0), 0);
+  const emptyRarities = rarityChoices.filter((choice) => !Number(selected?.rarityProbabilities[choice.value] || 0));
   const visibleShops = shops.filter((shop) => !shopQuery.trim() || `${shop.name} ${shop.regionName} ${shop.placeName}`.toLocaleLowerCase("it").includes(shopQuery.trim().toLocaleLowerCase("it")));
   const defaultProfile = configuration.profiles.find((profile) => profile.key === configuration.defaultProfileKey);
 
@@ -267,8 +292,36 @@ function ProfilesEditor({ configuration, shops, canEdit, assigning, onChange, on
             <label>Prezzi ×<input disabled={!canEdit} type="number" min=".1" max="5" step=".05" value={selected.priceMultiplier} onChange={(event) => updateSelected({ priceMultiplier: Number(event.target.value) })} /></label>
           </section>
           <section className="shop-profile-rarities">
-            <header><div><h3>Distribuzione rarità</h3><p>Sostituisce le percentuali globali quando il profilo genera le scorte.</p></div><strong data-state={Math.abs(rarityTotal - 1) < .001 ? "valid" : "invalid"}>{Math.round(rarityTotal * 100)}%</strong></header>
-            <div>{[["1", "Comune"], ["2", "Non comune"], ["3", "Raro"], ["4", "Pregiato"]].map(([key, label]) => <label key={key}>{label}<span><input disabled={!canEdit} type="number" min="0" max="100" value={Math.round(Number(selected.rarityProbabilities[key] || 0) * 100)} onChange={(event) => updateSelected({ rarityProbabilities: { ...selected.rarityProbabilities, [key]: Number(event.target.value) / 100 } })} />%</span></label>)}</div>
+            <header><div><h3>Distribuzione rarità</h3><p>Sostituisce le percentuali globali quando il profilo genera le scorte. Una rarità a 0% non viene mai estratta da questo profilo.</p></div><strong data-state={Math.abs(rarityTotal - 1) < .001 ? "valid" : "invalid"}>{formatPercent(rarityTotal)}%</strong></header>
+            <div>{rarityChoices.map((choice) => {
+              const share = Number(selected.rarityProbabilities[choice.value] || 0);
+              return <label key={choice.value} data-state={share > 0 ? "active" : "empty"}>{choice.label}<span>
+                <input disabled={!canEdit} type="number" min="0" max="100" step="0.01" value={formatPercent(share)} onChange={(event) => updateSelected({ rarityProbabilities: { ...selected.rarityProbabilities, [choice.value]: Number(event.target.value) / 100 } })} />%
+              </span></label>;
+            })}</div>
+            {emptyRarities.length > 0 && <p className="form-warning">Nessun negozio con questo profilo può generare {emptyRarities.length === 1 ? "la rarità" : "le rarità"} {emptyRarities.map((choice) => choice.label).join(", ")}.</p>}
+          </section>
+          <section className="shop-profile-preview">
+            <header><div><h3>Prova il profilo</h3><p>Genera più volte senza salvare nulla e confronta la distribuzione ottenuta con quella richiesta.</p></div></header>
+            <div className="shop-profile-preview-controls">
+              <label>Tipo di negozio<select value={previewCategory} onChange={(event) => setPreviewCategory(event.target.value)}>{shopTypes.filter((type) => type.enabled).map((type) => <option key={type.key} value={type.key}>{type.label}</option>)}</select></label>
+              <label>Livello<input type="number" min={limits.minLevel || 1} max={limits.maxLevel || 20} value={previewLevel} onChange={(event) => setPreviewLevel(Number(event.target.value))} /></label>
+              <button type="button" className="button secondary" disabled={previewing || !previewCategory} onClick={() => onPreview({ generationProfileKey: selected.key, categoryKey: previewCategory, level: previewLevel })}>{previewing ? "Generazione…" : "Genera anteprima"}</button>
+            </div>
+            {preview && preview.profileKey === selected.key && <div className="shop-profile-preview-result">
+              <p className="muted-copy">{preview.samples} generazioni · {preview.categoryLabel} livello {preview.level} · {preview.fulfilledRolls}/{preview.requestedRolls} estrazioni riuscite · {preview.distinctItems} oggetti distinti su un bacino di {preview.candidatePoolSize}.</p>
+              <table className="data-table">
+                <thead><tr><th>Rarità</th><th>Richiesta</th><th>Ottenuta</th><th>Estratti</th><th>Non soddisfatte</th></tr></thead>
+                <tbody>{preview.rarities.map((entry) => <tr key={entry.rarity} data-state={entry.configured > 0 && entry.produced === 0 ? "invalid" : "valid"}>
+                  <td>{rarityChoices.find((choice) => choice.value === entry.rarity)?.label || entry.rarity}</td>
+                  <td>{formatPercent(entry.configured)}%</td>
+                  <td>{formatPercent(entry.share)}%</td>
+                  <td>{entry.produced}</td>
+                  <td>{entry.unfulfilled || "—"}</td>
+                </tr>)}</tbody>
+              </table>
+              {preview.rarities.some((entry) => entry.configured > 0 && entry.produced === 0) && <p className="form-warning">Una rarità richiesta non ha prodotto nulla: a questo livello non esiste alcun oggetto idoneo di quella rarità. Controlla la scheda «Oggetti esclusi».</p>}
+            </div>}
           </section>
         </>}
       </main>
@@ -309,6 +362,8 @@ const EXCLUSION_HINTS: Record<string, string> = {
   archived: "Voluto se l'oggetto è fuori uso; toglilo dall'archivio per rimetterlo in circolazione.",
   special: "Marcati come anomali o da rivedere. È la causa più frequente: controlla se il flag è ancora giustificato.",
   unique: "I pezzi Unici sono esclusi per scelta: vanno assegnati a mano.",
+  missingRarity: "Senza rarità l'oggetto non appartiene a nessuna estrazione. Assegnagli una rarità da 1 a 5.",
+  unreachableRarity: "La rarità esiste ma nessun profilo attivo le assegna una probabilità. Aggiungila nella scheda Profili.",
   noLootLevel: "Basta compilare lv_loot con un livello (3) o una fascia (4-6).",
   unrankedType: "Il tipo_1 non compare in nessuna categoria di negozio, oppure ha rango 5. Aggiungilo in Tipi e assortimento.",
 };
@@ -349,12 +404,15 @@ function StockEligibilityPanel({ report }: { report: StockEligibility }) {
   </section>;
 }
 
-function ShopManagementWorkspace({ market, saving, onSave, onAssign, onBatch }: {
+function ShopManagementWorkspace({ market, saving, previewing, profilePreview, onSave, onAssign, onBatch, onProfilePreview }: {
   market: MarketData;
   saving: boolean;
+  previewing: boolean;
+  profilePreview: ProfilePreview | null;
   onSave: (values: Record<string, unknown>) => void;
   onAssign: (shopId: number, profileKey: string) => void;
   onBatch: (values: Record<string, unknown>) => void;
+  onProfilePreview: (values: Record<string, unknown>) => void;
 }) {
   const [tab, setTab] = useState<WorkspaceTab>("territory");
   const [locations, setLocations] = useState(() => structuredClone(market.configuration.locations!));
@@ -384,7 +442,20 @@ function ShopManagementWorkspace({ market, saving, onSave, onAssign, onBatch }: 
     </nav>
     {tab === "territory" && <TerritoryEditor configuration={locations} market={market} onChange={setLocations} />}
     {tab === "types" && <ShopTypesEditor configuration={shopTypes} itemTypes={market.configuration.itemTypes || []} shops={market.shops} onChange={setShopTypes} />}
-    {tab === "profiles" && <ProfilesEditor configuration={profiles} shops={market.shops} canEdit={market.permissions.canEditGenerationProfiles} assigning={saving} onChange={setProfiles} onAssign={onAssign} />}
+    {tab === "profiles" && <ProfilesEditor
+      configuration={profiles}
+      shops={market.shops}
+      canEdit={market.permissions.canEditGenerationProfiles}
+      assigning={saving}
+      rarityChoices={market.configuration.rarityChoices || []}
+      shopTypes={market.shopTypes}
+      limits={market.configuration.limits}
+      onChange={setProfiles}
+      onAssign={onAssign}
+      onPreview={onProfilePreview}
+      preview={profilePreview}
+      previewing={previewing}
+    />}
     {tab === "eligibility" && market.stockEligibility && <StockEligibilityPanel report={market.stockEligibility} />}
     {tab === "generator" && rules && <section className="panel shop-generator-workspace" data-component-type="form" data-theme="parchment"><GeneratorRulesEditor rules={rules} onChange={setRules} /></section>}
     {tab === "batch" && <BatchCreator market={market} saving={saving} onCreate={onBatch} />}
@@ -395,6 +466,7 @@ function ShopManagementWorkspace({ market, saving, onSave, onAssign, onBatch }: 
 export function ShopManagementPage() {
   const { notify } = useApp();
   const queryClient = useQueryClient();
+  const [profilePreview, setProfilePreview] = useState<ProfilePreview | null>(null);
   const managementQuery = useQuery({
     queryKey: ["market-management"],
     queryFn: () => getData<MarketData>("/api/v1/management/shops"),
@@ -406,6 +478,13 @@ export function ShopManagementPage() {
       await queryClient.invalidateQueries({ queryKey: ["market"] });
       notify(response.events[0]?.message || "Gestione Negozi aggiornata.");
     },
+    onError: (error: Error) => notify(error.message, "error"),
+  });
+  // The dry-run never touches the catalogue, so it stays out of the cached
+  // management payload that every mutation replaces.
+  const previewMutation = useMutation({
+    mutationFn: (values: Record<string, unknown>) => command<MarketActionData>("market.profile.preview", { values }, "market-management"),
+    onSuccess: (response) => setProfilePreview(response.data.market?.profilePreview || null),
     onError: (error: Error) => notify(error.message, "error"),
   });
   const market = managementQuery.data;
@@ -421,9 +500,12 @@ export function ShopManagementPage() {
       key={market.configuration.hash || "market-management"}
       market={market}
       saving={mutation.isPending}
+      previewing={previewMutation.isPending}
+      profilePreview={profilePreview}
       onSave={(values) => mutation.mutate({ action: "market.settings.save", payload: { values } })}
       onAssign={(shopId, profileKey) => mutation.mutate({ action: "market.shop.profileAssign", payload: { shopId, profileKey } })}
       onBatch={(values) => mutation.mutate({ action: "market.shop.batchCreate", payload: { values, confirm: true } })}
+      onProfilePreview={(values) => previewMutation.mutate(values)}
     />}
   </div>;
 }
