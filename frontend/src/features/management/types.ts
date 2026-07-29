@@ -138,31 +138,8 @@ export type ManagedSkillRow = {
   archived: boolean;
   sourceProject: string;
   sourceId: number | null;
+  ownerCount: number;
   updatedAt: string | null;
-};
-
-export type SkillReviewSummary = {
-  id: number;
-  sourceProject: string;
-  sourceId: number;
-  name: string;
-  severity: "blocked" | "warning";
-  decision: string;
-  status: "open" | "imported" | "ignored";
-  blockers: string[];
-  blockerLabels: string[];
-  warnings: string[];
-  warningLabels: string[];
-  edited: boolean;
-  liveSkillId: number | null;
-  updatedAt: string | null;
-};
-
-export type SkillReviewDetail = SkillReviewSummary & {
-  suggestedValues: Record<string, unknown>;
-  workingValues: Record<string, unknown>;
-  source: Record<string, unknown>;
-  resolutionNotes: string;
 };
 
 export type SkillManagementOverview = {
@@ -172,14 +149,15 @@ export type SkillManagementOverview = {
     spells: number;
     families: number;
     groups: number;
-    openReviews: number;
-    blockedReviews: number;
   };
   groups: ManagedSkillGroup[];
   families: ManagedSkillFamily[];
   skills: ManagedSkillRow[];
+  total: number;
+  offset: number;
+  limit: number;
+  hasMore: boolean;
   skillOptions: Array<{ id: number; number: number; name: string; familyName: string; familyGroup: string }>;
-  reviews: SkillReviewSummary[];
   effectConfiguration: import("../../lib/types").EffectConfiguration;
 };
 
@@ -188,6 +166,7 @@ export type ManagedUnitSummary = {
   name: string;
   category: string;
   description: string;
+  imageUrl: string;
   generationKind: "creature" | "humanoid" | "";
   generationKindLabel: string;
   coreKey: string;
@@ -285,6 +264,8 @@ export type ManagedUnitDetail = {
   id: number | null;
   name: string;
   category: string;
+  loreImageId: number | null;
+  loreImageUrl: string;
   archetypeDescription: string;
   competenceProfile: Record<string, number>;
   archetypeTags: Record<string, number>;
@@ -298,6 +279,7 @@ export type ManagedUnitDetail = {
   equipmentSlots: UnitEquipmentSlotEntry[];
   equipmentGroups: UnitEquipmentGroup[];
   accessoryCountByLevel: UnitAccessoryCountBand[];
+  accessoryProfileKey: string;
   innateActions: UnitInnateAction[];
   levels: Array<Record<string, unknown>>;
   loreDescription: string;
@@ -315,6 +297,7 @@ export type UnitManagementOverview = {
     cores: Array<{ value: string; label: string; profile: Record<string, number> }>;
     tags: Array<{ key: string; label: string; minimum: number; maximum: number }>;
     equipmentSlots: Array<{ value: string; label: string }>;
+    accessoryProfiles: Array<{ value: string; label: string; description: string }>;
     competences: Array<{ key: string; label: string }>;
     magicPolicies: Array<{ value: "none" | "any"; label: string }>;
     classFamilies: Array<{ value: string; label: string }>;

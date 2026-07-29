@@ -522,6 +522,16 @@
               "type": "string"
             },
             "required": false
+          },
+          {
+            "in": "query",
+            "name": "campaign",
+            "schema": {
+              "default": "",
+              "title": "Campaign",
+              "type": "string"
+            },
+            "required": false
           }
         ],
         "responses": {
@@ -617,7 +627,78 @@
       "get": {
         "operationId": "backend_api_v1_api_managed_skills",
         "summary": "Managed Skills",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "schema": {
+              "default": "",
+              "title": "Query",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "group_id",
+            "schema": {
+              "default": 0,
+              "title": "Group Id",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "family_id",
+            "schema": {
+              "default": 0,
+              "title": "Family Id",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "schema": {
+              "default": "",
+              "title": "State",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "schema": {
+              "default": "",
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -660,63 +741,6 @@
             "name": "skill_id",
             "schema": {
               "title": "Skill Id",
-              "type": "integer"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ManagementEnvelopeSchema"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "management"
-        ],
-        "security": [
-          {
-            "SessionCookieAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/management/skill-reviews/{review_id}": {
-      "get": {
-        "operationId": "backend_api_v1_api_managed_skill_review",
-        "summary": "Managed Skill Review",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "review_id",
-            "schema": {
-              "title": "Review Id",
               "type": "integer"
             },
             "required": true
@@ -1078,7 +1102,78 @@
       "get": {
         "operationId": "backend_api_v1_api_dice_history",
         "summary": "Dice History",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "player",
+            "schema": {
+              "default": "",
+              "title": "Player",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "character_id",
+            "schema": {
+              "default": 0,
+              "title": "Character Id",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "schema": {
+              "default": "",
+              "title": "Source",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "since_days",
+            "schema": {
+              "default": 0,
+              "title": "Since Days",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 100,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "statistics",
+            "schema": {
+              "default": false,
+              "title": "Statistics",
+              "type": "boolean"
+            },
+            "required": false
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1524,8 +1619,10 @@
                     "competencies.updateExtra": "#/components/schemas/CompetenceExtraActionSchema",
                     "competencies.upgrade": "#/components/schemas/CompetenceUpgradeActionSchema",
                     "dice.roll": "#/components/schemas/DiceRollActionSchema",
+                    "diceHistory.purge": "#/components/schemas/DiceHistoryPurgeActionSchema",
                     "diceSets.archive": "#/components/schemas/DiceSetArchiveActionSchema",
                     "diceSets.create": "#/components/schemas/DiceSetCreateActionSchema",
+                    "diceSets.duplicate": "#/components/schemas/DiceSetDuplicateActionSchema",
                     "diceSets.update": "#/components/schemas/DiceSetUpdateActionSchema",
                     "effects.apply": "#/components/schemas/ApplyEffectActionSchema",
                     "effects.create": "#/components/schemas/CreateEffectActionSchema",
@@ -1539,6 +1636,8 @@
                     "items.archive": "#/components/schemas/ArchiveItemActionSchema",
                     "items.compareSave": "#/components/schemas/CompareItemActionSchema",
                     "items.create": "#/components/schemas/CreateItemActionSchema",
+                    "items.recheckSpecial": "#/components/schemas/ItemRecheckSpecialActionSchema",
+                    "items.setSpecial": "#/components/schemas/ItemSetSpecialActionSchema",
                     "items.update": "#/components/schemas/UpdateItemActionSchema",
                     "lore.character.delete": "#/components/schemas/LoreCharacterDeleteActionSchema",
                     "lore.character.save": "#/components/schemas/LoreCharacterSaveActionSchema",
@@ -1559,11 +1658,8 @@
                     "management.skills.family.state": "#/components/schemas/ManagedSkillFamilyStateActionSchema",
                     "management.skills.group.save": "#/components/schemas/ManagedSkillGroupSaveActionSchema",
                     "management.skills.group.state": "#/components/schemas/ManagedSkillGroupStateActionSchema",
-                    "management.skills.review.import": "#/components/schemas/ManagedSkillReviewImportActionSchema",
-                    "management.skills.review.save": "#/components/schemas/ManagedSkillReviewSaveActionSchema",
-                    "management.skills.review.status": "#/components/schemas/ManagedSkillReviewStatusActionSchema",
-                    "management.skills.review.sync": "#/components/schemas/ManagedSkillReviewSyncActionSchema",
                     "management.skills.skill.state": "#/components/schemas/ManagedSkillStateActionSchema",
+                    "management.skills.structure.reorder": "#/components/schemas/ManagedSkillStructureReorderActionSchema",
                     "management.themes.archive": "#/components/schemas/ManagedThemeArchiveActionSchema",
                     "management.themes.create": "#/components/schemas/ManagedThemeCreateActionSchema",
                     "management.themes.save": "#/components/schemas/ManagedThemeSaveActionSchema",
@@ -1676,16 +1772,19 @@
                     "$ref": "#/components/schemas/ManagedSkillFamilyStateActionSchema"
                   },
                   {
-                    "$ref": "#/components/schemas/ManagedSkillReviewSyncActionSchema"
+                    "$ref": "#/components/schemas/ItemSetSpecialActionSchema"
                   },
                   {
-                    "$ref": "#/components/schemas/ManagedSkillReviewSaveActionSchema"
+                    "$ref": "#/components/schemas/ItemRecheckSpecialActionSchema"
                   },
                   {
-                    "$ref": "#/components/schemas/ManagedSkillReviewImportActionSchema"
+                    "$ref": "#/components/schemas/DiceSetDuplicateActionSchema"
                   },
                   {
-                    "$ref": "#/components/schemas/ManagedSkillReviewStatusActionSchema"
+                    "$ref": "#/components/schemas/DiceHistoryPurgeActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedSkillStructureReorderActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/ManagedSkillStateActionSchema"
@@ -3173,6 +3272,14 @@
             "default": {},
             "title": "Metadata",
             "type": "object"
+          },
+          "specialReasons": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemSpecialReasonSchema"
+            },
+            "title": "Specialreasons",
+            "type": "array"
           }
         },
         "required": [
@@ -3180,6 +3287,29 @@
           "name"
         ],
         "title": "ItemSchema",
+        "type": "object"
+      },
+      "ItemSpecialReasonSchema": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "label"
+        ],
+        "title": "ItemSpecialReasonSchema",
         "type": "object"
       },
       "NoteSectionsSchema": {
@@ -3954,6 +4084,14 @@
             "title": "Textures",
             "type": "array"
           },
+          "untexturedDice": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Untextureddice",
+            "type": "array"
+          },
           "isActive": {
             "title": "Isactive",
             "type": "boolean"
@@ -4126,6 +4264,24 @@
         "title": "DiceTextureSchema",
         "type": "object"
       },
+      "DiceFaceCountSchema": {
+        "properties": {
+          "face": {
+            "title": "Face",
+            "type": "integer"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "face",
+          "count"
+        ],
+        "title": "DiceFaceCountSchema",
+        "type": "object"
+      },
       "DiceHistoryDataSchema": {
         "properties": {
           "rolls": {
@@ -4139,6 +4295,47 @@
             "default": 100,
             "title": "Limit",
             "type": "integer"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "hasMore": {
+            "default": false,
+            "title": "Hasmore",
+            "type": "boolean"
+          },
+          "sources": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EffectConfigurationOptionSchema"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "players": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Players",
+            "type": "array"
+          },
+          "statistics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiceStatisticsSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -4278,6 +4475,69 @@
           "rolledAt"
         ],
         "title": "DiceHistoryRollSchema",
+        "type": "object"
+      },
+      "DiceStatisticsRowSchema": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rolls": {
+            "title": "Rolls",
+            "type": "integer"
+          },
+          "dice": {
+            "title": "Dice",
+            "type": "integer"
+          },
+          "averageTotal": {
+            "title": "Averagetotal",
+            "type": "number"
+          },
+          "averageDie": {
+            "title": "Averagedie",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "rolls",
+          "dice",
+          "averageTotal",
+          "averageDie"
+        ],
+        "title": "DiceStatisticsRowSchema",
+        "type": "object"
+      },
+      "DiceStatisticsSchema": {
+        "properties": {
+          "byPlayer": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DiceStatisticsRowSchema"
+            },
+            "title": "Byplayer",
+            "type": "array"
+          },
+          "byDiceSet": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DiceStatisticsRowSchema"
+            },
+            "title": "Bydiceset",
+            "type": "array"
+          },
+          "faceDistribution": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DiceFaceCountSchema"
+            },
+            "title": "Facedistribution",
+            "type": "array"
+          }
+        },
+        "title": "DiceStatisticsSchema",
         "type": "object"
       },
       "CharacterNotesDataSchema": {
@@ -7944,6 +8204,52 @@
         "title": "CreateItemActionSchema",
         "type": "object"
       },
+      "DiceHistoryPurgeActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "diceHistory.purge",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/DiceHistoryPurgePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "DiceHistoryPurgeActionSchema",
+        "type": "object"
+      },
+      "DiceHistoryPurgePayloadSchema": {
+        "properties": {
+          "olderThanDays": {
+            "default": 30,
+            "title": "Olderthandays",
+            "type": "integer"
+          }
+        },
+        "title": "DiceHistoryPurgePayloadSchema",
+        "type": "object"
+      },
       "DiceRollActionSchema": {
         "properties": {
           "requestId": {
@@ -8121,6 +8427,41 @@
         "title": "DiceSetCreatePayloadSchema",
         "type": "object"
       },
+      "DiceSetDuplicateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "diceSets.duplicate",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/DiceSetArchivePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "DiceSetDuplicateActionSchema",
+        "type": "object"
+      },
       "DiceSetUpdateActionSchema": {
         "properties": {
           "requestId": {
@@ -8173,6 +8514,113 @@
           "values"
         ],
         "title": "DiceSetUpdatePayloadSchema",
+        "type": "object"
+      },
+      "ItemRecheckSpecialActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "items.recheckSpecial",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ItemRecheckSpecialPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ItemRecheckSpecialActionSchema",
+        "type": "object"
+      },
+      "ItemRecheckSpecialPayloadSchema": {
+        "properties": {
+          "itemIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Itemids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "itemIds"
+        ],
+        "title": "ItemRecheckSpecialPayloadSchema",
+        "type": "object"
+      },
+      "ItemSetSpecialActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "items.setSpecial",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ItemSetSpecialPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ItemSetSpecialActionSchema",
+        "type": "object"
+      },
+      "ItemSetSpecialPayloadSchema": {
+        "properties": {
+          "itemIds": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Itemids",
+            "type": "array"
+          },
+          "special": {
+            "title": "Special",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "itemIds",
+          "special"
+        ],
+        "title": "ItemSetSpecialPayloadSchema",
         "type": "object"
       },
       "ItemWritePayloadSchema": {
@@ -9074,210 +9522,6 @@
         "title": "ManagedSkillGroupStateActionSchema",
         "type": "object"
       },
-      "ManagedSkillReviewImportActionSchema": {
-        "properties": {
-          "requestId": {
-            "title": "Requestid",
-            "type": "string"
-          },
-          "context": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Context",
-            "type": "object"
-          },
-          "meta": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Meta",
-            "type": "object"
-          },
-          "action": {
-            "const": "management.skills.review.import",
-            "title": "Action",
-            "type": "string"
-          },
-          "payload": {
-            "$ref": "#/components/schemas/ManagedSkillReviewPayloadSchema"
-          }
-        },
-        "required": [
-          "requestId",
-          "action",
-          "payload"
-        ],
-        "title": "ManagedSkillReviewImportActionSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewPayloadSchema": {
-        "properties": {
-          "reviewId": {
-            "title": "Reviewid",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "reviewId"
-        ],
-        "title": "ManagedSkillReviewPayloadSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewSaveActionSchema": {
-        "properties": {
-          "requestId": {
-            "title": "Requestid",
-            "type": "string"
-          },
-          "context": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Context",
-            "type": "object"
-          },
-          "meta": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Meta",
-            "type": "object"
-          },
-          "action": {
-            "const": "management.skills.review.save",
-            "title": "Action",
-            "type": "string"
-          },
-          "payload": {
-            "$ref": "#/components/schemas/ManagedSkillReviewSavePayloadSchema"
-          }
-        },
-        "required": [
-          "requestId",
-          "action",
-          "payload"
-        ],
-        "title": "ManagedSkillReviewSaveActionSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewSavePayloadSchema": {
-        "properties": {
-          "reviewId": {
-            "title": "Reviewid",
-            "type": "integer"
-          },
-          "values": {
-            "additionalProperties": true,
-            "title": "Values",
-            "type": "object"
-          },
-          "notes": {
-            "default": "",
-            "title": "Notes",
-            "type": "string"
-          }
-        },
-        "required": [
-          "reviewId",
-          "values"
-        ],
-        "title": "ManagedSkillReviewSavePayloadSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewStatusActionSchema": {
-        "properties": {
-          "requestId": {
-            "title": "Requestid",
-            "type": "string"
-          },
-          "context": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Context",
-            "type": "object"
-          },
-          "meta": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Meta",
-            "type": "object"
-          },
-          "action": {
-            "const": "management.skills.review.status",
-            "title": "Action",
-            "type": "string"
-          },
-          "payload": {
-            "$ref": "#/components/schemas/ManagedSkillReviewStatusPayloadSchema"
-          }
-        },
-        "required": [
-          "requestId",
-          "action",
-          "payload"
-        ],
-        "title": "ManagedSkillReviewStatusActionSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewStatusPayloadSchema": {
-        "properties": {
-          "reviewId": {
-            "title": "Reviewid",
-            "type": "integer"
-          },
-          "status": {
-            "enum": [
-              "open",
-              "ignored"
-            ],
-            "title": "Status",
-            "type": "string"
-          }
-        },
-        "required": [
-          "reviewId",
-          "status"
-        ],
-        "title": "ManagedSkillReviewStatusPayloadSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewSyncActionSchema": {
-        "properties": {
-          "requestId": {
-            "title": "Requestid",
-            "type": "string"
-          },
-          "context": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Context",
-            "type": "object"
-          },
-          "meta": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Meta",
-            "type": "object"
-          },
-          "action": {
-            "const": "management.skills.review.sync",
-            "title": "Action",
-            "type": "string"
-          },
-          "payload": {
-            "$ref": "#/components/schemas/ManagedSkillReviewSyncPayloadSchema"
-          }
-        },
-        "required": [
-          "requestId",
-          "action",
-          "payload"
-        ],
-        "title": "ManagedSkillReviewSyncActionSchema",
-        "type": "object"
-      },
-      "ManagedSkillReviewSyncPayloadSchema": {
-        "properties": {},
-        "title": "ManagedSkillReviewSyncPayloadSchema",
-        "type": "object"
-      },
       "ManagedSkillStateActionSchema": {
         "properties": {
           "requestId": {
@@ -9329,6 +9573,63 @@
           "archived"
         ],
         "title": "ManagedSkillStatePayloadSchema",
+        "type": "object"
+      },
+      "ManagedSkillStructureReorderActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.skills.structure.reorder",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedSkillStructureReorderPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedSkillStructureReorderActionSchema",
+        "type": "object"
+      },
+      "ManagedSkillStructureReorderPayloadSchema": {
+        "properties": {
+          "groups": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "families": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Families",
+            "type": "array"
+          }
+        },
+        "title": "ManagedSkillStructureReorderPayloadSchema",
         "type": "object"
       },
       "ManagedSkillStructureStatePayloadSchema": {

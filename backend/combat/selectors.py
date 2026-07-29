@@ -677,7 +677,9 @@ def combat_workspace_payload(user, giocatore: Giocatore, map_id=None):
         ] if can_manage else [],
         "unitCatalog": [
             unit_catalog_entry(entry)
-            for entry in Unit.objects.filter(archived_at__isnull=True).order_by("categoria", "nome")
+            for entry in Unit.objects.filter(archived_at__isnull=True)
+            .select_related("lore_image")
+            .order_by("categoria", "nome")
         ] if can_manage else [],
         "baseMovementAp": float(global_setting_value("combat.base_movement_ap", 1) or 1),
         "effectCatalog": effect_catalog_payload() if can_manage else [],

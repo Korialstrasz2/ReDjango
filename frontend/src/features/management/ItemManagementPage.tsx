@@ -9,7 +9,11 @@ import { ItemEditorModal } from "../character/ItemEditorModal";
 import { command, getData } from "../../lib/api";
 import type { Item, ItemCatalog } from "../../lib/types";
 
-type ItemActionData = { item?: Item | null; catalog?: ItemCatalog | null; management?: { created?: boolean; updated?: number } | null };
+type ItemActionData = {
+  item?: Item | null;
+  catalog?: ItemCatalog | null;
+  management?: { created?: boolean; updated?: number; checked?: number; cleared?: number; stillSpecial?: number } | null;
+};
 type ItemDraft = {
   identityId: number | null;
   identityName: string;
@@ -247,6 +251,13 @@ function LegacyComparerTab({ onSaved }: { onSaved: (item: Item, created: boolean
   }} />;
 }
 
+function SpecialReasonChips({ item }: { item: Item }) {
+  if (!item.specialReasons.length) {
+    return <small className="item-special-reason-chips" data-empty="true">Nessun motivo rilevato · ricontrolla o verifica a mano</small>;
+  }
+  return <small className="item-special-reason-chips">{item.specialReasons.map((reason) => <span key={reason.code} className="item-special-reason-chip">{reason.label}</span>)}</small>;
+}
+
 const PAGE_SIZE = 100;
 
 export function ItemManagementPage() {
@@ -309,6 +320,16 @@ export function ItemManagementPage() {
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
+  const recheckMutation = useMutation({
+    mutationFn: (itemIds: number[]) => command<ItemActionData>("items.recheckSpecial", { itemIds }, "management-items"),
+    onSuccess: async (response) => {
+      await invalidate();
+      setTriageSelection([]);
+      const { cleared = 0, stillSpecial = 0 } = response.data.management || {};
+      notify(`${cleared} oggetti non sono più Speciali, ${stillSpecial} hanno ancora un motivo aperto.`);
+    },
+    onError: (error: Error) => notify(error.message, "error"),
+  });
   const types = useMemo(() => (catalog?.typeOptions || []).filter((option) => option.position === 1), [catalog]);
   const items = catalog?.items || [];
   const total = catalog?.total ?? 0;
@@ -333,14 +354,15 @@ export function ItemManagementPage() {
       {specialFilter === "special" && <section className="panel item-triage-bar" data-component-type="toolbar" data-theme="gold">
         <div>
           <strong>{catalog.specialCount ?? 0} oggetti sono marcati Speciali</strong>
-          <p>Il flag li esclude da ogni negozio. Seleziona quelli ormai a posto e togli il flag in blocco; il resto del catalogo non viene toccato.</p>
+          <p>Il flag li esclude da ogni negozio. <em>Ricontrolla</em> lo toglie solo dove il motivo originale (tipo mancante, effetti Elder non convertiti, non modello, temporaneo) risulta davvero risolto; <em>Forza rimozione</em> lo toglie comunque, senza verifica.</p>
         </div>
         <div className="button-row">
           <button type="button" className="button secondary" disabled={!items.length} onClick={() => setTriageSelection(triageSelection.length === items.length ? [] : items.map((item) => item.id))}>{triageSelection.length === items.length && items.length ? "Deseleziona pagina" : "Seleziona pagina"}</button>
-          <button type="button" className="button primary" disabled={!triageSelection.length || triageMutation.isPending} onClick={() => { if (window.confirm(`Togliere il flag Speciale da ${triageSelection.length} oggetti?`)) triageMutation.mutate(triageSelection); }}>{triageMutation.isPending ? "Aggiornamento…" : `Togli Speciale (${triageSelection.length})`}</button>
+          <button type="button" className="button secondary" disabled={!triageSelection.length || recheckMutation.isPending} onClick={() => recheckMutation.mutate(triageSelection)}>{recheckMutation.isPending ? "Verifica…" : `Ricontrolla (${triageSelection.length})`}</button>
+          <button type="button" className="button primary" disabled={!triageSelection.length || triageMutation.isPending} onClick={() => { if (window.confirm(`Forzare la rimozione del flag Speciale da ${triageSelection.length} oggetti, anche se il motivo non risulta risolto?`)) triageMutation.mutate(triageSelection); }}>{triageMutation.isPending ? "Aggiornamento…" : `Forza rimozione (${triageSelection.length})`}</button>
         </div>
       </section>}
-      <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{total} oggetti</strong><small>{total ? `${offset + 1}–${offset + items.length}` : "nessun risultato"}{catalogQuery.isFetching ? " · aggiornamento…" : ""}</small></header>{items.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}>{specialFilter === "special" && <input type="checkbox" aria-label={`Seleziona ${item.name}`} checked={triageSelection.includes(item.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleTriage(item.id)} />}<span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small></span><b>{item.weight ?? "—"}</b></button>)}{!items.length && !catalogQuery.isFetching && <div className="management-empty-state"><strong>Nessun oggetto</strong><p>Cambia ricerca o filtri.</p></div>}<footer className="managed-item-pager"><button type="button" className="button secondary small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>← Precedenti</button><span>{Math.floor(offset / PAGE_SIZE) + 1} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><button type="button" className="button secondary small" disabled={!catalog.hasMore} onClick={() => setOffset(offset + PAGE_SIZE)}>Successivi →</button></footer></section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}{selected.special ? " · speciale" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p><dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.notes && <aside><strong>Note</strong><p>{selected.notes}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
+      <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{total} oggetti</strong><small>{total ? `${offset + 1}–${offset + items.length}` : "nessun risultato"}{catalogQuery.isFetching ? " · aggiornamento…" : ""}</small></header>{items.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}>{specialFilter === "special" && <input type="checkbox" aria-label={`Seleziona ${item.name}`} checked={triageSelection.includes(item.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleTriage(item.id)} />}<span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small>{specialFilter === "special" && <SpecialReasonChips item={item} />}</span><b>{item.weight ?? "—"}</b></button>)}{!items.length && !catalogQuery.isFetching && <div className="management-empty-state"><strong>Nessun oggetto</strong><p>Cambia ricerca o filtri.</p></div>}<footer className="managed-item-pager"><button type="button" className="button secondary small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>← Precedenti</button><span>{Math.floor(offset / PAGE_SIZE) + 1} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><button type="button" className="button secondary small" disabled={!catalog.hasMore} onClick={() => setOffset(offset + PAGE_SIZE)}>Successivi →</button></footer></section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}{selected.special ? " · speciale" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p>{selected.special && <aside className="item-special-evidence"><strong>Perché è marcato Speciale</strong>{selected.specialReasons.length ? <ul>{selected.specialReasons.map((reason) => <li key={reason.code}><strong>{reason.label}</strong><span>{reason.hint}</span></li>)}</ul> : <p>Nessun motivo automatico rilevato: probabilmente il flag è stato impostato a mano, oppure la causa originale è già stata risolta. Prova <em>Ricontrolla</em> nell'elenco, oppure togli il flag da qui sotto.</p>}</aside>}<dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.notes && <aside><strong>Note</strong><p>{selected.notes}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
     </>}
     {mode === "compare" && <LegacyComparerTab onSaved={(item) => { setSelectedId(item.id); void invalidate(); }} />}
     {editorItem !== undefined && catalog && <ItemEditorModal item={editorItem} clone={cloning} catalog={catalog} media={media} saving={mutation.isPending} onClose={() => { setEditorItem(undefined); setCloning(false); }} onSave={saveEditor} onArchive={editorItem && !cloning ? archiveEditor : undefined} />}

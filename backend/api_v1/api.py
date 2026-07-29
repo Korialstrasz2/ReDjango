@@ -50,7 +50,14 @@ from backend.core.campaigns import (
     update_shared_campaign_notes,
 )
 from backend.core.item_selectors import item_catalog_payload
-from backend.core.item_services import archive_item, create_item, save_compared_item, set_items_special, update_item
+from backend.core.item_services import (
+    archive_item,
+    create_item,
+    recheck_items_special,
+    save_compared_item,
+    set_items_special,
+    update_item,
+)
 from backend.core.management_selectors import character_management_detail, character_management_overview
 from backend.core.management_services import (
     attach_orphan_record,
@@ -65,7 +72,7 @@ from backend.core.game_variable_services import (
     save_game_variables,
     validate_game_variables,
 )
-from backend.core.models import Giocatore, Skill, SkillMigrationReview
+from backend.core.models import Giocatore, Skill
 from backend.core.theme_selectors import themes_management_payload
 from backend.core.theme_services import (
     archive_theme,
@@ -89,22 +96,17 @@ from backend.lore.services import (
 )
 from backend.core.skill_management_selectors import (
     managed_skill_detail,
-    migration_review_detail,
     serialize_managed_family,
     serialize_managed_group,
-    serialize_review_summary,
     skill_management_overview,
 )
 from backend.core.skill_management_services import (
-    import_legacy_skill_review,
-    save_legacy_skill_review,
     save_skill_family,
     save_skill_group,
-    set_legacy_skill_review_status,
     set_managed_skill_archived,
     set_skill_family_archived,
+    reorder_skill_structure,
     set_skill_group_archived,
-    sync_legacy_skill_reviews,
 )
 from backend.core.security import effective_role, get_or_create_giocatore_for_user, has_minimum_role
 from backend.core.skill_selectors import serialize_skill, skill_catalog_payload
@@ -125,6 +127,8 @@ from backend.dice_tools.selectors import dice_history_payload, dice_sets_payload
 from backend.dice_tools.services import (
     archive_dice_set,
     create_dice_set,
+    duplicate_dice_set,
+    purge_dice_history,
     record_competence_dice_roll,
     record_quick_dice_roll,
     roll_dice,
@@ -411,10 +415,27 @@ def managed_character_detail(request: HttpRequest, character_id: int):
     response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
     tags=["management"],
 )
-def managed_skills(request: HttpRequest):
+def managed_skills(
+    request: HttpRequest,
+    query: str = "",
+    group_id: int = 0,
+    family_id: int = 0,
+    state: str = "",
+    kind: str = "",
+    offset: int = 0,
+    limit: int = 100,
+):
     user, giocatore = _identity(request)
     require_game_manager(user, giocatore)
-    return _envelope(request, skill_management_overview())
+    return _envelope(request, skill_management_overview(
+        query.strip(),
+        group_id=group_id or None,
+        family_id=family_id or None,
+        state=state.strip(),
+        kind=kind.strip(),
+        offset=offset,
+        limit=limit,
+    ))
 
 
 @api.get(
@@ -429,20 +450,6 @@ def managed_skill(request: HttpRequest, skill_id: int):
         return _envelope(request, managed_skill_detail(skill_id))
     except Skill.DoesNotExist as exc:
         raise ApiError("skills.not_found", "Abilità non trovata.", status=404) from exc
-
-
-@api.get(
-    "/management/skill-reviews/{review_id}",
-    response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema, 404: ErrorEnvelopeSchema},
-    tags=["management"],
-)
-def managed_skill_review(request: HttpRequest, review_id: int):
-    user, giocatore = _identity(request)
-    require_game_manager(user, giocatore)
-    try:
-        return _envelope(request, migration_review_detail(review_id))
-    except SkillMigrationReview.DoesNotExist as exc:
-        raise ApiError("management.skills.review_not_found", "Revisione non trovata.", status=404) from exc
 
 
 @api.get(
@@ -528,9 +535,27 @@ def dice_sets(request: HttpRequest, include_inactive: bool = False):
     response={200: DiceHistoryEnvelopeSchema, 403: ErrorEnvelopeSchema},
     tags=["dice"],
 )
-def dice_history(request: HttpRequest):
+def dice_history(
+    request: HttpRequest,
+    player: str = "",
+    character_id: int = 0,
+    source: str = "",
+    since_days: int = 0,
+    limit: int = 100,
+    offset: int = 0,
+    statistics: bool = False,
+):
     user, giocatore = _identity(request)
-    return _envelope(request, dice_history_payload(user, giocatore))
+    return _envelope(request, dice_history_payload(
+        user, giocatore,
+        player=player.strip(),
+        character_id=character_id or None,
+        source=source.strip(),
+        since_days=since_days,
+        limit=limit,
+        offset=offset,
+        include_statistics=statistics,
+    ))
 
 
 @api.get("/characters/{character_id}/notes", response={200: CharacterNotesEnvelopeSchema, 404: ErrorEnvelopeSchema}, tags=["notes"])
@@ -779,6 +804,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             updated = set_items_special(user, giocatore, payload.get("itemIds", []), bool(payload.get("special")))
             data = {"management": {"updated": updated}}
             message = f"{updated} oggetti aggiornati."
+        elif action == "items.recheckSpecial":
+            result = recheck_items_special(user, giocatore, payload.get("itemIds", []))
+            data = {"management": result}
+            message = f"{result['cleared']} oggetti non sono più Speciali, {result['stillSpecial']} hanno ancora un motivo aperto."
         elif action == "items.compareSave":
             item, created = save_compared_item(
                 user,
@@ -842,31 +871,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             family = set_skill_family_archived(user, giocatore, payload["familyId"], payload["archived"])
             data = {"management": {"family": serialize_managed_family(family)}}
             message = f"Famiglia {family.nome} {'archiviata' if payload['archived'] else 'ripristinata'}."
-        elif action == "management.skills.review.sync":
-            sync_result = sync_legacy_skill_reviews(user, giocatore)
-            data = {"management": {"reviewSync": sync_result}}
-            message = f"Coda Elder aggiornata: {sync_result['queued']} record da controllare."
-        elif action == "management.skills.review.save":
-            review = save_legacy_skill_review(
-                user,
-                giocatore,
-                payload["reviewId"],
-                payload.get("values", {}),
-                payload.get("notes", ""),
-            )
-            data = {"management": {"review": serialize_review_summary(review)}}
-            message = f"Correzione di {review.nome} salvata."
-        elif action == "management.skills.review.import":
-            review, skill = import_legacy_skill_review(user, giocatore, payload["reviewId"])
-            data = {
-                "management": {"review": serialize_review_summary(review)},
-                "skill": serialize_skill(skill),
-            }
-            message = f"{skill.nome} importata dalla revisione Elder."
-        elif action == "management.skills.review.status":
-            review = set_legacy_skill_review_status(user, giocatore, payload["reviewId"], payload["status"])
-            data = {"management": {"review": serialize_review_summary(review)}}
-            message = f"Stato di {review.nome} aggiornato."
+        elif action == "management.skills.structure.reorder":
+            touched = reorder_skill_structure(user, giocatore, payload.get("groups"), payload.get("families"))
+            data = {"management": {"reordered": touched}}
+            message = f"Ordine aggiornato: {touched['groups']} gruppi, {touched['families']} famiglie."
         elif action == "management.skills.skill.state":
             skill = set_managed_skill_archived(user, giocatore, payload["skillId"], payload["archived"])
             data = {"skill": serialize_skill(skill)}
@@ -993,6 +1001,14 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             dice_set = archive_dice_set(user, giocatore, payload["diceSetId"])
             data = {"diceSets": dice_sets_payload(include_inactive=True)}
             message = f"Set {dice_set.name} archiviato."
+        elif action == "diceSets.duplicate":
+            dice_set = duplicate_dice_set(user, giocatore, payload["diceSetId"])
+            data = {"diceSets": dice_sets_payload(include_inactive=True)}
+            message = f"Set {dice_set.name} creato come copia."
+        elif action == "diceHistory.purge":
+            archived = purge_dice_history(user, giocatore, older_than_days=payload.get("olderThanDays", 30))
+            data = {"management": {"archived": archived}}
+            message = f"{archived} tiri archiviati."
         elif action == "notes.updateSection":
             character = update_note_section(payload["characterId"], payload["section"], payload["content"])
             data = {"notes": character_notes_payload(character)}

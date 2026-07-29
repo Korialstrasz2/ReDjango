@@ -35,7 +35,7 @@ class OpenAIImageProvider:
         if not base:
             raise ApiError("ai.base_url_missing", "Configura l'indirizzo del provider immagini.", status=409)
         payload: dict[str, Any] = {
-            "model": self.provider.model or "gpt-image-1",
+            "model": self.provider.model or "gpt-image-2",
             "prompt": prompt,
             "size": size,
             "n": 1,

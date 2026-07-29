@@ -1,8 +1,10 @@
 from django.test import TestCase
 
+from backend.characters.selectors import serialize_item
 from backend.core.api import ApiError
 from backend.core.item_selectors import item_catalog_payload
-from backend.core.item_services import archive_item, restore_item, set_items_special, update_item
+from backend.core.item_services import archive_item, recheck_items_special, restore_item, set_items_special, update_item
+from backend.core.item_special import compute_special_reasons
 from backend.core.models import Giocatore, Oggetto
 
 
@@ -66,6 +68,93 @@ class ItemSpecialTriageTests(TestCase):
     def test_an_empty_selection_is_refused(self):
         with self.assertRaises(ApiError):
             set_items_special(None, self.master, [], False)
+
+
+class ItemSpecialReasonsTests(TestCase):
+    def test_a_clean_item_has_no_reasons(self):
+        item = Oggetto.objects.create(nome="A posto", tipo_1="pozione")
+        self.assertEqual(compute_special_reasons(item), [])
+
+    def test_each_reason_is_detected_independently(self):
+        self.assertEqual(
+            compute_special_reasons(Oggetto.objects.create(nome="Non modello", tipo_1="pozione", modello=False)),
+            ["non_modello"],
+        )
+        self.assertEqual(
+            compute_special_reasons(Oggetto.objects.create(nome="Temporaneo", tipo_1="pozione", temporaneo=True)),
+            ["temporaneo"],
+        )
+        self.assertEqual(
+            compute_special_reasons(Oggetto.objects.create(nome="Senza tipo")),
+            ["tipo_1_vuoto"],
+        )
+        descriptive = Oggetto.objects.create(
+            nome="Effetto testuale", tipo_1="pozione", effetto_1="Un effetto scritto a mano",
+        )
+        self.assertEqual(compute_special_reasons(descriptive), ["effetti_descrittivi"])
+
+    def test_a_convertible_elder_effect_is_not_a_reason(self):
+        item = Oggetto.objects.create(nome="Effetto convertibile", tipo_1="pozione", effetto_1="Personaggio.pf +5")
+        self.assertEqual(compute_special_reasons(item), [])
+
+    def test_multiple_reasons_stack_in_a_stable_order(self):
+        item = Oggetto.objects.create(nome="Un disastro", modello=False, temporaneo=True)
+        self.assertEqual(compute_special_reasons(item), ["non_modello", "temporaneo", "tipo_1_vuoto"])
+
+    def test_serialize_item_reports_labeled_reasons(self):
+        item = Oggetto.objects.create(nome="Serializzato", modello=False)
+        reasons = serialize_item(item, detailed=True)["specialReasons"]
+        self.assertEqual([entry["code"] for entry in reasons], ["non_modello", "tipo_1_vuoto"])
+        self.assertTrue(all(entry["label"] for entry in reasons))
+
+    def test_the_summary_view_does_not_include_reasons(self):
+        item = Oggetto.objects.create(nome="Riassunto", modello=False)
+        self.assertNotIn("specialReasons", serialize_item(item, detailed=False))
+
+
+class ItemRecheckSpecialTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.master = Giocatore.objects.create(nome="master", role=Giocatore.ROLE_MASTER)
+        cls.player = Giocatore.objects.create(nome="player", role=Giocatore.ROLE_USER)
+
+    def test_recheck_clears_the_flag_once_the_cause_is_fixed(self):
+        item = Oggetto.objects.create(
+            nome="Da rivalutare", tipo_1="pozione", modello=False, speciale=True,
+            metadata={"specialReasons": ["non_modello"]},
+        )
+        update_item(None, self.master, item.id, {"modello": True})
+        result = recheck_items_special(None, self.master, [item.id])
+        item.refresh_from_db()
+        self.assertEqual(result, {"checked": 1, "cleared": 1, "stillSpecial": 0})
+        self.assertFalse(item.speciale)
+        self.assertEqual(item.metadata["specialReasons"], [])
+
+    def test_recheck_keeps_the_flag_when_the_cause_persists(self):
+        item = Oggetto.objects.create(nome="Ancora da sistemare", modello=False, speciale=True)
+        result = recheck_items_special(None, self.master, [item.id])
+        item.refresh_from_db()
+        self.assertEqual(result, {"checked": 1, "cleared": 0, "stillSpecial": 1})
+        self.assertTrue(item.speciale)
+        self.assertEqual(item.metadata["specialReasons"], ["non_modello", "tipo_1_vuoto"])
+
+    def test_recheck_only_touches_the_selected_items(self):
+        selected = Oggetto.objects.create(nome="Selezionato", tipo_1="pozione", speciale=True)
+        untouched = Oggetto.objects.create(nome="Non toccato", modello=False, speciale=True)
+        recheck_items_special(None, self.master, [selected.id])
+        selected.refresh_from_db()
+        untouched.refresh_from_db()
+        self.assertFalse(selected.speciale)
+        self.assertTrue(untouched.speciale)
+
+    def test_players_cannot_recheck(self):
+        item = Oggetto.objects.create(nome="Protetto", tipo_1="pozione", speciale=True)
+        with self.assertRaises(ApiError):
+            recheck_items_special(None, self.player, [item.id])
+
+    def test_an_empty_selection_is_refused(self):
+        with self.assertRaises(ApiError):
+            recheck_items_special(None, self.master, [])
 
 
 class ItemCatalogPaginationTests(TestCase):

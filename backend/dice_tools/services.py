@@ -8,6 +8,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
+from datetime import timedelta
+
 from backend.core.api import ApiError
 from backend.core.models import Giocatore
 from backend.core.security import effective_role, has_minimum_role
@@ -207,6 +209,57 @@ def archive_dice_set(user, giocatore: Giocatore, dice_set_id: int) -> DiceSet:
         replacement.is_default = True
         replacement.save(update_fields=["is_default", "updated_at"])
     return dice_set
+
+
+@transaction.atomic
+def duplicate_dice_set(user, giocatore: Giocatore, dice_set_id: int) -> DiceSet:
+    """Copy a set with its textures, as the starting point for a variant."""
+    _require_admin(user, giocatore)
+    source = _dice_set_or_error(dice_set_id)
+    textures = list(source.textures.all())
+    copy = DiceSet.objects.create(
+        slug=_unique_slug(f"Copia di {source.name}"),
+        name=f"Copia di {source.name}"[:120],
+        description=source.description,
+        dice=list(source.dice),
+        surface_color=source.surface_color,
+        accent_color=source.accent_color,
+        text_color=source.text_color,
+        is_active=False,
+        is_default=False,
+        order=source.order,
+    )
+    for texture in textures:
+        DiceTexture.objects.create(
+            dice_set=copy,
+            sides=texture.sides,
+            image=texture.image,
+            scale=texture.scale,
+            offset_x=texture.offset_x,
+            offset_y=texture.offset_y,
+            rotation=texture.rotation,
+        )
+    return copy
+
+
+@transaction.atomic
+def purge_dice_history(user, giocatore: Giocatore, *, older_than_days: int) -> int:
+    """Archive roll records older than a cut-off.
+
+    The log only ever grew. Records are soft-archived rather than deleted so a
+    disputed roll can still be recovered from the database if it matters.
+    """
+    _require_admin(user, giocatore)
+    try:
+        days = int(older_than_days)
+    except (TypeError, ValueError) as exc:
+        raise ApiError("dice_history.days_invalid", "Indica un numero di giorni valido.", "olderThanDays") from exc
+    if days < 1:
+        raise ApiError("dice_history.days_invalid", "Conserva almeno un giorno di storico.", "olderThanDays")
+    cutoff = timezone.now() - timedelta(days=days)
+    return DiceRollRecord.objects.filter(archived_at__isnull=True, created_at__lt=cutoff).update(
+        archived_at=timezone.now()
+    )
 
 
 def roll_dice(payload: dict) -> dict:

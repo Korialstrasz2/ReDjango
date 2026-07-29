@@ -17,10 +17,9 @@ export function AITool({ notify }: Props) {
   const [mode, setMode] = useState<"chat" | "image">("chat");
   const [question, setQuestion] = useState("");
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
-  // La cronologia neutra è la memoria vera: contiene anche i blocchi grezzi del
-  // provider, senza i quali un giro di strumenti non potrebbe proseguire.
+  // La memoria resta client-side e provider-neutral; il backend non conserva conversazioni.
   const [history, setHistory] = useState<AIHistoryEntry[]>([]);
-  const [providerId, setProviderId] = useState<number | "">("");
+  const [agentId, setAgentId] = useState<number | "">("");
   const [prompt, setPrompt] = useState("");
   const [imageProviderId, setImageProviderId] = useState<number | "">("");
   const [size, setSize] = useState("1024x1024");
@@ -33,7 +32,7 @@ export function AITool({ notify }: Props) {
   }, [bubbles]);
 
   const ask = useMutation({
-    mutationFn: (message: string) => askAssistant({ message, history, providerId: providerId || undefined }),
+    mutationFn: (message: string) => askAssistant({ message, history, agentId: agentId || undefined }),
     onSuccess: (result) => {
       const data: AIChatResult = result.data;
       setHistory(data.history);
@@ -72,6 +71,7 @@ export function AITool({ notify }: Props) {
   if (workspace.isError) return <p className="form-error">{(workspace.error as Error).message}</p>;
 
   const data = workspace.data!;
+  const selectedAgent = data.agents.find((entry) => entry.id === agentId) || data.agents[0] || null;
   if (!data.ready) {
     return <div className="ai-empty" data-component-type="panel" data-theme="parchment">
       <h3>Nessun provider configurato</h3>
@@ -99,7 +99,7 @@ export function AITool({ notify }: Props) {
           </ul>}
           <p>{bubble.text}</p>
         </article>) : <div className="ai-suggestions">
-          <p className="muted-copy">Posso leggere oggetti, schede, abilità, competenze, lore, mercato e regole di questa campagna.</p>
+          <p className="muted-copy">{selectedAgent?.description || "Scegli un agente configurato per iniziare."}</p>
           <div className="button-row">
             {["Quanto pesa una spada lunga in acciaio?", "Come funziona la stanchezza?", "Che reputazione abbiamo con le fazioni?"].map((example) => <button key={example} type="button" className="button secondary small" onClick={() => setQuestion(example)}>{example}</button>)}
           </div>
@@ -125,10 +125,13 @@ export function AITool({ notify }: Props) {
         />
         <div className="ai-composer-actions">
           <label className="ai-provider-picker">
-            <span className="sr-only">Provider</span>
-            <select value={providerId} onChange={(event) => setProviderId(event.target.value ? Number(event.target.value) : "")}>
-              <option value="">Provider predefinito</option>
-              {data.chatProviders.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}{entry.model ? ` · ${entry.model}` : ""}</option>)}
+            <span className="sr-only">Agente</span>
+            <select value={agentId} onChange={(event) => {
+              setAgentId(event.target.value ? Number(event.target.value) : "");
+              reset();
+            }}>
+              <option value="">Agente predefinito</option>
+              {data.agents.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}{entry.model ? ` · ${entry.model}` : ""}</option>)}
             </select>
           </label>
           {bubbles.length > 0 && <button type="button" className="button secondary small" onClick={reset} disabled={ask.isPending}>Nuova conversazione</button>}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AIProvider
+from .models import AIAgentProfile, AIProvider
 
 
 @admin.register(AIProvider)
@@ -28,3 +28,11 @@ class AIProviderAdmin(admin.ModelAdmin):
     @admin.display(description="Chiave configurata")
     def secret_state(self, instance: AIProvider) -> str:
         return "Sì" if instance.has_secret else "No"
+
+
+@admin.register(AIAgentProfile)
+class AIAgentProfileAdmin(admin.ModelAdmin):
+    list_display = ("name", "minimum_role", "provider", "max_iterations", "is_enabled", "is_default")
+    list_filter = ("minimum_role", "is_enabled", "is_default")
+    search_fields = ("name", "slug", "description", "instructions")
+    ordering = ("order", "name")

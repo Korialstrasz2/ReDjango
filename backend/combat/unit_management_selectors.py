@@ -7,7 +7,7 @@ from django.db.models import Q
 from backend.characters.services.inventory_rules import EQUIPMENT_SLOT_LABELS
 from backend.characters.race_rules import RACE_NAMES, subraces_for
 from backend.core.competence_defaults import COMPETENCE_DEFINITIONS
-from backend.core.models import FamigliaSkill, Oggetto, Skill, Unit
+from backend.core.models import AccessoryProfile, FamigliaSkill, Oggetto, Skill, Unit
 
 from .unit_generation import (
     CORE_LABELS,
@@ -88,7 +88,9 @@ def unit_management_overview() -> dict[str, Any]:
                 "sourceProject": _mapping(unit.metadata).get("sourceProject", ""),
                 "sourceIds": _mapping(unit.metadata).get("sourceIds", []),
             }
-            for unit in Unit.objects.order_by("archived_at", "categoria", "nome")
+            for unit in Unit.objects.select_related("lore_image", "accessory_profile").order_by(
+                "archived_at", "categoria", "nome"
+            )
         ],
         "configuration": {
             "kinds": [{"value": key, "label": label} for key, label in UNIT_KINDS.items()],
@@ -107,6 +109,16 @@ def unit_management_overview() -> dict[str, Any]:
             "equipmentSlots": [
                 {"value": key, "label": label}
                 for key, label in EQUIPMENT_SLOT_LABELS.items()
+            ],
+            "accessoryProfiles": [
+                {
+                    "value": profile.key,
+                    "label": profile.nome,
+                    "description": profile.descrizione,
+                }
+                for profile in AccessoryProfile.objects.filter(
+                    archived_at__isnull=True,
+                ).order_by("nome")
             ],
             "competences": [
                 {"key": entry["key"], "label": entry["name"]}
@@ -264,6 +276,12 @@ def serialize_managed_unit(unit: Unit) -> dict[str, Any]:
         "id": unit.id,
         "name": unit.nome,
         "category": unit.categoria,
+        "loreImageId": unit.lore_image_id,
+        "loreImageUrl": (
+            unit.lore_image.file.url
+            if unit.lore_image_id and unit.lore_image and unit.lore_image.file
+            else ""
+        ),
         "archetypeDescription": unit.archetipo_descrizione,
         "competenceProfile": _mapping(unit.profilo_competenze),
         "archetypeTags": _mapping(unit.archetipo_tags),
@@ -272,6 +290,7 @@ def serialize_managed_unit(unit: Unit) -> dict[str, Any]:
         "equipmentSlots": equipment_slots,
         "equipmentGroups": equipment_groups,
         "accessoryCountByLevel": _list(equipment.get("accessoryCountByLevel")),
+        "accessoryProfileKey": unit.accessory_profile.key if unit.accessory_profile_id else "",
         "innateActions": _list(unit.skill_actions),
         "levels": _list(unit.levels),
         "loreDescription": unit.lore_description,

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 import { useApp } from "../../App";
+import { ImagePickerModal } from "../../components/ImagePickerModal";
 import { command, getData } from "../../lib/api";
 import type {
   ManagedUnitDetail,
@@ -28,6 +29,8 @@ const emptyUnit = (): ManagedUnitDetail => ({
   id: null,
   name: "",
   category: "",
+  loreImageId: null,
+  loreImageUrl: "",
   archetypeDescription: "",
   competenceProfile: {},
   archetypeTags: {
@@ -41,6 +44,7 @@ const emptyUnit = (): ManagedUnitDetail => ({
   equipmentSlots: [],
   equipmentGroups: [],
   accessoryCountByLevel: [],
+  accessoryProfileKey: "guerriero",
   innateActions: [],
   levels: [],
   loreDescription: "",
@@ -236,7 +240,8 @@ function EquipmentEditor({
     equipmentGroups: current.equipmentGroups.map((entry, row) => row === index ? { ...entry, ...values } : entry),
   }));
   return <section className="unit-editor-section" data-component-type="panel" data-theme="gold">
-    <header><div><p className="eyebrow">Pool a fasce</p><h2>Equipaggiamento coerente</h2><p>Ogni oggetto ha livello minimo, massimo e peso. Nessun oggetto fuori pool può essere assegnato.</p></div><button type="button" className="button secondary" onClick={addGroup}>Nuovo gruppo accessori</button></header>
+    <header><div><p className="eyebrow">Pool a fasce</p><h2>Equipaggiamento coerente</h2><p>Il profilo accessori estrae dinamicamente dal catalogo per tipo, effetto e livello con le regole Elder. Gli oggetti e i gruppi espliciti restano eccezioni garantite della singola Unit.</p></div><button type="button" className="button secondary" onClick={addGroup}>Nuovo gruppo accessori</button></header>
+    <label className="wide">Profilo accessori<select value={draft.accessoryProfileKey} onChange={(event) => setDraft((current) => ({ ...current, accessoryProfileKey: event.target.value }))}>{configuration.accessoryProfiles.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select><small>{configuration.accessoryProfiles.find((entry) => entry.value === draft.accessoryProfileKey)?.description || "Scegli il profilo condiviso usato durante la generazione."}</small></label>
     <div className="unit-add-item-row"><label>Slot<select value={slot} onChange={(event) => setSlot(event.target.value)}>{configuration.equipmentSlots.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label><SearchPicker<UnitItemOption> kind="item" label={`Aggiungi a ${configuration.equipmentSlots.find((entry) => entry.value === slot)?.label || slot}`} onChoose={(item) => {
       setDraft((current) => ({
         ...current,
@@ -407,7 +412,7 @@ function PreviewPanel({
 }
 
 export function UnitManagementPage() {
-  const { notify } = useApp();
+  const { media, notify } = useApp();
   const queryClient = useQueryClient();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [draft, setDraft] = useState<ManagedUnitDetail>(emptyUnit);
@@ -416,6 +421,7 @@ export function UnitManagementPage() {
   const [includeArchived, setIncludeArchived] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [preview, setPreview] = useState<UnitGenerationPreview | null>(null);
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
 
   const overviewQuery = useQuery({
     queryKey: ["management-units"],
@@ -493,6 +499,7 @@ export function UnitManagementPage() {
     equipmentSlots: kind === "humanoid" ? current.equipmentSlots : [],
     equipmentGroups: kind === "humanoid" ? current.equipmentGroups : [],
     accessoryCountByLevel: kind === "humanoid" ? current.accessoryCountByLevel : [],
+    accessoryProfileKey: kind === "humanoid" ? (current.accessoryProfileKey || "guerriero") : "",
     competenceProfile: kind === "humanoid" ? current.competenceProfile : {},
     innateActions: kind === "humanoid" ? [] : current.innateActions,
     statProfile: kind === "humanoid"
@@ -500,6 +507,7 @@ export function UnitManagementPage() {
       : current.statProfile,
   }));
   const canSave = Boolean(draft.name.trim() && draft.generation.kind && !saveMutation.isPending);
+  const portraitAsset = media.find((asset) => asset.id === draft.loreImageId) || null;
 
   return <div className="page management-page unit-management-page">
     <header className="page-header"><div><p className="eyebrow">Gestione del gioco</p><h1>Gestione Unit</h1><p>Autore, valida e prova gli archetipi usati da Unità rapide in Combattimento.</p></div><div className="button-row"><Link className="button secondary" to="/tools">Tutti gli strumenti</Link><button className="button primary" onClick={() => { setSelectedId(null); setDraft(emptyUnit()); setDirty(true); setPreview(null); setTab("profile"); }}>Nuova Unit</button></div></header>
@@ -539,6 +547,11 @@ export function UnitManagementPage() {
               <label>Categoria<input value={draft.category} onChange={(event) => setEditedDraft((current) => ({ ...current, category: event.target.value }))} placeholder="Banditi, Animali, Daedra…" /></label>
               {draft.generation.kind === "humanoid" && <label>Core<select value={draft.generation.coreKey} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, coreKey: event.target.value } }))}>{overview.configuration.cores.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select></label>}
               {draft.generation.kind === "humanoid" && <><label className="wide">Razze disponibili<select multiple size={6} value={draft.generation.allowedRaces} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, allowedRaces: Array.from(event.target.selectedOptions, (option) => option.value), allowedSubraces: [] } }))}>{overview.configuration.races.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}</select><small>Nessuna selezione = tutte le razze, estratte casualmente.</small></label><label className="wide">Sottorazze disponibili<select multiple size={6} value={draft.generation.allowedSubraces} onChange={(event) => setEditedDraft((current) => ({ ...current, generation: { ...current.generation, allowedSubraces: Array.from(event.target.selectedOptions, (option) => option.value) } }))}>{overview.configuration.races.filter((race) => draft.generation.allowedRaces.includes(race.value)).flatMap((race) => race.subraces.map((subrace) => <option key={`${race.value}:${subrace.value}`} value={subrace.value}>{race.label} · {subrace.label}</option>))}</select><small>Nessuna selezione = tutte le sottorazze delle razze consentite.</small></label></>}
+              <div className="selected-media-field wide">
+                <div>{draft.loreImageUrl ? <><img src={portraitAsset?.thumbnailUrl || portraitAsset?.url || draft.loreImageUrl} alt="" /><span><strong>{portraitAsset?.title || `Ritratto di ${draft.name || "Unit"}`}</strong><small>Personaggi · Unit e NPC · WebP 70%</small></span></> : <span><strong>Nessun ritratto</strong><small>Scegli o carica l'immagine usata dai personaggi generati.</small></span>}</div>
+                <button className="button secondary" type="button" onClick={() => setImagePickerOpen(true)}>Scegli dall'archivio</button>
+              </div>
+              <small className="wide">La selezione resta in bozza: il ritratto attuale della Unit cambia soltanto quando il salvataggio riesce.</small>
               <label className="wide">Descrizione dell'archetipo<textarea rows={3} value={draft.archetypeDescription} onChange={(event) => setEditedDraft((current) => ({ ...current, archetypeDescription: event.target.value }))} /></label>
               <label className="wide">Lore<textarea rows={5} value={draft.loreDescription} onChange={(event) => setEditedDraft((current) => ({ ...current, loreDescription: event.target.value }))} /></label>
               <label className="wide">Note di authoring<textarea rows={3} value={draft.notes} onChange={(event) => setEditedDraft((current) => ({ ...current, notes: event.target.value }))} /></label>
@@ -595,5 +608,24 @@ export function UnitManagementPage() {
         </div>
       </main>
     </div>}
+    {imagePickerOpen && <ImagePickerModal
+      selectedId={draft.loreImageId}
+      usageType="character_portrait"
+      categorySlug="personaggi"
+      defaultGroup="Unit e NPC"
+      defaultTitle={draft.name || "Ritratto Unit"}
+      convertToWebpQuality={70}
+      restrictToUsageType
+      restrictToGroup="Unit e NPC"
+      lockCategory
+      lockGroup
+      uploadNotes="Ritratto caricato dalla Gestione Unit."
+      onSelect={(asset) => setEditedDraft((current) => ({
+        ...current,
+        loreImageId: asset?.id || null,
+        loreImageUrl: asset?.url || "",
+      }))}
+      onClose={() => setImagePickerOpen(false)}
+    />}
   </div>;
 }

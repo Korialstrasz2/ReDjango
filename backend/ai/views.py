@@ -6,7 +6,7 @@ from backend.core.views import get_authenticated_user
 from backend.media_library.selectors import serialize_uploaded_image
 
 from .selectors import ai_management_payload, ai_workspace_payload
-from .services import ask_assistant, generate_image, save_provider, test_provider
+from .services import ask_assistant, generate_image, save_agent, save_provider, test_provider
 
 
 @require_http_methods(["GET", "POST"])
@@ -53,6 +53,13 @@ def ai_management(request):
                 request,
                 {**ai_management_payload(user, giocatore), "test": result},
                 events=[{"type": "ai.tested", "message": result["message"]}],
+            )
+        if "agentValues" in payload:
+            agent = save_agent(user, giocatore, payload.get("agentValues", {}))
+            return api_response(
+                request,
+                ai_management_payload(user, giocatore),
+                events=[{"type": "ai.agent_saved", "message": f"{agent.name} aggiornato."}],
             )
         provider = save_provider(user, giocatore, payload.get("values", {}))
         return api_response(

@@ -16,6 +16,12 @@ class EventSchema(Schema):
     message: str
 
 
+class ItemSpecialReasonSchema(Schema):
+    code: str
+    label: str
+    hint: str = ""
+
+
 class ItemSchema(Schema):
     id: int
     name: str
@@ -53,6 +59,7 @@ class ItemSchema(Schema):
     mediaId: int | None = None
     notes: str = ""
     metadata: dict[str, Any] = {}
+    specialReasons: list[ItemSpecialReasonSchema] = []
 
 
 class SlotSchema(Schema):
@@ -500,23 +507,22 @@ class ManagedSkillStructureStatePayloadSchema(Schema):
     archived: bool
 
 
-class ManagedSkillReviewSyncPayloadSchema(Schema):
-    pass
+class DiceHistoryPurgePayloadSchema(Schema):
+    olderThanDays: int = 30
 
 
-class ManagedSkillReviewSavePayloadSchema(Schema):
-    reviewId: int
-    values: dict[str, Any]
-    notes: str = ""
+class ItemSetSpecialPayloadSchema(Schema):
+    itemIds: list[int]
+    special: bool
 
 
-class ManagedSkillReviewPayloadSchema(Schema):
-    reviewId: int
+class ItemRecheckSpecialPayloadSchema(Schema):
+    itemIds: list[int]
 
 
-class ManagedSkillReviewStatusPayloadSchema(Schema):
-    reviewId: int
-    status: Literal["open", "ignored"]
+class ManagedSkillStructureReorderPayloadSchema(Schema):
+    groups: list[int] = []
+    families: list[int] = []
 
 
 class ManagedSkillStatePayloadSchema(Schema):
@@ -590,6 +596,7 @@ class DiceSetSchema(Schema):
     accentColor: str
     textColor: str
     textures: list[DiceTextureSchema] = []
+    untexturedDice: list[int] = []
     isActive: bool
     isDefault: bool
     order: int
@@ -640,9 +647,34 @@ class DiceHistoryRollSchema(Schema):
     rolledAt: str
 
 
+class DiceStatisticsRowSchema(Schema):
+    name: str
+    rolls: int
+    dice: int
+    averageTotal: float
+    averageDie: float
+
+
+class DiceFaceCountSchema(Schema):
+    face: int
+    count: int
+
+
+class DiceStatisticsSchema(Schema):
+    byPlayer: list[DiceStatisticsRowSchema] = []
+    byDiceSet: list[DiceStatisticsRowSchema] = []
+    faceDistribution: list[DiceFaceCountSchema] = []
+
+
 class DiceHistoryDataSchema(Schema):
     rolls: list[DiceHistoryRollSchema]
     limit: int = 100
+    total: int = 0
+    offset: int = 0
+    hasMore: bool = False
+    sources: list[EffectConfigurationOptionSchema] = []
+    players: list[str] = []
+    statistics: DiceStatisticsSchema | None = None
 
 
 class DiceHistoryEnvelopeSchema(Schema):
@@ -1401,24 +1433,29 @@ class ManagedSkillFamilyStateActionSchema(ActionBaseSchema):
     payload: ManagedSkillStructureStatePayloadSchema
 
 
-class ManagedSkillReviewSyncActionSchema(ActionBaseSchema):
-    action: Literal["management.skills.review.sync"]
-    payload: ManagedSkillReviewSyncPayloadSchema
+class DiceSetDuplicateActionSchema(ActionBaseSchema):
+    action: Literal["diceSets.duplicate"]
+    payload: DiceSetArchivePayloadSchema
 
 
-class ManagedSkillReviewSaveActionSchema(ActionBaseSchema):
-    action: Literal["management.skills.review.save"]
-    payload: ManagedSkillReviewSavePayloadSchema
+class DiceHistoryPurgeActionSchema(ActionBaseSchema):
+    action: Literal["diceHistory.purge"]
+    payload: DiceHistoryPurgePayloadSchema
 
 
-class ManagedSkillReviewImportActionSchema(ActionBaseSchema):
-    action: Literal["management.skills.review.import"]
-    payload: ManagedSkillReviewPayloadSchema
+class ItemSetSpecialActionSchema(ActionBaseSchema):
+    action: Literal["items.setSpecial"]
+    payload: ItemSetSpecialPayloadSchema
 
 
-class ManagedSkillReviewStatusActionSchema(ActionBaseSchema):
-    action: Literal["management.skills.review.status"]
-    payload: ManagedSkillReviewStatusPayloadSchema
+class ItemRecheckSpecialActionSchema(ActionBaseSchema):
+    action: Literal["items.recheckSpecial"]
+    payload: ItemRecheckSpecialPayloadSchema
+
+
+class ManagedSkillStructureReorderActionSchema(ActionBaseSchema):
+    action: Literal["management.skills.structure.reorder"]
+    payload: ManagedSkillStructureReorderPayloadSchema
 
 
 class ManagedSkillStateActionSchema(ActionBaseSchema):
@@ -1768,10 +1805,11 @@ ActionEnvelopeSchema = Annotated[
     | ManagedSkillGroupStateActionSchema
     | ManagedSkillFamilySaveActionSchema
     | ManagedSkillFamilyStateActionSchema
-    | ManagedSkillReviewSyncActionSchema
-    | ManagedSkillReviewSaveActionSchema
-    | ManagedSkillReviewImportActionSchema
-    | ManagedSkillReviewStatusActionSchema
+    | ItemSetSpecialActionSchema
+    | ItemRecheckSpecialActionSchema
+    | DiceSetDuplicateActionSchema
+    | DiceHistoryPurgeActionSchema
+    | ManagedSkillStructureReorderActionSchema
     | ManagedSkillStateActionSchema
     | ManagedUnitSaveActionSchema
     | ManagedUnitStateActionSchema

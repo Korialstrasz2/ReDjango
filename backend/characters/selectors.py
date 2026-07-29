@@ -9,6 +9,7 @@ from django.contrib.staticfiles import finders
 from django.db.models import Q
 from django.templatetags.static import static
 
+from backend.core.item_special import special_reason_entries
 from backend.core.models import Effetto, Giocatore, Oggetto
 
 from .models import (
@@ -381,6 +382,7 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
                 "notes": item.notes,
                 "elderEffects": item.effetti_elder,
                 "metadata": item.metadata if isinstance(item.metadata, dict) else {},
+                "specialReasons": special_reason_entries(item),
             }
         )
     return payload

@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 
 from .models import (
+    AccessoryProfile,
     CampaignLoreEntry,
     CampaignLoreRelation,
     CharacterAssignmentRequest,
@@ -24,7 +25,6 @@ from .models import (
     OpzioneTipoOggetto,
     ReagenteAlchemico,
     Skill,
-    SkillMigrationReview,
     SpellDefinition,
     SettingDefinition,
     SettingOverride,
@@ -408,9 +408,9 @@ admin.site.register(
         NomiRazzeInfo,
         ReagenteAlchemico,
         Skill,
-        SkillMigrationReview,
-        SpellDefinition,
+            SpellDefinition,
         TipoArma,
+        AccessoryProfile,
         Unit,
     ],
     V2Admin,

@@ -5,6 +5,7 @@ export type CharacterSheet = components["schemas"]["CharacterSheetSchema"] & { d
 export type CharacterSummary = Pick<CharacterSheet, "id" | "name" | "type" | "races" | "level" | "details" | "primaryTotals">;
 export type CharacterSlot = components["schemas"]["SlotSchema"];
 export type Item = components["schemas"]["ItemSchema"];
+export type ItemSpecialReason = components["schemas"]["ItemSpecialReasonSchema"];
 export type Effect = components["schemas"]["EffectSchema"];
 export type EffectConfiguration = components["schemas"]["EffectConfigurationSchema"];
 export type EffectOperation = components["schemas"]["EffectOperationSchema"];
@@ -320,6 +321,7 @@ export type DiceSet = {
   accentColor: string;
   textColor: string;
   textures: DiceTexture[];
+  untexturedDice: number[];
   isActive: boolean;
   isDefault: boolean;
   order: number;
@@ -420,6 +422,15 @@ export type AIProviderSummary = {
   isEnabled: boolean;
   isDefault: boolean;
   description: string;
+  isConfigured: boolean;
+  capabilities: {
+    chat: boolean;
+    tools: boolean;
+    reasoning: boolean;
+    verbosity: boolean;
+    images: boolean;
+    imageEditing: boolean;
+  };
 };
 
 export type AIManagedProvider = AIProviderSummary & {
@@ -429,13 +440,42 @@ export type AIManagedProvider = AIProviderSummary & {
   suggestedModels: string[];
   maxTokens: number | null;
   effort: string;
+  verbosity: string;
   disableTools: boolean;
   order: number;
 };
 
-export type AIToolSummary = { name: string; description: string };
+export type AIToolSummary = {
+  name: string;
+  description: string;
+  scope: string;
+  minimumRole: "user" | "master" | "admin";
+  readOnly: boolean;
+};
+
+export type AIAgentSummary = {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  minimumRole: "user" | "master" | "admin";
+  providerId: number | null;
+  providerName: string;
+  model: string;
+  toolNames: string[];
+  maxIterations: number;
+  isEnabled: boolean;
+  isDefault: boolean;
+};
+
+export type AIManagedAgent = AIAgentSummary & {
+  instructions: string;
+  configuredToolNames: string[];
+  order: number;
+};
 
 export type AIWorkspaceData = {
+  agents: AIAgentSummary[];
   chatProviders: AIProviderSummary[];
   imageProviders: AIProviderSummary[];
   tools: AIToolSummary[];
@@ -447,11 +487,14 @@ export type AIWorkspaceData = {
 
 export type AIManagementData = {
   providers: AIManagedProvider[];
+  agents: AIManagedAgent[];
   kinds: Array<{ value: string; label: string }>;
   purposes: Array<{ value: string; label: string }>;
   authStrategies: Array<{ value: string; label: string }>;
+  roles: Array<{ value: "user" | "master" | "admin"; label: string }>;
   tools: AIToolSummary[];
   canManage: boolean;
+  canManageCredentials: boolean;
   test?: { ok: boolean; message: string };
 };
 
@@ -463,7 +506,6 @@ export type AIHistoryEntry = {
   toolCallId?: string;
   name?: string;
   isError?: boolean;
-  raw?: unknown;
 };
 
 export type AIToolTraceEntry = { name: string; arguments: Record<string, unknown>; isError: boolean };
@@ -474,7 +516,9 @@ export type AIChatResult = {
   toolTrace: AIToolTraceEntry[];
   usage: { inputTokens: number; outputTokens: number };
   stopReason: string;
+  runId: string;
   provider: { id: number; name: string; model: string };
+  agent: { id: number; name: string };
 };
 
 export type AudioTag = { value: string; label: string };

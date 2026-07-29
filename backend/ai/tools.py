@@ -34,6 +34,9 @@ class AITool:
     description: str
     schema: dict[str, Any]
     run: Callable[..., Any]
+    scope: str = "cataloghi"
+    minimum_role: str = Giocatore.ROLE_USER
+    read_only: bool = True
 
     def definition(self) -> dict[str, Any]:
         return {"name": self.name, "description": self.description, "input_schema": self.schema}
@@ -245,6 +248,7 @@ AI_TOOLS: list[AITool] = [
             {"nome": {"type": "string", "description": "Nome del personaggio. Vuoto per quello attivo."}}
         ),
         run=_character_sheet,
+        scope="personaggi",
     ),
     AITool(
         name="cerca_abilita",
@@ -257,41 +261,64 @@ AI_TOOLS: list[AITool] = [
         description="Legge le 21 competenze di un personaggio con i due ranghi e il valore extra efficace.",
         schema=_object_schema({"nome": {"type": "string", "description": "Nome del personaggio."}}),
         run=_competences,
+        scope="personaggi",
     ),
     AITool(
         name="lore_campagna",
         description="Consulta fazioni, reputazioni, personaggi non giocanti ed eventi della campagna. Mostra soltanto ciò che chi chiede può già vedere.",
         schema=_object_schema({"argomento": {"type": "string", "description": "Parola chiave. Vuoto per un quadro generale."}}),
         run=_lore,
+        scope="campagna",
     ),
     AITool(
         name="mercato",
         description="Elenca i negozi del mercato con tipo, località e regione.",
         schema=_object_schema({"negozio": {"type": "string", "description": "Filtra per nome del negozio."}}),
         run=_market,
+        scope="campagna",
     ),
     AITool(
         name="guide_regole",
         description="Cerca nelle guide di gioco il testo delle regole su un argomento.",
         schema=_object_schema({"argomento": {"type": "string", "description": "Argomento della regola, per esempio «fatica» o «alchimia»."}}),
         run=_rules_guide,
+        scope="regole",
     ),
     AITool(
         name="variabili_gioco",
         description="Legge le variabili e le formule di base del sistema. Riservato a Master e Amministratori.",
         schema=_object_schema({}),
         run=_game_variables,
+        scope="regole",
+        minimum_role=Giocatore.ROLE_MASTER,
     ),
 ]
 
 AI_TOOLS_BY_NAME = {tool.name: tool for tool in AI_TOOLS}
 
 
-def tool_definitions() -> list[dict[str, Any]]:
-    return [tool.definition() for tool in AI_TOOLS]
+def tool_is_available(tool: AITool, user, giocatore: Giocatore) -> bool:
+    return has_minimum_role(effective_role(user, giocatore), tool.minimum_role)
 
 
-def execute_tool(name: str, arguments: dict[str, Any], user, giocatore: Giocatore) -> tuple[str, bool]:
+def tool_definitions(user=None, giocatore: Giocatore | None = None, allowed_names: list[str] | None = None) -> list[dict[str, Any]]:
+    allowed = set(allowed_names) if allowed_names is not None else None
+    return [
+        tool.definition()
+        for tool in AI_TOOLS
+        if (allowed is None or tool.name in allowed)
+        and (user is None or giocatore is None or tool_is_available(tool, user, giocatore))
+    ]
+
+
+def execute_tool(
+    name: str,
+    arguments: dict[str, Any],
+    user,
+    giocatore: Giocatore,
+    *,
+    allowed_names: list[str] | None = None,
+) -> tuple[str, bool]:
     """Esegue uno strumento e restituisce `(testo, is_error)`.
 
     Un errore non solleva: torna all'agente come risultato, così può correggersi.
@@ -300,6 +327,10 @@ def execute_tool(name: str, arguments: dict[str, Any], user, giocatore: Giocator
     tool = AI_TOOLS_BY_NAME.get(name)
     if tool is None:
         return json.dumps({"errore": f"Strumento sconosciuto: {name}"}, ensure_ascii=False), True
+    if allowed_names is not None and name not in allowed_names:
+        return json.dumps({"errore": f"Strumento non autorizzato per questo agente: {name}"}, ensure_ascii=False), True
+    if not tool_is_available(tool, user, giocatore):
+        return json.dumps({"errore": f"Permessi insufficienti per lo strumento: {name}"}, ensure_ascii=False), True
     safe_arguments = {key: value for key, value in (arguments or {}).items() if key in tool.schema["properties"]}
     try:
         result = tool.run(user, giocatore, **safe_arguments)

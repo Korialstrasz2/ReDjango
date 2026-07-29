@@ -11,6 +11,8 @@ type Props = {
   resizable?: boolean;
   /** Nasconde intestazione e pulsante di chiusura: il piè di pagina diventa la maniglia di trascinamento. */
   hideHeader?: boolean;
+  /** Rende trascinabile anche il corpo: qualsiasi spazio vuoto diventa una maniglia. */
+  dragFromBody?: boolean;
 };
 
 type ResizeEdge = "top" | "right" | "bottom" | "left";
@@ -18,7 +20,7 @@ type ResizeEdge = "top" | "right" | "bottom" | "left";
 const MIN_MODAL_WIDTH = 360;
 const MIN_MODAL_HEIGHT = 240;
 
-export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false, hideHeader = false }: Props) {
+export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false, hideHeader = false, dragFromBody = false }: Props) {
   const modalRef = useRef<HTMLElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
@@ -44,7 +46,15 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   }, [onClose]);
 
   const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
-    if ((event.target as HTMLElement).closest("button, a, input, select, textarea, summary, label")) return;
+    if (event.button !== 0) return;
+    if ((event.target as HTMLElement).closest("button, a, input, select, textarea, summary, label, [contenteditable]")) return;
+    // Un pointerdown sulla barra di scorrimento non deve trascinare la finestra.
+    if (event.target === event.currentTarget) {
+      const host = event.currentTarget;
+      if (event.nativeEvent.offsetX > host.clientWidth || event.nativeEvent.offsetY > host.clientHeight) return;
+    }
+    // Trascinando dal corpo si eviterebbe altrimenti di selezionare il testo per sbaglio.
+    if (event.currentTarget.classList.contains("modal-body")) event.preventDefault();
     drag.current = { x: position.x, y: position.y, startX: event.clientX, startY: event.clientY };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -128,7 +138,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
           <h2>{title}</h2>
           <button className="icon-button" type="button" onClick={onClose} aria-label="Chiudi">×</button>
         </header>}
-        <div className="modal-body">{children}</div>
+        <div className="modal-body" {...(dragFromBody ? dragHandlers : {})}>{children}</div>
         {footer && <footer className="modal-footer" {...(hideHeader ? dragHandlers : {})}>
           {hideHeader && <span className="modal-drag-grip" aria-hidden="true" title="Trascina per spostare la finestra">⠿</span>}
           {footer}

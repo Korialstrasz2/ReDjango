@@ -18,7 +18,7 @@ Ricostruzione moderna, veloce e a pagina singola di **The Elder Django**. Django
 - Archivio immagini organizzato con categorie configurabili soltanto dall'Amministrazione Django e gruppi liberi, filtri per la navigazione e selettore visuale a miniature riutilizzato negli editor degli oggetti.
 - Area **Gestione** per master e amministratori: editor organizzato di personaggi e record collegati con ricerca degli orfani e anteprima sicura dell'eliminazione; catalogo oggetti completo con filtri e confronto/copia affiancato; postazione **Gestione Skill** con panoramica, catalogo completo, gruppi e famiglie modificabili e coda persistente per correggere/importare le skill Elder escluse; postazione **Gestione Unit** per autore, validare e provare Animali, Creature e Umanoidi usati dalla generazione rapida in Combattimento; postazione amministrativa **Gestione Variabili** con controlli tipizzati, guide contestuali e convalida server-side obbligatoria prima del salvataggio del profilo globale. Il relativo **Tool Danno** modifica la matrice completa d20 × differenza Attacco/Difesa, le formule dei Tier e le percentuali di resistenza realmente lette dal motore di combattimento.
 - **Gestione Negozi** è una postazione separata dal Mercato operativo: organizza e rinomina regioni, località e tipi senza cambiare le chiavi stabili, modifica ordine, icone, sfondi e assortimenti, e configura profili riutilizzabili per quantità, rarità e prezzi. Un profilo è predefinito per il mondo e può essere sostituito per ogni negozio; master e amministratori possono assegnarlo, mentre la definizione globale dei preset e delle regole del generatore resta amministrativa.
-- Generazione Unit variabile e riproducibile senza LLM: gli Umanoidi ripercorrono PE, prerequisiti, Skill, la tabella perk dell'AI Elder e pool equipaggiamento per fascia; `auto` crea una build diversa a ogni importazione, mentre una Variante nominata resta deterministica. Animali e Creature non hanno Skill a PE né equipaggiamento e usano curve configurabili con valori finali al livello 1/20 e abilità innate. Combattimento offre un selettore di livello per ogni Unit e master/admin possono prendere il controllo del risultato e aprirne la scheda completa. Il seed include l'Umanoide **Arciere Bandito** e l'Animale **Lupo**, ricostruiti dalle Unit Elder e pronti dal livello 1 al 20.
+- Generazione Unit variabile e riproducibile senza LLM: gli Umanoidi ripercorrono PE, prerequisiti, Skill, la tabella perk dell'AI Elder e pool equipaggiamento per fascia; sette profili accessori condivisi riprendono i pool pesati, le eccezioni ai duplicati, la curva quantità e la variazione di livello oggetto di Elder senza copiare liste di oggetti in ogni Unit. `auto` crea una build diversa a ogni importazione, mentre una Variante nominata resta deterministica. Animali e Creature non hanno Skill a PE né equipaggiamento e usano curve configurabili con valori finali al livello 1/20 e abilità innate. Combattimento offre un selettore di livello per ogni Unit e master/admin possono prendere il controllo del risultato e aprirne la scheda completa. Il seed include l'Umanoide **Arciere Bandito** e l'Animale **Lupo**, ricostruiti dalle Unit Elder e pronti dal livello 1 al 20.
 - Catalogo oggetti predisposto per l'importazione Elder: quattro tipi a scelta configurabili dall'Amministrazione Django, rarità `Unico/1-5` e otto testi effetto conservati separatamente dagli effetti strutturati eseguibili.
 - Importatore oggetti Elder verificabile: `Vuoto` diventa blank, i bonus numerici sicuri vengono convertiti in effetti strutturati, le regole descrittive restano leggibili e marcano l'oggetto `Speciale`; la sostituzione atomica rimappa anche gli oggetti già assegnati. Gestione Oggetti supporta cataloghi completi, filtro Speciale, confronto/copia e clonazione esplicita.
 - Pulsanti globali **Diario** e **Dadi**: il Diario è una superficie di scrittura più sottile e simile a un libro, con sezioni di testo libero e salvataggio automatico. Le note contestuali si aprono dal segnalibro in fondo alla barra laterale al passaggio del mouse o con il focus, e un clic le fissa: Zaino è collegato alla scheda, Combattimento alla relativa pagina e Competenze al suo atlante. Tutte e tre le sezioni sono anche nel Diario. Diario e Dadi si aprono al centro e possono essere spostati e ridimensionati. I dadi offrono tiri singoli animati, forme specifiche per d4–d100, modificatori del personaggio, formula completa del risultato e cronologia di sessione. Master e amministratori possono inoltre consultare, sia in Dadi sia in Competenze, gli ultimi 100 tiri persistenti del gruppo con giocatore, personaggio e orario; la scheda è controllata dall'impostazione di sessione dedicata.
@@ -162,6 +162,29 @@ La sostituzione del catalogo oggetti usa invece un dry-run predefinito e richied
 venv\Scripts\python.exe manage.py import_legacy_items
 venv\Scripts\python.exe manage.py import_legacy_items --apply
 ```
+
+I ritratti delle Unit Elder vengono letti soltanto dalla radice
+`django_slim/static/media/images/pgs` (le directory di duplicati e animazioni
+sono escluse), copiati in staging e convertiti in WebP qualità 70. Il comando
+scrive sempre un manifest verificabile; `--apply` è atomico e, per impostazione
+predefinita, viene rifiutato finché una delle 131 Unit è priva di una
+corrispondenza univoca e valida:
+
+```powershell
+venv\Scripts\python.exe manage.py import_legacy_unit_portraits
+# Dopo aver risolto ogni bloccante riportato nel manifest:
+venv\Scripts\python.exe manage.py import_legacy_unit_portraits --apply
+# Modalità esplicita: importa i validi e lascia invariati i bloccati.
+venv\Scripts\python.exe manage.py import_legacy_unit_portraits --apply --allow-partial
+```
+
+Le immagini importate usano categoria `Personaggi`, contesto
+`character_portrait` e gruppo `Unit e NPC`. La Unit conserva il collegamento
+canonico; ogni nuovo personaggio generato ne riceve il ritratto corrente come
+snapshot, senza cambiare i personaggi creati in precedenza.
+Gestione Unit usa lo stesso contratto: il selettore mostra soltanto ritratti
+conformi, converte i nuovi caricamenti in WebP qualità 70 e mantiene il
+collegamento precedente finché il salvataggio della Unit non riesce.
 
 La guida Elder `Razze` e il mapping `EffettiSbloccabili`/`Attivabile` si importano
 come gruppo di abilità `Razze/Sottorazze`, con una famiglia per razza. Il comando

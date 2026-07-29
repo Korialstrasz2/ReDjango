@@ -50,13 +50,23 @@ class AnthropicChatProvider:
             if role == "user":
                 messages.append({"role": "user", "content": entry.get("content", "")})
             elif role == "assistant":
-                # I blocchi tornano indietro come sono arrivati: ricostruirli
-                # romperebbe la corrispondenza con i tool_use del giro precedente.
                 raw = entry.get("raw")
                 if raw:
                     messages.append({"role": "assistant", "content": raw})
                 else:
-                    messages.append({"role": "assistant", "content": entry.get("content", "")})
+                    blocks: list[dict[str, Any]] = []
+                    if entry.get("content"):
+                        blocks.append({"type": "text", "text": entry.get("content", "")})
+                    blocks.extend(
+                        {
+                            "type": "tool_use",
+                            "id": call.get("id", ""),
+                            "name": call.get("name", ""),
+                            "input": call.get("arguments") or {},
+                        }
+                        for call in entry.get("toolCalls") or []
+                    )
+                    messages.append({"role": "assistant", "content": blocks or ""})
             elif role == "tool":
                 messages.append(
                     {
@@ -82,7 +92,7 @@ class AnthropicChatProvider:
             "system": system,
             "messages": self._messages(history),
         }
-        if tools:
+        if tools and not options.get("disableTools"):
             request["tools"] = tools
         effort = str(options.get("effort") or "").strip()
         if effort:

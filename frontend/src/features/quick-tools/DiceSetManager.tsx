@@ -135,6 +135,17 @@ export function DiceSetManager({ notify, compact = false }: Props) {
     onSuccess: async (result) => { await sync(result.data.diceSets); setSelectedId("new"); notify("Set di dadi archiviato."); },
     onError: (error: Error) => notify(error.message, "error")
   });
+  const duplicate = useMutation({
+    mutationFn: (diceSet: DiceSet) => command<{ diceSets: DiceSetsData }>("diceSets.duplicate", { diceSetId: diceSet.id }, "dice"),
+    onSuccess: async (result) => {
+      await sync(result.data.diceSets);
+      // The copy starts inactive so it cannot reach players before it is ready.
+      const copy = result.data.diceSets.diceSets.find((entry) => !entry.isActive && entry.name.startsWith("Copia di "));
+      if (copy) setSelectedId(copy.id);
+      notify("Set duplicato: la copia è una bozza finché non la attivi.");
+    },
+    onError: (error: Error) => notify(error.message, "error")
+  });
 
   const previewStyle = useMemo(() => ({
     "--dice-surface": draft.surfaceColor,
@@ -187,7 +198,7 @@ export function DiceSetManager({ notify, compact = false }: Props) {
       <div className="dice-set-list" role="listbox" aria-label="Set di dadi">
         <button type="button" className={selectedId === "new" ? "active" : ""} onClick={() => setSelectedId("new")}><strong>＋ Nuovo set</strong><span>Crea da zero</span></button>
         {query.data?.diceSets.map((entry) => <button type="button" key={entry.id} className={selectedId === entry.id ? "active" : ""} onClick={() => setSelectedId(entry.id)}>
-          <i style={{ background: entry.surfaceColor, borderColor: entry.accentColor }} /><strong>{entry.name}</strong><span>{entry.isDefault ? "Predefinito" : entry.isActive ? "Attivo" : "Bozza"}</span>
+          <i style={{ background: entry.surfaceColor, borderColor: entry.accentColor }} /><strong>{entry.name}</strong><span>{entry.isDefault ? "Predefinito" : entry.isActive ? "Attivo" : "Bozza"}</span><em className="dice-set-coverage" data-state={entry.untexturedDice.length ? "partial" : "complete"}>{entry.dice.length - entry.untexturedDice.length}/{entry.dice.length} texture</em>
         </button>)}
       </div>
       <form className="dice-set-form" onSubmit={submit}>
@@ -204,7 +215,8 @@ export function DiceSetManager({ notify, compact = false }: Props) {
           {draft.dice.length ? <TextureWorkshop side={textureSide} texture={textures[textureSide]} colors={draft} onChange={(values) => updateTexture(textureSide, values)} onFile={(event) => chooseTexture(textureSide, event)} onRemove={() => removeTexture(textureSide)} /> : <p className="form-error">Scegli almeno un dado per preparare le texture.</p>}
         </fieldset>
         <div className="check-row"><label><input type="checkbox" checked={draft.isActive} onChange={(event) => setDraft((current) => ({ ...current, isActive: event.target.checked }))} />Attivo</label><label><input type="checkbox" checked={draft.isDefault} onChange={(event) => setDraft((current) => ({ ...current, isDefault: event.target.checked, isActive: event.target.checked || current.isActive }))} />Predefinito</label></div>
-        <div className="button-row"><button className="button primary" disabled={save.isPending || draft.dice.length === 0}>{save.isPending ? "Preparazione…" : selected ? "Salva set" : "Crea set"}</button>{selected && <button className="button danger" type="button" disabled={archive.isPending} onClick={() => archive.mutate(selected)}>Archivia</button>}</div>
+        {selected && selected.untexturedDice.length > 0 && <p className="form-warning">Senza texture: {selected.untexturedDice.map((side) => `d${side}`).join(", ")}. Questi dadi usano solo il colore del materiale.</p>}
+        <div className="button-row"><button className="button primary" disabled={save.isPending || draft.dice.length === 0}>{save.isPending ? "Preparazione…" : selected ? "Salva set" : "Crea set"}</button>{selected && <button className="button secondary" type="button" disabled={duplicate.isPending} onClick={() => duplicate.mutate(selected)}>{duplicate.isPending ? "Copia…" : "Duplica"}</button>}{selected && <button className="button danger" type="button" disabled={archive.isPending} onClick={() => archive.mutate(selected)}>Archivia</button>}</div>
       </form>
     </div>}
   </section>;

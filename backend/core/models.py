@@ -630,60 +630,6 @@ class SpellDefinition(V2Model):
         return f"Incantesimo: {self.skill.nome}"
 
 
-class SkillMigrationReview(V2Model):
-    STATUS_OPEN = "open"
-    STATUS_IMPORTED = "imported"
-    STATUS_IGNORED = "ignored"
-    STATUS_CHOICES = [
-        (STATUS_OPEN, "Da rivedere"),
-        (STATUS_IMPORTED, "Importata"),
-        (STATUS_IGNORED, "Ignorata"),
-    ]
-    SEVERITY_BLOCKED = "blocked"
-    SEVERITY_WARNING = "warning"
-    SEVERITY_CHOICES = [
-        (SEVERITY_BLOCKED, "Bloccante"),
-        (SEVERITY_WARNING, "Avviso"),
-    ]
-
-    source_project = models.CharField(max_length=120)
-    source_id = models.PositiveIntegerField()
-    nome = models.CharField(max_length=180)
-    severity = models.CharField(max_length=24, choices=SEVERITY_CHOICES, default=SEVERITY_BLOCKED)
-    decision = models.CharField(max_length=40, default="needs_review")
-    status = models.CharField(max_length=24, choices=STATUS_CHOICES, default=STATUS_OPEN)
-    blockers = models.JSONField(default=list, blank=True)
-    warnings = models.JSONField(default=list, blank=True)
-    suggested_values = models.JSONField(default=dict, blank=True)
-    working_values = models.JSONField(default=dict, blank=True)
-    source_snapshot = models.JSONField(default=dict, blank=True)
-    edited = models.BooleanField(default=False)
-    resolution_notes = models.TextField(blank=True)
-    resolved_skill = models.ForeignKey(
-        Skill,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="migration_reviews",
-    )
-
-    class Meta:
-        ordering = ["status", "severity", "nome", "source_id"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["source_project", "source_id"],
-                name="unique_skill_migration_review_source",
-            ),
-        ]
-        indexes = [
-            models.Index(fields=["status", "severity"]),
-            models.Index(fields=["source_project", "source_id"]),
-        ]
-
-    def __str__(self) -> str:
-        return f"{self.nome} ({self.source_project} #{self.source_id})"
-
-
 class EffettiSkill(V2Model):
     SOURCE_CHOICES = [
         ("skill", "Skill"),
@@ -895,6 +841,20 @@ class Oggetto(V2Model):
         return self.nome
 
 
+class AccessoryProfile(V2Model):
+    key = models.SlugField(max_length=80, unique=True)
+    nome = models.CharField(max_length=120, unique=True)
+    descrizione = models.TextField(blank=True)
+    rules = models.JSONField(default=dict, blank=True)
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["nome"]
+
+    def __str__(self) -> str:
+        return self.nome
+
+
 class Unit(V2Model):
     nome = models.CharField(max_length=180, unique=True)
     categoria = models.CharField(max_length=80, blank=True)
@@ -915,6 +875,13 @@ class Unit(V2Model):
         related_name="unit_lore",
     )
     generation_rules = models.JSONField(default=dict, blank=True)
+    accessory_profile = models.ForeignKey(
+        AccessoryProfile,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="units",
+    )
     notes = models.TextField(blank=True)
 
     class Meta:

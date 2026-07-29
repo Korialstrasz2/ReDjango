@@ -191,23 +191,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/management/skill-reviews/{review_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Managed Skill Review */
-        get: operations["backend_api_v1_api_managed_skill_review"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/management/units": {
         parameters: {
             query?: never;
@@ -1053,6 +1036,23 @@ export interface components {
             metadata: {
                 [key: string]: unknown;
             };
+            /**
+             * Specialreasons
+             * @default []
+             */
+            specialReasons: components["schemas"]["ItemSpecialReasonSchema"][];
+        };
+        /** ItemSpecialReasonSchema */
+        ItemSpecialReasonSchema: {
+            /** Code */
+            code: string;
+            /** Label */
+            label: string;
+            /**
+             * Hint
+             * @default
+             */
+            hint: string;
         };
         /** NoteSectionsSchema */
         NoteSectionsSchema: {
@@ -1470,6 +1470,11 @@ export interface components {
              * @default []
              */
             textures: components["schemas"]["DiceTextureSchema"][];
+            /**
+             * Untextureddice
+             * @default []
+             */
+            untexturedDice: number[];
             /** Isactive */
             isActive: boolean;
             /** Isdefault */
@@ -1547,6 +1552,13 @@ export interface components {
              */
             rotation: number;
         };
+        /** DiceFaceCountSchema */
+        DiceFaceCountSchema: {
+            /** Face */
+            face: number;
+            /** Count */
+            count: number;
+        };
         /** DiceHistoryDataSchema */
         DiceHistoryDataSchema: {
             /** Rolls */
@@ -1556,6 +1568,32 @@ export interface components {
              * @default 100
              */
             limit: number;
+            /**
+             * Total
+             * @default 0
+             */
+            total: number;
+            /**
+             * Offset
+             * @default 0
+             */
+            offset: number;
+            /**
+             * Hasmore
+             * @default false
+             */
+            hasMore: boolean;
+            /**
+             * Sources
+             * @default []
+             */
+            sources: components["schemas"]["EffectConfigurationOptionSchema"][];
+            /**
+             * Players
+             * @default []
+             */
+            players: string[];
+            statistics?: components["schemas"]["DiceStatisticsSchema"] | null;
         };
         /** DiceHistoryEnvelopeSchema */
         DiceHistoryEnvelopeSchema: {
@@ -1622,6 +1660,37 @@ export interface components {
             diceSetName: string;
             /** Rolledat */
             rolledAt: string;
+        };
+        /** DiceStatisticsRowSchema */
+        DiceStatisticsRowSchema: {
+            /** Name */
+            name: string;
+            /** Rolls */
+            rolls: number;
+            /** Dice */
+            dice: number;
+            /** Averagetotal */
+            averageTotal: number;
+            /** Averagedie */
+            averageDie: number;
+        };
+        /** DiceStatisticsSchema */
+        DiceStatisticsSchema: {
+            /**
+             * Byplayer
+             * @default []
+             */
+            byPlayer: components["schemas"]["DiceStatisticsRowSchema"][];
+            /**
+             * Bydiceset
+             * @default []
+             */
+            byDiceSet: components["schemas"]["DiceStatisticsRowSchema"][];
+            /**
+             * Facedistribution
+             * @default []
+             */
+            faceDistribution: components["schemas"]["DiceFaceCountSchema"][];
         };
         /** CharacterNotesDataSchema */
         CharacterNotesDataSchema: {
@@ -3520,6 +3589,39 @@ export interface components {
             action: "items.create";
             payload: components["schemas"]["ItemWritePayloadSchema"];
         };
+        /** DiceHistoryPurgeActionSchema */
+        DiceHistoryPurgeActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "diceHistory.purge";
+            payload: components["schemas"]["DiceHistoryPurgePayloadSchema"];
+        };
+        /** DiceHistoryPurgePayloadSchema */
+        DiceHistoryPurgePayloadSchema: {
+            /**
+             * Olderthandays
+             * @default 30
+             */
+            olderThanDays: number;
+        };
         /** DiceRollActionSchema */
         DiceRollActionSchema: {
             /** Requestid */
@@ -3626,6 +3728,31 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** DiceSetDuplicateActionSchema */
+        DiceSetDuplicateActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "diceSets.duplicate";
+            payload: components["schemas"]["DiceSetArchivePayloadSchema"];
+        };
         /** DiceSetUpdateActionSchema */
         DiceSetUpdateActionSchema: {
             /** Requestid */
@@ -3659,6 +3786,68 @@ export interface components {
             values: {
                 [key: string]: unknown;
             };
+        };
+        /** ItemRecheckSpecialActionSchema */
+        ItemRecheckSpecialActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "items.recheckSpecial";
+            payload: components["schemas"]["ItemRecheckSpecialPayloadSchema"];
+        };
+        /** ItemRecheckSpecialPayloadSchema */
+        ItemRecheckSpecialPayloadSchema: {
+            /** Itemids */
+            itemIds: number[];
+        };
+        /** ItemSetSpecialActionSchema */
+        ItemSetSpecialActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "items.setSpecial";
+            payload: components["schemas"]["ItemSetSpecialPayloadSchema"];
+        };
+        /** ItemSetSpecialPayloadSchema */
+        ItemSetSpecialPayloadSchema: {
+            /** Itemids */
+            itemIds: number[];
+            /** Special */
+            special: boolean;
         };
         /** ItemWritePayloadSchema */
         ItemWritePayloadSchema: {
@@ -4244,137 +4433,6 @@ export interface components {
             action: "management.skills.group.state";
             payload: components["schemas"]["ManagedSkillStructureStatePayloadSchema"];
         };
-        /** ManagedSkillReviewImportActionSchema */
-        ManagedSkillReviewImportActionSchema: {
-            /** Requestid */
-            requestId: string;
-            /**
-             * Context
-             * @default {}
-             */
-            context: {
-                [key: string]: unknown;
-            };
-            /**
-             * Meta
-             * @default {}
-             */
-            meta: {
-                [key: string]: unknown;
-            };
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            action: "management.skills.review.import";
-            payload: components["schemas"]["ManagedSkillReviewPayloadSchema"];
-        };
-        /** ManagedSkillReviewPayloadSchema */
-        ManagedSkillReviewPayloadSchema: {
-            /** Reviewid */
-            reviewId: number;
-        };
-        /** ManagedSkillReviewSaveActionSchema */
-        ManagedSkillReviewSaveActionSchema: {
-            /** Requestid */
-            requestId: string;
-            /**
-             * Context
-             * @default {}
-             */
-            context: {
-                [key: string]: unknown;
-            };
-            /**
-             * Meta
-             * @default {}
-             */
-            meta: {
-                [key: string]: unknown;
-            };
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            action: "management.skills.review.save";
-            payload: components["schemas"]["ManagedSkillReviewSavePayloadSchema"];
-        };
-        /** ManagedSkillReviewSavePayloadSchema */
-        ManagedSkillReviewSavePayloadSchema: {
-            /** Reviewid */
-            reviewId: number;
-            /** Values */
-            values: {
-                [key: string]: unknown;
-            };
-            /**
-             * Notes
-             * @default
-             */
-            notes: string;
-        };
-        /** ManagedSkillReviewStatusActionSchema */
-        ManagedSkillReviewStatusActionSchema: {
-            /** Requestid */
-            requestId: string;
-            /**
-             * Context
-             * @default {}
-             */
-            context: {
-                [key: string]: unknown;
-            };
-            /**
-             * Meta
-             * @default {}
-             */
-            meta: {
-                [key: string]: unknown;
-            };
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            action: "management.skills.review.status";
-            payload: components["schemas"]["ManagedSkillReviewStatusPayloadSchema"];
-        };
-        /** ManagedSkillReviewStatusPayloadSchema */
-        ManagedSkillReviewStatusPayloadSchema: {
-            /** Reviewid */
-            reviewId: number;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "open" | "ignored";
-        };
-        /** ManagedSkillReviewSyncActionSchema */
-        ManagedSkillReviewSyncActionSchema: {
-            /** Requestid */
-            requestId: string;
-            /**
-             * Context
-             * @default {}
-             */
-            context: {
-                [key: string]: unknown;
-            };
-            /**
-             * Meta
-             * @default {}
-             */
-            meta: {
-                [key: string]: unknown;
-            };
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            action: "management.skills.review.sync";
-            payload: components["schemas"]["ManagedSkillReviewSyncPayloadSchema"];
-        };
-        /** ManagedSkillReviewSyncPayloadSchema */
-        ManagedSkillReviewSyncPayloadSchema: Record<string, never>;
         /** ManagedSkillStateActionSchema */
         ManagedSkillStateActionSchema: {
             /** Requestid */
@@ -4406,6 +4464,44 @@ export interface components {
             skillId: number;
             /** Archived */
             archived: boolean;
+        };
+        /** ManagedSkillStructureReorderActionSchema */
+        ManagedSkillStructureReorderActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.skills.structure.reorder";
+            payload: components["schemas"]["ManagedSkillStructureReorderPayloadSchema"];
+        };
+        /** ManagedSkillStructureReorderPayloadSchema */
+        ManagedSkillStructureReorderPayloadSchema: {
+            /**
+             * Groups
+             * @default []
+             */
+            groups: number[];
+            /**
+             * Families
+             * @default []
+             */
+            families: number[];
         };
         /** ManagedSkillStructureStatePayloadSchema */
         ManagedSkillStructureStatePayloadSchema: {
@@ -6047,6 +6143,7 @@ export interface operations {
             query?: {
                 query?: string;
                 orphan_kind?: string;
+                campaign?: string;
             };
             header?: never;
             path?: never;
@@ -6116,7 +6213,15 @@ export interface operations {
     };
     backend_api_v1_api_managed_skills: {
         parameters: {
-            query?: never;
+            query?: {
+                query?: string;
+                group_id?: number;
+                family_id?: number;
+                state?: string;
+                kind?: string;
+                offset?: number;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6149,46 +6254,6 @@ export interface operations {
             header?: never;
             path: {
                 skill_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ManagementEnvelopeSchema"];
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
-                };
-            };
-        };
-    };
-    backend_api_v1_api_managed_skill_review: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                review_id: number;
             };
             cookie?: never;
         };
@@ -6436,7 +6501,15 @@ export interface operations {
     };
     backend_api_v1_api_dice_history: {
         parameters: {
-            query?: never;
+            query?: {
+                player?: string;
+                character_id?: number;
+                source?: string;
+                since_days?: number;
+                limit?: number;
+                offset?: number;
+                statistics?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6608,7 +6681,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ManagedSkillReviewSyncActionSchema"] | components["schemas"]["ManagedSkillReviewSaveActionSchema"] | components["schemas"]["ManagedSkillReviewImportActionSchema"] | components["schemas"]["ManagedSkillReviewStatusActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketProfileAssignmentActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"];
+                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketProfileAssignmentActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"];
             };
         };
         responses: {

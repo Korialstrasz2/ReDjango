@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from backend.core.api import ApiError
+from backend.core.item_special import compute_special_reasons
 from backend.core.models import Giocatore, Oggetto, OpzioneTipoOggetto, TipoArma
 from backend.core.security import effective_role, has_minimum_role
 from backend.core.weapon_rules import normalize_weapon_profile
@@ -236,16 +237,7 @@ def restore_item(user, giocatore: Giocatore, item_id: int) -> Oggetto:
     return item
 
 
-@transaction.atomic
-def set_items_special(user, giocatore: Giocatore, item_ids: list[int], special: bool) -> int:
-    """Flag or clear `speciale` on several items at once.
-
-    The flag excludes an item from every shop, and it is by far the commonest
-    reason a template never appears anywhere. Reviewing thousands of legacy rows
-    one modal at a time is not a workflow, so the triage list clears them in
-    batches.
-    """
-    require_item_author(user, giocatore)
+def _item_identifiers(item_ids: list[int]) -> list[int]:
     identifiers = []
     for raw in item_ids or []:
         try:
@@ -254,4 +246,49 @@ def set_items_special(user, giocatore: Giocatore, item_ids: list[int], special: 
             raise ApiError("items.id_invalid", "Identificativo oggetto non valido.", "itemIds") from exc
     if not identifiers:
         raise ApiError("items.selection_required", "Seleziona almeno un oggetto.", "itemIds")
+    return identifiers
+
+
+@transaction.atomic
+def set_items_special(user, giocatore: Giocatore, item_ids: list[int], special: bool) -> int:
+    """Flag or clear `speciale` on several items at once, no questions asked.
+
+    The flag excludes an item from every shop, and it is by far the commonest
+    reason a template never appears anywhere. This is the blunt override for
+    when a master has already checked the items by hand; `recheck_items_special`
+    is the evidence-driven alternative that only clears items whose underlying
+    issue is actually gone.
+    """
+    require_item_author(user, giocatore)
+    identifiers = _item_identifiers(item_ids)
     return Oggetto.objects.filter(id__in=identifiers).update(speciale=special, updated_at=timezone.now())
+
+
+@transaction.atomic
+def recheck_items_special(user, giocatore: Giocatore, item_ids: list[int]) -> dict[str, int]:
+    """Recompute why each item would still be `speciale`, from its current field values.
+
+    Unlike `set_items_special`, this doesn't trust the caller's judgement: it
+    re-derives the reason codes `legacy_item_import` assigned at import time
+    (missing type, temporary flag, unconverted Elder effects, non-template) and
+    only clears the flag for items whose underlying data has actually been
+    fixed since. Items still failing a check keep `speciale=True` and get their
+    `metadata.specialReasons` snapshot refreshed to the current reasons.
+    """
+    require_item_author(user, giocatore)
+    identifiers = _item_identifiers(item_ids)
+    items = list(Oggetto.objects.select_for_update().filter(id__in=identifiers))
+    cleared = still_special = 0
+    for item in items:
+        reasons = compute_special_reasons(item)
+        metadata = dict(item.metadata) if isinstance(item.metadata, dict) else {}
+        metadata["specialReasons"] = reasons
+        was_special = item.speciale
+        item.metadata = metadata
+        item.speciale = bool(reasons)
+        item.save(update_fields=["metadata", "speciale", "updated_at"])
+        if was_special and not item.speciale:
+            cleared += 1
+        elif item.speciale:
+            still_special += 1
+    return {"checked": len(items), "cleared": cleared, "stillSpecial": still_special}

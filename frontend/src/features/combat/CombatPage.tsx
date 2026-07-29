@@ -867,10 +867,11 @@ function MapManagerModal({ workspace, busy, onClose, onSelect, onEdit, onVersion
   </Modal>;
 }
 
-function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDelete, onSaveActionSettings }: {
+function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDelete, onClearQueue, onSaveActionSettings }: {
   map: CombatMap; paths: PathResult | null; busy: boolean;
   notify: (message: string, kind?: "success" | "error" | "info") => void;
   onCreate: (payload: Record<string, unknown>) => void; onCommit: (id: number) => void; onDelete: (id: number) => void;
+  onClearQueue: (actionIds: number[]) => void;
   onSaveActionSettings: (characterId: number, settings: { tags?: Record<string, string[]>; tagFilters?: string[] }) => void;
 }) {
   const characterId = map.activeCharacterId || map.participants[0]?.character.id || 0;
@@ -919,14 +920,29 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
     const tags = { ...storedTags };
     if (next.length) tags[key] = next; else delete tags[key];
     onSaveActionSettings(characterId, { tags });
+    // Un'etichetta fuori dai filtri attivi fa sparire l'azione dall'elenco: va detto subito.
+    const resulting = next.length ? next : [UNTAGGED_ACTION_TAG];
+    if (!actionMatchesTagFilters(resulting, activeFilters)) {
+      const label = options.find((entry) => entry.key === key)?.name || "L'azione";
+      notify(`${label} esce dall'elenco: attiva il filtro “${resulting.join("” o “")}” per rivederla.`, "info");
+    }
   };
+  const actions = map.plannedActions.filter((entry) => entry.characterId === characterId);
+  const pendingActions = actions.filter((entry) => !entry.committedAt);
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const alreadyQueued = pendingActions.some((entry) => entry.actionType === actionType
+      && entry.name.trim().toLocaleLowerCase("it") === name.trim().toLocaleLowerCase("it"));
+    if (alreadyQueued && !confirm(`“${name}” è già in coda e non è ancora stata pagata. Aggiungerla una seconda volta?`)) return;
     const effectNote = selectedKey === "movement" ? "" : `Effetto ${spellIntensity}${selectedOption?.spell?.effectUnit ? ` ${selectedOption.spell.effectUnit}` : ""} · Mana richiesto ${requiredMana}`;
     const powerNote = actionType === "cast" ? `Potere usato ${powerUsed} · Potere gratis ${freePower}` : "";
     onCreate({ characterId, actionType, name, description: [description, effectNote, powerNote].filter(Boolean).join(" · "), costs: resolvedCosts, sourceSkillId, path: actionType === "movement" ? paths?.fastest.path || [] : [] });
   };
-  const actions = map.plannedActions.filter((entry) => entry.characterId === characterId);
+  const clearQueue = () => {
+    if (!pendingActions.length) return;
+    if (!confirm(`Svuotare la coda? ${pendingActions.length} azioni non pagate verranno rimosse. Le azioni già pagate restano nello storico.`)) return;
+    onClearQueue(pendingActions.map((entry) => entry.id));
+  };
   const projectedResources = character?.resources.filter((resource) => resource.key in resolvedCosts).map((resource) => ({ ...resource, after: Math.max(0, resource.current - (resolvedCosts[resource.key] || 0)) })) || [];
   const movementOption = { key: "movement", name: "Movimento", description: paths?.fastest.actionPoints != null ? `${paths.fastest.distance ?? 0} esagoni · ${paths.fastest.actionPoints} PA suggeriti` : "Scegli liberamente i PA usati.", kind: "movement" as const };
   // Il Movimento non è un'azione etichettabile: resta sempre in cima all'elenco.
@@ -934,20 +950,35 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
   const availableOptions = [movementOption, ...visibleOptions];
   return <div className="combat-quick-actions">
     <aside className="combat-quick-catalog">
-      <header>
-        <button type="button" className="combat-quick-catalog-title" aria-expanded={tagsExpanded} onClick={() => setTagsExpanded((current) => !current)} title="Mostra o nascondi i filtri per etichetta">Azioni disponibili</button>
+      <header
+        className="combat-quick-catalog-heading"
+        role="button"
+        tabIndex={0}
+        aria-expanded={tagsExpanded}
+        title={tagsExpanded ? "Chiudi i filtri per etichetta" : "Apri i filtri per etichetta"}
+        onClick={() => setTagsExpanded((current) => !current)}
+        onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setTagsExpanded((current) => !current); } }}
+      >
+        <strong className="combat-quick-catalog-title">Azioni disponibili{tagsExpanded ? " (Chiudi)" : ""}</strong>
         <span>{character?.name || "Nessun personaggio"}</span>
       </header>
-      <div className={`combat-quick-tag-filters ${tagsExpanded ? "expanded" : ""}`} role="group" aria-label="Filtri per etichetta">
+      {/* Chiuse, le etichette sono solo un'anteprima cliccabile che apre i filtri; aperte, filtrano davvero. */}
+      <div
+        className={`combat-quick-tag-filters ${tagsExpanded ? "expanded" : ""}`}
+        role="group"
+        aria-label={tagsExpanded ? "Filtri per etichetta" : "Etichette: apri i filtri"}
+        onClick={tagsExpanded ? undefined : () => setTagsExpanded(true)}
+      >
         {ACTION_TAGS.map((tag) => {
           const on = activeFilters.includes(tag);
           return <button
             key={tag}
             type="button"
             className={on ? "on" : "off"}
-            disabled={!tagsExpanded || busy || !characterId}
-            aria-pressed={on}
-            onClick={() => toggleFilter(tag)}
+            disabled={busy || !characterId}
+            aria-pressed={tagsExpanded ? on : undefined}
+            title={tagsExpanded ? `Filtra per “${tag}”` : "Apri i filtri per etichetta"}
+            onClick={() => tagsExpanded ? toggleFilter(tag) : setTagsExpanded(true)}
           >{tag}</button>;
         })}
       </div>
@@ -974,57 +1005,11 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
         <button className="button primary" disabled={busy || !characterId}>Aggiungi {selectedKey === "movement" ? "Movimento" : "alla coda"}</button>
       </form>
     </main>
-    <aside className="combat-quick-side"><section className="combat-quick-notes"><header><strong>Note</strong><span>Salvataggio automatico</span></header>{characterId && <NoteSectionEditor characterId={characterId} section="combat" notify={notify} rows={6} compact minimal />}</section><section className="combat-quick-queue"><header><strong>Coda azioni</strong><span>{actions.filter((entry) => !entry.committedAt).length} da pagare</span></header><div className="planned-action-list">{actions.map((action) => <article key={action.id} className={action.committedAt ? "committed" : ""}>
+    <aside className="combat-quick-side"><section className="combat-quick-notes"><header><strong>Note</strong><span>Salvataggio automatico</span></header>{characterId && <NoteSectionEditor characterId={characterId} section="combat" notify={notify} rows={6} compact minimal />}</section><section className="combat-quick-queue"><header><strong>Coda azioni</strong><span>{pendingActions.length} da pagare</span><button type="button" className="combat-quick-queue-reset" disabled={busy || !pendingActions.length} onClick={clearQueue} title="Rimuove tutte le azioni non ancora pagate">Svuota</button></header><div className="planned-action-list">{actions.map((action) => <article key={action.id} className={action.committedAt ? "committed" : ""}>
       <span className={`action-glyph ${action.actionType}`}>{({ movement: "↝", attack: "⚔", cast: "✦", power: "◆", other: "•" } as Record<string, string>)[action.actionType]}</span>
       <div><strong>{action.name}</strong><small>{Object.entries(action.costs).filter(([, value]) => value).map(([key, value]) => `${value} ${key.toUpperCase()}`).join(" · ") || "Nessun costo"}{action.path.length ? ` · ${action.path.length - 1} esagoni` : ""}</small>{action.description && <p>{action.description}</p>}</div>
       {action.committedAt ? <span className="paid">Pagata</span> : <div><button disabled={busy} onClick={() => onCommit(action.id)}>Paga</button><button disabled={busy} onClick={() => onDelete(action.id)}>×</button></div>}
     </article>)}</div>{!actions.length && <p className="combat-quick-empty">La coda è vuota. Scegli Movimento o una delle azioni sbloccate.</p>}<p className="planner-note">Solo “Paga” scala le risorse. La coda non impone un ordine di turno.</p></section></aside>
-  </div>;
-}
-
-function PlannerPanel({ map, paths, busy, onCreate, onCommit, onDelete }: {
-  map: CombatMap; paths: PathResult | null; busy: boolean;
-  onCreate: (payload: Record<string, unknown>) => void; onCommit: (id: number) => void; onDelete: (id: number) => void;
-}) {
-  const characterId = map.activeCharacterId || map.participants[0]?.character.id || 0;
-  const character = map.participants.find((entry) => entry.character.id === characterId)?.character;
-  const options = useMemo(() => characterActiveOptions(character), [character]);
-  const [costs, setCosts] = useState(EMPTY_COSTS);
-  const [actionType, setActionType] = useState("movement");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [sourceSkillId, setSourceSkillId] = useState<number | undefined>();
-  const chooseOption = (key: string) => {
-    const option = options.find((entry) => entry.key === key);
-    if (!option) return;
-    setActionType(option.kind);
-    setName(option.name);
-    setDescription(option.description);
-    setCosts({ ...EMPTY_COSTS, ...option.costs });
-    setSourceSkillId(option.sourceSkillId);
-  };
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onCreate({ characterId, actionType, name, description, costs, sourceSkillId, path: actionType === "movement" ? paths?.fastest.path || [] : [] });
-    setActionType("movement"); setName(""); setDescription(""); setCosts(EMPTY_COSTS); setSourceSkillId(undefined);
-  };
-  const actions = map.plannedActions.filter((entry) => entry.characterId === characterId);
-  return <div className="combat-planner">
-    <form className="planner-form" onSubmit={submit}>
-      <label className="wide">Dalle skill e dai poteri<select defaultValue="" onChange={(event) => chooseOption(event.target.value)}><option value="">Componi manualmente…</option>{options.map((entry) => <option key={entry.key} value={entry.key}>{entry.name}</option>)}</select></label>
-      <label>Tipo<select value={actionType} onChange={(event) => setActionType(event.target.value)}><option value="movement">Movimento</option><option value="attack">Attacco</option><option value="cast">Incantesimo</option><option value="power">Potere</option><option value="other">Altro</option></select></label>
-      <label>Azione<input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Es. Avanza e lancia Gelo" /></label>
-      <label className="wide">Promemoria<input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Bersaglio, bonus, effetto…" /></label>
-      <div className="planner-costs">{Object.entries(costs).map(([key, value]) => <label key={key}>{key}<input type="number" min="0" value={value} onChange={(event) => setCosts({ ...costs, [key]: Math.max(0, Number(event.target.value)) })} /></label>)}</div>
-      {paths?.fastest.actionPoints != null && <button type="button" className="planner-path-cost" onClick={() => setCosts({ ...costs, pa: paths.fastest.actionPoints || 0 })}>Usa percorso rapido: {paths.fastest.actionPoints} PA</button>}
-      <button className="button primary" disabled={busy || !characterId}>Aggiungi al piano</button>
-    </form>
-    <div className="planned-action-list">{actions.map((action) => <article key={action.id} className={action.committedAt ? "committed" : ""}>
-      <span className={`action-glyph ${action.actionType}`}>{({ movement: "↝", attack: "⚔", cast: "✦", power: "◆", other: "•" } as Record<string, string>)[action.actionType]}</span>
-      <div><strong>{action.name}</strong><small>{Object.entries(action.costs).filter(([, value]) => value).map(([key, value]) => `${value} ${key.toUpperCase()}`).join(" · ") || "Nessun costo"}{action.path.length ? ` · ${action.path.length - 1} esagoni` : ""}</small>{action.description && <p>{action.description}</p>}</div>
-      {action.committedAt ? <span className="paid">Pagata</span> : <div><button disabled={busy} onClick={() => onCommit(action.id)}>Paga</button><button disabled={busy} onClick={() => onDelete(action.id)}>×</button></div>}
-    </article>)}</div>
-    <p className="planner-note">Il piano è un promemoria: non impone turni. Solo “Paga” scala davvero le risorse della singola azione.</p>
   </div>;
 }
 
@@ -1190,6 +1175,14 @@ export function CombatPage() {
       if (action) spendLocalActionPoints(action.characterId, actionPointCost);
     } catch { /* onError already reports the API failure. */ }
   };
+  // Le cancellazioni vanno in sequenza: ogni risposta riporta l'intera mappa e
+  // richieste parallele finirebbero per riscrivere la cache con uno stato già superato.
+  const clearPlannedActions = async (actionIds: number[]) => {
+    for (const actionId of actionIds) {
+      try { await mutation.mutateAsync({ action: "combat.deletePlannedAction", payload: { mapId: map?.id, actionId } }); }
+      catch { return; }
+    }
+  };
   const resolveAttackAndSpendLocalActionPoints = async (payload: Record<string, unknown>) => {
     try {
       const response = await mutation.mutateAsync({ action: "combat.resolveAttack", payload: { mapId: map?.id, ...payload } });
@@ -1255,10 +1248,6 @@ export function CombatPage() {
             </DraggableHexTool>
             <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen && workspace.permissions.canManageMaps} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} />
           </div>
-          <section className={`combat-plan-drawer ${plannerOpen ? "open" : ""}`} data-component-type="drawer" data-theme="combat">
-            <button type="button" className="combat-drawer-toggle" aria-expanded={plannerOpen} onClick={() => setPlannerOpen((current) => { const next = !current; if (next) { setHexOpen(false); setAttackOpen(false); } return next; })}><span>☷</span><strong>Piano</strong><small>{map.plannedActions.filter((action) => !action.committedAt).length} da pagare · {plannerOpen ? "Chiudi" : "Espandi"}</small></button>
-            {plannerOpen && <div className="combat-plan-drawer-body"><PlannerPanel map={map} paths={paths} busy={mutation.isPending} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} /><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 12).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details></div>}
-          </section>
         </section>
         <aside className={`combat-attack-drawer ${attackOpen ? "open" : ""}`} data-component-type="drawer" data-theme="combat">
           <button type="button" className="combat-attack-drawer-toggle" aria-expanded={attackOpen} onClick={() => setAttackOpen((current) => { const next = !current; if (next) { setHexOpen(false); setPlannerOpen(false); } return next; })}><span>⚔</span><strong>Attacco</strong><small>{attackOpen ? "›" : "‹"}</small></button>
@@ -1266,7 +1255,7 @@ export function CombatPage() {
         </aside>
       </div>
     </>}
-    {plannerOpen && map && <Modal title={`Azioni rapide · ${map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.character.name || "Combattimento"}`} onClose={() => setPlannerOpen(false)} wide resizable hideHeader className="combat-quick-actions-modal" footer={<><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 8).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details><button className="button secondary" onClick={() => setPlannerOpen(false)}>Chiudi</button></>}><QuickActionsPanel map={map} paths={paths} busy={mutation.isPending} notify={notify} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} onSaveActionSettings={(targetCharacterId, settings) => act("combat.updateActionSettings", { characterId: targetCharacterId, ...settings })} /></Modal>}
+    {plannerOpen && map && <Modal title={`Azioni rapide · ${map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.character.name || "Combattimento"}`} onClose={() => setPlannerOpen(false)} wide resizable hideHeader dragFromBody className="combat-quick-actions-modal" footer={<><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 8).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details><button className="button secondary" onClick={() => setPlannerOpen(false)}>Chiudi</button></>}><QuickActionsPanel map={map} paths={paths} busy={mutation.isPending} notify={notify} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} onClearQueue={clearPlannedActions} onSaveActionSettings={(targetCharacterId, settings) => act("combat.updateActionSettings", { characterId: targetCharacterId, ...settings })} /></Modal>}
     {mapManagerOpen && <MapManagerModal workspace={workspace} busy={mutation.isPending} onClose={() => setMapManagerOpen(false)} onSelect={(id) => { setMapId(id); setPaths(null); setSelectedHex(null); setSelectedHexes([]); setMapManagerOpen(false); }} onEdit={() => { setMapManagerOpen(false); setMapEditorMode("edit"); }} onVersions={() => { setMapManagerOpen(false); setVersionsOpen(true); }} onCharacters={() => { setMapManagerOpen(false); setCharacterManager(true); }} />}
     {mapEditorMode && <UnifiedMapEditorModal workspace={workspace} createNew={mapEditorMode === "create"} busy={mutation.isPending} onClose={() => setMapEditorMode(null)} onSave={async (draft, file, convertToWebp) => {
       let imageId = draft.imageId;

@@ -816,54 +816,25 @@ Renamed replacement for `GroupNames`.
 | `surnames` | JSON | Surname/family-name pool. |
 | `description` | text nullable | Explains cultural usage for the group. |
 
-### LLMPrompt
+### AIProvider
 
-Managed prompt library for AI features.
+Encrypted provider endpoint and capability configuration. Secrets are write-only in the product API; only Administrators may change secrets or endpoints.
 
-| Field | Type | Why it exists |
-|---|---|---|
-| `name` | string unique | Stable prompt key used by services. |
-| `content` | text | Prompt body. |
-| `importanza` | integer | Existing priority/importance concept. |
-| `version` | string nullable | Lets prompts evolve without losing traceability. |
-| `feature` | string nullable | Groups prompts by feature such as images, character creation, lore, items, or skills. |
+### AIAgentProfile
 
-### LLMLog
-
-Short-lived AI call log.
+Configurable orchestration policy.
 
 | Field | Type | Why it exists |
 |---|---|---|
-| `service` | string | Records which feature/service called the model. |
-| `call` | text/JSON | Stores request and response summary for debugging. |
-| `created_time` | datetime | Supports pruning and recent-log inspection. |
-| `status` | enum/string nullable | Records success, failure, timeout, or validation error. |
-| `cost_metadata` | JSON | Allows later tracking of token/cost usage. |
+| `name`, `slug`, `description` | strings | User-facing identity and stable workflow key. |
+| `instructions` | text | Competence, goal and success criteria layered over invariant read-only rules. |
+| `minimum_role` | role enum | Lowest role allowed to invoke the workflow. |
+| `provider` | nullable FK | Pins a capability-bearing chat provider or falls back to the default. |
+| `allowed_tools` | JSON list | Explicit read-only scope; runtime also enforces each tool's own role. |
+| `max_iterations` | integer 1–12 | Bounded autonomy for the agent loop. |
+| `is_enabled`, `is_default`, `order` | state/order | Controls publication and selection in the assistant. |
 
-### LogControl
-
-Runtime logging switches.
-
-| Field | Type | Why it exists |
-|---|---|---|
-| `debug` | boolean | Enables debug logs. |
-| `methods` | boolean | Enables method-entry logs. |
-| `calls` | boolean | Enables external-call logs. |
-| `feature_flags` | JSON | Allows per-feature log switches without more columns. |
-
-### ToolControl
-
-Technical tool and maintenance toggles.
-
-| Field | Type | Why it exists |
-|---|---|---|
-| `enable_startup_indexing` | boolean | Keeps startup indexing explicit. |
-| `install_comfy` | boolean | Tracks whether local image tooling should be installed/started. |
-| `import_massivo` | boolean | Controls bulk import tooling. |
-| `vacuum_database` | boolean | Controls manual DB cleanup tasks. |
-| `setup_open_code_orchestrator` | boolean | Controls local orchestrator setup. |
-| `tool_flags` | JSON | Replaces one-column-per-maintenance-script growth. |
-| `last_run` | JSON | Records last execution result per tool. |
+AI run observability is deliberately operational rather than relational: one structured log line records run ID, profile, provider/model, caller role, tool names, iteration count, token totals, duration and status. Prompts, tool results, conversation context and responses are not stored in the database or logs.
 
 ## Dropped Or Merged Current Models
 

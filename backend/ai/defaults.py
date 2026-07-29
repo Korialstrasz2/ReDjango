@@ -1,99 +1,58 @@
-"""Preset dei provider AI.
+"""Preset aggiornabili per provider e profilo agente iniziale."""
 
-Sono soltanto punti di partenza: nome, endpoint e modello restano modificabili da
-`/tools/ai`. Il modello indicato è il valore di default suggerito, non un vincolo.
-"""
-
-from .models import AIProvider
+from .models import AIAgentProfile, AIProvider
+from .tools import AI_TOOLS
 
 
 AI_PROVIDER_PRESETS = [
     {
-        "slug": "anthropic",
-        "name": "Anthropic",
-        "purpose": AIProvider.PURPOSE_CHAT,
-        "kind": AIProvider.KIND_ANTHROPIC,
-        "base_url": "",
-        "model": "claude-opus-5",
+        "slug": "anthropic", "name": "Anthropic", "purpose": "chat", "kind": AIProvider.KIND_ANTHROPIC,
+        "base_url": "", "model": "claude-opus-5",
         "models": ["claude-opus-5", "claude-sonnet-5", "claude-haiku-4-5"],
         "description": "API Messages di Anthropic, con uso nativo degli strumenti.",
-        "order": 10,
-        "is_default": True,
+        "order": 10, "is_default": True,
     },
     {
-        "slug": "openai",
-        "name": "OpenAI",
-        "purpose": AIProvider.PURPOSE_CHAT,
-        "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
-        "base_url": "https://api.openai.com/v1",
-        "model": "gpt-5.2",
-        "models": ["gpt-5.2", "gpt-5.1", "gpt-5-mini"],
-        "description": "API compatibile OpenAI. Richiede una chiave della piattaforma, non l'account ChatGPT.",
-        "order": 20,
-        "is_default": False,
+        "slug": "openai", "name": "OpenAI", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_RESPONSES,
+        "base_url": "https://api.openai.com/v1", "model": "gpt-5.6-sol",
+        "models": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
+        "description": "OpenAI Responses API, adatta a ragionamento, strumenti e flussi agentici.",
+        "order": 20, "is_default": False,
     },
     {
-        "slug": "deepseek",
-        "name": "DeepSeek",
-        "purpose": AIProvider.PURPOSE_CHAT,
-        "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
-        "base_url": "https://api.deepseek.com/v1",
-        "model": "deepseek-chat",
+        "slug": "deepseek", "name": "DeepSeek", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
+        "base_url": "https://api.deepseek.com/v1", "model": "deepseek-chat",
         "models": ["deepseek-chat", "deepseek-reasoner"],
-        "description": "Compatibile OpenAI. I modelli di tipo «reasoner» possono non supportare gli strumenti.",
-        "order": 30,
-        "is_default": False,
+        "description": "Chat Completions compatibile OpenAI; le capacità dipendono dal modello.",
+        "order": 30, "is_default": False,
     },
     {
-        "slug": "locale",
-        "name": "Modello locale",
-        "purpose": AIProvider.PURPOSE_CHAT,
-        "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
-        "auth_strategy": AIProvider.AUTH_NONE,
-        "base_url": "http://127.0.0.1:11434/v1",
-        "model": "",
-        "models": [],
-        "description": "Qualsiasi server compatibile OpenAI in locale, per esempio Ollama o LM Studio.",
-        "order": 40,
-        "is_default": False,
-        "is_enabled": False,
+        "slug": "locale", "name": "Modello locale", "purpose": "chat", "kind": AIProvider.KIND_OPENAI_COMPATIBLE,
+        "auth_strategy": AIProvider.AUTH_NONE, "base_url": "http://127.0.0.1:11434/v1", "model": "",
+        "models": [], "description": "Endpoint locale compatibile OpenAI, per esempio Ollama o LM Studio.",
+        "order": 40, "is_default": False, "is_enabled": False,
     },
     {
-        "slug": "openai-immagini",
-        "name": "Immagini OpenAI",
-        "purpose": AIProvider.PURPOSE_IMAGE,
-        "kind": AIProvider.KIND_OPENAI_IMAGE,
-        "base_url": "https://api.openai.com/v1",
-        "model": "gpt-image-1",
-        "models": ["gpt-image-1"],
-        "description": "Generazione e modifica di immagini con l'ultimo modello immagini di OpenAI.",
-        "order": 10,
-        "is_default": True,
+        "slug": "openai-immagini", "name": "Immagini OpenAI", "purpose": "image", "kind": AIProvider.KIND_OPENAI_IMAGE,
+        "base_url": "https://api.openai.com/v1", "model": "gpt-image-2",
+        "models": ["gpt-image-2", "gpt-image-1"],
+        "description": "Generazione immagini OpenAI. La modifica da immagine resta in lavorazione.",
+        "order": 10, "is_default": True,
     },
     {
-        "slug": "stable-diffusion",
-        "name": "Stable Diffusion locale",
-        "purpose": AIProvider.PURPOSE_IMAGE,
-        "kind": AIProvider.KIND_STABLE_DIFFUSION,
-        "auth_strategy": AIProvider.AUTH_NONE,
-        "base_url": "http://127.0.0.1:7860",
-        "model": "",
-        "models": [],
-        "description": "API di AUTOMATIC1111 o ComfyUI in esecuzione sulla tua macchina.",
-        "order": 20,
-        "is_default": False,
-        "is_enabled": False,
+        "slug": "stable-diffusion", "name": "Stable Diffusion locale", "purpose": "image",
+        "kind": AIProvider.KIND_STABLE_DIFFUSION, "auth_strategy": AIProvider.AUTH_NONE,
+        "base_url": "http://127.0.0.1:7860", "model": "", "models": [],
+        "description": "API AUTOMATIC1111 locale. L'integrazione ComfyUI resta in lavorazione.",
+        "order": 20, "is_default": False, "is_enabled": False,
     },
 ]
 
-# Dimensioni offerte dall'interfaccia. Restano una picklist perché ogni provider
-# accetta un insieme chiuso di formati.
 AI_IMAGE_SIZES = [
     {"value": "1024x1024", "label": "Quadrata 1024"},
     {"value": "1024x1536", "label": "Verticale 1024x1536"},
     {"value": "1536x1024", "label": "Orizzontale 1536x1024"},
 ]
-
 AI_IMAGE_QUALITIES = [
     {"value": "low", "label": "Bassa"},
     {"value": "medium", "label": "Media"},
@@ -102,27 +61,48 @@ AI_IMAGE_QUALITIES = [
 
 
 def seed_ai_providers() -> int:
-    """Crea i provider mancanti senza toccare quelli già configurati."""
+    """Crea i preset e aggiorna solo metadata e vecchi default riconoscibili."""
 
     touched = 0
     for preset in AI_PROVIDER_PRESETS:
         defaults = {
-            "name": preset["name"],
-            "purpose": preset["purpose"],
-            "kind": preset["kind"],
+            "name": preset["name"], "purpose": preset["purpose"], "kind": preset["kind"],
             "auth_strategy": preset.get("auth_strategy", AIProvider.AUTH_API_KEY),
-            "base_url": preset["base_url"],
-            "model": preset["model"],
-            "options": {
-                "description": preset["description"],
-                "suggestedModels": preset["models"],
-            },
-            "is_enabled": preset.get("is_enabled", True),
-            "is_default": preset["is_default"],
-            "order": preset["order"],
-            "metadata": {"seed_kind": "ai_provider"},
+            "base_url": preset["base_url"], "model": preset["model"],
+            "options": {"description": preset["description"], "suggestedModels": preset["models"]},
+            "is_enabled": preset.get("is_enabled", True), "is_default": preset["is_default"],
+            "order": preset["order"], "metadata": {"seed_kind": "ai_provider"},
         }
-        _, created = AIProvider.objects.get_or_create(slug=preset["slug"], defaults=defaults)
+        provider, created = AIProvider.objects.get_or_create(slug=preset["slug"], defaults=defaults)
         if created:
             touched += 1
-    return touched
+            continue
+        options = dict(provider.options) if isinstance(provider.options, dict) else {}
+        options.update({"description": preset["description"], "suggestedModels": preset["models"]})
+        provider.options = options
+        fields = ["options", "updated_at"]
+        if preset["slug"] == "openai" and provider.kind == AIProvider.KIND_OPENAI_COMPATIBLE and provider.model == "gpt-5.2":
+            provider.kind = AIProvider.KIND_OPENAI_RESPONSES
+            provider.model = "gpt-5.6-sol"
+            fields.extend(["kind", "model"])
+        if preset["slug"] == "openai-immagini" and provider.model == "gpt-image-1":
+            provider.model = "gpt-image-2"
+            fields.append("model")
+        provider.save(update_fields=fields)
+
+    _, created = AIAgentProfile.objects.get_or_create(
+        slug="assistente-campagna",
+        defaults={
+            "name": "Assistente campagna",
+            "description": "Ricerca e spiega dati della campagna usando soltanto strumenti di lettura.",
+            "instructions": "Aiuta giocatori e Master a capire personaggi, oggetti, regole e stato della campagna. Indica in modo naturale quali dati hai consultato.",
+            "minimum_role": "user",
+            "provider": None,
+            "allowed_tools": [tool.name for tool in AI_TOOLS],
+            "max_iterations": 6,
+            "is_enabled": True,
+            "is_default": True,
+            "metadata": {"seed_kind": "ai_agent"},
+        },
+    )
+    return touched + int(created)

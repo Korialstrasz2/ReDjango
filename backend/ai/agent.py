@@ -1,16 +1,10 @@
-"""Il ciclo dell'agente.
-
-Chiedi al modello, esegui gli strumenti che chiede, rimanda i risultati, ripeti
-finché smette di chiederne. È tutto qui: con strumenti che sono già i selettori del
-progetto, un framework di agenti aggiungerebbe una dipendenza e un'astrazione in più
-senza togliere una riga di questo file.
-
-Il ciclo è limitato in modo esplicito — un modello che continuasse a chiamare
-strumenti non può far girare il server all'infinito.
-"""
+"""Runtime agentico provider-neutral, vincolato da un profilo configurabile."""
 
 from __future__ import annotations
 
+import logging
+import time
+import uuid
 from typing import Any
 
 from backend.core.api import ApiError
@@ -22,21 +16,22 @@ from .tools import execute_tool, tool_definitions
 
 MAXIMUM_ITERATIONS = 6
 MAXIMUM_HISTORY_MESSAGES = 40
+logger = logging.getLogger("redjango.ai.runs")
 
-SYSTEM_PROMPT = """Sei l'assistente di ReDjango, la postazione di gioco di una campagna di ruolo ambientata nel mondo di The Elder Scrolls.
+SYSTEM_PROMPT = """Sei un assistente di ReDjango, la postazione di gioco di una campagna di ruolo ambientata nel mondo di The Elder Scrolls.
 
-Rispondi sempre in italiano, in modo diretto e conciso.
+Obiettivo: rispondi in italiano con informazioni corrette, utili e verificabili sulla campagna.
 
-Per qualunque domanda sui dati della campagna — oggetti, personaggi, abilità, competenze, fazioni, negozi, regole — consulta prima gli strumenti invece di rispondere a memoria: il database è la fonte di verità e le tue conoscenze generali non contengono questa campagna.
+Vincoli: per i dati della campagna consulta gli strumenti pertinenti; il database è la fonte di verità. Non inventare dati mancanti.
 
-Gli strumenti mostrano soltanto ciò che chi ti sta parlando è già autorizzato a vedere. Se uno strumento non restituisce qualcosa, dì che non risulta accessibile: non dedurlo, non inventarlo e non lasciare intendere che esista dell'altro.
+Permessi: puoi usare soltanto gli strumenti esposti in questo turno. Sono di sola lettura e applicano i permessi dell'utente.
 
-Non hai strumenti di scrittura: puoi leggere e spiegare, non modificare la campagna. Se ti viene chiesto di cambiare qualcosa, spiega dove farlo nell'interfaccia."""
+Stop: appena hai prove sufficienti, rispondi senza chiamate ulteriori. Se mancano dati necessari, dichiaralo.
+
+Non puoi modificare il database. Se ti viene chiesto di cambiare qualcosa, spiega dove farlo nell'interfaccia."""
 
 
 def _trim(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Tiene la coda della conversazione, senza spezzare una coppia richiesta/risultato."""
-
     if len(history) <= MAXIMUM_HISTORY_MESSAGES:
         return history
     trimmed = history[-MAXIMUM_HISTORY_MESSAGES:]
@@ -45,20 +40,42 @@ def _trim(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return trimmed
 
 
-def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocatore) -> dict[str, Any]:
-    """Esegue un turno completo e restituisce la risposta più la traccia degli strumenti."""
+def _system_prompt(profile) -> str:
+    instructions = str(getattr(profile, "instructions", "") or "").strip()
+    return SYSTEM_PROMPT + (f"\n\nCompetenza specifica dell'agente:\n{instructions}" if instructions else "")
+
+
+def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocatore, profile=None) -> dict[str, Any]:
+    """Esegue un turno completo secondo provider, strumenti e limiti del profilo."""
 
     client = chat_provider_for(provider)
-    tools = tool_definitions()
+    allowed_tools = list(getattr(profile, "allowed_tools", []) or []) if profile is not None else None
+    tools = tool_definitions(user, giocatore, allowed_tools)
+    maximum_iterations = max(1, min(int(getattr(profile, "max_iterations", MAXIMUM_ITERATIONS)), 12))
     conversation = _trim(list(history))
     trace: list[dict[str, Any]] = []
     usage = {"inputTokens": 0, "outputTokens": 0}
+    run_id = uuid.uuid4().hex[:12]
+    started = time.monotonic()
 
-    for _ in range(MAXIMUM_ITERATIONS):
-        turn = client.complete(system=SYSTEM_PROMPT, history=conversation, tools=tools)
+    for iteration in range(maximum_iterations):
+        try:
+            turn = client.complete(system=_system_prompt(profile), history=conversation, tools=tools)
+        except Exception as error:
+            logger.warning(
+                "agent_run id=%s profile=%s provider=%s model=%s role=%s iterations=%s duration_ms=%s status=provider_error error=%s",
+                run_id,
+                getattr(profile, "slug", "legacy"),
+                provider.slug,
+                provider.model,
+                giocatore.role,
+                iteration + 1,
+                round((time.monotonic() - started) * 1000),
+                type(error).__name__,
+            )
+            raise
         usage["inputTokens"] += int(turn.usage.get("inputTokens") or 0)
         usage["outputTokens"] += int(turn.usage.get("outputTokens") or 0)
-
         conversation.append(
             {
                 "role": "assistant",
@@ -69,16 +86,37 @@ def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocator
         )
 
         if not turn.tool_calls:
-            return {
+            result = {
                 "reply": turn.text,
-                "history": conversation,
+                "history": [{key: value for key, value in entry.items() if key != "raw"} for entry in conversation],
                 "toolTrace": trace,
                 "usage": usage,
                 "stopReason": turn.stop_reason,
+                "runId": run_id,
             }
+            logger.info(
+                "agent_run id=%s profile=%s provider=%s model=%s role=%s tools=%s iterations=%s input_tokens=%s output_tokens=%s duration_ms=%s status=ok",
+                run_id,
+                getattr(profile, "slug", "legacy"),
+                provider.slug,
+                provider.model,
+                giocatore.role,
+                ",".join(item["name"] for item in trace) or "-",
+                iteration + 1,
+                usage["inputTokens"],
+                usage["outputTokens"],
+                round((time.monotonic() - started) * 1000),
+            )
+            return result
 
         for call in turn.tool_calls:
-            result, is_error = execute_tool(call.name, call.arguments, user, giocatore)
+            result, is_error = execute_tool(
+                call.name,
+                call.arguments,
+                user,
+                giocatore,
+                allowed_names=allowed_tools,
+            )
             trace.append({"name": call.name, "arguments": call.arguments, "isError": is_error})
             conversation.append(
                 {
@@ -90,6 +128,15 @@ def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocator
                 }
             )
 
+    logger.warning(
+        "agent_run id=%s profile=%s provider=%s role=%s tools=%s duration_ms=%s status=iteration_limit",
+        run_id,
+        getattr(profile, "slug", "legacy"),
+        provider.slug,
+        giocatore.role,
+        ",".join(item["name"] for item in trace) or "-",
+        round((time.monotonic() - started) * 1000),
+    )
     raise ApiError(
         "ai.iteration_limit",
         "L'assistente ha consultato troppi strumenti senza concludere. Riformula la domanda in modo più specifico.",

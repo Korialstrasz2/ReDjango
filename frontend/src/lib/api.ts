@@ -220,7 +220,7 @@ export async function deleteMedia(assetId: number) {
   });
 }
 
-/** Un giro dell'agente. La cronologia torna al server così com'è arrivata. */
+/** Un turno dell'agente con cronologia provider-neutral, senza stato persistente sul server. */
 export async function askAssistant(payload: Record<string, unknown>) {
   const id = requestId();
   return apiRequest<import("./types").AIChatResult>("/api/ai/", {

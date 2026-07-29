@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.core.models import V2Model
+from backend.core.models import Giocatore, V2Model
 
 from .crypto import decrypt_secret, encrypt_secret
 
@@ -24,11 +24,13 @@ class AIProvider(V2Model):
     ]
 
     KIND_ANTHROPIC = "anthropic"
+    KIND_OPENAI_RESPONSES = "openai_responses"
     KIND_OPENAI_COMPATIBLE = "openai_compatible"
     KIND_OPENAI_IMAGE = "openai_image"
     KIND_STABLE_DIFFUSION = "stable_diffusion"
     KIND_CHOICES = [
         (KIND_ANTHROPIC, "Anthropic Messages"),
+        (KIND_OPENAI_RESPONSES, "OpenAI Responses"),
         (KIND_OPENAI_COMPATIBLE, "Compatibile OpenAI"),
         (KIND_OPENAI_IMAGE, "Immagini OpenAI"),
         (KIND_STABLE_DIFFUSION, "Stable Diffusion locale"),
@@ -72,3 +74,39 @@ class AIProvider(V2Model):
 
     def read_secret(self) -> str:
         return decrypt_secret(self.secret_ciphertext)
+
+
+class AIAgentProfile(V2Model):
+    """Policy configurabile per un agente di sola lettura."""
+
+    name = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=120, unique=True)
+    description = models.TextField(blank=True)
+    instructions = models.TextField(blank=True)
+    minimum_role = models.CharField(
+        max_length=20,
+        choices=Giocatore.ROLE_CHOICES,
+        default=Giocatore.ROLE_USER,
+    )
+    provider = models.ForeignKey(
+        AIProvider,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="agent_profiles",
+        limit_choices_to={"purpose": AIProvider.PURPOSE_CHAT},
+    )
+    allowed_tools = models.JSONField(default=list, blank=True)
+    max_iterations = models.PositiveSmallIntegerField(default=6)
+    is_enabled = models.BooleanField(default=True)
+    is_default = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "name"]
+        verbose_name = "profilo agente AI"
+        verbose_name_plural = "profili agente AI"
+        indexes = [models.Index(fields=["is_enabled", "minimum_role", "order"])]
+
+    def __str__(self) -> str:
+        return self.name

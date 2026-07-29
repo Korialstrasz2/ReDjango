@@ -15,7 +15,8 @@ from backend.core.api import ApiError
 from backend.core.competence_defaults import default_competence_state
 from backend.core.management_selectors import deletion_preview_token
 from backend.core.management_services import delete_managed_character
-from backend.core.models import DatiCampagna, Effetto, FamigliaSkill, Giocatore, GlobalModifiers, GruppoFamiglieSkill, Oggetto, SettingDefinition, Skill, Unit
+from backend.core.models import AccessoryProfile, DatiCampagna, Effetto, FamigliaSkill, Giocatore, GlobalModifiers, GruppoFamiglieSkill, Oggetto, SettingDefinition, Skill, Unit
+from backend.media_library.models import ImageCategory, UploadedImage
 
 from .damage_rules import DAMAGE_RULES_CONFIG_KEY, default_damage_rules
 from .models import CombatEvent, HexType, MapHex, MapMetadata, MapParticipant, MapParticipantFootprint, MapSnapshot, MapType
@@ -48,6 +49,7 @@ from .services import (
     update_fog,
 )
 from .unit_generation import create_unit_character
+from .accessory_profiles import equip_accessory_profile
 from .unit_management_services import preview_managed_unit, save_managed_unit
 
 
@@ -1117,6 +1119,33 @@ class UnitGenerationTests(CombatTestCase):
         )
         self.assertGreater(dragon_20.tot["forza"], dragon_1.tot["forza"])
 
+    def test_generated_character_snapshots_the_unit_portrait(self):
+        first_portrait = UploadedImage.objects.create(
+            title="Ritratto Lupo Unit test",
+            file="v2/images/personaggi/lupo-unit-test.webp",
+            usage_type="character_portrait",
+        )
+        second_portrait = UploadedImage.objects.create(
+            title="Ritratto Lupo nuovo Unit test",
+            file="v2/images/personaggi/lupo-unit-test-nuovo.webp",
+            usage_type="character_portrait",
+        )
+        unit = Unit.objects.create(
+            nome="Lupo con ritratto Unit test",
+            categoria="Animali",
+            generation_rules={"kind": "creature"},
+            lore_image=first_portrait,
+        )
+
+        existing = create_unit_character(unit, 1, "ritratto-originale")
+        unit.lore_image = second_portrait
+        unit.save(update_fields=["lore_image", "updated_at"])
+        future = create_unit_character(unit, 1, "ritratto-nuovo")
+
+        existing.refresh_from_db()
+        self.assertEqual(existing.portrait_id, first_portrait.id)
+        self.assertEqual(future.portrait_id, second_portrait.id)
+
     def test_non_humanoid_curves_hit_exact_endpoints_and_are_traced(self):
         animal = Unit.objects.create(
             nome="Gatto con curve Unit test",
@@ -1365,6 +1394,129 @@ class UnitGenerationTests(CombatTestCase):
             character.equip.orecchino_1_id or character.equip.orecchino_2_id
         )
 
+    def test_shared_accessory_profile_uses_elder_level_formula_and_repeatable_kinds(self):
+        self.perk_catalog()
+        unit, _catalog = self.humanoid_unit()
+        ring = Oggetto.objects.create(
+            nome="Anello vitale livello cinque Unit test",
+            tipo_1="anello",
+            tipo_2="pf_item",
+            tipo_4="Livello 5",
+            effects=[{"target": "pf", "operation": "add", "value": 18}],
+        )
+        profile = AccessoryProfile.objects.get(key="guerriero")
+        profile.rules = {
+            "slots": ["anello_1", "anello_2"],
+            "countCurve": [{"maxLevel": 20, "count": 2}],
+            "countJitter": [0],
+            "itemLevelJitter": [0],
+            "coreWeight": 3,
+            "coreKinds": ["pf_item"],
+            "variantPools": [],
+            "repeatableKinds": ["pf_item"],
+        }
+        profile.save(update_fields=["rules", "updated_at"])
+        unit.accessory_profile = profile
+        unit.equipment_profiles = {
+            **unit.equipment_profiles,
+            "groups": [],
+        }
+        unit.save(update_fields=["accessory_profile", "equipment_profiles", "updated_at"])
+
+        character = create_unit_character(unit, 10, "elder-repeatable")
+
+        self.assertEqual(character.equip.anello_1_id, ring.id)
+        self.assertEqual(character.equip.anello_2_id, ring.id)
+        generated = [
+            entry
+            for entry in character.metadata["unitGeneration"]["equipment"]
+            if entry.get("source") == "accessoryProfile"
+        ]
+        self.assertEqual(len(generated), 2)
+        self.assertEqual({entry["requestedItemLevel"] for entry in generated}, {5})
+        self.assertEqual({entry["itemLevel"] for entry in generated}, {5})
+
+    def test_shared_accessory_profile_keeps_nonrepeatable_kinds_unique(self):
+        profile = AccessoryProfile.objects.get(key="assassino")
+        profile.rules = {
+            "slots": ["anello_1", "anello_2"],
+            "countCurve": [{"maxLevel": 20, "count": 2}],
+            "countJitter": [0],
+            "itemLevelJitter": [0],
+            "coreWeight": 3,
+            "coreKinds": ["attacco_item"],
+            "variantPools": [],
+            "repeatableKinds": [],
+        }
+        profile.save(update_fields=["rules", "updated_at"])
+        ring = Oggetto.objects.create(
+            nome="Anello attacco non ripetibile Unit test",
+            tipo_1="anello",
+            tipo_2="attacco_item",
+            tipo_4="Livello 3",
+        )
+        totals = default_personaggio_tot()
+        totals["anelli_max"] = 4
+        character = Personaggio.objects.create(
+            nome="Profilo accessori unico Unit test",
+            nome_interno="profilo-accessori-unico-unit-test",
+            equip=Equip.objects.create(nome="Equip profilo unico Unit test"),
+            tot=totals,
+        )
+        report = {"equipment": [], "warnings": []}
+
+        equip_accessory_profile(character, profile, 6, random.Random(41), report)
+
+        equipped_ids = [
+            character.equip.anello_1_id,
+            character.equip.anello_2_id,
+        ]
+        self.assertEqual(equipped_ids.count(ring.id), 1)
+        self.assertEqual(report["accessoryProfile"]["generated"], 1)
+
+    def test_shared_accessory_profile_varies_count_slots_and_item_level_by_seed(self):
+        profile = AccessoryProfile.objects.get(key="arciere")
+        profile.rules = {
+            "slots": ["anello_1", "anello_2", "anello_3", "anello_4"],
+            "countCurve": [{"maxLevel": 20, "count": 3}],
+            "countJitter": [-1, 0, 1],
+            "itemLevelJitter": [-2, -1, 0, 1, 2],
+            "coreWeight": 3,
+            "coreKinds": ["pf_item"],
+            "variantPools": [],
+            "repeatableKinds": ["pf_item"],
+        }
+        profile.save(update_fields=["rules", "updated_at"])
+        for item_level in range(1, 11):
+            Oggetto.objects.create(
+                nome=f"Anello vitale casuale L{item_level} Unit test",
+                tipo_1="anello",
+                tipo_2="pf_item",
+                tipo_4=f"Livello {item_level}",
+            )
+        counts = set()
+        levels = set()
+        slot_sets = set()
+        for seed in range(12):
+            totals = default_personaggio_tot()
+            totals["anelli_max"] = 4
+            character = Personaggio.objects.create(
+                nome=f"Profilo casuale {seed} Unit test",
+                nome_interno=f"profilo-casuale-{seed}-unit-test",
+                equip=Equip.objects.create(nome=f"Equip profilo casuale {seed} Unit test"),
+                tot=totals,
+            )
+            report = {"equipment": [], "warnings": []}
+            equip_accessory_profile(character, profile, 10, random.Random(seed), report)
+            generated = report["equipment"]
+            counts.add(len(generated))
+            levels.update(entry["requestedItemLevel"] for entry in generated)
+            slot_sets.add(tuple(sorted(entry["slot"] for entry in generated)))
+
+        self.assertGreater(len(counts), 1)
+        self.assertGreater(len(levels), 1)
+        self.assertGreater(len(slot_sets), 1)
+
     def test_unified_perk_progression_can_apply_milestone_characteristics(self):
         for name, family in (
             ("+1 caratteristica", self.minor_family),
@@ -1458,6 +1610,49 @@ class UnitGenerationTests(CombatTestCase):
         with self.assertRaises(ApiError) as error:
             save_managed_unit(self.user, self.giocatore, invalid)
         self.assertEqual(error.exception.code, "management.units.non_humanoid_skills")
+
+        category = ImageCategory.objects.create(
+            name="Personaggi Unit test",
+            slug="personaggi",
+            usage_types=["character_portrait"],
+        )
+        portrait = UploadedImage.objects.create(
+            title="Lupo gestito Unit test",
+            file="v2/images/personaggi/lupo-gestito-unit-test.webp",
+            usage_type="character_portrait",
+            category=category,
+            group="Unit e NPC",
+            metadata={"convertedToWebp": True, "webpQuality": 70},
+        )
+        updated, was_created = save_managed_unit(
+            self.user,
+            self.giocatore,
+            {**values, "loreImageId": portrait.id},
+            unit.id,
+        )
+        self.assertFalse(was_created)
+        self.assertEqual(updated.lore_image_id, portrait.id)
+
+        wrong_portrait = UploadedImage.objects.create(
+            title="Lupo non conforme Unit test",
+            file="v2/images/personaggi/lupo-non-conforme.png",
+            usage_type="generic",
+            category=category,
+            group="Altro",
+        )
+        with self.assertRaises(ApiError) as portrait_error:
+            save_managed_unit(
+                self.user,
+                self.giocatore,
+                {**values, "loreImageId": wrong_portrait.id},
+                unit.id,
+            )
+        self.assertEqual(
+            portrait_error.exception.code,
+            "management.units.portrait_contract",
+        )
+        unit.refresh_from_db()
+        self.assertEqual(unit.lore_image_id, portrait.id)
 
     def test_management_preview_rolls_back_and_scales_weighted_competences(self):
         self.perk_catalog()

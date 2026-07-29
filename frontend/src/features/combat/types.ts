@@ -72,6 +72,7 @@ export type CombatWorkspace = {
     name: string;
     category: string;
     description: string;
+    imageUrl: string;
     generationKind: "animal" | "creature" | "humanoid" | "";
     generationKindLabel: string;
     coreKey: string;

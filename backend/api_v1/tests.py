@@ -15,7 +15,6 @@ from backend.core.models import (
     Oggetto,
     OpzioneTipoOggetto,
     Skill,
-    SkillMigrationReview,
     SpellDefinition,
     Theme,
     Unit,
@@ -1084,6 +1083,10 @@ class CharacterWorkspaceApiTests(TestCase):
         )
         configuration = overview.json()["data"]["configuration"]
         self.assertEqual(
+            {entry["value"] for entry in configuration["accessoryProfiles"]},
+            {"guerriero", "tank", "mago", "battlemage", "arciere", "assassino", "supporto"},
+        )
+        self.assertEqual(
             {entry["value"] for entry in configuration["statCurveProfiles"]},
             {"very_low", "low", "medium", "high", "very_high", "custom"},
         )
@@ -1187,62 +1190,6 @@ class CharacterWorkspaceApiTests(TestCase):
         refreshed = self.client.get("/api/v1/management/skills").json()["data"]
         self.assertIn(group.id, [entry["id"] for entry in refreshed["groups"]])
         self.assertIn(family.id, [entry["id"] for entry in refreshed["families"]])
-
-    def test_skill_review_can_be_corrected_and_imported_without_character_ownership(self):
-        family = FamigliaSkill.objects.filter(archived_at__isnull=True).first()
-        source_id = 9_900_001
-        values = {
-            "name": "Skill Elder da revisionare",
-            "slug": "skill-elder-da-revisionare",
-            "number": 9_900_001,
-            "familyId": family.id,
-            "familyOrder": 0,
-            "magic": False,
-            "baseXpCost": 4,
-            "xpType": "all",
-            "rulesCost": "",
-            "description": "Proposta iniziale",
-            "requirementsText": "",
-            "prerequisiteIds": [],
-            "profileTags": {},
-            "profileNotes": "",
-            "passiveEffects": [],
-            "activeReminders": [],
-            "spell": None,
-            "icon": "runa",
-            "notes": "",
-            "metadata": {
-                "sourceProject": "the_elder_django",
-                "sourceId": source_id,
-                "sourceHash": "sha256:test-review",
-            },
-        }
-        review = SkillMigrationReview.objects.create(
-            source_project="the_elder_django",
-            source_id=source_id,
-            nome=values["name"],
-            severity=SkillMigrationReview.SEVERITY_BLOCKED,
-            blockers=["no_structured_feature"],
-            suggested_values=values,
-            working_values=values,
-            source_snapshot={"descrizione": "Test Elder"},
-        )
-        corrected = {**values, "description": "Correzione verificata dal master"}
-        saved = self.command(
-            "management.skills.review.save",
-            {"reviewId": review.id, "values": corrected, "notes": "Controllata manualmente"},
-        )
-        self.assertEqual(saved.status_code, 200)
-
-        ownership_count = SkillPersonaggio.objects.count()
-        imported = self.command("management.skills.review.import", {"reviewId": review.id})
-        self.assertEqual(imported.status_code, 200)
-        skill = Skill.objects.get(metadata__sourceProject="the_elder_django", metadata__sourceId=source_id)
-        self.assertEqual(skill.descrizione, "Correzione verificata dal master")
-        self.assertEqual(SkillPersonaggio.objects.count(), ownership_count)
-        review.refresh_from_db()
-        self.assertEqual(review.status, SkillMigrationReview.STATUS_IMPORTED)
-        self.assertEqual(review.resolved_skill_id, skill.id)
 
     def test_item_comparer_updates_only_matching_identity_and_otherwise_creates(self):
         source = Oggetto.objects.create(nome="Oggetto confronto sorgente", peso=1)

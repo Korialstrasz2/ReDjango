@@ -27,6 +27,8 @@ from backend.core.skill_pricing import skill_price
 from backend.core.skill_requirements import structured_requirement_reasons
 from backend.core.skill_services import unlock_skill
 
+from .accessory_profiles import equip_accessory_profile
+
 
 UNIT_KINDS = {
     "creature": "Creatura",
@@ -277,7 +279,11 @@ def unit_catalog_entry(unit: Unit) -> dict[str, Any]:
     kind = unit_kind(unit)
     core_key = unit_core_key(unit)
     rules = _unit_rules(unit)
-    has_equipment = bool(_equipment_slots(unit) or _list(_mapping(unit.equipment_profiles).get("groups")))
+    has_equipment = bool(
+        _equipment_slots(unit)
+        or _list(_mapping(unit.equipment_profiles).get("groups"))
+        or unit.accessory_profile_id
+    )
     has_archetype_profile = bool(
         _list(unit.skill_unlocks)
         or _profile_vector(unit.archetipo_tags)
@@ -294,6 +300,11 @@ def unit_catalog_entry(unit: Unit) -> dict[str, Any]:
         "name": unit.nome,
         "category": unit.categoria,
         "description": unit.archetipo_descrizione or unit.lore_description,
+        "imageUrl": (
+            unit.lore_image.file.url
+            if unit.lore_image_id and unit.lore_image and unit.lore_image.file
+            else ""
+        ),
         "generationKind": kind,
         "generationKindLabel": UNIT_KINDS.get(kind, "Non configurato"),
         "coreKey": core_key,
@@ -1345,7 +1356,11 @@ def _validate_unit(unit: Unit, level: int) -> tuple[str, dict[str, Any]]:
             "unitId",
             409,
         )
-    if not _equipment_slots(unit) and not _list(_mapping(unit.equipment_profiles).get("groups")):
+    if (
+        not _equipment_slots(unit)
+        and not _list(_mapping(unit.equipment_profiles).get("groups"))
+        and unit.accessory_profile_id is None
+    ):
         raise ApiError(
             "combat.unit_equipment_pool_required",
             "Un umanoide deve avere almeno un pool di equipaggiamento esplicito.",
@@ -1386,6 +1401,7 @@ def create_unit_character(unit: Unit, level: int, variant: str = "") -> Personag
         nome=name,
         nome_interno=f"unit-{unit.id}-{uuid4().hex[:12]}",
         tipologia="nemico",
+        portrait=unit.lore_image,
         razza_1=selected_race,
         razza_2=selected_subrace,
         livello=1,
@@ -1548,6 +1564,14 @@ def create_unit_character(unit: Unit, level: int, variant: str = "") -> Personag
                 f"{xp_bank} PE generali restano disponibili: nessuna Skill configurata è acquistabile."
             )
         _equip_humanoid(character, unit, level, rng, report)
+        if unit.accessory_profile_id:
+            equip_accessory_profile(
+                character,
+                unit.accessory_profile,
+                level,
+                rng,
+                report,
+            )
         character.save(update_fields=["pe_generali", "updated_at"])
         refresh_personaggio(character)
         character.refresh_from_db()

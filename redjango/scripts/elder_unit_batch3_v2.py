@@ -24,6 +24,19 @@ def covered_equipment(source_file: str) -> list[dict[str, Any]]:
                 entry["minLevel"] = 1
             if int(entry["maxLevel"]) == last:
                 entry["maxLevel"] = 20
+
+    # Protection layers are deliberate role signals, not a default stack.  Robes
+    # belong to casters, armour to martial units, and chainmail is reserved for
+    # the final tier of named frontline leaders.  Keep the source data intact,
+    # but apply the authored balance policy to generated Unit proposals.
+    remove_chainmail = {"862-863", "937", "845-846", "872-873-874", "878-879-880"}
+    elite_tanks = {"847", "921", "945", "970"}
+    if source_file in remove_chainmail:
+        entries = [entry for entry in entries if entry["slot"] != "chainmail"]
+    elif source_file in elite_tanks:
+        for entry in entries:
+            if entry["slot"] == "chainmail":
+                entry["minLevel"] = max(15, int(entry["minLevel"]))
     return entries
 
 
@@ -157,10 +170,10 @@ HUMANOID_SPECS: list[dict[str, Any]] = [
         "equipment": covered_equipment("862-863"),
         "fantasy": "Campione nordico che considera la furia uno stato sacro e il dolore una prova.",
         "combat": "Entra con spadone, accetta di esporsi e converte ferite e slancio in pressione crescente.",
-        "archetype": "Berserker Nord con spadone, chainmail e furia offensiva.",
+        "archetype": "Berserker Nord con spadone, armatura e furia offensiva.",
         "tags": {"core_fisico": 5, "focus_combat": 5, "attacco": 5, "difesa": 1, "core_magico": -5},
         "competences": {"intimidire": 5, "sopravvivenza": 4, "scalare": 3, "strategia_militare": 1, "diplomazia": -5},
-        "siblings": [("Barbaro Nord", "nearest", "Furia e spadone fisso sostituiscono pressione più controllata."), ("Berserker Orco", "same-role", "Rapidità nordica e chainmail invece di massa orchesca."), ("Guerriero (standard)", "contrast", "Aggressione senza scudo invece di equilibrio.")],
+        "siblings": [("Barbaro Nord", "nearest", "Furia e spadone fisso sostituiscono pressione più controllata."), ("Berserker Orco", "same-role", "Rapidità nordica e furia invece di massa orchesca."), ("Guerriero (standard)", "contrast", "Aggressione senza scudo invece di equilibrio.")],
         "axes": [("furia nordica", "Skill Barbaro e razza Nord"), ("lama pesante", "spadone/Zweihander e tenuta al gelo")],
         "must": ["Nord", "Berserker", "spadone", "furia"], "must_not": ["magia", "scudo", "ritirata prudente", "azioni innate"],
         "variation": "Zweihander o spadone nordico/ebano", "legacy_range": "10-20",

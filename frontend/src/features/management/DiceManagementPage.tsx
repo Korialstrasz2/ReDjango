@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import { useApp } from "../../App";
 import { DiceSetManager } from "../quick-tools/DiceSetManager";
+import { DiceHistoryPanel } from "./DiceHistoryPanel";
 
 export function DiceManagementPage() {
   const { notify } = useApp();
@@ -26,6 +27,7 @@ export function DiceManagementPage() {
       </header>
 
       <DiceSetManager notify={notify} />
+      <DiceHistoryPanel notify={notify} />
     </div>
   );
 }

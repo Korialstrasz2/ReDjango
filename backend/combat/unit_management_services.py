@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from django.db import transaction
@@ -13,8 +14,9 @@ from backend.characters.services.inventory_rules import (
 from backend.characters.race_rules import RACE_NAMES, subraces_for
 from backend.core.api import ApiError
 from backend.core.competence_defaults import default_competence_state
-from backend.core.models import Giocatore, Oggetto, Skill, Unit
+from backend.core.models import AccessoryProfile, Giocatore, Oggetto, Skill, Unit
 from backend.core.security import effective_role, has_minimum_role
+from backend.media_library.models import UploadedImage
 
 from .unit_generation import (
     DEFAULT_CORE_PROFILES,
@@ -24,6 +26,7 @@ from .unit_generation import (
     UNIT_STAT_PROFILE_LABELS,
     create_unit_character,
 )
+from .accessory_profiles import recommended_accessory_profile_key
 from .unit_management_selectors import serialize_managed_unit
 
 
@@ -347,6 +350,14 @@ def _clean_equipment(values: Mapping[str, Any], kind: str) -> dict[str, Any]:
         seen.add(identity)
         slots.setdefault(slot, []).append(cleaned)
 
+    protection_slots = {"armatura", "chainmail", "veste"}
+    if protection_slots <= set(slots):
+        raise ApiError(
+            "management.units.protection_layers_invalid",
+            "Una Unit non puÃ² combinare armatura, chainmail e veste.",
+            "equipmentSlots",
+        )
+
     groups = []
     for group_index, raw in enumerate(raw_groups):
         group = _mapping(raw)
@@ -421,10 +432,10 @@ def _clean_equipment(values: Mapping[str, Any], kind: str) -> dict[str, Any]:
                 "items": items,
             }
         )
-    if not slots and not groups:
+    if not slots and not groups and not str(values.get("accessoryProfileKey") or "").strip():
         raise ApiError(
             "management.units.equipment_required",
-            "Un umanoide deve avere almeno un pool di equipaggiamento.",
+            "Un umanoide deve avere almeno un pool di equipaggiamento o un profilo accessori.",
             "equipmentSlots",
         )
     accessory_bands = []
@@ -732,7 +743,30 @@ def _clean_unit_values(values: Mapping[str, Any]) -> dict[str, Any]:
             "Configura i tag dell'archetipo o almeno una Skill nel pool personalizzato.",
             "archetypeTags",
         )
-    equipment_profiles = _clean_equipment(values, kind)
+    accessory_profile_key = str(values.get("accessoryProfileKey") or "").strip()
+    if kind == "humanoid" and not accessory_profile_key:
+        accessory_profile_key = recommended_accessory_profile_key(
+            core_key,
+            archetype_tags,
+            name,
+        )
+    equipment_profiles = _clean_equipment(
+        {**dict(values), "accessoryProfileKey": accessory_profile_key},
+        kind,
+    )
+    accessory_profile = None
+    if kind == "humanoid":
+        try:
+            accessory_profile = AccessoryProfile.objects.get(
+                key=accessory_profile_key,
+                archived_at__isnull=True,
+            )
+        except AccessoryProfile.DoesNotExist as exc:
+            raise ApiError(
+                "management.units.accessory_profile_invalid",
+                "Il profilo accessori selezionato non esiste o è archiviato.",
+                "accessoryProfileKey",
+            ) from exc
     actions = _clean_actions(values.get("innateActions"), kind)
     competence_profile = _clean_profile(
         values.get("competenceProfile"),
@@ -808,6 +842,7 @@ def _clean_unit_values(values: Mapping[str, Any]) -> dict[str, Any]:
         "profilo_competenze": competence_profile,
         "levels": _list(values.get("levels")),
         "equipment_profiles": equipment_profiles,
+        "accessory_profile": accessory_profile,
         "stat_profiles": cleaned_stat_profile,
         "skill_actions": actions,
         "skill_unlocks": skill_unlocks,
@@ -815,6 +850,52 @@ def _clean_unit_values(values: Mapping[str, Any]) -> dict[str, Any]:
         "generation_rules": rules,
         "notes": str(values.get("notes") or "").strip(),
     }
+
+
+def _unit_portrait(raw_image_id: Any) -> UploadedImage | None:
+    if raw_image_id in (None, ""):
+        return None
+    try:
+        image_id = int(raw_image_id)
+    except (TypeError, ValueError) as error:
+        raise ApiError(
+            "management.units.portrait_invalid",
+            "Scegli un ritratto Unit valido.",
+            "loreImageId",
+        ) from error
+    try:
+        image = UploadedImage.objects.select_related("category").get(
+            pk=image_id,
+            archived_at__isnull=True,
+        )
+    except UploadedImage.DoesNotExist as error:
+        raise ApiError(
+            "management.units.portrait_not_found",
+            "Il ritratto selezionato non è disponibile.",
+            "loreImageId",
+            404,
+        ) from error
+    metadata = image.metadata if isinstance(image.metadata, dict) else {}
+    conversion = metadata.get("conversion") if isinstance(metadata.get("conversion"), dict) else {}
+    quality = metadata.get("webpQuality", conversion.get("quality"))
+    if (
+        image.usage_type != "character_portrait"
+        or not image.category_id
+        or image.category.slug != "personaggi"
+        or image.group != "Unit e NPC"
+        or not image.file
+        or Path(image.file.name).suffix.casefold() != ".webp"
+        or quality != 70
+    ):
+        raise ApiError(
+            "management.units.portrait_contract",
+            (
+                "Il ritratto Unit deve essere un WebP qualità 70 nella categoria "
+                "Personaggi, gruppo Unit e NPC."
+            ),
+            "loreImageId",
+        )
+    return image
 
 
 @transaction.atomic
@@ -846,6 +927,8 @@ def save_managed_unit(
             unit = Unit.objects.select_for_update().get(pk=unit_id)
         except Unit.DoesNotExist as exc:
             raise ApiError("management.units.not_found", "Unit non trovata.", status=404) from exc
+    if "loreImageId" in values:
+        unit.lore_image = _unit_portrait(values.get("loreImageId"))
     for field, value in cleaned.items():
         setattr(unit, field, value)
     if source_metadata is not None:
@@ -937,6 +1020,8 @@ def preview_managed_unit(
 
 def managed_unit_detail(unit_id: int) -> dict[str, Any]:
     try:
-        return serialize_managed_unit(Unit.objects.get(pk=unit_id))
+        return serialize_managed_unit(
+            Unit.objects.select_related("accessory_profile", "lore_image").get(pk=unit_id)
+        )
     except Unit.DoesNotExist as exc:
         raise ApiError("management.units.not_found", "Unit non trovata.", status=404) from exc

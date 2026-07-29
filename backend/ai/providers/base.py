@@ -1,10 +1,7 @@
-"""Contratto comune fra i provider.
+"""Contratto provider-neutral.
 
-La conversazione viaggia in una forma neutra; ogni adattatore la traduce nel proprio
-formato di rete. Il turno dell'assistente conserva anche il contenuto grezzo del
-provider (`raw`), perché una conversazione resta sempre sullo stesso provider e
-rimandare indietro i blocchi esattamente come sono arrivati è l'unico modo sicuro
-di continuare un giro di strumenti.
+Il contenuto grezzo resta soltanto durante il turno server-side necessario a
+completare le chiamate agli strumenti; non viene affidato alla cronologia client.
 """
 
 from __future__ import annotations
@@ -72,10 +69,12 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], *, tim
 def chat_provider_for(provider):
     from ..models import AIProvider
     from .anthropic_provider import AnthropicChatProvider
-    from .openai_provider import OpenAICompatibleChatProvider
+    from .openai_provider import OpenAICompatibleChatProvider, OpenAIResponsesChatProvider
 
     if provider.kind == AIProvider.KIND_ANTHROPIC:
         return AnthropicChatProvider(provider)
+    if provider.kind == AIProvider.KIND_OPENAI_RESPONSES:
+        return OpenAIResponsesChatProvider(provider)
     if provider.kind == AIProvider.KIND_OPENAI_COMPATIBLE:
         return OpenAICompatibleChatProvider(provider)
     raise ApiError("ai.kind_unsupported", f"Il provider «{provider.name}» non è un provider di chat.", status=409)

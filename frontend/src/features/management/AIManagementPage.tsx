@@ -2,63 +2,81 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getData, saveAIProvider } from "../../lib/api";
-import type { AIManagedProvider, AIManagementData } from "../../lib/types";
+import type { AIManagedAgent, AIManagedProvider, AIManagementData } from "../../lib/types";
 import { useApp } from "../../App";
 
-type Draft = {
-  name: string;
-  baseUrl: string;
-  model: string;
-  secret: string;
-  maxTokens: string;
-  effort: string;
-  disableTools: boolean;
-  isEnabled: boolean;
+type ProviderDraft = {
+  name: string; baseUrl: string; model: string; secret: string; maxTokens: string;
+  effort: string; verbosity: string; disableTools: boolean; isEnabled: boolean;
+};
+type AgentDraft = {
+  name: string; description: string; instructions: string; minimumRole: "user" | "master" | "admin";
+  providerId: number | null; toolNames: string[]; maxIterations: number; isEnabled: boolean; isDefault: boolean;
 };
 
-const draftFrom = (provider: AIManagedProvider): Draft => ({
-  name: provider.name,
-  baseUrl: provider.baseUrl,
-  model: provider.model,
-  secret: "",
-  maxTokens: provider.maxTokens ? String(provider.maxTokens) : "",
-  effort: provider.effort || "",
-  disableTools: provider.disableTools,
-  isEnabled: provider.isEnabled,
+const providerDraft = (item: AIManagedProvider): ProviderDraft => ({
+  name: item.name, baseUrl: item.baseUrl, model: item.model, secret: "",
+  maxTokens: item.maxTokens ? String(item.maxTokens) : "", effort: item.effort || "",
+  verbosity: item.verbosity || "", disableTools: item.disableTools, isEnabled: item.isEnabled,
+});
+const agentDraft = (item: AIManagedAgent): AgentDraft => ({
+  name: item.name, description: item.description, instructions: item.instructions,
+  minimumRole: item.minimumRole, providerId: item.providerId,
+  toolNames: item.configuredToolNames, maxIterations: item.maxIterations,
+  isEnabled: item.isEnabled, isDefault: item.isDefault,
+});
+const emptyAgent = (): AgentDraft => ({
+  name: "Nuovo agente", description: "", instructions: "", minimumRole: "user",
+  providerId: null, toolNames: [], maxIterations: 6, isEnabled: true, isDefault: false,
 });
 
 export function AIManagementPage() {
   const { notify } = useApp();
   const queryClient = useQueryClient();
   const management = useQuery({ queryKey: ["aiManagement"], queryFn: () => getData<AIManagementData>("/api/ai/providers/") });
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [section, setSection] = useState<"agents" | "providers">("agents");
+  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
+  const [selectedProviderId, setSelectedProviderId] = useState<number | null>(null);
+  const [agent, setAgent] = useState<AgentDraft | null>(null);
+  const [provider, setProvider] = useState<ProviderDraft | null>(null);
 
+  const agents = management.data?.agents || [];
   const providers = management.data?.providers || [];
-  const selected = providers.find((entry) => entry.id === selectedId) || providers[0] || null;
+  const isNewAgent = selectedAgentId === -1;
+  const selectedAgent = isNewAgent ? null : agents.find((item) => item.id === selectedAgentId) || agents[0] || null;
+  const selectedProvider = providers.find((item) => item.id === selectedProviderId) || providers[0] || null;
 
   useEffect(() => {
-    if (selected && (selectedId !== selected.id || draft === null)) {
-      setSelectedId(selected.id);
-      setDraft(draftFrom(selected));
+    if (!isNewAgent && selectedAgent && (selectedAgentId !== selectedAgent.id || !agent)) {
+      setSelectedAgentId(selectedAgent.id);
+      setAgent(agentDraft(selectedAgent));
     }
-  }, [draft, selected, selectedId]);
+  }, [agent, isNewAgent, selectedAgent, selectedAgentId]);
+  useEffect(() => {
+    if (selectedProvider && (selectedProviderId !== selectedProvider.id || !provider)) {
+      setSelectedProviderId(selectedProvider.id);
+      setProvider(providerDraft(selectedProvider));
+    }
+  }, [provider, selectedProvider, selectedProviderId]);
 
   const apply = (data: AIManagementData, message: string) => {
     queryClient.setQueryData(["aiManagement"], data);
     void queryClient.invalidateQueries({ queryKey: ["aiWorkspace"] });
     notify(message);
   };
-
-  const save = useMutation({
+  const saveAgent = useMutation({
+    mutationFn: (agentValues: Record<string, unknown>) => saveAIProvider({ agentValues }),
+    onSuccess: (result) => apply(result.data, result.events[0]?.message || "Agente aggiornato."),
+    onError: (error: Error) => notify(error.message, "error"),
+  });
+  const saveProvider = useMutation({
     mutationFn: (values: Record<string, unknown>) => saveAIProvider({ values }),
     onSuccess: (result) => {
       apply(result.data, result.events[0]?.message || "Provider aggiornato.");
-      setDraft((current) => current && { ...current, secret: "" });
+      setProvider((current) => current && { ...current, secret: "" });
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
-
   const probe = useMutation({
     mutationFn: (id: number) => saveAIProvider({ test: id }),
     onSuccess: (result) => apply(result.data, result.data.test?.message || "Prova completata."),
@@ -67,114 +85,114 @@ export function AIManagementPage() {
 
   if (management.isLoading) return <div className="page"><p className="empty-copy">Caricamento della configurazione…</p></div>;
   if (management.isError) return <div className="page"><p className="form-error">{(management.error as Error).message}</p></div>;
-  if (!management.data?.canManage) return <div className="page"><p className="form-error">Questa pagina è riservata a Master e Amministratori.</p></div>;
-
-  const submit = () => {
-    if (!selected || !draft) return;
-    save.mutate({
-      id: selected.id,
-      name: draft.name,
-      baseUrl: draft.baseUrl,
-      model: draft.model,
-      isEnabled: draft.isEnabled,
-      maxTokens: draft.maxTokens ? Number(draft.maxTokens) : null,
-      effort: draft.effort,
-      disableTools: draft.disableTools,
-      ...(draft.secret ? { secret: draft.secret } : {}),
-    });
-  };
-
-  const chat = providers.filter((entry) => entry.purpose === "chat");
-  const images = providers.filter((entry) => entry.purpose === "image");
+  const data = management.data!;
+  if (!data.canManage) return <div className="page"><p className="form-error">Questa pagina è riservata a Master e Amministratori.</p></div>;
 
   return <div className="page ai-management">
     <header className="page-header">
       <div><p className="eyebrow">Strumenti</p><h1>Gestione AI</h1></div>
     </header>
-
     <section className="panel" data-component-type="panel" data-theme="gold">
       <p className="muted-copy">
-        Le chiavi si scrivono e non si rileggono: restano cifrate nel database e non vengono mai inviate all'interfaccia.
-        L'assistente esegue gli strumenti con i permessi di chi fa la domanda, quindi non può mostrare a un giocatore
-        quello che la sua pagina gli nasconde.
+        Gli agenti definiscono competenza, ruolo, provider, strumenti e autonomia. Tutti gli strumenti sono di sola lettura.
+        I log registrano solo esito, tempi, modello e strumenti usati; mai domande o risposte.
       </p>
     </section>
+    <nav className="ai-tabs" aria-label="Configurazione AI">
+      <button type="button" className={section === "agents" ? "active" : ""} onClick={() => setSection("agents")}>Agenti</button>
+      <button type="button" className={section === "providers" ? "active" : ""} onClick={() => setSection("providers")}>Provider</button>
+    </nav>
 
-    <div className="ai-management-layout">
-      <aside className="ai-provider-list" aria-label="Provider configurati">
-        {[["Chat", chat], ["Immagini", images]].map(([label, entries]) => <section key={String(label)}>
-          <h2>{String(label)}</h2>
-          {(entries as AIManagedProvider[]).map((entry) => <button
-            key={entry.id}
-            type="button"
-            className={entry.id === selected?.id ? "active" : ""}
-            onClick={() => { setSelectedId(entry.id); setDraft(draftFrom(entry)); }}
-          >
-            <strong>{entry.name}</strong>
-            <span>{entry.model || "modello non impostato"}</span>
-            <small data-state={entry.isEnabled ? "on" : "off"}>
-              {entry.isEnabled ? "attivo" : "disattivato"}{entry.hasSecret ? " · chiave presente" : entry.authStrategy === "none" ? " · senza chiave" : " · chiave mancante"}
-            </small>
-          </button>)}
-        </section>)}
+    {section === "agents" && agent && (selectedAgent || isNewAgent) && <div className="ai-management-layout">
+      <aside className="ai-provider-list" aria-label="Agenti configurati">
+        <section><h2>Workflow agentici</h2><button type="button" onClick={() => { setSelectedAgentId(-1); setAgent(emptyAgent()); }}>
+          <strong>+ Nuovo agente</strong><span>Crea un workflow separato</span>
+        </button>{agents.map((item) => <button
+          key={item.id} type="button" className={item.id === selectedAgent?.id ? "active" : ""}
+          onClick={() => { setSelectedAgentId(item.id); setAgent(agentDraft(item)); }}
+        >
+          <strong>{item.name}</strong><span>{item.providerName || "provider predefinito"}</span>
+          <small data-state={item.isEnabled ? "on" : "off"}>{item.minimumRole} · {item.toolNames.length} strumenti</small>
+        </button>)}</section>
       </aside>
-
-      {selected && draft && <section className="ai-provider-form panel" data-component-type="panel" data-theme="parchment">
-        <header><div><p className="eyebrow">{selected.kind}</p><h2>{selected.name}</h2></div></header>
-        <p className="muted-copy">{selected.description}</p>
-
-        <label>Nome<input value={draft.name} maxLength={120} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></label>
-        <label>Indirizzo API<input value={draft.baseUrl} placeholder="https://api.esempio.com/v1" onChange={(event) => setDraft({ ...draft, baseUrl: event.target.value })} /></label>
-        <label>Modello
-          <input list={`ai-models-${selected.id}`} value={draft.model} onChange={(event) => setDraft({ ...draft, model: event.target.value })} />
-          <datalist id={`ai-models-${selected.id}`}>
-            {selected.suggestedModels.map((model) => <option key={model} value={model} />)}
-          </datalist>
+      <section className="ai-provider-form panel" data-component-type="panel" data-theme="parchment">
+        <header><div><p className="eyebrow">Policy agentica</p><h2>{selectedAgent?.name || "Nuovo agente"}</h2></div></header>
+        <label>Nome<input value={agent.name} maxLength={120} onChange={(event) => setAgent({ ...agent, name: event.target.value })} /></label>
+        <label>Scopo visibile<input value={agent.description} maxLength={1000} onChange={(event) => setAgent({ ...agent, description: event.target.value })} /></label>
+        <label>Competenza e istruzioni
+          <textarea rows={6} maxLength={8000} value={agent.instructions} onChange={(event) => setAgent({ ...agent, instructions: event.target.value })} />
+          <small className="muted-copy">Definisci obiettivo, criteri di successo e limiti specifici. Il divieto di scrittura resta sempre applicato dal runtime.</small>
         </label>
-
-        {selected.authStrategy !== "none" && <label>
-          Chiave API
-          <input
-            type="password"
-            autoComplete="off"
-            value={draft.secret}
-            placeholder={selected.hasSecret ? "Configurata — scrivi per sostituirla" : "Incolla la chiave"}
-            onChange={(event) => setDraft({ ...draft, secret: event.target.value })}
-          />
-          <small className="muted-copy">
-            Serve una chiave della piattaforma del provider. L'accesso con l'account ChatGPT non è utilizzabile da un'applicazione multiutente come questa.
-          </small>
-        </label>}
-
         <div className="ai-provider-options">
-          <label>Token massimi<input type="number" min={256} max={32000} value={draft.maxTokens} onChange={(event) => setDraft({ ...draft, maxTokens: event.target.value })} /></label>
-          {selected.kind === "anthropic" && <label>Impegno
-            <select value={draft.effort} onChange={(event) => setDraft({ ...draft, effort: event.target.value })}>
-              <option value="">Predefinito</option>
-              {["low", "medium", "high", "xhigh", "max"].map((level) => <option key={level} value={level}>{level}</option>)}
-            </select>
-          </label>}
+          <label>Ruolo minimo<select value={agent.minimumRole} onChange={(event) => setAgent({ ...agent, minimumRole: event.target.value as AgentDraft["minimumRole"] })}>
+            {data.roles.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}
+          </select></label>
+          <label>Provider<select value={agent.providerId || ""} onChange={(event) => setAgent({ ...agent, providerId: event.target.value ? Number(event.target.value) : null })}>
+            <option value="">Provider chat predefinito</option>
+            {providers.filter((item) => item.purpose === "chat").map((item) => <option key={item.id} value={item.id}>{item.name} · {item.model}</option>)}
+          </select></label>
+          <label>Passi massimi<input type="number" min={1} max={12} value={agent.maxIterations} onChange={(event) => setAgent({ ...agent, maxIterations: Number(event.target.value) })} /></label>
         </div>
+        <fieldset className="inline-admin-tool">
+          <legend>Permessi e ambiti di lettura</legend>
+          <div className="ai-tool-list">{data.tools.map((tool) => <label key={tool.name} className="ai-toggle">
+            <input type="checkbox" checked={agent.toolNames.includes(tool.name)} onChange={(event) => setAgent({
+              ...agent,
+              toolNames: event.target.checked ? [...agent.toolNames, tool.name] : agent.toolNames.filter((name) => name !== tool.name),
+            })} />
+            <span><strong>{tool.name}</strong> · {tool.scope} · {tool.minimumRole}<small className="muted-copy">{tool.description}</small></span>
+          </label>)}</div>
+        </fieldset>
+        <label className="ai-toggle"><input type="checkbox" checked={agent.isEnabled} onChange={(event) => setAgent({ ...agent, isEnabled: event.target.checked })} /><span>Agente attivo</span></label>
+        <label className="ai-toggle"><input type="checkbox" checked={agent.isDefault} onChange={(event) => setAgent({ ...agent, isDefault: event.target.checked })} /><span>Agente predefinito</span></label>
+        <button type="button" className="button primary" disabled={saveAgent.isPending} onClick={() => saveAgent.mutate({
+          ...(selectedAgent ? { id: selectedAgent.id } : {}), ...agent,
+        })}>Salva agente</button>
+      </section>
+    </div>}
 
-        <label className="ai-toggle"><input type="checkbox" checked={draft.isEnabled} onChange={(event) => setDraft({ ...draft, isEnabled: event.target.checked })} /><span>Attivo</span></label>
-        {selected.purpose === "chat" && <label className="ai-toggle">
-          <input type="checkbox" checked={draft.disableTools} onChange={(event) => setDraft({ ...draft, disableTools: event.target.checked })} />
-          <span>Disattiva gli strumenti<small className="muted-copy">Necessario con i modelli di ragionamento che non accettano le funzioni.</small></span>
+    {section === "providers" && selectedProvider && provider && <div className="ai-management-layout">
+      <aside className="ai-provider-list" aria-label="Provider configurati">
+        {providers.map((item) => <button key={item.id} type="button" className={item.id === selectedProvider.id ? "active" : ""}
+          onClick={() => { setSelectedProviderId(item.id); setProvider(providerDraft(item)); }}>
+          <strong>{item.name}</strong><span>{item.model || "modello non impostato"}</span>
+          <small data-state={item.isEnabled ? "on" : "off"}>{item.isEnabled ? "attivo" : "disattivato"} · {item.kind}</small>
+        </button>)}
+      </aside>
+      <section className="ai-provider-form panel" data-component-type="panel" data-theme="parchment">
+        <header><div><p className="eyebrow">{selectedProvider.kind}</p><h2>{selectedProvider.name}</h2></div></header>
+        <p className="muted-copy">{selectedProvider.description}</p>
+        <label>Nome<input value={provider.name} onChange={(event) => setProvider({ ...provider, name: event.target.value })} /></label>
+        <label>Indirizzo API<input value={provider.baseUrl} disabled={!data.canManageCredentials} onChange={(event) => setProvider({ ...provider, baseUrl: event.target.value })} /></label>
+        <label>Modello<input list={`ai-models-${selectedProvider.id}`} value={provider.model} onChange={(event) => setProvider({ ...provider, model: event.target.value })} />
+          <datalist id={`ai-models-${selectedProvider.id}`}>{selectedProvider.suggestedModels.map((model) => <option key={model} value={model} />)}</datalist>
+        </label>
+        {selectedProvider.authStrategy !== "none" && <label>Chiave API<input type="password" autoComplete="off" disabled={!data.canManageCredentials}
+          value={provider.secret} placeholder={selectedProvider.hasSecret ? "Configurata — scrivi per sostituirla" : "Incolla la chiave"}
+          onChange={(event) => setProvider({ ...provider, secret: event.target.value })} />
+          {!data.canManageCredentials && <small className="muted-copy">Chiavi e indirizzi sono modificabili solo dagli Amministratori.</small>}
         </label>}
-
-        <div className="button-row">
-          <button type="button" className="button primary" disabled={save.isPending} onClick={submit}>Salva</button>
-          <button type="button" className="button secondary" disabled={probe.isPending || !selected.isEnabled} onClick={() => probe.mutate(selected.id)}>{probe.isPending ? "Prova in corso…" : "Prova connessione"}</button>
+        <div className="ai-provider-options">
+          <label>Token massimi<input type="number" min={256} max={128000} value={provider.maxTokens} onChange={(event) => setProvider({ ...provider, maxTokens: event.target.value })} /></label>
+          {selectedProvider.capabilities.reasoning && <label>Ragionamento<select value={provider.effort} onChange={(event) => setProvider({ ...provider, effort: event.target.value })}>
+            <option value="">Predefinito</option>{["none", "low", "medium", "high", "xhigh", "max"].map((value) => <option key={value}>{value}</option>)}
+          </select></label>}
+          {selectedProvider.capabilities.verbosity && <label>Dettaglio<select value={provider.verbosity} onChange={(event) => setProvider({ ...provider, verbosity: event.target.value })}>
+            <option value="">Predefinito</option>{["low", "medium", "high"].map((value) => <option key={value}>{value}</option>)}
+          </select></label>}
         </div>
-        {management.data.test && <p className={management.data.test.ok ? "muted-copy" : "form-error"}>{management.data.test.message}</p>}
-
-        {selected.purpose === "chat" && <details className="inline-admin-tool">
-          <summary>Strumenti disponibili all'assistente</summary>
-          <ul className="ai-tool-list">
-            {management.data.tools.map((tool) => <li key={tool.name}><strong>{tool.name}</strong><span>{tool.description}</span></li>)}
-          </ul>
-        </details>}
-      </section>}
-    </div>
+        <label className="ai-toggle"><input type="checkbox" checked={provider.isEnabled} onChange={(event) => setProvider({ ...provider, isEnabled: event.target.checked })} /><span>Attivo</span></label>
+        {selectedProvider.capabilities.chat && <label className="ai-toggle"><input type="checkbox" checked={provider.disableTools} onChange={(event) => setProvider({ ...provider, disableTools: event.target.checked })} /><span>Forza modalità senza strumenti</span></label>}
+        <div className="button-row">
+          <button type="button" className="button primary" disabled={saveProvider.isPending} onClick={() => saveProvider.mutate({
+            id: selectedProvider.id, name: provider.name, model: provider.model, isEnabled: provider.isEnabled,
+            maxTokens: provider.maxTokens ? Number(provider.maxTokens) : null, effort: provider.effort,
+            verbosity: provider.verbosity, disableTools: provider.disableTools,
+            ...(data.canManageCredentials ? { baseUrl: provider.baseUrl, ...(provider.secret ? { secret: provider.secret } : {}) } : {}),
+          })}>Salva provider</button>
+          <button type="button" className="button secondary" disabled={probe.isPending || !selectedProvider.isEnabled} onClick={() => probe.mutate(selectedProvider.id)}>Prova connessione</button>
+        </div>
+      </section>
+    </div>}
   </div>;
 }

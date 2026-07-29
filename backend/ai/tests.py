@@ -9,10 +9,11 @@ from backend.core.models import DatiCampagna, Giocatore, Oggetto
 from .agent import run_agent
 from .crypto import decrypt_secret, encrypt_secret
 from .defaults import seed_ai_providers
-from .models import AIProvider
+from .models import AIAgentProfile, AIProvider
+from .providers.openai_provider import OpenAIResponsesChatProvider
 from .providers.base import ChatTurn, ToolCall
 from .selectors import ai_management_payload, ai_workspace_payload
-from .services import ask_assistant, sanitize_history, save_provider
+from .services import ask_assistant, sanitize_history, save_agent, save_provider
 from .tools import execute_tool
 
 
@@ -34,9 +35,11 @@ class ScriptedProvider:
     def __init__(self, turns):
         self.turns = list(turns)
         self.seen_histories = []
+        self.seen_tools = []
 
     def complete(self, *, system, history, tools):
         self.seen_histories.append(list(history))
+        self.seen_tools.append(list(tools))
         return self.turns.pop(0)
 
 
@@ -109,8 +112,8 @@ class AIWorkspaceApiTests(TestCase):
         self.assertNotIn("sk-configurata", json.dumps(data))
         self.assertTrue(all("hasSecret" not in entry for entry in data["chatProviders"]))
 
-    def test_master_saves_a_provider_and_the_key_is_write_only(self):
-        self.login("ai_master", Giocatore.ROLE_MASTER)
+    def test_admin_saves_a_provider_and_the_key_is_write_only(self):
+        self.login("ai_admin_save", Giocatore.ROLE_ADMIN)
         provider = AIProvider.objects.get(slug="deepseek")
 
         response = self.client.post(
@@ -132,7 +135,7 @@ class AIWorkspaceApiTests(TestCase):
         self.assertNotIn("secret", listed)
 
     def test_saving_rejects_a_malformed_endpoint(self):
-        self.login("ai_master2", Giocatore.ROLE_MASTER)
+        self.login("ai_admin_endpoint", Giocatore.ROLE_ADMIN)
         provider = AIProvider.objects.get(slug="openai")
         response = self.client.post(
             "/api/ai/providers/",
@@ -143,7 +146,7 @@ class AIWorkspaceApiTests(TestCase):
         self.assertEqual(response.json()["errors"][0]["code"], "ai.base_url_invalid")
 
     def test_clearing_the_key_is_explicit(self):
-        user = self.login("ai_master3", Giocatore.ROLE_MASTER)
+        user = self.login("ai_admin_clear", Giocatore.ROLE_ADMIN)
         giocatore = Giocatore.objects.get(user=user)
         provider = AIProvider.objects.get(slug="anthropic")
         provider.set_secret("sk-da-rimuovere")
@@ -232,7 +235,7 @@ class AIAgentLoopTests(TestCase):
             ]
         )
         self.assertEqual([entry["role"] for entry in history], ["user", "assistant", "tool"])
-        self.assertEqual(history[1]["raw"], [{"type": "text", "text": "salve"}])
+        self.assertNotIn("raw", history[1])
 
     def test_an_empty_question_is_refused(self):
         with self.assertRaises(Exception) as caught:
@@ -250,8 +253,8 @@ class AIToolPermissionTests(TestCase):
     def test_game_variables_are_master_only(self):
         user, giocatore = self._identity("var_player", Giocatore.ROLE_USER)
         content, is_error = execute_tool("variabili_gioco", {}, user, giocatore)
-        self.assertFalse(is_error)
-        self.assertIn("riservate", content)
+        self.assertTrue(is_error)
+        self.assertIn("Permessi insufficienti", content)
 
         master, master_giocatore = self._identity("var_master", Giocatore.ROLE_MASTER)
         content, _ = execute_tool("variabili_gioco", {}, master, master_giocatore)
@@ -269,3 +272,82 @@ class AIToolPermissionTests(TestCase):
         master, master_giocatore = self._identity("sheet_master", Giocatore.ROLE_MASTER)
         content, _ = execute_tool("scheda_personaggio", {"nome": "Segreto del Master"}, master, master_giocatore)
         self.assertIn("Segreto del Master", content)
+
+
+class AIAgentProfileTests(TestCase):
+    def setUp(self):
+        seed_ai_providers()
+        self.user = get_user_model().objects.create_user(username="agent_policy")
+        self.giocatore = Giocatore.objects.create(user=self.user, nome="agent_policy", role=Giocatore.ROLE_MASTER)
+        self.provider = AIProvider.objects.get(slug="anthropic")
+
+    def test_profile_exposes_only_allowed_tools(self):
+        profile = AIAgentProfile.objects.get(slug="assistente-campagna")
+        profile.allowed_tools = ["cerca_oggetti"]
+        profile.save(update_fields=["allowed_tools"])
+        scripted = ScriptedProvider([ChatTurn(text="Fatto", stop_reason="end_turn")])
+
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            run_agent(self.provider, [{"role": "user", "content": "Cerca"}], self.user, self.giocatore, profile)
+
+        self.assertEqual([tool["name"] for tool in scripted.seen_tools[0]], ["cerca_oggetti"])
+
+    def test_master_cannot_change_endpoint_but_can_change_model(self):
+        save_provider(self.user, self.giocatore, {"id": self.provider.id, "model": "claude-sonnet-5"})
+        self.provider.refresh_from_db()
+        self.assertEqual(self.provider.model, "claude-sonnet-5")
+        with self.assertRaises(Exception) as caught:
+            save_provider(self.user, self.giocatore, {"id": self.provider.id, "baseUrl": "https://example.test"})
+        self.assertEqual(getattr(caught.exception, "code", ""), "ai.admin_required")
+
+    def test_master_can_create_a_separate_agent_policy(self):
+        agent = save_agent(
+            self.user,
+            self.giocatore,
+            {
+                "name": "Esperto regole",
+                "description": "Risponde sulle regole.",
+                "minimumRole": "master",
+                "providerId": self.provider.id,
+                "toolNames": ["guide_regole"],
+                "maxIterations": 3,
+                "isEnabled": True,
+            },
+        )
+        self.assertEqual(agent.slug, "esperto-regole")
+        self.assertEqual(agent.allowed_tools, ["guide_regole"])
+        self.assertEqual(agent.max_iterations, 3)
+
+
+class OpenAIResponsesProviderTests(TestCase):
+    def test_responses_uses_modern_token_reasoning_and_tool_shape(self):
+        provider = AIProvider.objects.create(
+            slug="responses-test",
+            name="Responses",
+            purpose="chat",
+            kind=AIProvider.KIND_OPENAI_RESPONSES,
+            base_url="https://api.openai.com/v1",
+            model="gpt-5.6-sol",
+            options={"maxTokens": 12000, "effort": "low"},
+        )
+        provider.set_secret("sk-test")
+        provider.save()
+        response = {
+            "status": "completed",
+            "output": [{"type": "message", "content": [{"type": "output_text", "text": "Pronto"}]}],
+            "usage": {"input_tokens": 10, "output_tokens": 2},
+        }
+        with patch("backend.ai.providers.openai_provider.post_json", return_value=response) as post:
+            turn = OpenAIResponsesChatProvider(provider).complete(
+                system="Sistema",
+                history=[{"role": "user", "content": "Ciao"}],
+                tools=[{"name": "lookup", "description": "Legge", "input_schema": {"type": "object", "properties": {}}}],
+            )
+
+        url, payload, _headers = post.call_args.args
+        self.assertEqual(url, "https://api.openai.com/v1/responses")
+        self.assertEqual(payload["max_output_tokens"], 12000)
+        self.assertEqual(payload["reasoning"], {"effort": "low"})
+        self.assertEqual(payload["tools"][0]["type"], "function")
+        self.assertNotIn("max_tokens", payload)
+        self.assertEqual(turn.text, "Pronto")

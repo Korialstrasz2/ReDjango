@@ -1,7 +1,8 @@
 from backend.characters.models import Personaggio, default_personaggio_tot
-from backend.core.models import DatiCampagna, Giocatore, Oggetto, SettingDefinition, Skill, Unit
+from backend.core.models import AccessoryProfile, DatiCampagna, Giocatore, Oggetto, SettingDefinition, Skill, Unit
 
 from .models import CharacterTemplate, CombatModifier, HexType, MapType
+from .accessory_profiles import seed_accessory_profiles
 
 
 HEX_TYPE_DEFAULTS = (
@@ -31,6 +32,7 @@ ELDER_UNIT_SEED_VERSION = "14"
 
 
 def _seed_elder_units() -> int:
+    archer_accessory_profile = AccessoryProfile.objects.get(key="arciere")
     item_names = {
         "Armatura (pelle)",
         "Armatura (chitina)",
@@ -46,22 +48,7 @@ def _seed_elder_units() -> int:
         "Arco corto (ferro)",
         "Arco corto (acciaio)",
         "Arco corto (nordico)",
-        "Mantello da città",
-        "Mantello da viaggio",
-        "Mantello del cacciatore",
-        "Orecchino + attacco lv. 1 (1)",
-        "Orecchino + attacco lv. 2 (2)",
-        "Orecchino + attacco lv. 3 (3)",
-        "Orecchino + attacco lv. 4 (4)",
-        "Orecchino + pf lv. 1 (4)",
-        "Orecchino + pf lv. 2 (6)",
-        "Orecchino + pf lv. 3 (9)",
-        "Orecchino + pf lv. 4 (13)",
     }
-    for label in ("Anello", "Amuleto", "Cintura", "Fascia", "Spilla"):
-        for item_level, attack, health in ((1, 1, 4), (2, 2, 6), (3, 3, 9), (4, 4, 13)):
-            item_names.add(f"{label} + attacco lv. {item_level} ({attack})")
-            item_names.add(f"{label} + pf lv. {item_level} ({health})")
     skill_names = {
         "Tiro Rapido",
         "Tiro Attento",
@@ -171,68 +158,6 @@ def _seed_elder_units() -> int:
             "weight": weight,
             "chance": chance,
         }
-
-    accessory_types = {
-        "Orecchino": "orecchino",
-        "Anello": "anello",
-        "Amuleto": "amuleto",
-        "Cintura": "cintura",
-        "Fascia": "fascia",
-        "Spilla": "spilla",
-    }
-    archer_accessory_presets = {
-        # Elder pg_da_archetipo.py repeats these archer Core presets, then
-        # mixes one physical/utility preset to keep copies distinct.
-        "pf_item",
-        "attacco_item",
-        "velocita_extra",
-        "agilita_extra",
-        "concentrazione_extra",
-        "difesa_item",
-        "energia_item",
-        "resistenza_extra",
-        "stanchezzabase",
-        "rigenerazionepf",
-        "fortuna_extra",
-        "reroll",
-        "darkvision",
-    }
-    accessory_catalog = list(
-        Oggetto.objects.filter(
-            tipo_1__in=accessory_types.values(),
-            tipo_2__in=archer_accessory_presets,
-            tipo_4__startswith="Livello ",
-            archived_at__isnull=True,
-            archiviato=False,
-        )
-    )
-
-    def accessory_entries(label):
-        item_type = accessory_types[label]
-        result = []
-        for item in accessory_catalog:
-            if item.tipo_1 != item_type:
-                continue
-            try:
-                item_level = int(str(item.tipo_4).split()[-1])
-            except (TypeError, ValueError):
-                continue
-            result.append(
-                {
-                    "itemId": item.id,
-                    "minLevel": max(1, item_level * 2 - 5),
-                    "maxLevel": min(20, item_level * 2 + 5),
-                    "weight": 4 if item.tipo_2 in {
-                        "pf_item",
-                        "attacco_item",
-                        "velocita_extra",
-                        "agilita_extra",
-                        "concentrazione_extra",
-                    } else 1,
-                    "chance": 1,
-                }
-            )
-        return result
 
     core_skill_plan = tuple(
         [(f"Vitale {level}", "core", 1, 20, 9) for level in range(1, 11)]
@@ -379,59 +304,12 @@ def _seed_elder_units() -> int:
                     item_entry("Arco corto (nordico)", 4, 6, 2),
                     item_entry("Arco corto (ossa)", 9, 20, 4),
                 ],
-                "mantello": [
-                    item_entry("Mantello da città", 1, 20, 3, 0.85),
-                    item_entry("Mantello da viaggio", 3, 20, 2, 0.85),
-                    item_entry("Mantello del cacciatore", 5, 20, 2, 0.75),
-                ],
             },
-            "groups": [
-                {
-                    "name": "Orecchini del predone",
-                    "slots": [f"orecchino_{index}" for index in range(1, 7)],
-                    "minCount": 1,
-                    "maxCount": 3,
-                    "emptyChance": 0,
-                    "items": accessory_entries("Orecchino"),
-                },
-                {
-                    "name": "Anelli del predone",
-                    "slots": [f"anello_{index}" for index in range(1, 9)],
-                    "minCount": 1,
-                    "maxCount": 3,
-                    "emptyChance": 0,
-                    "items": accessory_entries("Anello"),
-                },
-                *[
-                    {
-                        "name": f"{label} del predone",
-                        "slots": [slot],
-                        "minCount": 0,
-                        "maxCount": 1,
-                        "emptyChance": 0.6,
-                        "items": accessory_entries(label),
-                    }
-                    for label, slot in (
-                        ("Amuleto", "amuleto"),
-                        ("Cintura", "cintura"),
-                        ("Fascia", "fascia"),
-                        ("Spilla", "spilla"),
-                    )
-                ],
-                ],
-            "accessoryCountByLevel": [
-                {"minLevel": 1, "maxLevel": 1, "minCount": 2, "maxCount": 4},
-                {"minLevel": 2, "maxLevel": 2, "minCount": 3, "maxCount": 5},
-                {"minLevel": 3, "maxLevel": 3, "minCount": 4, "maxCount": 6},
-                {"minLevel": 4, "maxLevel": 5, "minCount": 5, "maxCount": 7},
-                {"minLevel": 6, "maxLevel": 7, "minCount": 6, "maxCount": 8},
-                {"minLevel": 8, "maxLevel": 9, "minCount": 7, "maxCount": 9},
-                {"minLevel": 10, "maxLevel": 12, "minCount": 8, "maxCount": 10},
-                {"minLevel": 13, "maxLevel": 15, "minCount": 9, "maxCount": 10},
-                {"minLevel": 16, "maxLevel": 20, "minCount": 10, "maxCount": 10},
-            ],
+            "groups": [],
+            "accessoryCountByLevel": [],
             "allowDuplicates": False,
         },
+        "accessory_profile": archer_accessory_profile,
         "stat_profiles": {
             "baseModifiers": {
                 "velocita": 1,
@@ -592,6 +470,7 @@ def _seed_elder_units() -> int:
 
 def ensure_combat_defaults():
     touched = 0
+    touched += seed_accessory_profiles()
     active_campaign = DatiCampagna.objects.filter(attiva=True, archived_at__isnull=True).first()
     campaign_by_character_id: dict[int, int] = {}
     for player in Giocatore.objects.filter(active_campaign__isnull=False).only("active_campaign_id", "character_ids"):

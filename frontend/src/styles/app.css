@@ -2039,6 +2039,18 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .item-management-inspector aside { clear: both; margin-top: 15px; padding: 12px; border-left: 3px solid var(--gold); background: color-mix(in srgb, var(--gold), transparent 92%); }
 .item-management-inspector aside p { margin: 5px 0 0; color: var(--muted); }
 
+.item-special-evidence { margin: 15px 0; padding: 12px 14px; border-left: 3px solid var(--gold); border-radius: 4px; background: color-mix(in srgb, var(--gold), transparent 92%); }
+.item-special-evidence > strong { display: block; margin-bottom: 8px; color: var(--gold); font-size: .78rem; }
+.item-special-evidence ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.item-special-evidence li { display: grid; gap: 2px; }
+.item-special-evidence li strong { font-size: .82rem; }
+.item-special-evidence li span { color: var(--muted); font-size: .74rem; line-height: 1.5; }
+.item-special-evidence > p { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+
+.managed-item-list button small.item-special-reason-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; overflow: visible; text-overflow: clip; white-space: normal; }
+.item-special-reason-chip { padding: 2px 7px; border-radius: 20px; background: color-mix(in srgb, var(--gold), transparent 78%); color: var(--gold); font-size: .62rem; font-weight: 600; white-space: nowrap; }
+.managed-item-list button small.item-special-reason-chips[data-empty="true"] { color: var(--muted); font-style: italic; }
+
 /* Gestione Skill */
 .skill-management-page { --skill-management-row: 58px; }
 .skill-management-page .page-header > div:first-child > p:last-child { margin: 7px 0 0; color: var(--muted); }
@@ -3396,8 +3408,6 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-token text { fill: #fff5dc; font: 700 12px var(--font-display); pointer-events: none; }
 .combat-map-empty { position: absolute; inset: 50% auto auto 50%; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); color: var(--muted); pointer-events: none; }
 .combat-map-empty strong { color: var(--text); }
-.combat-drawer-toggle { display: grid; width: 100%; min-height: 36px; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 5px 9px; color: #f1e6cb; border: 0; background: linear-gradient(90deg, color-mix(in srgb, #d9bd7a 13%, #0c110f), #0c110feb); text-align: left; }
-.combat-drawer-toggle > span { color: #d9bd7a; font-size: .9rem; }.combat-drawer-toggle > strong { color: #f1e6cb; font-size: .63rem; letter-spacing: .06em; text-transform: uppercase; }.combat-drawer-toggle > small { color: #b8ae98; font-size: .51rem; }
 .combat-hex-drawer { position: absolute; z-index: 8; top: 8px; left: 50%; width: min(560px, calc(100% - 70px)); overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold) 48%, var(--line)); border-radius: 9px; background: #0c110fee; box-shadow: 0 10px 30px #0009; transform: translateX(-50%); backdrop-filter: blur(9px); transition: width .2s ease; }
 .combat-hex-drawer.open { width: min(980px, calc(100% - 28px)); }
 .combat-hex-drawer-body { max-height: 300px; overflow: auto; padding: 9px; color: #f1e6cb; border-top: 1px solid #d9bd7a3d; }
@@ -3406,9 +3416,6 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-hex-drawer-body .combat-hex-selection > header span, .combat-hex-drawer-body output { color: #d9bd7a; }
 .combat-hex-drawer-body .combat-hex-inspector { display: grid; grid-template-columns: minmax(280px, 1.25fr) minmax(220px, .82fr) minmax(250px, .95fr); gap: 9px; align-items: start; }
 .combat-hex-selection { display: grid; gap: 7px; min-width: 0; }
-.combat-plan-drawer { position: absolute; z-index: 9; right: 0; bottom: 0; left: 0; overflow: hidden; border-top: 1px solid var(--line); background: #0d1210f5; box-shadow: 0 -10px 28px #0007; }
-.combat-plan-drawer-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 24%); gap: 10px; max-height: 330px; overflow: auto; padding: 10px; color: #f1e6cb; border-top: 1px solid #d9bd7a3d; }
-.combat-plan-drawer-body .planner-form > label, .combat-plan-drawer-body .planner-costs label, .combat-plan-drawer-body .planner-note, .combat-plan-drawer-body .combat-event-log { color: #b8ae98; }
 .combat-attack-drawer { position: relative; display: flex; width: 42px; min-width: 0; flex: 0 0 42px; flex-direction: column; transition: width .2s ease, flex-basis .2s ease, border-color .2s ease; }
 .combat-attack-drawer.open { width: min(520px, 44vw); flex-basis: min(520px, 44vw); border-color: color-mix(in srgb, #b8594f 55%, var(--line)); }
 .combat-attack-drawer-toggle { display: flex; width: 100%; min-height: 100%; flex: 1; flex-direction: column; align-items: center; justify-content: flex-start; gap: 9px; padding: 12px 5px; color: #f0e1cd; border: 0; background: linear-gradient(180deg, #381d1a99, #101411); }
@@ -3475,12 +3482,8 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .attack-result.hit { border-color: #67a269; background: #3b783421; }
 .attack-opponent-hint { margin: 7px 0; padding: 7px; color: var(--muted); border: 1px dashed var(--line); border-radius: 7px; font-size: .62rem; }
 .attack-result header { display: flex; justify-content: space-between; gap: 8px; }.attack-result header span { color: var(--muted); font-size: .6rem; }.attack-result p { margin: 5px 0 0; color: var(--muted); font-size: .64rem; }
-.planner-form { display: grid; grid-template-columns: 120px 1fr; gap: 7px; }
-.planner-form > label { color: var(--muted); font-size: .6rem; }.planner-form input, .planner-form select { width: 100%; margin-top: 2px; }
-.planner-form .wide, .planner-costs, .planner-path-cost, .planner-form > .button { grid-column: 1 / -1; }
 .planner-costs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
 .planner-costs label { color: var(--muted); font-size: .52rem; text-align: center; text-transform: uppercase; }.planner-costs input { min-width: 0; padding-inline: 3px; text-align: center; }
-.planner-path-cost { padding: 6px; color: var(--gold); border: 1px dashed color-mix(in srgb, var(--gold) 55%, var(--line)); border-radius: 6px; background: transparent; font-size: .62rem; }
 .planned-action-list { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
 .planned-action-list article { display: grid; grid-template-columns: 30px 1fr auto; gap: 7px; align-items: center; padding: 7px; border: 1px solid var(--line); border-radius: 8px; }
 .planned-action-list article.committed { opacity: .58; }
@@ -3627,8 +3630,6 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 @media (max-width: 650px) {
   .combat-page { padding-inline: 10px; overflow-x: auto; }
   .combat-stage-layout { min-width: 690px; }
-  .combat-plan-drawer-body { grid-template-columns: 1fr; }
-  .combat-plan-drawer-body .combat-event-log { max-height: 110px; }
   .combat-map-toolbar select { min-width: 100%; }
   .combat-import-layout { grid-template-columns: 1fr; }
   .combat-import-layout > aside { padding: 0 0 10px; border: 0; border-bottom: 1px solid var(--line); }
@@ -3638,7 +3639,7 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 }
 
 /* Combat room · familiar fast-workstation layout */
-.combat-stage-layout > .combat-character-rail, .combat-plan-drawer { display: none !important; }
+.combat-stage-layout > .combat-character-rail { display: none !important; }
 .combat-page { gap: 10px; background: radial-gradient(circle at 56% 12%, color-mix(in srgb, var(--gold) 5%, transparent), transparent 28%); }
 .combat-map-toolbar { flex-wrap: wrap; }
 .combat-map-manager-trigger { display: grid !important; min-width: 230px; grid-template-columns: 24px minmax(110px, 1fr) auto; gap: 8px; align-items: center; text-align: left; }
@@ -3720,10 +3721,14 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-quick-catalog > header, .combat-quick-queue > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 12px; border-bottom: 1px solid var(--line); }
 .combat-quick-catalog > header strong, .combat-quick-queue > header strong { font: 700 .68rem var(--font-display); text-transform: uppercase; }.combat-quick-catalog > header span, .combat-quick-queue > header span { color: var(--gold); font-size: .54rem; }
 .combat-quick-catalog-title { padding: 0; border: 0; background: transparent; color: inherit; font: 700 .68rem var(--font-display); text-transform: uppercase; cursor: pointer; }
-.combat-quick-catalog-title[aria-expanded="true"] { color: var(--gold); }
+.combat-quick-catalog-heading { cursor: pointer; }
+.combat-quick-catalog-heading:hover, .combat-quick-catalog-heading:focus-visible { background: color-mix(in srgb, var(--gold) 9%, transparent); }
+.combat-quick-catalog-heading[aria-expanded="true"] .combat-quick-catalog-title { color: var(--gold); }
 /* Etichette compatte e non cliccabili finché non si apre "Azioni disponibili". */
 .combat-quick-tag-filters { display: flex; flex-wrap: wrap; gap: 3px; padding: 5px 8px; border-bottom: 1px solid var(--line); }
-.combat-quick-tag-filters button, .combat-quick-action-tags button { padding: 1px 4px; border: 1px solid #0004; border-radius: 4px; color: #f4efe2; font-size: .42rem; line-height: 1.5; text-transform: lowercase; cursor: default; }
+.combat-quick-tag-filters:not(.expanded) { cursor: pointer; }
+.combat-quick-tag-filters:not(.expanded):hover { background: color-mix(in srgb, var(--gold) 9%, transparent); }
+.combat-quick-tag-filters button, .combat-quick-action-tags button { padding: 1px 4px; border: 1px solid #0004; border-radius: 4px; color: #f4efe2; font-size: .42rem; line-height: 1.5; text-transform: lowercase; cursor: inherit; }
 .combat-quick-tag-filters button.on, .combat-quick-action-tags button.on { background: #3f7a45; }
 .combat-quick-tag-filters button.off, .combat-quick-action-tags button.off { background: #8a3a33; }
 .combat-quick-tag-filters button:disabled, .combat-quick-action-tags button:disabled { opacity: 1; }
@@ -3748,6 +3753,9 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-quick-form { display: grid; gap: 10px; margin-top: 14px; }.combat-quick-form > header { display: flex; align-items: end; justify-content: space-between; gap: 14px; }.combat-quick-form h3, .combat-quick-form p { margin: 0; }.combat-quick-form h3 { font: 700 1.1rem var(--font-display); }.combat-quick-form label { display: grid; gap: 4px; color: var(--muted); font-size: .6rem; }.combat-quick-form > header label { width: 150px; }.combat-quick-form textarea { resize: vertical; }.combat-quick-form fieldset { margin: 0; padding: 10px; border: 1px solid var(--line); border-radius: 8px; }.combat-quick-form legend { padding: 0 5px; color: var(--gold); font-size: .58rem; text-transform: uppercase; }
 .combat-spell-economy { margin: 6px 0 0; color: var(--muted); font-size: .5rem; line-height: 1.5; }
 .combat-quick-form .planner-costs input[readonly] { color: var(--gold); background: #0004; }
+.combat-quick-queue-reset { padding: 2px 8px; color: #e8aa91; border: 1px solid color-mix(in srgb, #b8594f 60%, var(--line)); border-radius: 5px; background: transparent; font-size: .5rem; text-transform: uppercase; cursor: pointer; }
+.combat-quick-queue-reset:hover:not(:disabled) { border-color: #b8594f; background: #b8594f28; }
+.combat-quick-queue-reset:disabled { opacity: .4; cursor: default; }
 .combat-quick-queue > .planned-action-list { min-height: 0; overflow-y: auto; margin: 0; padding: 8px; }.combat-quick-queue .planned-action-list article { grid-template-columns: 30px minmax(0, 1fr) auto; }.combat-quick-empty, .combat-quick-queue .planner-note { margin: 8px 12px; color: var(--muted); font-size: .57rem; }
 
 .combat-map-manager-modal { width: min(1080px, calc(100vw - var(--sidebar-width) - 70px)); max-height: min(780px, calc(100vh - 70px)); }

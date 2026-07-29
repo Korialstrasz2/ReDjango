@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useApp } from "../App";
-import { uploadMedia } from "../lib/api";
+import { convertImageToWebp, uploadMedia } from "../lib/api";
 import type { MediaAsset } from "../lib/types";
 import { Modal } from "./Modal";
 
@@ -11,14 +11,39 @@ type Props = {
   usageType: string;
   defaultGroup: string;
   defaultTitle: string;
+  categorySlug?: string;
+  convertToWebpQuality?: number;
+  restrictToUsageType?: boolean;
+  restrictToGroup?: string;
+  lockCategory?: boolean;
+  lockGroup?: boolean;
+  uploadNotes?: string;
   onSelect: (asset: MediaAsset | null) => void;
   onClose: () => void;
 };
 
-export function ImagePickerModal({ selectedId, usageType, defaultGroup, defaultTitle, onSelect, onClose }: Props) {
+export function ImagePickerModal({
+  selectedId,
+  usageType,
+  defaultGroup,
+  defaultTitle,
+  categorySlug,
+  convertToWebpQuality,
+  restrictToUsageType = false,
+  restrictToGroup,
+  lockCategory = false,
+  lockGroup = false,
+  uploadNotes = "Caricata dal selettore immagini.",
+  onSelect,
+  onClose,
+}: Props) {
   const { media, mediaCategories, notify } = useApp();
   const queryClient = useQueryClient();
-  const automaticCategory = mediaCategories.find((category) => category.usageTypes.includes(usageType)) || mediaCategories[0];
+  const automaticCategory = (
+    categorySlug
+      ? mediaCategories.find((category) => category.slug === categorySlug)
+      : undefined
+  ) || mediaCategories.find((category) => category.usageTypes.includes(usageType)) || mediaCategories[0];
   const [draftId, setDraftId] = useState<number | null>(selectedId);
   const [query, setQuery] = useState("");
   const [categoryId, setCategoryId] = useState(automaticCategory ? String(automaticCategory.id) : "");
@@ -29,7 +54,11 @@ export function ImagePickerModal({ selectedId, usageType, defaultGroup, defaultT
   const normalized = query.trim().toLocaleLowerCase("it");
   const visible = media.filter((asset) => {
     const matches = !normalized || `${asset.title} ${asset.category} ${asset.group} ${asset.notes}`.toLocaleLowerCase("it").includes(normalized);
-    return matches && (!categoryId || asset.categoryId === Number(categoryId)) && (!group || asset.group === group);
+    return matches
+      && (!categoryId || asset.categoryId === Number(categoryId))
+      && (!group || asset.group === group)
+      && (!restrictToUsageType || asset.usageType === usageType)
+      && (!restrictToGroup || asset.group === restrictToGroup);
   });
   const selected = media.find((asset) => asset.id === draftId) || null;
   useEffect(() => {
@@ -56,7 +85,28 @@ export function ImagePickerModal({ selectedId, usageType, defaultGroup, defaultT
     return () => window.removeEventListener("keydown", closeTopLayer, true);
   }, [actionAssetId, previewAsset]);
   const uploadMutation = useMutation({
-    mutationFn: ({ file, title, selectedCategoryId, selectedGroup }: { file: File; title: string; selectedCategoryId: number; selectedGroup: string }) => uploadMedia(file, title, "Caricata dal selettore immagini degli oggetti.", usageType, selectedCategoryId, selectedGroup),
+    mutationFn: async ({ file, title, selectedCategoryId, selectedGroup }: { file: File; title: string; selectedCategoryId: number; selectedGroup: string }) => {
+      const prepared = convertToWebpQuality == null
+        ? file
+        : await convertImageToWebp(file, convertToWebpQuality / 100);
+      return uploadMedia(
+        prepared,
+        title,
+        uploadNotes,
+        usageType,
+        selectedCategoryId,
+        selectedGroup,
+        convertToWebpQuality == null
+          ? {}
+          : {
+            originalName: file.name,
+            originalMimeType: file.type,
+            originalSizeBytes: file.size,
+            convertedToWebp: true,
+            webpQuality: convertToWebpQuality,
+          },
+      );
+    },
     onSuccess: async (response) => {
       setDraftId(response.data.asset.id);
       await queryClient.invalidateQueries({ queryKey: ["media"] });
@@ -88,8 +138,8 @@ export function ImagePickerModal({ selectedId, usageType, defaultGroup, defaultT
         <p className="eyebrow">Caricamento contestuale</p><h3>Nuova immagine</h3>
         <form className="stacked-form" onSubmit={upload}>
           <label>Nome<input name="title" defaultValue={defaultTitle} required /></label>
-          <label>Categoria<select name="categoryId" defaultValue={automaticCategory?.id || ""} required><option value="" disabled>Scegli categoria</option>{mediaCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
-          <label>Gruppo<input name="group" defaultValue={defaultGroup} required /></label>
+          <label>Categoria<select name="categoryId" defaultValue={automaticCategory?.id || ""} required disabled={lockCategory}><option value="" disabled>Scegli categoria</option>{mediaCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select>{lockCategory && <input type="hidden" name="categoryId" value={automaticCategory?.id || ""} />}</label>
+          <label>Gruppo<input name="group" defaultValue={defaultGroup} required readOnly={lockGroup} /></label>
           <label>File<input name="file" type="file" accept="image/*" required /></label>
           <button className="button secondary" disabled={uploadMutation.isPending || !mediaCategories.length}>Carica e seleziona</button>
         </form>

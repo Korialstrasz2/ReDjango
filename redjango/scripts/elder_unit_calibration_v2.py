@@ -1536,9 +1536,8 @@ HUMANOIDS: list[dict[str, Any]] = [
             ],
             equipment=[
                 item("armatura", 5785),
-                item("chainmail", 635),
+                item("chainmail", 635, 15, 20),
                 item("scudo", 621),
-                item("veste", 670),
                 item("vestiti", 5275),
                 item("arma", 5718, weight=8),
                 item("arma", 228, weight=2),

@@ -9,45 +9,9 @@ from backend.core.models import (
     FamigliaSkill,
     GruppoFamiglieSkill,
     Skill,
-    SkillMigrationReview,
 )
 
 from .skill_selectors import XP_TYPE_LABELS, serialize_skill, serialize_skill_family
-
-
-BLOCKER_LABELS = {
-    "active_cost_conflict": "Il costo dell'azione non coincide tra le fonti Elder.",
-    "no_structured_feature": "Non è stato riconosciuto un effetto, un'azione o un incantesimo strutturato.",
-    "passive_has_no_valid_operations": "Il passivo non contiene modifiche applicabili in sicurezza.",
-    "passive_value_not_evidenced_in_prose": "Il valore proposto non è confermato dal testo della skill.",
-    "prerequisite_not_in_auto_import_queue": "Un prerequisito è ancora nella coda di revisione.",
-    "requirement_not_exact_skill_name": "Il requisito non indica esattamente il nome di una skill.",
-    "spell_base_mana_conflicts_with_active_cost": "Il Mana base non coincide con il costo dell'azione Elder.",
-    "spell_base_mana_conflicts_with_rules_cost": "Il Mana base non coincide con il costo scritto nelle regole.",
-    "spell_formula_conflicts_with_active_effect": "La formula magica non coincide con l'effetto attivo proposto.",
-    "source_changed_since_last_import": "La sorgente Elder è cambiata dopo l'ultima importazione.",
-    "target_family_missing": "La famiglia di destinazione non esiste.",
-    "target_name_collision": "Il nome è già usato da un'altra skill.",
-    "target_number_collision": "Il numero è già usato da un'altra skill.",
-    "multiple_proposals_for_skill": "Esistono più proposte Elder per la stessa skill.",
-    "prerequisite_cycle": "I prerequisiti formano un ciclo.",
-}
-
-WARNING_LABELS = {
-    "active_icon_fell_back_to_runa": "L'icona Elder non era utilizzabile: è stata proposta la runa.",
-}
-
-
-def issue_label(code: str) -> str:
-    if code in BLOCKER_LABELS:
-        return BLOCKER_LABELS[code]
-    if code in WARNING_LABELS:
-        return WARNING_LABELS[code]
-    if code.startswith("passive_target_unsupported:"):
-        return f"Bersaglio passivo non ancora supportato: {code.split(':', 1)[1]}."
-    if code.startswith("target_validation:"):
-        return f"La proposta non supera la validazione ReDjango ({code.split(':', 1)[1]})."
-    return code.replace("_", " ").capitalize()
 
 
 def serialize_managed_group(group: GruppoFamiglieSkill) -> dict[str, Any]:
@@ -95,29 +59,14 @@ def serialize_managed_skill(skill: Skill) -> dict[str, Any]:
         "passiveCount": len(skill.effetti_passivi) if isinstance(skill.effetti_passivi, list) else 0,
         "actionCount": len(skill.azioni_attive) if isinstance(skill.azioni_attive, list) else 0,
         "prerequisiteCount": int(getattr(skill, "prerequisite_count", 0) or 0),
+        # Characters that already bought this skill. Changing a cost or a
+        # prerequisite rewrites what they paid for, so the count has to be
+        # visible before the editor opens.
+        "ownerCount": int(getattr(skill, "owner_count", 0) or 0),
         "archived": skill.archived_at is not None,
         "sourceProject": str(metadata.get("sourceProject") or ""),
         "sourceId": metadata.get("sourceId"),
         "updatedAt": skill.updated_at.isoformat() if skill.updated_at else None,
-    }
-
-
-def serialize_review_summary(review: SkillMigrationReview) -> dict[str, Any]:
-    return {
-        "id": review.id,
-        "sourceProject": review.source_project,
-        "sourceId": review.source_id,
-        "name": review.nome,
-        "severity": review.severity,
-        "decision": review.decision,
-        "status": review.status,
-        "blockers": list(review.blockers) if isinstance(review.blockers, list) else [],
-        "blockerLabels": [issue_label(code) for code in review.blockers if isinstance(code, str)],
-        "warnings": list(review.warnings) if isinstance(review.warnings, list) else [],
-        "warningLabels": [issue_label(code) for code in review.warnings if isinstance(code, str)],
-        "edited": review.edited,
-        "liveSkillId": review.resolved_skill_id,
-        "updatedAt": review.updated_at.isoformat() if review.updated_at else None,
     }
 
 
@@ -151,36 +100,77 @@ def _groups_and_families() -> tuple[list[GruppoFamiglieSkill], list[FamigliaSkil
     return groups, families
 
 
-def skill_management_overview() -> dict[str, Any]:
-    groups, families = _groups_and_families()
-    skills = list(
+SKILL_PAGE_SIZE = 100
+
+
+def _skill_queryset(query: str, group_id: int | None, family_id: int | None, state: str, kind: str):
+    skills = (
         Skill.objects.select_related("famiglia", "famiglia__gruppo", "spell_definition")
-        .annotate(prerequisite_count=Count("prerequisiti", distinct=True))
+        .annotate(
+            prerequisite_count=Count("prerequisiti", distinct=True),
+            owner_count=Count("personaggi_sbloccati", distinct=True),
+        )
         .order_by("famiglia__gruppo__ordine", "famiglia__ordine", "ordine_famiglia", "numero", "nome")
     )
-    reviews = list(
-        SkillMigrationReview.objects.filter(archived_at__isnull=True)
-        .select_related("resolved_skill")
-        .order_by("status", "severity", "nome", "source_id")
+    if query:
+        skills = skills.filter(
+            Q(nome__icontains=query)
+            | Q(slug__icontains=query)
+            | Q(famiglia__nome__icontains=query)
+            | Q(famiglia__gruppo__nome__icontains=query)
+        )
+    if group_id:
+        skills = skills.filter(famiglia__gruppo_id=group_id)
+    if family_id:
+        skills = skills.filter(famiglia_id=family_id)
+    if state == "active":
+        skills = skills.filter(archived_at__isnull=True)
+    elif state == "archived":
+        skills = skills.filter(archived_at__isnull=False)
+    if kind == "spell":
+        skills = skills.filter(spell_definition__isnull=False)
+    elif kind == "skill":
+        skills = skills.filter(spell_definition__isnull=True)
+    return skills
+
+
+def skill_management_overview(
+    query: str = "",
+    *,
+    group_id: int | None = None,
+    family_id: int | None = None,
+    state: str = "",
+    kind: str = "",
+    offset: int = 0,
+    limit: int = SKILL_PAGE_SIZE,
+) -> dict[str, Any]:
+    groups, families = _groups_and_families()
+    # Metrics are counted in the database: the page used to load all 1500+ rows
+    # just to add them up.
+    totals = Skill.objects.aggregate(
+        total=Count("id", distinct=True),
+        archived=Count("id", filter=Q(archived_at__isnull=False), distinct=True),
+        spells=Count("id", filter=Q(archived_at__isnull=True, spell_definition__isnull=False), distinct=True),
     )
-    active_skills = [skill for skill in skills if skill.archived_at is None]
+    page = _skill_queryset(query, group_id, family_id, state, kind)
+    total = page.count()
+    offset = max(0, offset)
+    rows = list(page[offset:offset + limit])
     return {
         "metrics": {
-            "activeSkills": len(active_skills),
-            "archivedSkills": len(skills) - len(active_skills),
-            "spells": sum(1 for skill in active_skills if getattr(skill, "spell_definition", None)),
+            "activeSkills": totals["total"] - totals["archived"],
+            "archivedSkills": totals["archived"],
+            "spells": totals["spells"],
             "families": sum(1 for family in families if family.archived_at is None),
             "groups": sum(1 for group in groups if group.archived_at is None),
-            "openReviews": sum(1 for review in reviews if review.status == SkillMigrationReview.STATUS_OPEN),
-            "blockedReviews": sum(
-                1 for review in reviews
-                if review.status == SkillMigrationReview.STATUS_OPEN
-                and review.severity == SkillMigrationReview.SEVERITY_BLOCKED
-            ),
         },
         "groups": [serialize_managed_group(group) for group in groups],
         "families": [serialize_managed_family(family) for family in families],
-        "skills": [serialize_managed_skill(skill) for skill in skills],
+        "skills": [serialize_managed_skill(skill) for skill in rows],
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "hasMore": offset + len(rows) < total,
         "skillOptions": [
             {
                 "id": skill.id,
@@ -189,9 +179,10 @@ def skill_management_overview() -> dict[str, Any]:
                 "familyName": skill.famiglia.nome,
                 "familyGroup": skill.famiglia.gruppo.nome,
             }
-            for skill in active_skills
+            for skill in Skill.objects.filter(archived_at__isnull=True)
+            .select_related("famiglia", "famiglia__gruppo")
+            .order_by("numero", "nome")
         ],
-        "reviews": [serialize_review_summary(review) for review in reviews],
         "effectConfiguration": effect_configuration_payload(),
     }
 
@@ -202,17 +193,9 @@ def managed_skill_detail(skill_id: int) -> dict[str, Any]:
         .prefetch_related("prerequisiti")
         .get(pk=skill_id)
     )
-    return {"skill": serialize_skill(skill)}
-
-
-def migration_review_detail(review_id: int) -> dict[str, Any]:
-    review = SkillMigrationReview.objects.select_related("resolved_skill").get(pk=review_id)
-    return {
-        "review": {
-            **serialize_review_summary(review),
-            "suggestedValues": review.suggested_values if isinstance(review.suggested_values, dict) else {},
-            "workingValues": review.working_values if isinstance(review.working_values, dict) else {},
-            "source": review.source_snapshot if isinstance(review.source_snapshot, dict) else {},
-            "resolutionNotes": review.resolution_notes,
-        }
-    }
+    owners = list(
+        skill.personaggi_sbloccati.select_related("personaggio")
+        .order_by("personaggio__nome")
+        .values_list("personaggio__nome", flat=True)
+    )
+    return {"skill": serialize_skill(skill), "owners": owners}
