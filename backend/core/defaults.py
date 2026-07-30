@@ -139,6 +139,7 @@ V2_SETTING_DEFAULTS = [
         "default_value": "off",
         "choices": [
             {"value": "off", "label": "Nessuno"},
+            {"value": "hint", "label": "Accennato"},
             {"value": "soft", "label": "Sottile"},
             {"value": "strong", "label": "Marcato"},
         ],
@@ -363,6 +364,20 @@ V2_SETTING_DEFAULTS = [
         "order": 90,
     },
     {
+        "key": "shortcuts.theft",
+        "label": "Furto rapido",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre il calcolatore di scasso e borseggio.",
+        "minimum_role": "user",
+        "value_type": "select",
+        "default_value": "Alt+F",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-theft",
+        "order": 95,
+    },
+    {
         "key": "shortcuts.audio",
         "label": "Audio rapido",
         "category": "scorciatoie da tastiera",
@@ -389,6 +404,22 @@ V2_SETTING_DEFAULTS = [
         "master_customizable": True,
         "ui_token": "shortcut-ai",
         "order": 97,
+    },
+    {
+        "key": "shortcuts.names",
+        "label": "Generatore nomi",
+        "category": "scorciatoie da tastiera",
+        "description": "Apre il Generatore nomi.",
+        "minimum_role": "user",
+        "value_type": "select",
+        # Non Alt+O: resta libera perché è la combinazione con cui i test
+        # verificano che una scorciatoia possa essere riassegnata.
+        "default_value": "Alt+P",
+        "choices": SAFE_ALT_SHORTCUT_CHOICES,
+        "user_customizable": True,
+        "master_customizable": True,
+        "ui_token": "shortcut-names",
+        "order": 98,
     },
     {
         "key": "shortcuts.skills",
@@ -941,6 +972,29 @@ CHARACTERISTIC_ADJUSTMENT_DEFAULTS = {
     "livello": "personaggio.livello / 5",
     "fortuna": "((final.fortuna - 10) * 0.15) - 0.15",
 }
+
+# Le nove caratteristiche nell'ordine in cui vanno mostrate: creazione del
+# personaggio, guida "Creare un nuovo PG" e qualunque altro elenco leggibile.
+CHARACTERISTIC_CHOICES = (
+    ("forza", "Forza"),
+    ("resistenza", "Resistenza"),
+    ("velocita", "Velocità"),
+    ("agilita", "Agilità"),
+    ("intelligenza", "Intelligenza"),
+    ("concentrazione", "Concentrazione"),
+    ("personalita", "Personalità"),
+    ("saggezza", "Saggezza"),
+    ("fortuna", "Fortuna"),
+)
+CHARACTERISTIC_KEYS = tuple(key for key, _label in CHARACTERISTIC_CHOICES)
+CHARACTERISTIC_LABELS = dict(CHARACTERISTIC_CHOICES)
+
+# Bonus della caratteristica preferita scelta alla creazione. Si somma al bonus
+# automatico di Livello che CHARACTERISTIC_ADJUSTMENT_DEFAULTS applica già a
+# tutte e nove le caratteristiche: la preferita avanza quindi al doppio della
+# velocità. Cambiare qui il valore cambia l'effetto creato da ogni nuovo PG.
+PREFERRED_CHARACTERISTIC_FORMULA = "personaggio.livello / 5"
+PREFERRED_CHARACTERISTIC_EFFECT_NAME = "Caratteristica preferita"
 
 
 QUICK_STAT_ADJUSTMENT_CONFIG_KEY = "quick_stat_adjustments"
@@ -1900,3 +1954,20 @@ V2_SETTING_DEFAULTS.extend([
 ])
 
 V2_SETTING_DEFAULTS.extend(BACKUP_SETTING_DEFINITIONS)
+
+# Generazione personaggi: amministrata da Gestione AI, non dalle Impostazioni
+# personali, come già succede per le regole del Mercato.
+V2_SETTING_DEFAULTS.append(
+    {
+        "key": "ai.npc_generation", "label": "Generazione personaggi", "category": "ai",
+        "description": "Formato, qualità e stile del ritratto PNG generato, e disponibilità del contesto di campagna.",
+        "minimum_role": "master", "value_type": "json",
+        "default_value": {
+            "portraitSize": "640x1024",
+            "portraitQuality": "medium",
+            "portraitStyle": "Ritratto a mezzo busto, pittura a olio fantasy, luce naturale morbida, sfondo neutro.",
+            "allowCampaignContext": True,
+        },
+        "choices": [], "user_customizable": False, "master_customizable": False, "order": 10,
+    }
+)

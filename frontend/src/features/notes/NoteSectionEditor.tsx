@@ -8,6 +8,7 @@ export const NOTE_SECTIONS: Array<{ id: NoteSection; label: string; description:
   { id: "appunti", label: "Appunti", description: "Pensieri, nomi e dettagli da ricordare.", glyph: "⌑" },
   { id: "missioni", label: "Missioni", description: "Obiettivi, indizi e prossimi passi.", glyph: "⚑" },
   { id: "zaino", label: "Zaino", description: "Scorte, oggetti affidati e cose da recuperare.", glyph: "◇" },
+  { id: "furto", label: "Furto", description: "Cariche dei set da scasso, poteri particolari e colpi in sospeso.", glyph: "⚿" },
   { id: "combat", label: "Combattimento", description: "Tattiche, avversari e promemoria per gli scontri.", glyph: "⚔" },
   { id: "competenze", label: "Competenze", description: "Nuance, usi creativi, bonus permanenti e promemoria sui tiri.", glyph: "✧" },
   { id: "crafting", label: "Crafting", description: "Materiali, ricette e progetti in corso.", glyph: "⚒" },

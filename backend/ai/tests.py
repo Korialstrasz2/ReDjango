@@ -16,7 +16,7 @@ from .providers.images import OpenAIImageProvider
 from .providers.base import ChatTurn, ToolCall
 from .selectors import ai_management_payload, ai_workspace_payload
 from .services import ask_assistant, sanitize_history, save_agent, save_provider
-from .tools import execute_tool
+from .tools import AI_TOOLS, execute_tool
 
 
 def envelope(action: str, payload: dict) -> str:
@@ -38,10 +38,12 @@ class ScriptedProvider:
         self.turns = list(turns)
         self.seen_histories = []
         self.seen_tools = []
+        self.seen_systems = []
 
     def complete(self, *, system, history, tools):
         self.seen_histories.append(list(history))
         self.seen_tools.append(list(tools))
+        self.seen_systems.append(system)
         return self.turns.pop(0)
 
 
@@ -194,7 +196,9 @@ class AIWorkspaceApiTests(TestCase):
         self.assertEqual(image_provider["imageGeneration"]["defaultQuality"], "medium")
         self.assertEqual(
             [entry["value"] for entry in image_provider["imageGeneration"]["sizes"]],
-            ["1024x1024", "1024x1536", "1536x1024"],
+            # 640x1024 è il minimo che gpt-image-2 accetta (655.360 pixel) e resta
+            # in cima perché è il ritratto più economico.
+            ["640x1024", "1024x1024", "1024x1536", "1536x1024"],
         )
 
     def test_seeded_provider_catalogues_offer_models_for_each_runtime(self):
@@ -339,6 +343,549 @@ class AIToolPermissionTests(TestCase):
         self.assertEqual(payload["fazioni"][0]["reputazione"], 42)
         self.assertEqual(payload["personaggi"], [])
         self.assertEqual(payload["eventi"], [])
+
+
+class AICharacterSheetSectionTests(TestCase):
+    """Fase 0: la scheda restituisce sezioni piccole invece di una whitelist morta."""
+
+    def _identity_with_character(self, username: str, **character_fields):
+        from backend.characters.models import Personaggio
+
+        character = Personaggio.objects.create(
+            nome="Illaoi", nome_interno=f"{username}-personaggio", **character_fields
+        )
+        user = get_user_model().objects.create_user(username=username)
+        giocatore = Giocatore.objects.create(
+            user=user,
+            nome=username,
+            role=Giocatore.ROLE_USER,
+            character_ids=[character.id],
+            active_character=character,
+        )
+        return user, giocatore
+
+    def test_default_section_includes_coins(self):
+        user, giocatore = self._identity_with_character("sheet_coins_default", monete=250, livello=4)
+        content, is_error = execute_tool("scheda_personaggio", {"nome": "Illaoi"}, user, giocatore)
+
+        payload = json.loads(content)
+        self.assertFalse(is_error)
+        self.assertEqual(payload["sezione"], "riepilogo")
+        self.assertEqual(payload["personaggio"]["coins"], 250)
+
+    def test_economia_section_returns_only_economic_fields(self):
+        user, giocatore = self._identity_with_character("sheet_econ", monete=999)
+        content, _ = execute_tool("scheda_personaggio", {"nome": "Illaoi", "sezione": "economia"}, user, giocatore)
+
+        payload = json.loads(content)
+        self.assertEqual(payload["sezione"], "economia")
+        self.assertEqual(payload["personaggio"]["coins"], 999)
+        self.assertNotIn("characteristics", payload["personaggio"])
+        self.assertNotIn("combat", payload["personaggio"])
+
+    def test_unknown_section_degrades_to_riepilogo(self):
+        user, giocatore = self._identity_with_character("sheet_unknown_section", monete=10)
+        content, is_error = execute_tool(
+            "scheda_personaggio", {"nome": "Illaoi", "sezione": "non_esiste"}, user, giocatore
+        )
+
+        payload = json.loads(content)
+        self.assertFalse(is_error)
+        self.assertEqual(payload["sezione"], "riepilogo")
+        self.assertIn("coins", payload["personaggio"])
+
+    def test_no_dead_stats_key_remains(self):
+        from .tools import CHARACTER_SHEET_SECTIONS
+
+        for keys in CHARACTER_SHEET_SECTIONS.values():
+            self.assertNotIn("stats", keys)
+
+
+class AIToolResultTruncationTests(TestCase):
+    """Fase 0.3: un risultato troppo grande resta JSON valido, mai una stringa spezzata."""
+
+    def test_oversized_list_is_shrunk_with_a_valid_marker_not_a_cut_string(self):
+        from .tools import _serialize_tool_result
+
+        huge = {"oggetti": [{"nome": f"Oggetto {index}", "descrizione": "x" * 200} for index in range(500)]}
+        encoded = _serialize_tool_result(huge)
+
+        payload = json.loads(encoded)  # solleva se il JSON è stato tagliato a metà
+        self.assertTrue(payload.get("troncato"))
+        self.assertIn("oggettiTotale", payload)
+        self.assertEqual(payload["oggettiTotale"], 500)
+        self.assertLess(len(payload["oggetti"]), 500)
+
+    def test_result_with_nothing_shrinkable_still_yields_valid_json(self):
+        from .tools import _serialize_tool_result
+
+        huge_string_only = {"descrizione": "x" * 30000}
+        encoded = _serialize_tool_result(huge_string_only)
+
+        payload = json.loads(encoded)
+        self.assertEqual(payload["errore"], "risultato_troppo_grande")
+
+    def test_small_result_is_untouched(self):
+        from .tools import _serialize_tool_result
+
+        small = {"oggetti": [{"nome": "Spada"}]}
+        encoded = _serialize_tool_result(small)
+        self.assertEqual(json.loads(encoded), small)
+
+
+class AIAgentContextTests(TestCase):
+    """Fase 1: il prompt di sistema dichiara chi sta chiedendo, invece di lasciarlo indovinare."""
+
+    @classmethod
+    def setUpTestData(cls):
+        seed_ai_providers()
+
+    def setUp(self):
+        self.provider = AIProvider.objects.get(slug="anthropic")
+
+    def test_system_prompt_names_the_active_character_and_role(self):
+        from backend.characters.models import Personaggio
+
+        character = Personaggio.objects.create(nome="Illaoi", nome_interno="illaoi-context-test", livello=7)
+        user = get_user_model().objects.create_user(username="context_player")
+        giocatore = Giocatore.objects.create(
+            user=user,
+            nome="context_player",
+            role=Giocatore.ROLE_USER,
+            character_ids=[character.id],
+            active_character=character,
+        )
+
+        scripted = ScriptedProvider([ChatTurn(text="risposta", stop_reason="end_turn")])
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            run_agent(self.provider, [{"role": "user", "content": "quante monete ho?"}], user, giocatore)
+
+        system_prompt = scripted.seen_systems[0]
+        self.assertIn("Illaoi", system_prompt)
+        self.assertIn("Giocatore", system_prompt)
+        self.assertIn("personaggio attivo", system_prompt.lower())
+
+    def test_context_block_does_not_crash_without_characters_or_campaign(self):
+        user = get_user_model().objects.create_user(username="context_empty")
+        giocatore = Giocatore.objects.create(user=user, nome="context_empty", role=Giocatore.ROLE_USER)
+
+        scripted = ScriptedProvider([ChatTurn(text="risposta", stop_reason="end_turn")])
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            result = run_agent(self.provider, [{"role": "user", "content": "ciao"}], user, giocatore)
+
+        self.assertEqual(result["reply"], "risposta")
+        self.assertIn("nessuno", scripted.seen_systems[0])
+
+
+class AIToolSmokeTests(TestCase):
+    """Fase 2: ogni strumento deve poter essere eseguito senza sollevare eccezioni non gestite.
+
+    Chiama `tool.run(...)` direttamente, non `execute_tool`: `execute_tool` incaraverebbe
+    un vero bug di programmazione (AttributeError, KeyError) in un normale `{"errore": ...}`,
+    rendendolo indistinguibile da un esito atteso.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        from backend.characters.models import Personaggio, Zaino
+        from backend.combat.models import CombatModifier, CombatModifierState, MapMetadata, MapParticipant, MapType
+        from backend.core.defaults import V2_SETTING_DEFAULTS
+        from backend.core.models import (
+            CampaignLoreEntry,
+            Curiosita,
+            FamigliaSkill,
+            GruppoFamiglieSkill,
+            HallOfFameCharacter,
+            Negozio,
+            OpzioneTipoOggetto,
+            ReagenteAlchemico,
+            SettingDefinition,
+            Skill,
+            SpellDefinition,
+            TimelineEvent,
+            TipoArma,
+        )
+        from backend.dice_tools.models import DiceRollRecord
+        from backend.lore.models import EffettoEventoReputazione, EventoReputazione, RelazioneFazione
+        from backend.media_library.models import DatiMappa, UploadedImage
+
+        # market_overview() legge la configurazione Mercato dalle SettingDefinition seed:
+        # senza questo, ogni strumento che tocca il mercato solleva ValidationError.
+        for definition in V2_SETTING_DEFAULTS:
+            if definition["key"].startswith("mercato."):
+                SettingDefinition.objects.create(**definition, value=definition["default_value"])
+
+        cls.campaign = DatiCampagna.objects.create(
+            nome="Smoke", attiva=True, giorni_da_inizio=12, ora_corrente="Mattino", meteo="Sereno"
+        )
+        zaino = Zaino.objects.create(nome="Zaino smoke")
+        cls.character = Personaggio.objects.create(
+            nome="Illaoi",
+            nome_interno="illaoi-smoke",
+            monete=500,
+            livello=5,
+            campagna=cls.campaign,
+            zaino=zaino,
+            tot={"slot_magici": 0, "slot_non_magici": 10, "pf": 40, "mod_carico": 5},
+        )
+        cls.user = get_user_model().objects.create_user(username="smoke_master")
+        cls.giocatore = Giocatore.objects.create(
+            user=cls.user,
+            nome="smoke_master",
+            role=Giocatore.ROLE_MASTER,
+            character_ids=[cls.character.id],
+            active_character=cls.character,
+            active_campaign=cls.campaign,
+        )
+
+        item = Oggetto.objects.create(nome="Pozione smoke", tipo_1="pozione", valore=10, rarita=1, lv_loot="1")
+        Negozio.objects.create(
+            nome="Bottega smoke",
+            location_key="skyrim/whiterun",
+            categoria="generale",
+            livello=1,
+            lista_oggetti={"version": 2, "entries": [{"itemId": item.id, "quantity": 3, "unitPrice": 20, "source": "manual"}]},
+        )
+
+        group = GruppoFamiglieSkill.objects.create(nome="Smoke group", slug="smoke-group")
+        family = FamigliaSkill.objects.create(nome="Smoke family", gruppo=group)
+        skill = Skill.objects.create(
+            nome="Smoke skill", slug="smoke-skill", numero=999001, famiglia=family, costo_pe=5, tipo_pe="all"
+        )
+        SpellDefinition.objects.create(
+            skill=skill, tier="base", range_text="Vicino", effect_unit="Intensità",
+            base_mana=1, effect_per_mana=1, minimum_mana=1,
+        )
+
+        TipoArma.objects.create(nome="Spada smoke")
+        OpzioneTipoOggetto.objects.create(posizione=1, valore="arma", etichetta="Arma")
+        ReagenteAlchemico.objects.create(nome="Radice smoke", colore="rosso", livello=1)
+
+        fazione = Fazione.objects.create(campagna=cls.campaign, nome="Fazione smoke", reputazione_base=10)
+        altra = Fazione.objects.create(campagna=cls.campaign, nome="Altra fazione", reputazione_base=0)
+        RelazioneFazione.objects.create(origine=fazione, destinazione=altra, coefficiente=0.2)
+        evento = EventoReputazione.objects.create(
+            campagna=cls.campaign, titolo="Evento smoke", motivo="Un motivo", giorno_campagna=1,
+            visibile_ai_giocatori=True,
+        )
+        EffettoEventoReputazione.objects.create(evento=evento, fazione=fazione, delta=5)
+
+        CampaignLoreEntry.objects.create(
+            campagna=cls.campaign, slug="voce-smoke", nome="Voce smoke", sommario="Un sommario", visibilita="player"
+        )
+        cls.dm_only_entry = CampaignLoreEntry.objects.create(
+            campagna=cls.campaign, slug="voce-segreta", nome="Voce segreta del Master", sommario="Solo per il Master", visibilita="dm"
+        )
+        Curiosita.objects.create(nome="Curiosita smoke", descrizione="Una curiosità", visibile=True)
+        HallOfFameCharacter.objects.create(nome="Eroe smoke")
+        TimelineEvent.objects.create(nome="Evento timeline smoke", campagna=cls.campaign)
+
+        map_type = MapType.objects.create(name="Tipo smoke", slug="tipo-smoke")
+        cls.map = MapMetadata.objects.create(name="Mappa smoke", map_type=map_type, is_default=True)
+        MapParticipant.objects.create(map=cls.map, character=cls.character)
+        modifier = CombatModifier.objects.create(name="Modificatore smoke")
+        CombatModifierState.objects.create(map=cls.map, modifier=modifier, enabled=True)
+
+        cls.non_secret_setting = SettingDefinition.objects.create(
+            key="smoke.setting", label="Impostazione smoke", category="Smoke", value_type="string", default_value="ok"
+        )
+
+        DiceRollRecord.objects.create(
+            giocatore=cls.giocatore, player_name="smoke_master", personaggio=cls.character,
+            notation="1d20", rolls=[15], modifier=0, total=15,
+        )
+
+        image = UploadedImage.objects.create(title="Mappa viaggio smoke")
+        DatiMappa.objects.create(nome="Mappa viaggio smoke", campagna=cls.campaign, tipo="globale", image=image)
+
+    def test_every_tool_runs_without_raising(self):
+        required_arguments = {
+            "posso_permettermi": {"oggetto": "Pozione"},
+            "analisi_abilita": {"nome": "Smoke skill"},
+            "perche_reputazione": {"fazione": "Fazione smoke"},
+        }
+        failures = []
+        for tool in AI_TOOLS:
+            kwargs = required_arguments.get(tool.name, {})
+            try:
+                tool.run(self.user, self.giocatore, **kwargs)
+            except Exception as error:  # noqa: BLE001 - il test deve poter riportare qualunque rottura
+                failures.append(f"{tool.name}: {type(error).__name__}: {error}")
+        self.assertEqual(failures, [])
+
+    def test_master_only_tools_refuse_a_plain_player(self):
+        player_user = get_user_model().objects.create_user(username="smoke_player")
+        player = Giocatore.objects.create(user=player_user, nome="smoke_player", role=Giocatore.ROLE_USER)
+        for name in ("giocatori", "storico_tiri", "statistiche_tiri", "relazioni_fazioni", "riepilogo_gruppo"):
+            content, is_error = execute_tool(name, {}, player_user, player)
+            self.assertTrue(is_error, f"{name} should refuse a plain player")
+
+    def test_admin_only_tool_refuses_a_master(self):
+        content, is_error = execute_tool("impostazioni", {}, self.user, self.giocatore)
+        self.assertTrue(is_error)
+
+    def test_settings_tool_never_exposes_admin_managed_keys(self):
+        from backend.core.settings_selectors import ADMIN_MANAGED_SETTING_KEYS
+        from backend.core.models import SettingDefinition
+
+        SettingDefinition.objects.create(
+            key="security.game_master_access_code", label="Codice Master", category="Sicurezza",
+            value_type="string", default_value="segreto",
+        )
+        admin_user = get_user_model().objects.create_user(username="smoke_admin")
+        admin = Giocatore.objects.create(user=admin_user, nome="smoke_admin", role=Giocatore.ROLE_ADMIN)
+        content, is_error = execute_tool("impostazioni", {}, admin_user, admin)
+        payload = json.loads(content)
+        self.assertFalse(is_error)
+        keys = {entry["chiave"] for entry in payload["impostazioni"]}
+        self.assertFalse(keys & ADMIN_MANAGED_SETTING_KEYS)
+        self.assertIn("smoke.setting", keys)
+
+    def test_voci_lore_hides_dm_only_entries_from_a_player(self):
+        player_user = get_user_model().objects.create_user(username="lore_player")
+        player = Giocatore.objects.create(
+            user=player_user, nome="lore_player", role=Giocatore.ROLE_USER, active_campaign=self.campaign,
+        )
+        content, _ = execute_tool("voci_lore", {}, player_user, player)
+        payload = json.loads(content)
+        names = {entry["nome"] for entry in payload["voci"]}
+        self.assertNotIn("Voce segreta del Master", names)
+        self.assertIn("Voce smoke", names)
+
+        content, _ = execute_tool("voci_lore", {}, self.user, self.giocatore)
+        payload = json.loads(content)
+        names = {entry["nome"] for entry in payload["voci"]}
+        self.assertIn("Voce segreta del Master", names)
+
+
+class ExpandFullAccessProfilesMigrationTests(TestCase):
+    """La migrazione 0006 allarga solo i profili che avevano l'insieme storico completo."""
+
+    def test_full_access_profile_gains_new_tools_but_narrowed_profile_does_not(self):
+        import importlib
+
+        from django.apps import apps as django_apps
+
+        migration_module = importlib.import_module("backend.ai.migrations.0006_expand_full_access_agent_profiles")
+
+        full_access = AIAgentProfile.objects.create(
+            name="Completo", slug="completo-migrazione-test",
+            allowed_tools=sorted(migration_module.HISTORICAL_TOOL_NAMES),
+        )
+        narrowed = AIAgentProfile.objects.create(
+            name="Ristretto", slug="ristretto-migrazione-test",
+            allowed_tools=["cerca_oggetti", "scheda_personaggio"],
+        )
+
+        migration_module.expand_full_access_profiles(django_apps, None)
+
+        full_access.refresh_from_db()
+        narrowed.refresh_from_db()
+        self.assertIn("posso_permettermi", full_access.allowed_tools)
+        self.assertIn("capacita_trasporto", full_access.allowed_tools)
+        self.assertEqual(set(narrowed.allowed_tools), {"cerca_oggetti", "scheda_personaggio"})
+
+
+class AIGuideSearchTests(TestCase):
+    """Regressione da «come funziona il viaggio?»: la guida grande deve restituire le regole, non l'indice."""
+
+    LONG_GUIDE = json.dumps([
+        {
+            "type": "legacy_html",
+            "html": (
+                "<h1>INDICE</h1><ul><li>Base</li><li>Viaggio</li><li>Combat</li></ul>"
+                + "<p>Testo di riempimento sul combattimento e sulle malattie. </p>" * 120
+                + "<h2>VIAGGIO</h2><p>In viaggio i PG si muovono a 5 km orari su strada. "
+                + "Dopo 5h 30m di viaggio si prende 1 Stanchezza. Il viaggio al buio dimezza la velocità.</p>"
+                + "<p>Altro riempimento finale. </p>" * 40
+            ),
+        }
+    ])
+
+    def setUp(self):
+        from backend.core.models import Guida
+
+        self.guide = Guida.objects.create(nome="Regole Varie", contenuto=self.LONG_GUIDE, categoria="Regolamento")
+
+    def test_excerpt_reaches_the_rules_section_not_the_table_of_contents(self):
+        from .tools import _rules_guide
+
+        payload = _rules_guide(None, None, argomento="viaggio")
+        joined = " ".join(payload["guide"][0]["estratti"])
+
+        self.assertEqual(payload["stato"], "ok")
+        # Il dato che l'utente ha chiesto e che prima non arrivava mai al modello.
+        self.assertIn("5 km orari", joined)
+        self.assertIn("Stanchezza", joined)
+
+    def test_content_is_not_double_encoded_json(self):
+        from .tools import _rules_guide
+
+        payload = _rules_guide(None, None, argomento="viaggio")
+        joined = " ".join(payload["guide"][0]["estratti"])
+
+        # `json.dumps` sul TextField produceva \" e \r\n letterali dentro il testo.
+        self.assertNotIn('\\"', joined)
+        self.assertNotIn("\\r\\n", joined)
+        self.assertNotIn("legacy_html", joined)
+        self.assertNotIn("<p>", joined)
+
+    def test_status_distinguishes_no_data_from_no_match(self):
+        from backend.core.models import Guida
+
+        from .tools import _rules_guide
+
+        self.assertEqual(_rules_guide(None, None, argomento="tema-inesistente")["stato"], "filtro_senza_risultati")
+        Guida.objects.all().delete()
+        self.assertEqual(_rules_guide(None, None, argomento="viaggio")["stato"], "nessun_dato")
+
+    def test_result_stays_within_the_tool_character_budget(self):
+        from .tools import MAXIMUM_TOOL_RESULT_CHARACTERS, _rules_guide
+
+        encoded = json.dumps(_rules_guide(None, None, argomento="viaggio"), ensure_ascii=False)
+        self.assertLess(len(encoded), MAXIMUM_TOOL_RESULT_CHARACTERS)
+
+
+class AIAgentLoopResilienceTests(TestCase):
+    """Un modello che gira a vuoto deve essere fermato e comunque produrre una risposta."""
+
+    @classmethod
+    def setUpTestData(cls):
+        seed_ai_providers()
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="loop_resilience")
+        self.giocatore = Giocatore.objects.create(user=self.user, nome="loop_resilience", role=Giocatore.ROLE_MASTER)
+        self.provider = AIProvider.objects.get(slug="anthropic")
+
+    def test_identical_repeated_calls_are_reported_instead_of_re_executed(self):
+        repeated = ScriptedProvider([
+            ChatTurn(tool_calls=[ToolCall(id="t1", name="guide_regole", arguments={"argomento": "viaggio"})], stop_reason="tool_use"),
+            ChatTurn(tool_calls=[ToolCall(id="t2", name="guide_regole", arguments={"argomento": "viaggio"})], stop_reason="tool_use"),
+            ChatTurn(text="Ecco quello che ho trovato.", stop_reason="end_turn"),
+        ])
+        with patch("backend.ai.agent.chat_provider_for", return_value=repeated):
+            result = run_agent(self.provider, [{"role": "user", "content": "come funziona il viaggio?"}], self.user, self.giocatore)
+
+        tool_messages = [entry for entry in result["history"] if entry["role"] == "tool"]
+        self.assertEqual(len(tool_messages), 2)
+        self.assertIn("chiamata_ripetuta", tool_messages[1]["content"])
+        self.assertTrue(result["toolTrace"][1]["isError"])
+
+    def test_exhausting_iterations_still_answers_from_what_was_gathered(self):
+        turns = [
+            ChatTurn(tool_calls=[ToolCall(id=f"t{index}", name="guide_regole", arguments={"argomento": f"tema{index}"})], stop_reason="tool_use")
+            for index in range(6)
+        ]
+        turns.append(ChatTurn(text="Non ho trovato la regola, ma ecco cosa ho verificato.", stop_reason="end_turn"))
+        scripted = ScriptedProvider(turns)
+
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            result = run_agent(self.provider, [{"role": "user", "content": "una domanda difficile"}], self.user, self.giocatore)
+
+        self.assertEqual(result["stopReason"], "iteration_limit")
+        self.assertIn("ecco cosa ho verificato", result["reply"])
+        # L'ultima chiamata deve essere senza strumenti: è ciò che forza la conclusione.
+        self.assertEqual(scripted.seen_tools[-1], [])
+
+    def test_iteration_limit_still_raises_when_the_model_returns_nothing(self):
+        turns = [
+            ChatTurn(tool_calls=[ToolCall(id=f"t{index}", name="guide_regole", arguments={"argomento": f"tema{index}"})], stop_reason="tool_use")
+            for index in range(6)
+        ]
+        turns.append(ChatTurn(text="   ", stop_reason="end_turn"))
+        scripted = ScriptedProvider(turns)
+
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            with self.assertRaises(Exception) as caught:
+                run_agent(self.provider, [{"role": "user", "content": "domanda"}], self.user, self.giocatore)
+        self.assertEqual(getattr(caught.exception, "code", ""), "ai.iteration_limit")
+
+
+class AIScopeRouterTests(TestCase):
+    """Fase 3: il router riduce il menu di strumenti quando aiuta, mai a costo della risposta."""
+
+    def setUp(self):
+        seed_ai_providers()
+        self.user = get_user_model().objects.create_user(username="router_user")
+        self.giocatore = Giocatore.objects.create(user=self.user, nome="router_user", role=Giocatore.ROLE_MASTER)
+        self.provider = AIProvider.objects.get(slug="anthropic")
+        self.profile = AIAgentProfile.objects.get(slug="assistente-campagna")
+
+    def test_router_narrows_the_tool_menu_to_the_chosen_scope(self):
+        from .tools import reachable_tools
+
+        scripted = ScriptedProvider(
+            [
+                ChatTurn(text='["personaggi"]', stop_reason="end_turn"),
+                ChatTurn(text="Fatto", stop_reason="end_turn"),
+            ]
+        )
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            run_agent(
+                self.provider, [{"role": "user", "content": "quante monete ho?"}], self.user, self.giocatore, self.profile
+            )
+
+        self.assertEqual(len(scripted.seen_systems), 2)
+        main_call_tools = {tool["name"] for tool in scripted.seen_tools[1]}
+        # `regole` è sempre incluso per progetto: vedi ROUTER_ALWAYS_INCLUDED_SCOPES.
+        expected = {
+            tool.name for tool in reachable_tools(self.user, self.giocatore, self.profile.allowed_tools)
+            if tool.scope in {"personaggi", "regole"}
+        }
+        self.assertEqual(main_call_tools, expected)
+        self.assertLess(len(expected), len(self.profile.allowed_tools))
+
+    def test_router_failure_falls_back_to_every_reachable_tool(self):
+        from .tools import reachable_tools
+
+        scripted = ScriptedProvider(
+            [
+                ChatTurn(text="questo non è un array JSON", stop_reason="end_turn"),
+                ChatTurn(text="Fatto comunque", stop_reason="end_turn"),
+            ]
+        )
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            result = run_agent(
+                self.provider, [{"role": "user", "content": "una domanda qualsiasi"}], self.user, self.giocatore, self.profile
+            )
+
+        self.assertEqual(result["reply"], "Fatto comunque")
+        main_call_tools = {tool["name"] for tool in scripted.seen_tools[1]}
+        expected_all = {tool.name for tool in reachable_tools(self.user, self.giocatore, self.profile.allowed_tools)}
+        self.assertEqual(main_call_tools, expected_all)
+
+    def test_router_is_skipped_below_the_tool_threshold(self):
+        self.profile.allowed_tools = ["cerca_oggetti", "scheda_personaggio"]
+        self.profile.save(update_fields=["allowed_tools"])
+        scripted = ScriptedProvider([ChatTurn(text="Fatto", stop_reason="end_turn")])
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            run_agent(self.provider, [{"role": "user", "content": "ciao"}], self.user, self.giocatore, self.profile)
+        self.assertEqual(len(scripted.seen_systems), 1)
+
+    def test_rules_scope_survives_a_router_that_omits_it(self):
+        """«come funziona il viaggio?» veniva instradata su campagna e non raggiungeva le guide."""
+
+        scripted = ScriptedProvider([
+            ChatTurn(text='["campagna"]', stop_reason="end_turn"),
+            ChatTurn(text="Fatto", stop_reason="end_turn"),
+        ])
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            run_agent(
+                self.provider, [{"role": "user", "content": "come funziona il viaggio?"}], self.user, self.giocatore, self.profile
+            )
+
+        offered = {tool["name"] for tool in scripted.seen_tools[1]}
+        self.assertIn("guide_regole", offered)
+        self.assertIn("mappe_viaggio", offered)
+
+    def test_routing_mode_off_skips_the_router_even_with_many_tools(self):
+        self.profile.routing_mode = AIAgentProfile.ROUTING_OFF
+        self.profile.save(update_fields=["routing_mode"])
+        scripted = ScriptedProvider([ChatTurn(text="Fatto", stop_reason="end_turn")])
+        with patch("backend.ai.agent.chat_provider_for", return_value=scripted):
+            run_agent(self.provider, [{"role": "user", "content": "ciao"}], self.user, self.giocatore, self.profile)
+        self.assertEqual(len(scripted.seen_systems), 1)
 
 
 class AIAgentProfileTests(TestCase):

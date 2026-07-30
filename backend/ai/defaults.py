@@ -68,6 +68,10 @@ AI_PROVIDER_PRESETS = [
 ]
 
 AI_IMAGE_SIZES = [
+    # 640x1024 sono esattamente 655.360 pixel: il minimo fatturabile di
+    # gpt-image-2 e quindi il ritratto più economico ottenibile. Non esiste un
+    # 512x512: sta sotto la soglia e l'API lo rifiuta.
+    {"value": "640x1024", "label": "Ritratto 640x1024 (minimo)"},
     {"value": "1024x1024", "label": "Quadrata 1024"},
     {"value": "1024x1536", "label": "Verticale 1024x1536"},
     {"value": "1536x1024", "label": "Orizzontale 1536x1024"},

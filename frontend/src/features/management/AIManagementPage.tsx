@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getData, saveAIProvider } from "../../lib/api";
-import type { AIManagedAgent, AIManagedProvider, AIManagementData } from "../../lib/types";
+import { getData, saveAIProvider, saveNpcGeneration } from "../../lib/api";
+import type { AIManagedAgent, AIManagedProvider, AIManagementData, NpcGenerationConfig } from "../../lib/types";
 import { useApp } from "../../App";
 
 type ProviderDraft = {
@@ -11,7 +11,8 @@ type ProviderDraft = {
 };
 type AgentDraft = {
   name: string; description: string; instructions: string; minimumRole: "user" | "master" | "admin";
-  providerId: number | null; toolNames: string[]; maxIterations: number; isEnabled: boolean; isDefault: boolean;
+  providerId: number | null; toolNames: string[]; maxIterations: number; routingMode: "off" | "auto";
+  isEnabled: boolean; isDefault: boolean;
 };
 
 const providerDraft = (item: AIManagedProvider): ProviderDraft => ({
@@ -22,19 +23,25 @@ const providerDraft = (item: AIManagedProvider): ProviderDraft => ({
 const agentDraft = (item: AIManagedAgent): AgentDraft => ({
   name: item.name, description: item.description, instructions: item.instructions,
   minimumRole: item.minimumRole, providerId: item.providerId,
-  toolNames: item.configuredToolNames, maxIterations: item.maxIterations,
+  toolNames: item.configuredToolNames, maxIterations: item.maxIterations, routingMode: item.routingMode,
   isEnabled: item.isEnabled, isDefault: item.isDefault,
 });
 const emptyAgent = (): AgentDraft => ({
   name: "Nuovo agente", description: "", instructions: "", minimumRole: "user",
-  providerId: null, toolNames: [], maxIterations: 6, isEnabled: true, isDefault: false,
+  providerId: null, toolNames: [], maxIterations: 6, routingMode: "auto", isEnabled: true, isDefault: false,
 });
+
+const SCOPE_LABELS: Record<string, string> = {
+  personaggi: "Personaggi", cataloghi: "Cataloghi", mercato: "Mercato", campagna: "Campagna",
+  dadi: "Dadi", combattimento: "Combattimento", regole: "Regole", gestione: "Gestione",
+};
 
 export function AIManagementPage() {
   const { notify } = useApp();
   const queryClient = useQueryClient();
   const management = useQuery({ queryKey: ["aiManagement"], queryFn: () => getData<AIManagementData>("/api/ai/providers/") });
-  const [section, setSection] = useState<"agents" | "providers">("agents");
+  const [section, setSection] = useState<"agents" | "providers" | "npc">("agents");
+  const [npc, setNpc] = useState<NpcGenerationConfig | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
   const [selectedProviderId, setSelectedProviderId] = useState<number | null>(null);
   const [agent, setAgent] = useState<AgentDraft | null>(null);
@@ -58,6 +65,9 @@ export function AIManagementPage() {
       setProvider(providerDraft(selectedProvider));
     }
   }, [provider, selectedProvider, selectedProviderId]);
+  useEffect(() => {
+    if (!npc && management.data?.npcGeneration) setNpc({ ...management.data.npcGeneration });
+  }, [management.data, npc]);
 
   const apply = (data: AIManagementData, message: string) => {
     queryClient.setQueryData(["aiManagement"], data);
@@ -82,6 +92,14 @@ export function AIManagementPage() {
     onSuccess: (result) => apply(result.data, result.data.test?.message || "Prova completata."),
     onError: (error: Error) => notify(error.message, "error"),
   });
+  const saveNpc = useMutation({
+    mutationFn: (values: NpcGenerationConfig) => saveNpcGeneration(values),
+    onSuccess: (result) => {
+      apply(result.data, result.events[0]?.message || "Generazione personaggi aggiornata.");
+      setNpc(result.data.npcGeneration);
+    },
+    onError: (error: Error) => notify(error.message, "error"),
+  });
 
   if (management.isLoading) return <div className="page"><p className="empty-copy">Caricamento della configurazione…</p></div>;
   if (management.isError) return <div className="page"><p className="form-error">{(management.error as Error).message}</p></div>;
@@ -101,7 +119,44 @@ export function AIManagementPage() {
     <nav className="ai-tabs" aria-label="Configurazione AI">
       <button type="button" className={section === "agents" ? "active" : ""} onClick={() => setSection("agents")}>Agenti</button>
       <button type="button" className={section === "providers" ? "active" : ""} onClick={() => setSection("providers")}>Provider</button>
+      <button type="button" className={section === "npc" ? "active" : ""} onClick={() => setSection("npc")}>Generazione personaggi</button>
     </nav>
+
+    {section === "npc" && npc && <section className="ai-provider-form panel ai-npc-generation" data-component-type="panel" data-theme="parchment">
+      <header><div><p className="eyebrow">Strumento Nomi</p><h2>Generazione personaggi</h2></div></header>
+      <p className="muted-copy">
+        Il dossier di un PNG non costa quasi nulla; il ritratto sì. Queste impostazioni valgono per tutti i Master e
+        decidono quanto può costare una rigenerazione.
+      </p>
+      <div className="ai-provider-options">
+        <label>Formato del ritratto<select value={npc.portraitSize} onChange={(event) => setNpc({ ...npc, portraitSize: event.target.value })}>
+          {data.imageSizes.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
+        </select></label>
+        <label>Qualità<select value={npc.portraitQuality} onChange={(event) => setNpc({ ...npc, portraitQuality: event.target.value })}>
+          {data.portraitQualities.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
+        </select></label>
+      </div>
+      <p className="muted-copy">
+        640x1024 sono esattamente 655.360 pixel: il minimo che gpt-image-2 accetta, e quindi il ritratto più economico.
+        Un 512x512 non esiste, sta sotto la soglia. La qualità pesa più del formato: «bassa» costa circa un ottavo di «media».
+      </p>
+      <label>Stile del ritratto
+        <textarea rows={3} maxLength={400} value={npc.portraitStyle} onChange={(event) => setNpc({ ...npc, portraitStyle: event.target.value })} />
+        <small className="muted-copy">Coda aggiunta a ogni prompt di ritratto, dopo aspetto e ruolo del personaggio.</small>
+      </label>
+      <label className="ai-toggle">
+        <input type="checkbox" checked={npc.allowCampaignContext} onChange={(event) => setNpc({ ...npc, allowCampaignContext: event.target.checked })} />
+        <span>Consenti il contesto della campagna nel dossier</span>
+      </label>
+      <small className="muted-copy">
+        Con l'opzione attiva il Master può far leggere lore, fazioni e note condivise come sfondo. I permessi restano
+        quelli dell'utente: un giocatore non vedrebbe comunque i dati riservati al Master.
+      </small>
+      <div className="button-row">
+        <button type="button" className="button primary" disabled={saveNpc.isPending} onClick={() => saveNpc.mutate(npc)}>Salva</button>
+        {management.data?.npcGeneration && <button type="button" className="button secondary" onClick={() => setNpc({ ...management.data!.npcGeneration })}>Annulla modifiche</button>}
+      </div>
+    </section>}
 
     {section === "agents" && agent && (selectedAgent || isNewAgent) && <div className="ai-management-layout">
       <aside className="ai-provider-list" aria-label="Agenti configurati">
@@ -132,16 +187,29 @@ export function AIManagementPage() {
             {providers.filter((item) => item.purpose === "chat").map((item) => <option key={item.id} value={item.id}>{item.name} · {item.model}</option>)}
           </select></label>
           <label>Passi massimi<input type="number" min={1} max={12} value={agent.maxIterations} onChange={(event) => setAgent({ ...agent, maxIterations: Number(event.target.value) })} /></label>
+          <label>Instradamento<select value={agent.routingMode} onChange={(event) => setAgent({ ...agent, routingMode: event.target.value as AgentDraft["routingMode"] })}>
+            {data.routingModes.map((mode) => <option key={mode.value} value={mode.value}>{mode.label}</option>)}
+          </select>
+            <small className="muted-copy">Con «Automatico», una domanda che ha molti strumenti disponibili viene prima instradata a un sottoinsieme pertinente.</small>
+          </label>
         </div>
         <fieldset className="inline-admin-tool">
-          <legend>Permessi e ambiti di lettura</legend>
-          <div className="ai-tool-list">{data.tools.map((tool) => <label key={tool.name} className="ai-toggle">
-            <input type="checkbox" checked={agent.toolNames.includes(tool.name)} onChange={(event) => setAgent({
-              ...agent,
-              toolNames: event.target.checked ? [...agent.toolNames, tool.name] : agent.toolNames.filter((name) => name !== tool.name),
-            })} />
-            <span><strong>{tool.name}</strong> · {tool.scope} · {tool.minimumRole}<small className="muted-copy">{tool.description}</small></span>
-          </label>)}</div>
+          <legend>Permessi e ambiti di lettura ({agent.toolNames.length} selezionati)</legend>
+          {Object.entries(
+            data.tools.reduce<Record<string, typeof data.tools>>((groups, tool) => {
+              (groups[tool.scope] ||= []).push(tool);
+              return groups;
+            }, {})
+          ).map(([scope, tools]) => <div key={scope} className="ai-tool-scope-group">
+            <h4>{SCOPE_LABELS[scope] || scope}</h4>
+            <div className="ai-tool-list">{tools.map((tool) => <label key={tool.name} className="ai-toggle">
+              <input type="checkbox" checked={agent.toolNames.includes(tool.name)} onChange={(event) => setAgent({
+                ...agent,
+                toolNames: event.target.checked ? [...agent.toolNames, tool.name] : agent.toolNames.filter((name) => name !== tool.name),
+              })} />
+              <span><strong>{tool.name}</strong> · {tool.minimumRole}<small className="muted-copy">{tool.description}</small></span>
+            </label>)}</div>
+          </div>)}
         </fieldset>
         <label className="ai-toggle"><input type="checkbox" checked={agent.isEnabled} onChange={(event) => setAgent({ ...agent, isEnabled: event.target.checked })} /><span>Agente attivo</span></label>
         <label className="ai-toggle"><input type="checkbox" checked={agent.isDefault} onChange={(event) => setAgent({ ...agent, isDefault: event.target.checked })} /><span>Agente predefinito</span></label>

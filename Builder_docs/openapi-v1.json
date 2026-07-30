@@ -615,6 +615,34 @@
         ]
       }
     },
+    "/api/v1/names": {
+      "get": {
+        "operationId": "backend_api_v1_api_names",
+        "summary": "Names",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NameCatalogEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "description": "Catalogo dei bacini di nomi: nessun provider AI è richiesto per leggerlo.",
+        "tags": [
+          "names"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/management/shops": {
       "get": {
         "operationId": "backend_api_v1_api_managed_shops",
@@ -2148,6 +2176,7 @@
                     "market.shop.regenerate": "#/components/schemas/MarketShopRegenerateActionSchema",
                     "market.shop.save": "#/components/schemas/MarketShopSaveActionSchema",
                     "market.shop.state": "#/components/schemas/MarketShopStateActionSchema",
+                    "names.generate": "#/components/schemas/NameGenerateActionSchema",
                     "notes.updateSection": "#/components/schemas/NoteUpdateActionSchema",
                     "skills.archive": "#/components/schemas/SkillArchiveActionSchema",
                     "skills.configureCharacterActions": "#/components/schemas/SkillConfigureCharacterActionsActionSchema",
@@ -2456,6 +2485,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/LoreTimelineArchiveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/NameGenerateActionSchema"
                   }
                 ],
                 "title": "Command"
@@ -3671,6 +3703,11 @@
             "title": "Eldereffects",
             "type": "array"
           },
+          "specialRules": {
+            "default": "",
+            "title": "Specialrules",
+            "type": "string"
+          },
           "imageUrl": {
             "default": "",
             "title": "Imageurl",
@@ -3875,6 +3912,11 @@
           "zaino": {
             "default": "",
             "title": "Zaino",
+            "type": "string"
+          },
+          "furto": {
+            "default": "",
+            "title": "Furto",
             "type": "string"
           },
           "combat": {
@@ -5125,6 +5167,11 @@
             "title": "Eldereffects",
             "type": "array"
           },
+          "specialRules": {
+            "default": "",
+            "title": "Specialrules",
+            "type": "string"
+          },
           "weaponCategory": {
             "default": "",
             "title": "Weaponcategory",
@@ -5382,6 +5429,55 @@
           "data"
         ],
         "title": "LoreEnvelopeSchema",
+        "type": "object"
+      },
+      "NameCatalogEnvelopeSchema": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EventSchema"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "title": "Errors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "requestId",
+          "data"
+        ],
+        "title": "NameCatalogEnvelopeSchema",
         "type": "object"
       },
       "ManagementEnvelopeSchema": {
@@ -8097,6 +8193,18 @@
               }
             ],
             "title": "Lore"
+          },
+          "generatedName": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generatedname"
           }
         },
         "title": "ActionDataSchema",
@@ -12676,6 +12784,69 @@
           "direction"
         ],
         "title": "MoveEffectPayloadSchema",
+        "type": "object"
+      },
+      "NameGenerateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "names.generate",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/NameGeneratePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "NameGenerateActionSchema",
+        "type": "object"
+      },
+      "NameGeneratePayloadSchema": {
+        "description": "`race` basta alla modalità rapida; `cultureId` serve solo quando il Master\nsceglie una cultura diversa da quella omonima della razza.",
+        "properties": {
+          "race": {
+            "default": "",
+            "title": "Race",
+            "type": "string"
+          },
+          "cultureId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultureid"
+          },
+          "gender": {
+            "default": "casuale",
+            "title": "Gender",
+            "type": "string"
+          }
+        },
+        "title": "NameGeneratePayloadSchema",
         "type": "object"
       },
       "NoteUpdateActionSchema": {

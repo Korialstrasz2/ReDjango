@@ -84,6 +84,7 @@ PERSONAGGIO_TOT_KEYS = (
 
 NOTE_SECTION_FIELDS = (
     "zaino",
+    "furto",
     "combat",
     "competenze",
     "crafting",
@@ -394,6 +395,9 @@ class Equip(V2Model):
 class Note(V2Model):
     nome = models.CharField(max_length=160)
     zaino = models.TextField(blank=True, default="")
+    # Scasso e borseggio restano regole da tavolo: cariche del set, usura e
+    # poteri particolari li annota il giocatore invece di essere tracciati.
+    furto = models.TextField(blank=True, default="")
     combat = models.TextField(blank=True, default="")
     competenze = models.TextField(blank=True, default="")
     crafting = models.TextField(blank=True, default="")

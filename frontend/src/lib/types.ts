@@ -359,7 +359,7 @@ export type DiceRoll = {
   rolledAt: string;
 };
 
-export type NoteSection = "zaino" | "combat" | "competenze" | "crafting" | "viaggio" | "appunti" | "missioni" | "background";
+export type NoteSection = "zaino" | "furto" | "combat" | "competenze" | "crafting" | "viaggio" | "appunti" | "missioni" | "background";
 
 export type NoteSections = Record<NoteSection, string>;
 
@@ -482,6 +482,7 @@ export type AIAgentSummary = {
   model: string;
   toolNames: string[];
   maxIterations: number;
+  routingMode: "off" | "auto";
   isEnabled: boolean;
   isDefault: boolean;
 };
@@ -499,6 +500,14 @@ export type AIWorkspaceData = {
   tools: AIToolSummary[];
   canManage: boolean;
   ready: boolean;
+  npcGeneration: NpcGenerationConfig;
+};
+
+export type NpcGenerationConfig = {
+  portraitSize: string;
+  portraitQuality: string;
+  portraitStyle: string;
+  allowCampaignContext: boolean;
 };
 
 export type AIManagementData = {
@@ -508,10 +517,77 @@ export type AIManagementData = {
   purposes: Array<{ value: string; label: string }>;
   authStrategies: Array<{ value: string; label: string }>;
   roles: Array<{ value: "user" | "master" | "admin"; label: string }>;
+  routingModes: Array<{ value: "off" | "auto"; label: string }>;
   tools: AIToolSummary[];
   canManage: boolean;
   canManageCredentials: boolean;
   test?: { ok: boolean; message: string };
+  npcGeneration: NpcGenerationConfig;
+  portraitQualities: Array<{ value: string; label: string }>;
+  imageSizes: Array<{ value: string; label: string }>;
+};
+
+/** Il catalogo dei bacini di nomi: si legge senza alcun provider AI configurato. */
+export type NameCatalogData = {
+  races: NameRaceEntry[];
+  genders: Array<{ value: NameGender; label: string }>;
+  cultureCount: number;
+};
+
+export type NameGender = "maschile" | "femminile" | "casuale";
+
+export type NameRaceEntry = {
+  race: string;
+  slug: string;
+  playable: boolean;
+  defaultCulture: string;
+  cultures: NameCultureEntry[];
+};
+
+export type NameCultureEntry = {
+  id: number;
+  name: string;
+  slug: string;
+  race: string;
+  description: string;
+  maleCount: number;
+  femaleCount: number;
+  surnameCount: number;
+  usable: boolean;
+};
+
+export type GeneratedName = {
+  name: string;
+  firstName: string;
+  surname: string;
+  gender: Exclude<NameGender, "casuale">;
+  requestedGender: NameGender;
+  race: string;
+  culture: string;
+  cultureId: number;
+  cultureDescription: string;
+  alreadyUsed: boolean;
+};
+
+export type NpcDossierDraft = {
+  ruolo: string;
+  aspetto: string;
+  personalita: string;
+  voce: string;
+  gancio: string;
+  ganci: string[];
+};
+
+export type NpcDossierResult = {
+  name: string;
+  draft: NpcDossierDraft;
+  description: string;
+  subject: Record<string, string>;
+  contextUsed: boolean;
+  contextTrace: Array<{ name: string; ok: boolean; characters: number }>;
+  contextCharacters: number;
+  provider: { id: number; name: string; model: string };
+  portrait: { size: string; quality: string; style: string };
 };
 
 /** Una voce della conversazione nella forma neutra che il backend rimanda indietro. */

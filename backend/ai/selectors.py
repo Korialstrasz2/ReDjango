@@ -7,9 +7,17 @@ from typing import Any
 from backend.core.models import Giocatore
 from backend.core.security import effective_role, get_or_create_giocatore_for_user, has_minimum_role
 
-from .defaults import image_generation_options
+from .defaults import AI_IMAGE_SIZES, image_generation_options
 from .models import AIAgentProfile, AIProvider
+from .npc_config import npc_generation_config
 from .tools import AI_TOOLS, tool_is_available
+
+
+PORTRAIT_QUALITY_LABELS = (
+    ("low", "Bassa · la più economica"),
+    ("medium", "Media"),
+    ("high", "Alta · la più costosa"),
+)
 
 
 def can_use_ai(user, giocatore: Giocatore | None = None) -> bool:
@@ -104,6 +112,7 @@ def serialize_agent(agent: AIAgentProfile, user, giocatore: Giocatore, *, manage
         "providerName": agent.provider.name if agent.provider else "",
         "model": agent.provider.model if agent.provider else "",
         "toolNames": [tool.name for tool in tools], "maxIterations": agent.max_iterations,
+        "routingMode": agent.routing_mode,
         "isEnabled": agent.is_enabled, "isDefault": agent.is_default,
     }
     if management:
@@ -133,6 +142,7 @@ def ai_workspace_payload(user, giocatore: Giocatore) -> dict[str, Any]:
         "imageProviders": [serialize_provider(entry, include_management=False) for entry in images],
         "tools": [tool_payload(tool) for tool in AI_TOOLS if tool_is_available(tool, user, giocatore)],
         "canManage": can_manage_ai(user, giocatore), "ready": bool(agents),
+        "npcGeneration": npc_generation_config(),
     }
 
 
@@ -146,7 +156,11 @@ def ai_management_payload(user, giocatore: Giocatore) -> dict[str, Any]:
         "purposes": [{"value": value, "label": label} for value, label in AIProvider.PURPOSE_CHOICES],
         "authStrategies": [{"value": value, "label": label} for value, label in AIProvider.AUTH_CHOICES],
         "roles": [{"value": value, "label": label} for value, label in Giocatore.ROLE_CHOICES],
+        "routingModes": [{"value": value, "label": label} for value, label in AIAgentProfile.ROUTING_CHOICES],
         "tools": [tool_payload(tool) for tool in AI_TOOLS],
         "canManage": can_manage_ai(user, giocatore),
         "canManageCredentials": can_manage_ai_credentials(user, giocatore),
+        "npcGeneration": npc_generation_config(),
+        "portraitQualities": [{"value": value, "label": label} for value, label in PORTRAIT_QUALITY_LABELS],
+        "imageSizes": [dict(entry) for entry in AI_IMAGE_SIZES],
     }

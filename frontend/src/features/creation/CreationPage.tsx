@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
@@ -47,6 +47,10 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
   const [setItemId, setSetItemId] = useState<number | null>(data.rules.defaultSetId ?? null);
   const [lastBrew, setLastBrew] = useState<AlchemyBrewResult | null>(null);
   const [lastExtraction, setLastExtraction] = useState<AlchemyCatalogReagent | null>(null);
+  // The last slot is reachable only through powers or similar: warn for a moment when it gets used.
+  const [lastSlotHint, setLastSlotHint] = useState(false);
+  const lastSlotHintTimeout = useRef<number | null>(null);
+  useEffect(() => () => { if (lastSlotHintTimeout.current) window.clearTimeout(lastSlotHintTimeout.current); }, []);
 
   const family = data.potionFamilies.find((entry) => entry.color === potionColor);
   useEffect(() => {
@@ -108,6 +112,11 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
       return;
     }
     setIngredients((current) => [...current, { color, level }]);
+    if (ingredients.length === data.rules.maxIngredients - 1) {
+      setLastSlotHint(true);
+      if (lastSlotHintTimeout.current) window.clearTimeout(lastSlotHintTimeout.current);
+      lastSlotHintTimeout.current = window.setTimeout(() => setLastSlotHint(false), 3000);
+    }
   };
 
   const stockByColor = COLOR_ORDER.map((color) => ({
@@ -185,12 +194,14 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
       <div className="alchemy-slots" aria-label="Reagenti sul banco">
         {Array.from({ length: data.rules.maxIngredients }, (_, index) => {
           const ingredient = ingredients[index];
+          const epic = index === data.rules.maxIngredients - 1 ? " alchemy-slot-epic" : "";
           return ingredient
-            ? <button type="button" className={`alchemy-slot filled color-${ingredient.color}`} key={index} onClick={() => setIngredients((current) => current.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Rimuovi reagente ${ingredient.color} livello ${ingredient.level}`}>
+            ? <button type="button" className={`alchemy-slot filled color-${ingredient.color}${epic}`} key={index} onClick={() => setIngredients((current) => current.filter((_, itemIndex) => itemIndex !== index))} aria-label={`Rimuovi reagente ${ingredient.color} livello ${ingredient.level}`}>
                 <i aria-hidden="true" /><strong>Lv {ingredient.level}</strong><small>Rimuovi</small>
               </button>
-            : <div className="alchemy-slot" key={index}><span>{index + 1}</span><small>Vuoto</small></div>;
+            : <div className={`alchemy-slot${epic}`} key={index}><span>{index + 1}</span><small>Vuoto</small></div>;
         })}
+        {lastSlotHint && <p className="alchemy-slot-hint" role="status">Solo se possibile da poteri o altro</p>}
       </div>
       <fieldset className="alchemy-color-choice">
         <legend>Famiglia della pozione</legend>

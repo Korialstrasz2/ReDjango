@@ -14,6 +14,18 @@
       "port": 8013
     },
     {
+      "name": "redjango-verify2",
+      "runtimeExecutable": "venv/Scripts/python.exe",
+      "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8023", "--noreload"],
+      "port": 8023
+    },
+    {
+      "name": "redjango-verify3",
+      "runtimeExecutable": "venv/Scripts/python.exe",
+      "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8033", "--noreload"],
+      "port": 8033
+    },
+    {
       "name": "frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "frontend", "run", "dev"],

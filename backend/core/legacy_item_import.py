@@ -82,6 +82,11 @@ COMPETENCE_TARGETS = {
     for definition in COMPETENCE_DEFINITIONS
 }
 
+# Elder consistently doubles the m in Camuffare — in the effect text and in the
+# `+skillcammuffare` type tag alike. Without this spelling, the 20th of the 21
+# competences is the only one whose item bonuses never import.
+COMPETENCE_TARGETS["cammuffare"] = "competenza.camuffare"
+
 
 def clean_legacy_value(value: Any) -> str:
     cleaned = str(value or "").strip()
@@ -332,8 +337,12 @@ def repair_imported_item_effects(*, apply: bool = False) -> dict[str, int]:
         conversion = dict(metadata.get("effectConversion") or {})
         conversion.update(converted=len(converted), retainedForReview=len(retained))
         metadata["effectConversion"] = conversion
+        # Imported at module scope this would be circular: `item_special` reads
+        # `convert_effect` from here to keep one definition of "convertible".
+        from backend.core.item_special import unreviewed_descriptive_effects
+
         reasons = [reason for reason in metadata.get("specialReasons", []) if reason != "effetti_descrittivi"]
-        if retained:
+        if unreviewed_descriptive_effects(item):
             reasons.append("effetti_descrittivi")
         metadata["specialReasons"] = reasons
         item.effects = [*existing, *missing]

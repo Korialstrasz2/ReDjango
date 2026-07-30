@@ -630,7 +630,7 @@ class HierarchicalSettingsTests(TestCase):
         self.assertFalse(settings["accessibility.text_color_aware_outline"]["value"])
         self.assertEqual(
             [choice["value"] for choice in settings["accessibility.contrast_outline"]["choices"]],
-            ["off", "soft", "strong"],
+            ["off", "hint", "soft", "strong"],
         )
         self.assertEqual(settings["accessibility.contrast_outline"]["value"], "off")
         self.assertEqual(
@@ -649,7 +649,7 @@ class HierarchicalSettingsTests(TestCase):
                 rejected = self.post_settings({"appearance.font_scale": scale}, request_id=f"font-{scale}")
                 self.assertEqual(rejected.status_code, 400)
 
-        for level in ("soft", "strong", "off"):
+        for level in ("off", "hint", "soft", "strong"):
             with self.subTest(level=level):
                 outlined = self.post_settings(
                     {"accessibility.contrast_outline": level},
@@ -697,8 +697,10 @@ class HierarchicalSettingsTests(TestCase):
                 "shortcuts.settings": "Alt+I",
                 "shortcuts.journal": "Alt+J",
                 "shortcuts.dice": "Alt+R",
+                "shortcuts.theft": "Alt+F",
                 "shortcuts.audio": "Alt+U",
                 "shortcuts.ai": "Alt+H",
+                "shortcuts.names": "Alt+P",
                 "shortcuts.tools": "Alt+T",
             },
         )

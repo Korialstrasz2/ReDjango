@@ -53,7 +53,7 @@ export const useApp = () => {
 
 const VALID_FONTS = new Set(["system", "serif", "book", "humanist", "accessible"]);
 const VALID_DENSITIES = new Set(["spacious", "comfortable", "compact", "condensed"]);
-const VALID_TEXT_OUTLINES = new Set(["off", "soft", "strong"]);
+const VALID_TEXT_OUTLINES = new Set(["off", "hint", "soft", "strong"]);
 const TEXT_OUTLINE_COLOR_PROPERTY = "--text-aware-outline-color";
 const outlinedTextElements = new Set<HTMLElement>();
 let textOutlineObserver: MutationObserver | null = null;
@@ -518,7 +518,34 @@ function VariableReferenceBlock({ groups }: { groups: GuideVariableGroup[] }) {
 
 function GuidesPage() {
   const { bootstrap } = useApp();
-  const [selected, setSelected] = useState<Guide | undefined>(bootstrap.guides[0]);
+  const location = useLocation();
+  // Gli strumenti collegano una sezione precisa con `?guida=<nome>#<ancora>`:
+  // la guida non vive nella rotta, quindi va scelta prima di cercare l'ancora.
+  const requested = bootstrap.guides.find((guide) => guide.name === new URLSearchParams(location.search).get("guida"));
+  const [selected, setSelected] = useState<Guide | undefined>(requested || bootstrap.guides[0]);
+  const readerRef = useRef<HTMLElement>(null);
+  useEffect(() => { if (requested) setSelected(requested); }, [requested]);
+  useEffect(() => {
+    const anchorId = decodeURIComponent(location.hash.replace("#", ""));
+    if (!anchorId) return;
+    // Il corpo Elder è HTML grezzo lungo migliaia di pixel: font e immagini
+    // continuano a spostare l'ancora dopo il primo render, quindi si riprova a
+    // intervalli brevi finché lo scorrimento non la porta davvero in cima.
+    let timer = 0;
+    let attempts = 0;
+    const settle = () => {
+      const target = readerRef.current?.querySelector(`#${CSS.escape(anchorId)}`);
+      (window as unknown as { __anchorDebug: unknown[] }).__anchorDebug ??= [];
+      (window as unknown as { __anchorDebug: unknown[] }).__anchorDebug.push({ attempts, anchorId, reader: !!readerRef.current, target: !!target, top: target ? Math.round(target.getBoundingClientRect().top) : null });
+      if (target) {
+        target.scrollIntoView({ block: "start" });
+        if (Math.abs(target.getBoundingClientRect().top) < 120) return;
+      }
+      if ((attempts += 1) < 20) timer = window.setTimeout(settle, 50);
+    };
+    settle();
+    return () => window.clearTimeout(timer);
+  }, [location.hash, selected]);
   // The Elder rules are injected as raw HTML, so cross-guide links arrive as
   // anchors carrying the target guide name instead of React elements.
   const openLinkedGuide = (event: MouseEvent<HTMLElement>) => {
@@ -540,7 +567,7 @@ function GuidesPage() {
     if (block.type === "warning") return <aside className="callout guide-warning" key={index}><strong>{block.title}</strong><p>{renderGuideText(block.text)}</p></aside>;
     return <p key={index}>{renderGuideText(block.text)}</p>;
   };
-  return <div className="page"><PageHeader eyebrow="Conoscenza" title="Guide" /><div className="selection-layout guide-layout"><aside className="panel guide-index">{bootstrap.guides.map((guide) => <button className={selected?.name === guide.name ? "active" : ""} onClick={() => setSelected(guide)} key={guide.name}><strong>{guide.name}</strong><span>{guide.category}</span></button>)}</aside><article className="panel guide-reader"><p className="eyebrow">{selected?.category}</p><h2>{selected?.name}</h2>{selected?.content.map(renderBlock)}</article></div></div>;
+  return <div className="page"><PageHeader eyebrow="Conoscenza" title="Guide" /><div className="selection-layout guide-layout"><aside className="panel guide-index">{bootstrap.guides.map((guide) => <button className={selected?.name === guide.name ? "active" : ""} onClick={() => setSelected(guide)} key={guide.name}><strong>{guide.name}</strong><span>{guide.category}</span></button>)}</aside><article className="panel guide-reader" ref={readerRef}><p className="eyebrow">{selected?.category}</p><h2>{selected?.name}</h2>{selected?.content.map(renderBlock)}</article></div></div>;
 }
 
 type MediaConfirmState =

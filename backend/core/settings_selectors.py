@@ -21,6 +21,8 @@ ADMIN_MANAGED_SETTING_KEYS = frozenset({
     "mercato.locations",
     "mercato.shop_types",
     "mercato.generator_rules",
+    # Amministrata dal pannello Generazione personaggi in Gestione AI.
+    "ai.npc_generation",
     *BACKUP_SETTING_KEYS,
 })
 GLOBAL_EDITABLE_SETTING_KEYS = frozenset({

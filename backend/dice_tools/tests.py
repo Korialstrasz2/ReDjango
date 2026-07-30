@@ -178,7 +178,7 @@ class QuickToolsApiTests(TestCase):
     def test_note_sections_are_shared_with_the_character_sheet_and_validate_input(self):
         initial = self.client.get(f"/api/v1/characters/{self.character.id}/notes")
         self.assertEqual(initial.status_code, 200)
-        self.assertEqual(set(initial.json()["data"]["sections"]), {"zaino", "combat", "competenze", "crafting", "viaggio", "appunti", "missioni", "background"})
+        self.assertEqual(set(initial.json()["data"]["sections"]), {"zaino", "furto", "combat", "competenze", "crafting", "viaggio", "appunti", "missioni", "background"})
         other_zaino = self.other_character.note.zaino
 
         updated = self.command("notes.updateSection", {"characterId": self.character.id, "section": "zaino", "content": "Tre sigilli recuperati. Portare corde e torce."})

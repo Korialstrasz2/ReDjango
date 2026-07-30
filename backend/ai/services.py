@@ -2,18 +2,20 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import transaction
 from django.utils.text import slugify
 
 from backend.core.api import ApiError
-from backend.core.models import Giocatore
+from backend.core.models import Giocatore, SettingDefinition
 from backend.media_library.models import UploadedImage
 from backend.media_library.services import create_uploaded_image
 
 from .agent import run_agent
 from .defaults import image_generation_options
 from .models import AIAgentProfile, AIProvider
+from .npc_config import NPC_GENERATION_KEY, validate_npc_generation
 from .providers import image_provider_for
 from .providers.images import decode_image
 from .selectors import can_manage_ai, can_manage_ai_credentials, default_provider
@@ -274,6 +276,9 @@ def save_agent(user, giocatore: Giocatore, values: dict) -> AIAgentProfile:
         raise ApiError("ai.iterations_invalid", "Il limite deve essere un numero.", "maxIterations") from exc
     if not 1 <= max_iterations <= 12:
         raise ApiError("ai.iterations_invalid", "Il limite deve essere compreso tra 1 e 12.", "maxIterations")
+    routing_mode = str(values.get("routingMode", agent.routing_mode))
+    if routing_mode not in dict(AIAgentProfile.ROUTING_CHOICES):
+        raise ApiError("ai.routing_mode_invalid", "Modalità di instradamento non valida.", "routingMode")
     tool_names = values.get("toolNames", agent.allowed_tools)
     if not isinstance(tool_names, list) or any(name not in AI_TOOLS_BY_NAME for name in tool_names):
         raise ApiError("ai.tools_invalid", "La selezione degli strumenti non è valida.", "toolNames")
@@ -290,12 +295,77 @@ def save_agent(user, giocatore: Giocatore, values: dict) -> AIAgentProfile:
     agent.provider = provider
     agent.allowed_tools = list(dict.fromkeys(tool_names))
     agent.max_iterations = max_iterations
+    agent.routing_mode = routing_mode
     agent.is_enabled = bool(values.get("isEnabled", agent.is_enabled))
     if values.get("isDefault"):
         AIAgentProfile.objects.exclude(pk=agent.pk).update(is_default=False)
         agent.is_default = True
     agent.save()
     return agent
+
+
+def generate_npc_portrait(user, giocatore: Giocatore, payload: dict) -> UploadedImage:
+    """Il ritratto di un PNG: passo separato ed esplicito, mai automatico.
+
+    Formato e qualità arrivano dalla configurazione, non dal client: è così che
+    una rigenerazione non può costare più di quanto il Master ha deciso.
+    """
+
+    from .npc_config import npc_generation_config
+    from .npc_dossier import portrait_prompt
+
+    config = npc_generation_config()
+    title = str(payload.get("name") or "").strip()[:180]
+    if not title:
+        raise ApiError("ai.portrait_name_required", "Serve il nome del personaggio.", "name")
+    draft = payload.get("draft") if isinstance(payload.get("draft"), dict) else {}
+    subject = payload.get("subject") if isinstance(payload.get("subject"), dict) else {}
+    prompt = portrait_prompt(draft, subject, config["portraitStyle"])
+    if not prompt:
+        raise ApiError(
+            "ai.portrait_prompt_empty",
+            "Genera prima un dossier: il ritratto nasce dal campo aspetto.",
+            "draft",
+        )
+    return generate_image(
+        user,
+        giocatore,
+        {
+            "prompt": prompt,
+            "providerId": payload.get("providerId"),
+            "size": config["portraitSize"],
+            "quality": config["portraitQuality"],
+            "title": title,
+            "usageType": "character_portrait",
+            "group": "Ritratti PNG",
+        },
+    )
+
+
+@transaction.atomic
+def save_npc_generation(user, giocatore: Giocatore, values: dict) -> dict[str, Any]:
+    """Salva la configurazione dei ritratti PNG, rifiutando i formati illegali."""
+
+    _require_manager(user, giocatore)
+    try:
+        config = validate_npc_generation(values)
+    except DjangoValidationError as error:
+        details = error.message_dict if hasattr(error, "message_dict") else {"values": error.messages}
+        field, messages = next(iter(details.items()))
+        raise ApiError("ai.npc_generation_invalid", str(messages[0]), field, 400) from error
+
+    setting = SettingDefinition.objects.filter(
+        key=NPC_GENERATION_KEY, active=True, archived_at__isnull=True
+    ).first()
+    if setting is None:
+        raise ApiError(
+            "ai.npc_generation_missing",
+            "Manca la configurazione «Generazione personaggi»: esegui seed_minimum_data.",
+            status=409,
+        )
+    setting.value = config
+    setting.save(update_fields=["value", "updated_at"])
+    return config
 
 
 def test_provider(user, giocatore: Giocatore, provider_id: object) -> dict[str, Any]:

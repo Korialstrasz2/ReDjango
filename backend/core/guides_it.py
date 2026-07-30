@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import Any
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-07-29-variable-reference-ui-v2"
+V2_GUIDE_DEFAULT_VERSION = "2026-07-30-nuovo-pg-v1"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
 ITEM_COMPENDIUM_GUIDE_NAME = "Oggetti"
+NEW_CHARACTER_GUIDE_NAME = "Creare un nuovo PG"
 
 RACE_GUIDE_RACES = (
     "Bosmer", "Dunmer", "Orsimer", "Altmer", "Imperiale", "Bretone",
@@ -591,8 +592,165 @@ def weapon_catalogue_guide_blocks(weapon_types: list[Mapping[str, Any]]) -> list
     return blocks
 
 
-def _guide_content(*blocks: dict) -> str:
-    return json.dumps(list(blocks), ensure_ascii=False, indent=2)
+def _race_modifier_text(modifiers: Mapping[str, Any]) -> str:
+    """Rende leggibili i modificatori di razza: prima i bonus, poi i malus."""
+    bonuses, penalties = [], []
+    for key, value in modifiers.items():
+        label = CHARACTERISTIC_LABELS.get(key, key.replace("_", " ").capitalize())
+        if isinstance(value, (int, float)) and value < 0:
+            penalties.append(f"{label} {value}")
+        else:
+            bonuses.append(f"{label} +{value}")
+    return "; ".join(filter(None, ("; ".join(bonuses), "; ".join(penalties)))) or "Nessun modificatore"
+
+
+def _race_entries() -> list[dict[str, str]]:
+    entries = []
+    for race, definition in RACE_CATALOG.items():
+        trait = definition.get("trait")
+        trait_note = str((trait if isinstance(trait, dict) else {"note": trait or ""}).get("note") or "")
+        subraces = ", ".join(definition.get("subraces") or {}) or "nessuna sottorazza"
+        entries.append(
+            {
+                "title": race,
+                "meta": _race_modifier_text(definition.get("modifiers") or {}),
+                "note": f"Tratto razziale: {trait_note} Sottorazze: {subraces}.",
+            }
+        )
+    return entries
+
+
+def nuovo_pg_guide_blocks() -> list[dict[str, Any]]:
+    """Procedura di creazione di un personaggio giocabile.
+
+    Le razze sono generate da RACE_CATALOG: la guida non può descrivere
+    modificatori diversi da quelli che il sistema applica davvero.
+    """
+    preferred_example = json.dumps(
+        {
+            "nome": PREFERRED_CHARACTERISTIC_EFFECT_NAME,
+            "origine": "Creazione personaggio",
+            "operazioni": [
+                {
+                    "bersaglio": "agilita",
+                    "operazione": "add",
+                    "valore": PREFERRED_CHARACTERISTIC_FORMULA,
+                }
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+    return [
+        {
+            "type": "paragraph",
+            "text": (
+                "Un personaggio nuovo nasce al livello 1, con tutte e nove le caratteristiche al valore "
+                "base 10, zero Punti Esperienza in ogni riserva, nessuna competenza, nessuna abilità e "
+                "nessuna moneta. La scheda è volutamente vuota: tutto il resto si guadagna giocando. "
+                "Alla creazione si decidono soltanto identità, razza, sottorazza e caratteristica preferita."
+            ),
+        },
+        {"type": "heading", "text": "Identità"},
+        {
+            "type": "list",
+            "items": [
+                "Nome: il nome con cui il personaggio compare in tutta l'applicazione. Si può cambiare dopo.",
+                "Nome interno: identificativo tecnico univoco, generato dal sistema e mai mostrato al tavolo. Non va scelto a mano.",
+                "Tipologia: sempre «giocabile» per un PG. Le altre tipologie appartengono a NPC, nemici, evocazioni e unità generate.",
+                "Età e sesso: liberi, senza effetti meccanici.",
+                "Campagna: il personaggio entra nella campagna attiva del giocatore che lo crea.",
+                "Ritratto: facoltativo alla creazione, si assegna in seguito dalla libreria immagini.",
+                "Dettagli personaggio: descrizione breve. Il background lungo va nella sezione Background del diario.",
+            ],
+        },
+        {
+            "type": "callout",
+            "title": "La terza razza non si usa alla creazione",
+            "text": (
+                "La scheda espone razza_1, razza_2 e razza_3. Alla creazione si compilano solo le prime due: "
+                "razza_1 è la razza, razza_2 è la sottorazza. Il terzo campo resta libero per casi particolari "
+                "decisi dal Master e non viene letto dal calcolo automatico dei bonus razziali."
+            ),
+        },
+        {"type": "heading", "text": "Razza e sottorazza"},
+        {
+            "type": "paragraph",
+            "text": (
+                "La razza determina i modificatori alle caratteristiche e un tratto razziale; la sottorazza "
+                "aggiunge una specializzazione, a volte puramente narrativa e a volte con un effetto numerico. "
+                "Ogni razza ha le proprie sottorazze: una sottorazza non appartenente alla razza scelta viene "
+                "rifiutata dalla creazione."
+            ),
+        },
+        {"type": "entries", "items": _race_entries()},
+        {
+            "type": "callout",
+            "title": "I bonus razziali sono automatici: non ricrearli a mano",
+            "text": (
+                "Questa è la differenza più importante rispetto a Elder Django. Là il regolamento chiedeva di "
+                "annotare i bonus razziali e di costruirli a mano come effetti. In ReDjango il sistema li applica "
+                "da solo non appena razza e sottorazza sono impostate: modificatori della razza, tratto razziale "
+                "ed effetto della sottorazza compaiono nella scheda senza che nessuno li scriva. Creare a mano gli "
+                "stessi effetti raddoppia ogni bonus. Si creano a mano solo gli effetti che il sistema non conosce."
+            ),
+        },
+        {"type": "heading", "text": "Caratteristica preferita"},
+        {
+            "type": "paragraph",
+            "text": (
+                "È l'unica scelta meccanica della creazione, e va fatta subito. Si sceglie una fra Forza, "
+                "Resistenza, Velocità, Agilità, Intelligenza, Concentrazione, Personalità, Saggezza e Fortuna: "
+                "la creazione genera un effetto permanente che aggiunge "
+                f"«{PREFERRED_CHARACTERISTIC_FORMULA}» a quella caratteristica, cioè +1 ogni cinque livelli."
+            ),
+        },
+        {"type": "code", "language": "json", "text": preferred_example},
+        {
+            "type": "callout",
+            "title": "In ReDjango il bonus di livello lo ricevono tutte le caratteristiche",
+            "text": (
+                "Il profilo Formule_base applica già automaticamente la formula di Livello a tutte e nove le "
+                "caratteristiche, più un bonus derivato dalla Fortuna alle altre otto. La caratteristica preferita "
+                "si somma a questo: la caratteristica scelta cresce quindi al doppio della velocità delle altre. "
+                "In Elder Django il bonus di livello esisteva solo sulla preferita. Chi converte una scheda Elder "
+                "deve saperlo: i numeri non coincideranno."
+            ),
+        },
+        {
+            "type": "warning",
+            "title": "Differenze rispetto a Elder Django",
+            "text": (
+                "La creazione ReDjango non chiede una classe o un archetipo, che in Elder esistevano nel wizard "
+                "AI. Non assegna un budget iniziale di Punti Esperienza: si parte da zero e non da un livello "
+                "concordato. I bonus razziali sono automatici invece che manuali. La caratteristica preferita "
+                "resta una scelta, ma si somma al bonus di livello globale invece di sostituirlo."
+            ),
+        },
+        {"type": "heading", "text": "Dopo la creazione"},
+        {
+            "type": "list",
+            "items": [
+                "Perk: uno minore a ogni livello, uno maggiore ai livelli pari. Si annotano come effetti personalizzati.",
+                "Punti Esperienza: quattro riserve (generali, rossi, verdi, blu) per sbloccare le abilità dalla pagina Abilità.",
+                "Competenze: due barre da 0 a 7 per competenza, pagate con i PE competenze dalla pagina Competenze.",
+                "Diario: nove sezioni (zaino, furto, combat, competenze, crafting, viaggio, appunti, missioni, background) dalla scheda del personaggio.",
+                "Equipaggiamento e monete: si assegnano dalla scheda e dal Mercato; un PG nuovo parte senza nulla.",
+                "Soglie di critico (crit_min, crit_nor, crit_mag) e bottoni combat: si configurano dalla scheda prima del primo combattimento.",
+                "Borsa alchemica: si riempie giocando; i moltiplicatori dipendono da abilità ed equipaggiamento.",
+            ],
+        },
+        {
+            "type": "callout",
+            "title": "Convenzione degli effetti manuali",
+            "text": (
+                "Gli effetti creati a mano vanno raggruppati per bersaglio (un effetto «+ attacco», un effetto "
+                "«+ pf») e devono dichiarare la provenienza nel campo origine: «Perk minore», «Manuale Elder», "
+                "«Abilità: Vitale 3», «Creazione personaggio». È la convenzione che seguono tutte le schede "
+                "importate da Elder Django ed è l'unico modo per capire, mesi dopo, da dove arrivi un +1."
+            ),
+        },
+    ]
 
 
 def _difference_warning(text: str) -> dict[str, str]:
@@ -608,7 +766,7 @@ _ELDER_RULES_PATH = Path(__file__).with_name("regole_varie_elder.html")
 _RULE_STATUS_NOTES: dict[str | tuple[str, str], tuple[str, str]] = {
     "INDICE": ("implemented", "INDICE ORIGINALE — I collegamenti restano interni a questa guida e portano alle sezioni Elder sottostanti."),
     "Critici": ("partial", "PARZIALMENTE IMPLEMENTATO — I critici sono risolti: le soglie crit_min/crit_nor/crit_mag danno +40%/+60%/+80% di danno, corretti dalla Fortuna e dalla differenza d’attacco. NON ANCORA IMPLEMENTATI gittata, malus in mischia e attacchi di opportunità, che restano regole manuali; la ricarica delle armi a distanza è invece gestita dalla postazione."),
-    "SCASSINARE e BORSEGGIARE": ("missing", "NON ANCORA IMPLEMENTATO — Mancano workflow dedicati per serrature, usura degli attrezzi, soglie, furtività e borseggio."),
+    "SCASSINARE e BORSEGGIARE": ("partial", "PARZIALMENTE IMPLEMENTATO — Lo strumento rapido Furto calcola soglie, modificatori di manutenzione e compagnia, diversivi e bonus del set. Restano manuali il tiro di competenza, l'usura dei set (annotata nella sezione Furto del diario) e il tiro di Percezione dell'altra persona."),
     "ALCHIMIA, INCANTAMENTO E FORGIATURA": ("partial", "PARZIALMENTE IMPLEMENTATO — Alchimia è operativa; Incantamento e Forgiatura sono visibili nella Creazione ma non ancora implementati."),
     "Alchimia": ("implemented", "IMPLEMENTATO CON DIFFERENZE REDJANGO — Borsa, 42 ingredienti Elder, estrazione, anteprima e distillazione transazionale sono attive."),
     ("Alchimia", "Introduzione"): ("partial", "PARZIALMENTE IMPLEMENTATO — La creazione è attiva; tempi narrativi di 15/10 minuti e percentuale del set non fanno avanzare automaticamente un orologio di campagna."),

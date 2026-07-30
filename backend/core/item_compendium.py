@@ -194,6 +194,15 @@ GLOSSARY = (
         ),
     },
     {
+        "key": "regole_speciali",
+        "title": "Regole speciali",
+        "text": (
+            "La versione curata dal Master delle regole che il sistema non calcola. Quando c'è, è "
+            "questa la formulazione da applicare al tavolo: il testo Elder qui sotto resta solo "
+            "come originale di riferimento."
+        ),
+    },
+    {
         "key": "slot",
         "title": "Slot di equipaggiamento",
         "text": (
@@ -227,14 +236,25 @@ def _slot_families() -> dict[str, str]:
     return families
 
 
+def _type_option_label(option: OpzioneTipoOggetto) -> str:
+    """The administrator's label, or a readable rendering of the raw code.
+
+    The import copied every ``valore`` into ``etichetta``, so most options carry
+    a "label" that is really just the stored slug. Treating that copy as *no
+    label authored* is what lets the guide read "Spada lunga" instead of
+    "spadalunga", while any label an administrator actually wrote still wins.
+    """
+    if option.etichetta and option.etichetta != option.valore:
+        return option.etichetta
+    return _humanized(option.valore)
+
+
 def _type_options() -> list[dict[str, Any]]:
     return [
         {
             "position": option.posizione,
             "value": option.valore,
-            # The administrator's label wins; the humanized code is only a
-            # fallback so an unlabelled option is still readable in the guide.
-            "label": option.etichetta or _humanized(option.valore),
+            "label": _type_option_label(option),
         }
         for option in OpzioneTipoOggetto.objects.filter(
             attiva=True,
@@ -587,6 +607,7 @@ def _compendium_item(item: Oggetto, *, weapon_keys: dict[str, str], slots: dict[
         "regionWeight": item.peso_regione,
         "operations": _item_operations(item),
         "elderEffects": [text for text in item.effetti_elder if text],
+        "specialRules": item.regole_speciali,
         "weaponCategory": weapon_category,
         "weaponProfile": profile if isinstance(profile, dict) else {},
         "actionPointCost": item.pa_per_attacco,

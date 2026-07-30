@@ -40,17 +40,38 @@ export function InfoPopover({ label, title, children, hint, className = "" }: Pr
     );
     // Sotto il richiamo quando c'è spazio, sopra quando la nota uscirebbe dallo schermo.
     const below = anchor.bottom + 9;
-    const top = height && below + height > window.innerHeight - VIEWPORT_MARGIN
-      ? Math.max(VIEWPORT_MARGIN, anchor.top - height - 9)
+    const preferred = height && below + height > window.innerHeight - VIEWPORT_MARGIN
+      ? anchor.top - height - 9
       : below;
+    // Il richiamo può essere appena fuori dall'area visibile mentre la pagina
+    // scorre: la nota resta comunque interamente leggibile.
+    const top = Math.max(
+      VIEWPORT_MARGIN,
+      Math.min(preferred, window.innerHeight - height - VIEWPORT_MARGIN),
+    );
     setPlacement({ top, left });
   }, []);
 
   useLayoutEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setPlacement(null);
+      return;
+    }
     reposition();
-    noteRef.current?.focus();
   }, [open, reposition]);
+
+  // Il fuoco si sposta sulla nota solo dopo che è stata collocata, così la
+  // lettura da tastiera parte dal contenuto invece che dal richiamo. La
+  // dipendenza è il solo "è collocata", non la posizione: lo scorrimento
+  // ricalcola le coordinate senza riprendersi il fuoco. Nessun riferimento
+  // mutabile fa da guardia, perché StrictMode esegue gli effetti due volte e
+  // una guardia del genere resterebbe alzata dopo la passata scartata.
+  const placed = placement !== null;
+  useEffect(() => {
+    const note = noteRef.current;
+    if (!open || !placed || !note || note.contains(document.activeElement)) return;
+    note.focus();
+  }, [open, placed]);
 
   useEffect(() => {
     if (!open) return;
@@ -99,7 +120,10 @@ export function InfoPopover({ label, title, children, hint, className = "" }: Pr
         data-theme="parchment"
         role="note"
         tabIndex={-1}
-        style={{ top: placement?.top ?? 0, left: placement?.left ?? 0, visibility: placement ? "visible" : "hidden" }}
+        // La nota viene misurata prima di sapere dove sta: resta trasparente per
+        // un fotogramma, non nascosta, perché `visibility: hidden` impedirebbe
+        // di darle il fuoco da tastiera.
+        style={{ top: placement?.top ?? 0, left: placement?.left ?? 0, opacity: placement ? 1 : 0 }}
       >
         <header>
           <strong>{title}</strong>

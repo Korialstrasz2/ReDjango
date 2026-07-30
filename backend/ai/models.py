@@ -79,6 +79,13 @@ class AIProvider(V2Model):
 class AIAgentProfile(V2Model):
     """Policy configurabile per un agente di sola lettura."""
 
+    ROUTING_OFF = "off"
+    ROUTING_AUTO = "auto"
+    ROUTING_CHOICES = [
+        (ROUTING_OFF, "Disattivato"),
+        (ROUTING_AUTO, "Automatico"),
+    ]
+
     name = models.CharField(max_length=120)
     slug = models.SlugField(max_length=120, unique=True)
     description = models.TextField(blank=True)
@@ -98,6 +105,12 @@ class AIAgentProfile(V2Model):
     )
     allowed_tools = models.JSONField(default=list, blank=True)
     max_iterations = models.PositiveSmallIntegerField(default=6)
+    routing_mode = models.CharField(
+        max_length=8,
+        choices=ROUTING_CHOICES,
+        default=ROUTING_AUTO,
+        help_text="Con «Automatico», una domanda con molti strumenti disponibili viene prima instradata a un sottoinsieme pertinente.",
+    )
     is_enabled = models.BooleanField(default=True)
     is_default = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)

@@ -239,6 +239,11 @@ function ItemSheet({ item, reference, onClose }: {
       </ul> : <p className="muted-copy">Nessun effetto calcolato automaticamente.</p>}
     </section>
 
+    {item.specialRules.trim() && <section className="compendium-sheet-section">
+      <h4>{note("regole_speciali") || "Regole speciali"}</h4>
+      <p className="compendium-rule-text">{item.specialRules}</p>
+    </section>}
+
     {item.elderEffects.length > 0 && <section className="compendium-sheet-section">
       <h4>{note("effetti_elder") || "Effetti descritti a testo"}</h4>
       <ul className="compendium-rule-list">{item.elderEffects.map((text, index) => <li key={index}>{text}</li>)}</ul>

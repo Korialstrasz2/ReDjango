@@ -12,13 +12,13 @@ export type PageShortcutTarget =
   | "guides"
   | "settings"
   | "tools";
-export type QuickToolShortcutTarget = "journal" | "dice" | "audio" | "ai";
+export type QuickToolShortcutTarget = "journal" | "dice" | "theft" | "audio" | "ai" | "names";
 
 export const pageShortcutTargets: PageShortcutTarget[] = [
   "dashboard", "character", "skills", "competencies", "creation", "combat", "travel", "market",
   "lore", "media", "guides", "settings", "tools",
 ];
-export const quickToolShortcutTargets: QuickToolShortcutTarget[] = ["journal", "dice", "audio", "ai"];
+export const quickToolShortcutTargets: QuickToolShortcutTarget[] = ["journal", "dice", "theft", "audio", "ai", "names"];
 
 export type ShortcutProfile = "standard" | "fast" | "custom";
 type ShortcutTarget = PageShortcutTarget | QuickToolShortcutTarget;
@@ -26,7 +26,8 @@ type ShortcutTarget = PageShortcutTarget | QuickToolShortcutTarget;
 export const STANDARD_SHORTCUTS: Record<ShortcutTarget, string> = {
   dashboard: "Alt+S", character: "Alt+C", skills: "Alt+A", competencies: "Alt+N", creation: "Alt+K",
   combat: "Alt+B", travel: "Alt+V", market: "Alt+Q", lore: "Alt+L", media: "Alt+M", guides: "Alt+G",
-  settings: "Alt+I", tools: "Alt+T", journal: "Alt+J", dice: "Alt+R", audio: "Alt+U", ai: "Alt+H",
+  settings: "Alt+I", tools: "Alt+T", journal: "Alt+J", dice: "Alt+R", theft: "Alt+F", audio: "Alt+U", ai: "Alt+H",
+  names: "Alt+P",
 };
 
 // La riga centrale di una tastiera italiana (A…Ù) segue l'ordine del menu principale,
@@ -34,7 +35,8 @@ export const STANDARD_SHORTCUTS: Record<ShortcutTarget, string> = {
 export const FAST_SHORTCUTS: Record<ShortcutTarget, string> = {
   dashboard: "Alt+A", character: "Alt+S", skills: "Alt+D", competencies: "Alt+F", creation: "Alt+G",
   combat: "Alt+H", travel: "Alt+J", market: "Alt+K", lore: "Alt+L", media: "Alt+Ò", guides: "Alt+À",
-  settings: "Alt+Ù", tools: "Alt+T", journal: "Alt+Z", dice: "Alt+X", audio: "Alt+C", ai: "Alt+V",
+  settings: "Alt+Ù", tools: "Alt+T", journal: "Alt+Z", dice: "Alt+X", theft: "Alt+B", audio: "Alt+C", ai: "Alt+V",
+  names: "Alt+N",
 };
 
 export const PROFILE_SHORTCUTS: Record<Exclude<ShortcutProfile, "custom">, Record<ShortcutTarget, string>> = {

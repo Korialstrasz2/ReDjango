@@ -64,6 +64,8 @@ from backend.core.item_services import (
     update_item,
 )
 from backend.core.management_selectors import character_management_detail, character_management_overview
+from backend.core.naming_selectors import name_catalog_payload
+from backend.core.naming_services import generate_name
 from backend.core.management_services import (
     attach_orphan_record,
     delete_managed_character,
@@ -187,7 +189,7 @@ from backend.market.services import (
     set_shop_state as set_market_shop_state,
 )
 
-from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, ItemCompendiumPageEnvelopeSchema, ItemCompendiumReferenceEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, SkillCatalogEnvelopeSchema
+from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, ItemCompendiumPageEnvelopeSchema, ItemCompendiumReferenceEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, NameCatalogEnvelopeSchema, SkillCatalogEnvelopeSchema
 
 
 class SessionCookieAuth(APIKeyCookie):
@@ -430,6 +432,14 @@ def market_shop(request: HttpRequest, shop_id: int, character_id: int | None = N
 def lore(request: HttpRequest):
     user, giocatore = _identity(request)
     return _envelope(request, lore_payload(user, giocatore))
+
+
+@api.get("/names", response={200: NameCatalogEnvelopeSchema}, tags=["names"])
+def names(request: HttpRequest):
+    """Catalogo dei bacini di nomi: nessun provider AI è richiesto per leggerlo."""
+
+    _identity(request)
+    return _envelope(request, name_catalog_payload())
 
 
 @api.get("/management/shops", response={200: MarketEnvelopeSchema, 403: ErrorEnvelopeSchema}, tags=["management"])
@@ -1492,6 +1502,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             save_lore_npc(user, giocatore, payload["values"])
             data = {"lore": lore_payload(user, giocatore)}
             message = "Personaggio salvato."
+        elif action == "names.generate":
+            generated = generate_name(giocatore, payload)
+            data = {"generatedName": generated}
+            message = f"{generated['name']} ({generated['culture']})."
         elif action == "lore.character.delete":
             delete_lore_npc(user, giocatore, payload["id"])
             data = {"lore": lore_payload(user, giocatore)}

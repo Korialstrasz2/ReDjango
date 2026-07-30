@@ -95,6 +95,7 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
     mediaId: item?.mediaId ?? "",
     alchemy_profile: JSON.stringify(item?.alchemyProfile || {}, null, 2),
     crafting_profile: JSON.stringify(item?.craftingProfile || {}, null, 2),
+    regole_speciali: item?.specialRules || "",
     notes: item?.notes || ""
   }), [item]);
 
@@ -132,6 +133,7 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
           `effetto_${index + 1}`,
           String(form.get(`effetto_${index + 1}`) || "").trim(),
         ])),
+        regole_speciali: form.get("regole_speciali"),
         effects: normalizedEffects,
         weapon_profile: weaponProfile,
         alchemy_profile: alchemy,
@@ -188,7 +190,10 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
         {costBand && <section className="weapon-cost-guideline"><div><strong>Linea guida Elder, non vincolante</strong><span>Peso {costBand.weight}{suggestedPrice != null ? ` · Valore ${suggestedPrice}` : " · scegli un materiale per il valore"}</span></div><button type="button" className="button secondary small" onClick={() => { setItemWeight(costBand.weight); if (suggestedPrice != null) setItemValue(suggestedPrice); }}>Copia prezzo e peso</button></section>}
       </fieldset>
       <fieldset><legend>Economia, peso e loot</legend><div className="form-grid three"><label>Valore<input name="valore" type="number" min="0" value={itemValue} onChange={(event) => setItemValue(event.target.value === "" ? "" : Number(event.target.value))} /></label><label>Peso<input name="peso" type="number" min="0" step="0.01" value={itemWeight} onChange={(event) => setItemWeight(event.target.value === "" ? "" : Number(event.target.value))} /></label><label>Rarità<select name="rarita" defaultValue={defaults.rarita}><option value="">Non specificata</option>{catalog.rarityChoices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}</select></label><label>Livello loot<input name="lv_loot" defaultValue={defaults.lv_loot} /></label><label>Regione<input name="regione_loot" defaultValue={defaults.regione_loot} /></label><label>Peso regione<input name="peso_regione" type="number" min="0" step="0.1" defaultValue={defaults.peso_regione} /></label><label>PA per attacco<input name="pa_per_attacco" type="number" min="0" value={paCost} onChange={(event) => setPaCost(event.target.value === "" ? "" : Number(event.target.value))} /></label></div></fieldset>
-      <fieldset><legend>Effetti Elder conservati</legend><p className="field-hint">Questi otto testi sono conservati senza interpretarli. Solo gli effetti strutturati sotto partecipano ai calcoli.</p><div className="form-grid">{elderEffects.map((value, index) => <label key={index}>Effetto {index + 1}<textarea name={`effetto_${index + 1}`} rows={2} maxLength={255} defaultValue={value} /></label>)}</div></fieldset>
+      <fieldset><legend>Effetti Elder conservati</legend><p className="field-hint">Questi otto testi sono conservati senza interpretarli. Solo gli effetti strutturati sotto partecipano ai calcoli.</p><div className="form-grid">{elderEffects.map((value, index) => <label key={index}>Effetto {index + 1}<textarea name={`effetto_${index + 1}`} rows={2} maxLength={255} defaultValue={value} /></label>)}</div>
+        <label>Regole speciali<textarea name="regole_speciali" rows={4} defaultValue={defaults.regole_speciali} /></label>
+        <p className="field-hint">Riscrivi qui, per il tavolo, le regole che il sistema non sa calcolare. Salvando un testo dichiari riviste le voci Elder descrittive attualmente presenti: l'oggetto smette di essere marcato speciale per quel motivo, e torna in revisione se in seguito un effetto Elder cambia.</p>
+      </fieldset>
       <fieldset><legend>Effetti</legend>
         <datalist id="item-effect-targets">{catalog.effectConfiguration.targets.map((target) => <option key={target.value} value={target.value}>{target.label}</option>)}</datalist>
         <div className="effect-editor-list">{effects.map((effect, index) => <div className="effect-editor-row" key={index}><input list="item-effect-targets" aria-label="Statistica o competenza" placeholder="Statistica o competenza" value={effect.target} onChange={(event) => setEffects((current) => current.map((entry, i) => i === index ? {...entry, target: event.target.value} : entry))} /><select aria-label="Operazione" value={effect.operation} onChange={(event) => setEffects((current) => current.map((entry, i) => i === index ? {...entry, operation: event.target.value} : entry))}>{operations.map((operation) => <option key={operation}>{operation}</option>)}</select><input aria-label="Valore" type="number" step="0.01" value={effect.value} onChange={(event) => setEffects((current) => current.map((entry, i) => i === index ? {...entry, value: event.target.value} : entry))} /><button type="button" className="icon-button danger" onClick={() => setEffects((current) => current.filter((_, i) => i !== index))} aria-label="Rimuovi effetto">×</button></div>)}</div>

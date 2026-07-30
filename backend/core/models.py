@@ -805,6 +805,15 @@ class Oggetto(V2Model):
     effetto_6 = models.CharField("effetto Elder 6", max_length=255, blank=True)
     effetto_7 = models.CharField("effetto Elder 7", max_length=255, blank=True)
     effetto_8 = models.CharField("effetto Elder 8", max_length=255, blank=True)
+    regole_speciali = models.TextField(
+        "regole speciali",
+        blank=True,
+        help_text=(
+            "Regole leggibili al tavolo per gli effetti che il sistema non sa calcolare. "
+            "Compilarle dichiara riviste le voci Elder descrittive attualmente presenti, "
+            "così l'oggetto smette di essere marcato speciale per quel motivo."
+        ),
+    )
     effects = models.JSONField(default=list, blank=True)
     weapon_profile = models.JSONField(default=dict, blank=True)
     alchemy_profile = models.JSONField(default=dict, blank=True)

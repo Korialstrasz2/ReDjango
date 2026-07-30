@@ -332,6 +332,7 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
         "lootLevel": item.lv_loot,
         "region": item.regione_loot,
         "effects": item.effects or [],
+        "specialRules": item.regole_speciali,
         "weaponTypeId": item.tipo_arma_id,
         "weaponType": item.tipo_arma.nome if item.tipo_arma_id and item.tipo_arma else "",
         "weaponLength": str(

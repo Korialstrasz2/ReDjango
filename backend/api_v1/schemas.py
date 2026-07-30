@@ -37,6 +37,7 @@ class ItemSchema(Schema):
     region: str = ""
     effects: list[dict[str, Any]] = []
     elderEffects: list[str] = []
+    specialRules: str = ""
     imageUrl: str = ""
     archived: bool = False
     special: bool = False
@@ -257,6 +258,7 @@ class CharacterAppearanceSchema(Schema):
 
 class NoteSectionsSchema(Schema):
     zaino: str = ""
+    furto: str = ""
     combat: str = ""
     competenze: str = ""
     crafting: str = ""
@@ -499,6 +501,7 @@ class CompendiumItemSchema(Schema):
     regionWeight: float | None = None
     operations: list[CompendiumOperationEntrySchema] = []
     elderEffects: list[str] = []
+    specialRules: str = ""
     weaponCategory: str = ""
     weaponProfile: dict[str, Any] = {}
     actionPointCost: int | None = None
@@ -2043,6 +2046,20 @@ class LoreTimelineArchiveActionSchema(ActionBaseSchema):
     payload: LoreIdPayloadSchema
 
 
+class NameGeneratePayloadSchema(Schema):
+    """`race` basta alla modalità rapida; `cultureId` serve solo quando il Master
+    sceglie una cultura diversa da quella omonima della razza."""
+
+    race: str = ""
+    cultureId: int | None = None
+    gender: str = "casuale"
+
+
+class NameGenerateActionSchema(ActionBaseSchema):
+    action: Literal["names.generate"]
+    payload: NameGeneratePayloadSchema
+
+
 ActionEnvelopeSchema = Annotated[
     SwapActionSchema
     | AssignItemActionSchema
@@ -2141,7 +2158,8 @@ ActionEnvelopeSchema = Annotated[
     | LoreCharacterSaveActionSchema
     | LoreCharacterDeleteActionSchema
     | LoreTimelineSaveActionSchema
-    | LoreTimelineArchiveActionSchema,
+    | LoreTimelineArchiveActionSchema
+    | NameGenerateActionSchema,
     Field(discriminator="action"),
 ]
 
@@ -2169,6 +2187,7 @@ class ActionDataSchema(Schema):
     market: dict[str, Any] | None = None
     marketQuote: dict[str, Any] | None = None
     lore: dict[str, Any] | None = None
+    generatedName: dict[str, Any] | None = None
 
 
 class ActionEnvelopeResponseSchema(Schema):
@@ -2199,6 +2218,15 @@ class MarketEnvelopeSchema(Schema):
 
 
 class LoreEnvelopeSchema(Schema):
+    ok: bool
+    requestId: str
+    data: dict[str, Any]
+    events: list[EventSchema] = []
+    warnings: list[dict[str, Any]] = []
+    errors: list[ErrorSchema] = []
+
+
+class NameCatalogEnvelopeSchema(Schema):
     ok: bool
     requestId: str
     data: dict[str, Any]

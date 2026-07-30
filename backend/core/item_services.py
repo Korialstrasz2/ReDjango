@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from backend.core.api import ApiError
-from backend.core.item_special import compute_special_reasons
+from backend.core.item_special import REVIEWED_EFFECTS_KEY, compute_special_reasons, descriptive_effects
 from backend.core.models import Giocatore, Oggetto, OpzioneTipoOggetto, TipoArma
 from backend.core.security import effective_role, has_minimum_role
 from backend.core.weapon_rules import normalize_weapon_profile
@@ -38,6 +38,7 @@ ITEM_FIELDS = (
     "peso_regione",
     "pa_per_attacco",
     *ELDER_EFFECT_FIELDS,
+    "regole_speciali",
     "effects",
     "weapon_profile",
     "alchemy_profile",
@@ -57,7 +58,7 @@ def _clean_item_payload(payload: dict[str, Any], *, partial: bool) -> dict[str, 
         if field not in payload:
             continue
         value = payload[field]
-        if field in {"nome", "icona", *ITEM_TYPE_FIELDS, *ELDER_EFFECT_FIELDS, "descrizione", "lv_loot", "regione_loot", "notes"}:
+        if field in {"nome", "icona", *ITEM_TYPE_FIELDS, *ELDER_EFFECT_FIELDS, "descrizione", "lv_loot", "regione_loot", "notes", "regole_speciali"}:
             value = str(value or "").strip()
             if value.casefold() == "vuoto":
                 value = ""
@@ -138,6 +139,24 @@ def _relations(payload: dict[str, Any], values: dict[str, Any]) -> None:
         values["media"] = None if raw_id in (None, "") else UploadedImage.objects.get(pk=int(raw_id))
 
 
+def sync_special_rules_review(item: Oggetto) -> None:
+    """Record which Elder texts the curated `regole_speciali` covers.
+
+    Writing the rules is what releases an item from the descriptive-effects
+    review queue, so the acknowledgement is stored alongside the text instead
+    of being inferred from it: a curated rule is a rewrite, not a quote, and
+    could never be matched back to the original wording. Clearing the field
+    puts every text back in the queue, and editing an `effetto_N` later leaves
+    the new wording unreviewed — which is the point.
+    """
+    metadata = dict(item.metadata) if isinstance(item.metadata, dict) else {}
+    if item.regole_speciali.strip():
+        metadata[REVIEWED_EFFECTS_KEY] = descriptive_effects(item)
+    else:
+        metadata.pop(REVIEWED_EFFECTS_KEY, None)
+    item.metadata = metadata
+
+
 def _refresh_characters_using(item: Oggetto) -> None:
     from backend.characters.models import Equip, Personaggio
     from backend.characters.services.inventory_rules import EQUIPMENT_SLOT_ORDER
@@ -160,7 +179,10 @@ def create_item(user, giocatore: Giocatore, payload: dict[str, Any]) -> Oggetto:
         raise ApiError("items.duplicate_name", "Esiste già un oggetto con questo nome.", "nome", 409)
     metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
     values["metadata"] = {**metadata, "sourceProject": "redjango", "source": "item_authoring"}
-    return Oggetto.objects.create(**values)
+    item = Oggetto(**values)
+    sync_special_rules_review(item)
+    item.save()
+    return item
 
 
 @transaction.atomic
@@ -178,6 +200,11 @@ def update_item(user, giocatore: Giocatore, item_id: int, payload: dict[str, Any
     # hidden from every query that filters on `archived_at`.
     if "archiviato" in values:
         item.archived_at = (item.archived_at or timezone.now()) if values["archiviato"] else None
+    # Only a save that touches the rules text re-reads which Elder effects it
+    # covers. Editing an effect alone must not extend an older verdict to text
+    # the master has not looked at.
+    if "regole_speciali" in values:
+        sync_special_rules_review(item)
     item.save()
     _refresh_characters_using(item)
     return item

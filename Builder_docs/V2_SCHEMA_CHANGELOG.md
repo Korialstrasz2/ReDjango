@@ -151,3 +151,11 @@ Compatibility decisions:
 - Preserve unknown historical reagent keys in container metadata and expand capacity when required so migration never drops a stack.
 - Make extraction, brewing, character summaries, imports, seeds, and combat clones operate directly on container entries.
 - Normalize legacy `Oggetto` rows such as `Reagente Verde lv 2` into canonical stock when assigned to Alchimia&Contenitori.
+
+## v1.7 curated item special rules - 2026-07-30
+
+- Additive: add `Oggetto.regole_speciali`, free text holding the master-curated, table-readable version of a rule the engine cannot compute (migration `core.0043`). The eight `effetto_1...effetto_8` Elder fields are untouched and remain the provenance record.
+- Make the field an input to the `speciale` decision rather than display only: saving it records the Elder texts it covers under `metadata.descriptiveEffectsReviewed`, and `compute_special_reasons` reports `effetti_descrittivi` only for texts absent from that list. Editing an `effetto_N` afterwards returns the item to the review queue, because the new wording is not covered.
+- Keep curation and mutation separate: writing the rules removes the reason, the existing `items.recheckSpecial` action clears the flag. Market logic is unchanged; items re-enter shops only by losing `speciale`.
+- Expose `specialRules` through the item and compendium contracts, the item editor, the comparer, the compendium sheet, market detail, and the equipment inspector.
+- Review procedure, text families, and the 236 items blocked by seven missing effect targets are documented in `ITEM_SPECIAL_RULES_REVIEW_GUIDE.md`.

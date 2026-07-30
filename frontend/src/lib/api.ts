@@ -239,6 +239,35 @@ export async function generateAIImage(payload: Record<string, unknown>) {
   });
 }
 
+/** Una bozza di PNG: il backend non scrive nulla, restituisce solo il testo da rivedere. */
+export async function generateNpcDossier(payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<import("./types").NpcDossierResult>("/api/ai/dossier/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.generateDossier", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.generateDossier", requestId: id, context: { screen: "names" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+/** Passo separato e a pagamento: formato e qualità li decide Gestione AI, non il client. */
+export async function generateNpcPortrait(payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<{ asset: import("./types").MediaAsset }>("/api/ai/dossier/portrait/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.generatePortrait", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.generatePortrait", requestId: id, context: { screen: "names" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+export async function saveNpcGeneration(payload: Record<string, unknown>) {
+  const id = requestId();
+  return apiRequest<import("./types").AIManagementData>("/api/ai/providers/", {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.saveNpcGeneration", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.saveNpcGeneration", requestId: id, context: { screen: "ai" }, payload: { npcGenerationValues: payload }, meta: { clientVersion: "react-v1" } })
+  });
+}
+
 export async function saveAIProvider(payload: Record<string, unknown>) {
   const id = requestId();
   return apiRequest<import("./types").AIManagementData>("/api/ai/providers/", {

@@ -112,6 +112,61 @@ class ItemSpecialReasonsTests(TestCase):
         self.assertNotIn("specialReasons", serialize_item(item, detailed=False))
 
 
+class ItemSpecialRulesTests(TestCase):
+    """`regole_speciali` is the curated rewrite that closes a descriptive-effect review."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.master = Giocatore.objects.create(nome="master", role=Giocatore.ROLE_MASTER)
+
+    def _descriptive_item(self, nome: str) -> Oggetto:
+        return Oggetto.objects.create(
+            nome=nome, tipo_1="anello", speciale=True, effetto_1="+1 potere free Alterazione",
+        )
+
+    def test_writing_the_rules_closes_the_descriptive_review(self):
+        item = self._descriptive_item("Anello dell'alterazione")
+        update_item(None, self.master, item.id, {"regole_speciali": "Concede un potere gratuito di Alterazione."})
+        item.refresh_from_db()
+        self.assertEqual(compute_special_reasons(item), [])
+        self.assertEqual(item.metadata["descriptiveEffectsReviewed"], ["+1 potere free Alterazione"])
+
+    def test_the_original_elder_text_is_kept_as_provenance(self):
+        item = self._descriptive_item("Anello con provenienza")
+        update_item(None, self.master, item.id, {"regole_speciali": "Regola riscritta."})
+        item.refresh_from_db()
+        self.assertEqual(item.effetto_1, "+1 potere free Alterazione")
+
+    def test_recheck_releases_a_curated_item_into_the_market(self):
+        item = self._descriptive_item("Anello liberato")
+        update_item(None, self.master, item.id, {"regole_speciali": "Regola riscritta."})
+        result = recheck_items_special(None, self.master, [item.id])
+        item.refresh_from_db()
+        self.assertEqual(result, {"checked": 1, "cleared": 1, "stillSpecial": 0})
+        self.assertFalse(item.speciale)
+
+    def test_a_new_elder_effect_returns_the_item_to_review(self):
+        item = self._descriptive_item("Anello modificato")
+        update_item(None, self.master, item.id, {"regole_speciali": "Regola riscritta."})
+        update_item(None, self.master, item.id, {"effetto_2": "Rigenera 1 pf ogni 1 ora"})
+        item.refresh_from_db()
+        self.assertEqual(compute_special_reasons(item), ["effetti_descrittivi"])
+
+    def test_clearing_the_rules_reopens_the_review(self):
+        item = self._descriptive_item("Anello svuotato")
+        update_item(None, self.master, item.id, {"regole_speciali": "Regola riscritta."})
+        update_item(None, self.master, item.id, {"regole_speciali": ""})
+        item.refresh_from_db()
+        self.assertEqual(compute_special_reasons(item), ["effetti_descrittivi"])
+        self.assertNotIn("descriptiveEffectsReviewed", item.metadata)
+
+    def test_the_rules_reach_the_market_and_compendium_payloads(self):
+        item = self._descriptive_item("Anello leggibile")
+        update_item(None, self.master, item.id, {"regole_speciali": "Concede un potere gratuito."})
+        item.refresh_from_db()
+        self.assertEqual(serialize_item(item)["specialRules"], "Concede un potere gratuito.")
+
+
 class ItemRecheckSpecialTests(TestCase):
     @classmethod
     def setUpTestData(cls):
