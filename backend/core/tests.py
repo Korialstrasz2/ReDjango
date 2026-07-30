@@ -10,7 +10,7 @@ from django.test import TestCase
 
 from backend.characters.models import PERSONAGGIO_TOT_KEYS, Personaggio
 from backend.core.legacy_race_import import import_legacy_races
-from backend.core.defaults import V2_SETTING_DEFAULTS
+from backend.core.defaults import SAFE_ALT_SHORTCUT_CHOICES, V2_SETTING_DEFAULTS
 from backend.core.guides_it import ITEM_COMPENDIUM_GUIDE_NAME, V2_GUIDE_DEFAULTS
 
 from .admin import GlobalModifiersAdminForm, OggettoAdminForm
@@ -705,7 +705,18 @@ class HierarchicalSettingsTests(TestCase):
                 "shortcuts.tools": "Alt+T",
             },
         )
-        self.assertNotIn("Alt+D", {choice["value"] for choice in shortcuts["shortcuts.journal"]["choices"]})
+        # Nessun default può essere assegnato due volte: un duplicato renderebbe
+        # una delle due scorciatoie irraggiungibile.
+        assigned = [setting["value"] for key, setting in shortcuts.items() if key != "shortcuts.profile"]
+        self.assertEqual(len(assigned), len(set(assigned)))
+
+        # L'intera riga della tastiera è selezionabile, Alt+D compreso: il client
+        # blocca l'azione nativa del browser sulle combinazioni assegnate. Il
+        # profilo Veloce assegna proprio Alt+D, e un valore non presente fra le
+        # scelte verrebbe rifiutato da validate_setting_value.
+        offered = {choice["value"] for choice in shortcuts["shortcuts.journal"]["choices"]}
+        self.assertEqual(offered, {choice["value"] for choice in SAFE_ALT_SHORTCUT_CHOICES})
+        self.assertIn("Alt+D", offered)
 
         saved = self.post_settings({"shortcuts.journal": "Alt+O"})
         self.assertEqual(saved.status_code, 200)

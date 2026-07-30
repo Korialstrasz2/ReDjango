@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { matchesShortcut, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutValue } from "./shortcuts";
+import { PROFILE_SHORTCUTS, matchesShortcut, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutValue } from "./shortcuts";
 
 const keyboardEvent = (overrides: Partial<KeyboardEvent> = {}) => ({
   altKey: true,
@@ -39,6 +39,25 @@ describe("keyboard shortcuts", () => {
     expect(shortcutValue({ "shortcuts.profile": "fast" }, "settings")).toBe("Alt+Ù");
     expect(shortcutValue({ "shortcuts.profile": "fast" }, "ai")).toBe("Alt+V");
     expect(shortcutValue({ "shortcuts.profile": "custom", "shortcuts.journal": "Alt+K" }, "journal")).toBe("Alt+K");
+  });
+
+  it("keeps every profile assignment inside the Alt-letter set the backend offers", () => {
+    // Il backend valida i valori salvati contro SAFE_ALT_SHORTCUT_CHOICES: un
+    // profilo che assegnasse una lettera fuori da questo insieme non sarebbe
+    // salvabile. Le due stringhe devono restare allineate.
+    const offered = new Set([..."ABCDEFGHIJKLMNOPQRSTUVWXYZÒÀÙ"].map((letter) => `Alt+${letter}`));
+    for (const profile of Object.values(PROFILE_SHORTCUTS)) {
+      for (const [target, value] of Object.entries(profile)) {
+        expect(offered, `${target} usa ${value}`).toContain(value);
+      }
+    }
+  });
+
+  it("never assigns the same combination twice inside a profile", () => {
+    for (const [name, profile] of Object.entries(PROFILE_SHORTCUTS)) {
+      const values = Object.values(profile);
+      expect(new Set(values).size, `profilo ${name}`).toBe(values.length);
+    }
   });
 
   it("reports every shortcut involved in an inline conflict", () => {

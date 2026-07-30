@@ -32,6 +32,7 @@ redjango_ui*.log
 scratch.py
 frontend/node_modules/
 frontend/test-results/
+test-results/
 frontend/playwright-report/
 frontend/.playwright/
 frontend/e2e.sqlite3
