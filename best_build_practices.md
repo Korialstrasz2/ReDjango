@@ -702,6 +702,16 @@ Recommended source format:
 - Contextual pages must mount the existing editor inside the sidebar flyout instead of creating new note persistence.
 - Fantasy atmosphere comes from theme, typography, and the writing surface, not from extra form fields or content-management ceremony.
 
+## Character Creation Contract
+
+- A new PG is born at level 1, with the nine characteristics at the profile base value, zero PE in every pool, no competence, no skill, no coin, and no equipment. Creation decides identity, race, subrace, and preferred characteristic; everything else is earned in play.
+- The creation service must never write racial effects. `automatic_race_effects` already derives race modifiers, racial trait, and subrace from `razza_1`/`razza_2` on every refresh; writing them again doubles every bonus. This is the single most common way a converted Elder sheet comes out wrong.
+- `razza_1` is the race and `razza_2` the subrace. A subrace not belonging to the chosen race is rejected. `razza_3` is not written at creation.
+- The preferred characteristic is a real `EffettoPersonalizzato` named from `PREFERRED_CHARACTERISTIC_EFFECT_NAME`, carrying `PREFERRED_CHARACTERISTIC_FORMULA` on the chosen stat, with `origine` `"Creazione personaggio"`. It stacks on the automatic level bonus that every characteristic already receives, so the chosen stat advances twice as fast. Both constants live in `backend/core/defaults.py` and are the only place to change the amount.
+- Creation is player-facing at `/new-character` and must stay outside the Master guard. It uses the `characters.create` action, never `management.characters.*`.
+- Every playable character owns its own `Equip`, `Zaino`, `Faretra`, `Note`, and `EffettiPersonaggio`; the creation service builds all five in one transaction and assigns the result to the creating `Giocatore`.
+- Manual effects added later declare their provenance in `origine` (`Perk minore`, `Manuale Elder`, `Abilità: Vitale 3`). It is the only way to trace a stray +1 months later.
+
 ## Campaign Clock And Weather Contract
 
 - The quick-tools bar carries the campaign state on its left: campaign name, `Meteo`, `Giorno`, `Ora`. It is the one place in the shell that answers "when and where are we", so no page duplicates that readout.

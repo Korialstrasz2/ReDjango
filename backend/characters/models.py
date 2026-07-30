@@ -446,6 +446,11 @@ class Personaggio(V2Model):
     livello = models.IntegerField(default=1)
     eta = models.IntegerField(null=True, blank=True)
     sesso = models.CharField(max_length=80, blank=True)
+    # Scelta alla creazione del PG. I valori validi sono le nove chiavi di
+    # CHARACTERISTIC_KEYS, ma la validazione resta nel servizio: legarla a
+    # choices renderebbe invalide le righe esistenti se una caratteristica
+    # venisse rinominata. Le schede importate da Elder non hanno la scelta.
+    caratteristica_preferita = models.CharField(max_length=32, blank=True)
     monete = models.IntegerField(default=0)
     dettagli_personaggio = models.TextField(blank=True)
     danno = models.IntegerField(default=0)

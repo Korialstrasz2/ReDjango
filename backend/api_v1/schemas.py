@@ -587,6 +587,17 @@ class OverviewPayloadSchema(Schema):
     values: dict[str, Any]
 
 
+class CharacterCreatePayloadSchema(Schema):
+    nome: str = Field(min_length=1, max_length=180)
+    razza: str = Field(min_length=1, max_length=120)
+    sottorazza: str = Field(default="", max_length=120)
+    caratteristicaPreferita: str = Field(min_length=1, max_length=32)
+    eta: int | None = Field(default=None, ge=1, le=999)
+    sesso: str = Field(default="", max_length=80)
+    dettagliPersonaggio: str = Field(default="", max_length=4000)
+    background: str = Field(default="", max_length=8000)
+
+
 class CoinsPayloadSchema(Schema):
     characterId: int
     coins: int = Field(ge=0, le=2_147_483_647)
@@ -1571,6 +1582,11 @@ class OverviewActionSchema(ActionBaseSchema):
     payload: OverviewPayloadSchema
 
 
+class CharacterCreateActionSchema(ActionBaseSchema):
+    action: Literal["characters.create"]
+    payload: CharacterCreatePayloadSchema
+
+
 class CoinsActionSchema(ActionBaseSchema):
     action: Literal["character.updateCoins"]
     payload: CoinsPayloadSchema
@@ -2069,6 +2085,7 @@ ActionEnvelopeSchema = Annotated[
     | QuickStatActionSchema
     | RestActionSchema
     | OverviewActionSchema
+    | CharacterCreateActionSchema
     | CoinsActionSchema
     | SharedCoinsActionSchema
     | ApplyEffectActionSchema

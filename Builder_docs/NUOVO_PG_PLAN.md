@@ -173,12 +173,23 @@ exists) plus the nine characteristics with their labels, so the wizard has no ha
 
 ---
 
-## 5. Open points
+## 5. Status
 
-- **Guard against abuse of a player-facing route.** Nothing currently limits how many PGs a
-  player can create. Simplest answer: cap at a configurable number of `giocabile` characters
-  per giocatore, surfaced as a game variable. Needs a decision before shipping.
+Built and verified on 2026-07-30. What shipped matches the plan above, with one addition:
+the quota open point was resolved in code rather than deferred —
+`MAX_PLAYABLE_CHARACTERS_PER_PLAYER = 5` in
+`backend/characters/services/creation.py`, with Master and admin exempt. The wizard reads
+the remaining allowance from `characters.creationOptions` and refuses to start when it is
+spent.
+
+## 6. Open points
+
+- **The quota is a module constant, not a game variable.** Five per player is a guess. If
+  the table wants it configurable it belongs in the `Formule_base` profile like the other
+  tunables.
 - **`classe`/archetipo** exists in Elder's wizard and nowhere in ReDjango. Left out of this
   slice deliberately; if it should come back it is a second field plus a catalog.
 - **Starting equipment and monete** are zero by decision 3. If the table expects a starting
   kit, that is a separate content decision, not a creation-flow one.
+- **`razza_3`** is still written by nobody. The guide says so explicitly; the field remains
+  for the Master's manual use.

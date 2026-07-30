@@ -6,6 +6,14 @@ from html import escape, unescape
 from pathlib import Path
 from typing import Any
 
+from backend.characters.race_rules import RACE_CATALOG
+
+from .defaults import (
+    CHARACTERISTIC_LABELS,
+    PREFERRED_CHARACTERISTIC_EFFECT_NAME,
+    PREFERRED_CHARACTERISTIC_FORMULA,
+)
+
 
 V2_GUIDE_DEFAULT_VERSION = "2026-07-30-nuovo-pg-v1"
 
@@ -592,6 +600,10 @@ def weapon_catalogue_guide_blocks(weapon_types: list[Mapping[str, Any]]) -> list
     return blocks
 
 
+def _guide_content(*blocks: dict) -> str:
+    return json.dumps(list(blocks), ensure_ascii=False, indent=2)
+
+
 def _race_modifier_text(modifiers: Mapping[str, Any]) -> str:
     """Rende leggibili i modificatori di razza: prima i bonus, poi i malus."""
     bonuses, penalties = [], []
@@ -911,6 +923,13 @@ CODE_DISEASE = """{
 
 
 V2_GUIDE_DEFAULTS = [
+    {
+        "seed_key": "nuovo-pg",
+        "nome": NEW_CHARACTER_GUIDE_NAME,
+        "categoria": "Personaggio",
+        "ordine": 3,
+        "contenuto": _guide_content(*nuovo_pg_guide_blocks()),
+    },
     {
         "seed_key": "regole-varie",
         "nome": "Regole Varie",

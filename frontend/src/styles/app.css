@@ -4912,3 +4912,42 @@ html[data-reduced-motion="true"] .alchemy-slot-epic, html[data-reduced-motion="t
   .backup-list-entries article { grid-template-columns: 1fr; }
   .backup-list-entries article > .button { justify-self: end; }
 }
+
+/* Nuovo PG — procedura di creazione del personaggio giocabile */
+.new-pg-page { display: grid; gap: 14px; align-content: start; }
+.list-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.list-panel-heading h2 { margin-bottom: 0; }
+.new-pg-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.new-pg-tabs button { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 1px 9px; align-items: center; min-height: 60px; padding: 10px 13px; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; background: var(--theme-overlay-surface); text-align: left; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+.new-pg-tabs button:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold), var(--line)); transform: translateY(-1px); }
+.new-pg-tabs button:disabled { cursor: not-allowed; opacity: .5; }
+.new-pg-tabs button.active { color: var(--text); border-color: color-mix(in srgb, var(--gold), transparent 20%); background: linear-gradient(100deg, color-mix(in srgb, var(--gold), transparent 87%), var(--theme-panel-strong-surface)); box-shadow: inset 3px 0 var(--gold); }
+.new-pg-tabs button > span { grid-row: 1 / 3; color: var(--gold); font: 700 .72rem var(--font-display); }
+.new-pg-tabs button strong { font: 700 .85rem var(--font-display); letter-spacing: .03em; }
+.new-pg-tabs button small { font-size: .55rem; text-transform: uppercase; letter-spacing: .08em; }
+.new-pg-step { display: grid; gap: 14px; padding: 22px; }
+.new-pg-step > header { display: grid; gap: 4px; padding-bottom: 13px; border-bottom: 1px solid color-mix(in srgb, var(--line), transparent 25%); }
+.new-pg-step > header h2, .new-pg-step > header .eyebrow { margin-bottom: 0; }
+.new-pg-step > header p:last-child { max-width: 780px; color: var(--muted); font-size: .68rem; line-height: 1.6; }
+.new-pg-race-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.new-pg-race-grid button { display: grid; gap: 3px; min-height: 58px; padding: 10px 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; background: #0002; text-align: left; cursor: pointer; }
+.new-pg-race-grid button:hover { border-color: color-mix(in srgb, var(--gold), var(--line)); }
+.new-pg-race-grid button.active { color: var(--text); border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 87%); }
+.new-pg-race-grid strong { font: 700 .78rem var(--font-display); }
+.new-pg-race-grid small { font-size: .55rem; text-transform: uppercase; letter-spacing: .06em; }
+.new-pg-subrace { display: grid; gap: 5px; max-width: 420px; color: var(--muted); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.new-pg-inline-hint { margin: 0; color: #e5c27a; font-size: .62rem; }
+.new-pg-characteristic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.new-pg-characteristic-grid button { min-height: 44px; padding: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; background: #0002; font: 700 .72rem var(--font-display); cursor: pointer; }
+.new-pg-characteristic-grid button:hover { border-color: color-mix(in srgb, var(--gold), var(--line)); }
+.new-pg-characteristic-grid button.active { color: var(--text); border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 84%); box-shadow: 0 0 15px color-mix(in srgb, var(--gold), transparent 78%); }
+.new-pg-summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin: 0; }
+.new-pg-summary > div { display: grid; gap: 3px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 6px; background: #0002; }
+.new-pg-summary dt { color: var(--muted); font-size: .55rem; text-transform: uppercase; letter-spacing: .08em; }
+.new-pg-summary dd { margin: 0; color: var(--text); font: 700 .8rem var(--font-display); }
+.new-pg-actions { display: flex; justify-content: space-between; gap: 12px; }
+
+@media (max-width: 760px) {
+  .new-pg-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .list-panel-heading { flex-direction: column; align-items: start; }
+}

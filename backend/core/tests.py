@@ -276,9 +276,10 @@ class CoreContractTests(TestCase):
         self.assertEqual(body["data"]["security"]["hierarchy"], [])
         guides = body["data"]["guides"]
         self.assertEqual(len(guides), len(V2_GUIDE_DEFAULTS))
-        self.assertEqual(guides[0]["name"], "Regole Varie")
-        self.assertTrue(guides[0]["content"])
-        rules_guide = guides[0]
+        # Le guide vanno cercate per nome: l'ordine dipende da "ordine" e
+        # cambia ogni volta che se ne aggiunge una prima delle altre.
+        rules_guide = next(guide for guide in guides if guide["name"] == "Regole Varie")
+        self.assertTrue(rules_guide["content"])
         self.assertEqual(rules_guide["content"][0]["type"], "legacy_html")
         rules_html = rules_guide["content"][0]["html"]
         self.assertGreater(len(rules_html), 55_000)
@@ -350,7 +351,7 @@ class CoreContractTests(TestCase):
         self.assertIn("Katana", titles)
         self.assertIn("Mani nude", titles)
 
-        rules_html = guides[0]["content"][0]["html"]
+        rules_html = next(guide for guide in guides if guide["name"] == "Regole Varie")["content"][0]["html"]
         self.assertNotIn("NEGOZI</h1>\n<aside", rules_html)
         self.assertNotIn("RISOLUZIONE NON ANCORA IMPLEMENTATA", rules_html)
 

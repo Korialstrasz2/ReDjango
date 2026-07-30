@@ -31,6 +31,7 @@ from backend.characters.services.custom_effects import (
     remove_custom_or_legacy_effect,
     update_custom_effect,
 )
+from backend.characters.services.creation import create_personaggio, creation_options_payload
 from backend.characters.services.notes import update_note_section
 from backend.characters.services.competencies import (
     reroll_competence,
@@ -310,6 +311,13 @@ def _character_sheet_payload(
 def character_sheet(request: HttpRequest, character_id: int):
     user, giocatore = _identity(request)
     return _envelope(request, _sheet_data(user, giocatore, character_id))
+
+
+@api.get("/characters/creation-options", response={200: ManagementEnvelopeSchema}, tags=["characters"])
+def character_creation_options(request: HttpRequest):
+    """Cataloghi della procedura "Nuovo PG": razze, sottorazze, caratteristiche, quota."""
+    _user, giocatore = _identity(request)
+    return _envelope(request, creation_options_payload(giocatore))
 
 
 @api.get("/items", response={200: ItemCatalogEnvelopeSchema}, tags=["items"])
@@ -869,6 +877,11 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             character = update_overview(payload["characterId"], payload["values"])
             data = {"character": _character_sheet_payload(character, user, giocatore)}
             message = "Personaggio aggiornato."
+        elif action == "characters.create":
+            character = create_personaggio(giocatore, payload)
+            data = {"character": _character_sheet_payload(character, user, giocatore)}
+            # Formulazione neutra: il messaggio vale per qualunque sesso scelto.
+            message = f"{character.nome} entra in gioco."
         elif action == "character.updateCoins":
             result = update_carried_coins(
                 payload["characterId"],

@@ -7,7 +7,12 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from backend.core.api import ApiError
-from backend.core.defaults import FORMULE_BASE_VALUE_FLOAT
+from backend.core.defaults import (
+    FORMULE_BASE_FORMULAS,
+    FORMULE_BASE_VALUE_FLOAT,
+    PREFERRED_CHARACTERISTIC_EFFECT_NAME,
+    PREFERRED_CHARACTERISTIC_FORMULA,
+)
 from backend.core.models import Effetto, Giocatore, GlobalModifiers, Oggetto, Skill, TipoArma
 
 from .effect_preset_defaults import DEFAULT_EFFECT_PRESETS
@@ -23,6 +28,12 @@ from .services.custom_effects import (
     create_custom_effect,
     effect_configuration_payload,
     validate_effect_values,
+)
+from .services.creation import (
+    CREATION_EFFECT_ORIGIN,
+    MAX_PLAYABLE_CHARACTERS_PER_PLAYER,
+    create_personaggio,
+    creation_options_payload,
 )
 from .services.effect_presets import effect_preset_payload, validate_preset_values
 from .selectors import _character_appearance
@@ -1103,3 +1114,146 @@ class EffectPresetTests(TestCase):
         with self.assertRaises(ApiError) as caught:
             validate_effect_values({"name": "Passiva vuota", "icon": "runa", "operations": []})
         self.assertEqual(caught.exception.code, "effects.operations_required")
+
+
+class NuovoPgCreationTests(TestCase):
+    """Creazione di un personaggio giocabile dalla procedura "Nuovo PG"."""
+
+    def setUp(self):
+        GlobalModifiers.objects.create(
+            name="Formule_base",
+            value_float=profile_values(),
+            value_string={"formulas": dict(FORMULE_BASE_FORMULAS)},
+        )
+        self.giocatore = Giocatore.objects.create(nome="Creatrice", role=Giocatore.ROLE_USER)
+
+    def _values(self, **overrides):
+        values = {
+            "nome": "Sera Telvanni",
+            "razza": "Dunmer",
+            "sottorazza": "Retaggio Mago",
+            "caratteristicaPreferita": "intelligenza",
+            "eta": 31,
+            "sesso": "femmina",
+            "dettagliPersonaggio": "Studiosa in esilio.",
+            "background": "Cresciuta fra le torri fungine.",
+        }
+        values.update(overrides)
+        return values
+
+    def test_creation_builds_every_related_record(self):
+        personaggio = create_personaggio(self.giocatore, self._values())
+
+        self.assertEqual(personaggio.tipologia, "giocabile")
+        self.assertEqual(personaggio.livello, 1)
+        self.assertIsNotNone(personaggio.equip)
+        self.assertIsNotNone(personaggio.zaino)
+        self.assertIsNotNone(personaggio.faretra)
+        self.assertIsNotNone(personaggio.note)
+        self.assertIsNotNone(personaggio.effetti)
+        self.assertEqual(personaggio.note.background, "Cresciuta fra le torri fungine.")
+
+    def test_a_new_pg_starts_empty(self):
+        personaggio = create_personaggio(self.giocatore, self._values())
+
+        self.assertEqual(personaggio.monete, 0)
+        self.assertEqual(
+            [personaggio.pe_generali, personaggio.pe_rossi, personaggio.pe_verdi, personaggio.pe_blu, personaggio.pe_abilita],
+            [0, 0, 0, 0, 0],
+        )
+        self.assertEqual(personaggio.skill_sbloccate.count(), 0)
+
+    def test_racial_effects_are_applied_without_being_written_by_the_service(self):
+        """I bonus razziali arrivano da automatic_race_effects, non da effetti creati qui."""
+        personaggio = create_personaggio(self.giocatore, self._values())
+
+        # Dunmer: intelligenza +2, saggezza +2, fortuna -2, personalita -1.
+        # Sulle otto caratteristiche diverse da Fortuna pesa anche la formula
+        # amministrativa di Fortuna: con Fortuna finale 8 vale -0.45, e
+        # l'arrotondamento per difetto se la mangia. La preferita non aggiunge
+        # nulla al livello 1, dove 1/5 vale 0.2.
+        self.assertEqual(personaggio.tot["intelligenza"], 11)
+        self.assertEqual(personaggio.tot["saggezza"], 11)
+        self.assertEqual(personaggio.tot["fortuna"], 8)
+        self.assertEqual(personaggio.tot["personalita"], 8)
+        self.assertEqual(personaggio.tot["forza"], 9)
+        self.assertEqual(
+            [effect.nome for effect in personaggio.effetti_personalizzati.all()],
+            [PREFERRED_CHARACTERISTIC_EFFECT_NAME],
+        )
+
+    def test_the_preferred_characteristic_effect_carries_the_level_formula(self):
+        personaggio = create_personaggio(self.giocatore, self._values(caratteristicaPreferita="agilita"))
+
+        effect = personaggio.effetti_personalizzati.get(nome=PREFERRED_CHARACTERISTIC_EFFECT_NAME)
+        operation = effect.operazioni.get()
+        self.assertEqual(personaggio.caratteristica_preferita, "agilita")
+        self.assertEqual(operation.bersaglio, "agilita")
+        self.assertEqual(operation.operazione, "add")
+        self.assertEqual(operation.valore, PREFERRED_CHARACTERISTIC_FORMULA)
+        self.assertEqual(effect.origine, CREATION_EFFECT_ORIGIN)
+
+    def test_the_preferred_characteristic_doubles_the_level_bonus(self):
+        """La preferita riceve il bonus di livello due volte: globale e scelto.
+
+        A livello 10 la formula vale 2, quindi la caratteristica scelta sta due
+        punti sopra una non scelta con lo stesso modificatore razziale. È la
+        differenza voluta rispetto a Elder Django, dove il bonus di livello
+        esisteva solo sulla preferita.
+        """
+        personaggio = create_personaggio(self.giocatore, self._values(caratteristicaPreferita="forza"))
+        personaggio.livello = 10
+        personaggio.save(update_fields=["livello"])
+        refresh_personaggio(personaggio)
+        personaggio.refresh_from_db()
+
+        # Dunmer non tocca né Forza né Velocità: restano confrontabili.
+        self.assertEqual(personaggio.tot["forza"] - personaggio.tot["velocita"], 2)
+
+    def test_the_character_is_assigned_to_its_creator(self):
+        personaggio = create_personaggio(self.giocatore, self._values())
+        self.giocatore.refresh_from_db()
+
+        self.assertIn(personaggio.pk, self.giocatore.character_ids)
+        self.assertEqual(self.giocatore.active_character_id, personaggio.pk)
+
+    def test_a_subrace_from_another_race_is_rejected(self):
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values(razza="Nord", sottorazza="Retaggio Mago"))
+        self.assertEqual(caught.exception.code, "characters.subrace_invalid")
+
+    def test_an_unknown_race_is_rejected(self):
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values(razza="Hobbit", sottorazza=""))
+        self.assertEqual(caught.exception.code, "characters.race_invalid")
+
+    def test_the_preferred_characteristic_must_be_one_of_the_nine(self):
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values(caratteristicaPreferita="carisma"))
+        self.assertEqual(caught.exception.code, "characters.preferred_characteristic_invalid")
+
+    def test_internal_names_do_not_collide(self):
+        first = create_personaggio(self.giocatore, self._values())
+        second = create_personaggio(self.giocatore, self._values())
+
+        self.assertNotEqual(first.nome_interno, second.nome_interno)
+        self.assertTrue(first.nome_interno.startswith("sera-telvanni-"))
+
+    def test_the_quota_stops_a_player_but_not_a_master(self):
+        for _index in range(MAX_PLAYABLE_CHARACTERS_PER_PLAYER):
+            create_personaggio(self.giocatore, self._values())
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values())
+        self.assertEqual(caught.exception.code, "characters.quota_reached")
+
+        master = Giocatore.objects.create(nome="Narratore", role=Giocatore.ROLE_MASTER)
+        for _index in range(MAX_PLAYABLE_CHARACTERS_PER_PLAYER + 1):
+            create_personaggio(master, self._values())
+
+    def test_creation_options_expose_races_and_characteristics(self):
+        payload = creation_options_payload(self.giocatore)
+
+        self.assertEqual(len(payload["races"]), len(RACE_NAMES))
+        self.assertEqual(len(payload["characteristics"]), 9)
+        self.assertEqual(payload["startingLevel"], 1)
+        self.assertEqual(payload["quota"], {"used": 0, "max": MAX_PLAYABLE_CHARACTERS_PER_PLAYER, "canCreate": True})
