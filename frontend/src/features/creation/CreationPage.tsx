@@ -117,6 +117,25 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
   }));
 
   return <div className="alchemy-workspace">
+    <div className="alchemy-stock-column">
+    <section className="panel alchemy-set-bar">
+      <label>Set
+        <select value={setItemId ?? ""} onChange={(event) => setSetItemId(event.target.value ? Number(event.target.value) : null)}>
+          <option value="">Nessun set · ×{formatNumber(baseSetBonus)}</option>
+          {data.sets.map((entry) => <option key={entry.id} value={entry.id}>
+            {entry.name} · {entry.bonusPercent > 0 ? `+${formatNumber(entry.bonusPercent)}%` : "nessun bonus"} · {entry.sourceLabel}
+          </option>)}
+        </select>
+      </label>
+      <p className="alchemy-inline-hint">
+        {data.sets.length === 0
+          ? "Nessun set alchemico nello zaino, nei contenitori o fra le risorse del gruppo: si distilla a mani nude."
+          : selectedSet
+            ? `${selectedSet.name} · bonus ×${formatNumber(selectedSet.bonus)} · ${selectedSet.shared ? "condiviso con il gruppo" : selectedSet.sourceLabel}${selectedSet.id === data.rules.defaultSetId ? " · selezionato in automatico (qualità migliore)" : ""}`
+          : "Stai distillando senza set: il bonus resta quello base."}
+      </p>
+    </section>
+
     <section className="panel alchemy-stock-panel">
       <header className="alchemy-section-heading">
         <div><p className="eyebrow">Alchimia&Contenitori</p><h2>Tre essenze, quattro livelli</h2></div>
@@ -159,6 +178,7 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
         </button>
       </div>
     </section>
+    </div>
 
     <section className="panel alchemy-bench-panel">
       <header className="alchemy-section-heading"><div><p className="eyebrow">Banco di distillazione</p><h2>Componi la miscela</h2></div><span className="alchemy-step">1–4 reagenti</span></header>
@@ -180,22 +200,7 @@ function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
         <label>Effetto
           <select value={effect} onChange={(event) => setEffect(event.target.value)}>{family?.effects.map((name) => <option key={name}>{name}</option>)}</select>
         </label>
-        <label>Set alchemico
-          <select value={setItemId ?? ""} onChange={(event) => setSetItemId(event.target.value ? Number(event.target.value) : null)}>
-            <option value="">Nessun set · ×{formatNumber(baseSetBonus)}</option>
-            {data.sets.map((entry) => <option key={entry.id} value={entry.id}>
-              {entry.name} · {entry.bonusPercent > 0 ? `+${formatNumber(entry.bonusPercent)}%` : "nessun bonus"} · {entry.sourceLabel}
-            </option>)}
-          </select>
-        </label>
       </div>
-      <p className="alchemy-inline-hint">
-        {data.sets.length === 0
-          ? "Nessun set alchemico nello zaino, nei contenitori o fra le risorse del gruppo: si distilla a mani nude."
-          : selectedSet
-            ? `${selectedSet.name} · bonus ×${formatNumber(selectedSet.bonus)} · ${selectedSet.shared ? "condiviso con il gruppo" : selectedSet.sourceLabel}${selectedSet.id === data.rules.defaultSetId ? " · selezionato in automatico (qualità migliore)" : ""}`
-          : "Stai distillando senza set: il bonus resta quello base."}
-      </p>
       <div className="alchemy-formula-card">
         <div><span>Somma livelli</span><strong>{formatNumber(estimate.levelTotal)}</strong></div>
         <span aria-hidden="true">×</span>

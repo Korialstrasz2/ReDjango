@@ -11,6 +11,7 @@ from django.test import TestCase
 from backend.characters.models import PERSONAGGIO_TOT_KEYS, Personaggio
 from backend.core.legacy_race_import import import_legacy_races
 from backend.core.defaults import V2_SETTING_DEFAULTS
+from backend.core.guides_it import ITEM_COMPENDIUM_GUIDE_NAME, V2_GUIDE_DEFAULTS
 
 from .admin import GlobalModifiersAdminForm, OggettoAdminForm
 from .models import CharacterAssignmentRequest, FamigliaSkill, Giocatore, GlobalModifiers, GruppoFamiglieSkill, Guida, Oggetto, OpzioneTipoOggetto, SettingDefinition, SettingOverride, Theme
@@ -274,22 +275,36 @@ class CoreContractTests(TestCase):
         self.assertFalse(body["data"]["security"]["showRoleLabels"])
         self.assertEqual(body["data"]["security"]["hierarchy"], [])
         guides = body["data"]["guides"]
-        self.assertEqual(len(guides), 8)
-        self.assertEqual(guides[0]["name"], "Regole Varie — ReDjango")
+        self.assertEqual(len(guides), len(V2_GUIDE_DEFAULTS))
+        self.assertEqual(guides[0]["name"], "Regole Varie")
         self.assertTrue(guides[0]["content"])
         rules_guide = guides[0]
         self.assertEqual(rules_guide["content"][0]["type"], "legacy_html")
         rules_html = rules_guide["content"][0]["html"]
-        self.assertGreater(len(rules_html), 75_000)
+        self.assertGreater(len(rules_html), 55_000)
         self.assertIn('href="#combat"', rules_html)
         self.assertIn('id="combat"', rules_html)
         self.assertIn("NON ANCORA IMPLEMENTATO", rules_html)
+        self.assertIn('data-guide="Variabili del personaggio e alchimia"', rules_html)
         self.assertTrue(any(guide["name"] == "Creare e usare le armi" for guide in guides))
+        # Il compendio è una guida per il giocatore: il blocco interattivo deve
+        # arrivare intatto alla SPA, che lo sostituisce con il catalogo.
+        compendium_guide = next(guide for guide in guides if guide["name"] == ITEM_COMPENDIUM_GUIDE_NAME)
+        self.assertEqual(compendium_guide["category"], "Compendio")
+        self.assertIn("item_compendium", {block["type"] for block in compendium_guide["content"]})
         character_guide = next(guide for guide in guides if guide["name"] == "Variabili del personaggio e alchimia")
-        guide_text = json.dumps(character_guide["content"], ensure_ascii=False)
+        reference_block = next(
+            block for block in character_guide["content"] if block["type"] == "variable_reference"
+        )
+        listed_keys = {
+            variable["key"]
+            for group in reference_block["groups"]
+            for variable in group["variables"]
+        }
         for key in PERSONAGGIO_TOT_KEYS:
             with self.subTest(character_variable=key):
-                self.assertIn(f"({key})", guide_text)
+                self.assertIn(key, listed_keys)
+        guide_text = json.dumps(character_guide["content"], ensure_ascii=False)
         self.assertIn("Borsa dei reagenti e alchimia", guide_text)
         # A guide only carries a divergence warning when it actually diverges;
         # guides that match the system must not invent one.

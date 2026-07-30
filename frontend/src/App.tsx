@@ -1,4 +1,4 @@
-import { createContext, type CSSProperties, type FormEvent, type ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, type CSSProperties, type FormEvent, type MouseEvent, type ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
@@ -16,10 +16,13 @@ import { GameVariablesPage } from "./features/management/GameVariablesPage";
 import { ItemManagementPage } from "./features/management/ItemManagementPage";
 import { DungeonHelperPage } from "./features/management/DungeonHelperPage";
 import { ManagementHub } from "./features/management/ManagementHub";
+import { BackupManagementPage } from "./features/management/BackupManagementPage";
+import { PlayerManagementPage } from "./features/management/PlayerManagementPage";
 import { ShopManagementPage } from "./features/management/ShopManagementPage";
 import { SkillManagementPage } from "./features/management/SkillManagementPage";
 import { ThemeManagementPage } from "./features/management/ThemeManagementPage";
 import { UnitManagementPage } from "./features/management/UnitManagementPage";
+import { ItemCompendium } from "./features/guides/ItemCompendium";
 import { LorePage } from "./features/lore/LorePage";
 import { MarketPage } from "./features/market/MarketPage";
 import { ContextNoteDock } from "./features/notes/ContextNoteDock";
@@ -30,7 +33,7 @@ import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
 import { FIXED_SHORTCUTS, pageShortcutTargets, quickToolShortcutTargets, SHORTCUT_CATEGORY, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
-import type { AuthData, BootstrapData, Guide, GuideEntry, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
+import type { AuthData, BootstrapData, Guide, GuideEntry, GuideVariable, GuideVariableGroup, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
   bootstrap: BootstrapData;
@@ -235,6 +238,8 @@ function Shell({ children }: { children: ReactNode }) {
     ["/tools/ai", "Gestione AI", "✳"],
     ...(settings.security.canManageAdminSettings
       ? [
+        ["/tools/players", "Gestione Player", "☺"] as [string, string, string, PageShortcutTarget?],
+        ["/tools/backups", "Gestione Backup", "▣"] as [string, string, string, PageShortcutTarget?],
         ["/tools/dice", "Gestisci Dadi", "◆"] as [string, string, string, PageShortcutTarget?],
         ["/tools/themes", "Gestione Temi", "◐"] as [string, string, string, PageShortcutTarget?],
         ["/tools/variables", "Gestione Variabili", "ƒ"] as [string, string, string, PageShortcutTarget?],
@@ -297,13 +302,18 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="app-shell" data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>
       <aside className="side-nav" data-component-type="nav" data-theme="dark">
-        <Link to="/" className="brand-block">
-          {activeCharacterPortrait && <img src={activeCharacterPortrait} alt="" />}
-          <span style={{ "--name-len": (activeCharacterFirstName || "Sala principale").length, "--player-len": settings.giocatore.displayName.length } as CSSProperties}>
-            <strong>{activeCharacterFirstName || "Sala principale"}</strong><small>{settings.giocatore.displayName}</small>
-          </span>
-        </Link>
-        <nav className="nav-list" aria-label="Menu principale">
+        {/* Il ritratto apre la scheda del personaggio; il nome resta la via per la Sala principale. */}
+        <div className="brand-block">
+          {activeCharacterPortrait && <Link to={characterPath} className="brand-portrait" aria-label={`Scheda personaggio${activeCharacter ? ` di ${activeCharacter.name}` : ""}`} title="Scheda personaggio">
+            <img src={activeCharacterPortrait} alt="" />
+          </Link>}
+          <Link to="/" className="brand-identity" title="Sala principale">
+            <span style={{ "--name-len": (activeCharacterFirstName || "Sala principale").length, "--player-len": settings.giocatore.displayName.length } as CSSProperties}>
+              <strong>{activeCharacterFirstName || "Sala principale"}</strong><small>{settings.giocatore.displayName}</small>
+            </span>
+          </Link>
+        </div>
+        <NavScroll label="Menu principale">
           {links.map(([href, label, icon, shortcutTarget]) => {
             const shortcut = shortcutTarget ? shortcutValue(settings.ui, shortcutTarget) : "";
             return <Link key={label} to={href} aria-keyshortcuts={shortcut || undefined} title={shortcut ? `${label} (${shortcut.replace("+", " + ")})` : label} className={location.pathname === href || (href !== "/" && location.pathname.startsWith(href)) ? "active" : ""}>
@@ -321,7 +331,7 @@ function Shell({ children }: { children: ReactNode }) {
               </Link>;
             })}
           </div>}
-        </nav>
+        </NavScroll>
         {contextualNoteSection && quickCharacterId && quickCharacter && <ContextNoteDock
           key={`${quickCharacterId}:${contextualNoteSection}`}
           characterId={quickCharacterId}
@@ -342,12 +352,58 @@ function Shell({ children }: { children: ReactNode }) {
   );
 }
 
+/* The native bar sizes its thumb to the content, so a barely-overflowing menu gets a full-height
+   slab sitting in the link lane. This keeps a fixed-length ghost thumb in its own gutter instead,
+   fading in while scrolling or hovering. */
+const NAV_THUMB_HEIGHT = 44;
+const NAV_TRACK_INSET = 10;
+
+function NavScroll({ label, children }: { label: string; children: ReactNode }) {
+  const scrollRef = useRef<HTMLElement | null>(null);
+  const thumbRef = useRef<HTMLDivElement | null>(null);
+  const fadeRef = useRef(0);
+  const sync = useCallback((reveal?: boolean) => {
+    const scroller = scrollRef.current, thumb = thumbRef.current;
+    if (!scroller || !thumb) return;
+    const range = scroller.scrollHeight - scroller.clientHeight;
+    const track = scroller.clientHeight - NAV_THUMB_HEIGHT - NAV_TRACK_INSET * 2;
+    thumb.hidden = range <= 1 || track <= 0;
+    if (thumb.hidden) return;
+    thumb.style.transform = `translateY(${NAV_TRACK_INSET + (scroller.scrollTop / range) * track}px)`;
+    if (!reveal) return;
+    thumb.dataset.active = "true";
+    window.clearTimeout(fadeRef.current);
+    fadeRef.current = window.setTimeout(() => { delete thumb.dataset.active; }, 900);
+  }, []);
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+    const onScroll = () => sync(true);
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    return () => { scroller.removeEventListener("scroll", onScroll); window.clearTimeout(fadeRef.current); };
+  }, [sync]);
+  /* Re-run on every render so a changed link set is picked up, and watch the links themselves: the
+     list only overflows once fonts and the portrait have settled, which resizes them and not it. */
+  useLayoutEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+    const observer = new ResizeObserver(() => sync());
+    observer.observe(scroller);
+    for (const child of Array.from(scroller.children)) observer.observe(child);
+    return () => observer.disconnect();
+  });
+  return <div className="nav-scroll">
+    <nav className="nav-list" aria-label={label} ref={scrollRef}>{children}</nav>
+    <div className="nav-scroll-thumb" ref={thumbRef} aria-hidden="true" hidden />
+  </div>;
+}
+
 function PageHeader({ eyebrow, title, actions }: { eyebrow?: string; title: string; actions?: ReactNode }) {
   return <header className="page-header"><div>{eyebrow && <p className="eyebrow">{eyebrow}</p>}<h1>{title}</h1></div>{actions}</header>;
 }
 
 function Dashboard() {
-  const { personaggi, notify } = useApp();
+  const { personaggi, settings, notify } = useApp();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const active = personaggi.activePersonaggio;
@@ -389,10 +445,73 @@ function Dashboard() {
       </div>}
     </section>
     <div className="selection-layout dashboard-character-selection">
-      <section className="panel list-panel"><h2>Personaggi disponibili</h2><div className="character-list">
+      <section className="panel list-panel"><h2>{settings.security.canManageGameData ? "Personaggi della campagna" : "I miei personaggi"}</h2><div className="character-list">
         {personaggi.personaggi.map((entry) => <button key={entry.id} className={entry.id === selected ? "active" : ""} onClick={() => setSelected(entry.id)}><strong>{entry.name}</strong><span>{entry.races.join(" / ") || "Razza sconosciuta"} · livello {entry.level}</span></button>)}
-      </div></section>
+      </div>{!personaggi.personaggi.length && <div className="management-empty-state"><strong>Nessun personaggio assegnato</strong><p>Vedi soltanto i personaggi che ti sono stati assegnati. Chiedine uno dalle Impostazioni → Profilo, oppure fatteli assegnare da un master.</p></div>}</section>
       <section className="panel character-preview">{character ? <><p className="eyebrow">{character.type}</p><h2>{character.name}</h2><p>{character.races.join(" / ")} · livello {character.level}</p><p className="long-copy">{character.details}</p><div className="stat-chip-row">{character.primaryTotals.map((stat) => <span key={stat.key}><small>{stat.label}</small><strong>{stat.value}</strong></span>)}</div><div className="button-row"><button className="button primary" disabled={selectMutation.isPending} onClick={() => selectMutation.mutate(character.id)}>Imposta e apri</button><Link className="button secondary" to={`/character/${character.id}`}>Apri senza cambiare</Link></div></> : <p>Nessun personaggio disponibile.</p>}</section>
+    </div>
+  </div>;
+}
+
+function renderGuideText(text?: string) {
+  return (text ?? "").split(/(\[[^\]]+\]\(\/(?:[^)]*)\))/g).map((part, index) => {
+    const match = part.match(/^\[([^\]]+)\]\((\/[^)]*)\)$/);
+    return match ? <Link key={index} to={match[2]}>{match[1]}</Link> : part;
+  });
+}
+
+function VariableReferenceBlock({ groups }: { groups: GuideVariableGroup[] }) {
+  const flat = useMemo(
+    () => groups.flatMap((group) => group.variables.map((variable) => ({ variable, group }))),
+    [groups],
+  );
+  const [selectedKey, setSelectedKey] = useState<string | undefined>(flat[0]?.variable.key);
+  const [query, setQuery] = useState("");
+  const normalized = query.trim().toLocaleLowerCase("it");
+  const matches = (variable: GuideVariable) =>
+    !normalized || `${variable.label} ${variable.key} ${variable.description}`.toLocaleLowerCase("it").includes(normalized);
+  const current = flat.find((entry) => entry.variable.key === selectedKey) ?? flat[0];
+  return <div className="variable-reference">
+    <div className="variable-reference-index">
+      <input
+        type="search"
+        className="variable-reference-search"
+        placeholder="Cerca una variabile…"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        aria-label="Cerca una variabile"
+      />
+      <div className="variable-reference-list" role="listbox" aria-label="Variabili del personaggio">
+        {groups.map((group) => {
+          const visible = group.variables.filter(matches);
+          if (!visible.length) return null;
+          return <div className="variable-reference-group" key={group.label}>
+            <p className="variable-reference-group-label">{group.label}</p>
+            {visible.map((variable) => <button
+              type="button"
+              key={variable.key}
+              role="option"
+              aria-selected={current?.variable.key === variable.key}
+              className={current?.variable.key === variable.key ? "active" : ""}
+              onClick={() => setSelectedKey(variable.key)}
+            ><strong>{variable.label}</strong><code>{variable.key}</code></button>)}
+          </div>;
+        })}
+      </div>
+    </div>
+    <div className="variable-reference-detail">
+      {current ? <>
+        <p className="eyebrow">{current.group.label}</p>
+        <h4>{current.variable.label} <code>{current.variable.key}</code></h4>
+        <p>{renderGuideText(current.variable.description)}</p>
+        {current.variable.facts.length > 0 && <ul className="variable-reference-facts">
+          {current.variable.facts.map((fact, index) => <li key={index}>{renderGuideText(fact)}</li>)}
+        </ul>}
+        {current.group.note && <aside className="callout">
+          <strong>{current.group.note.title}</strong>
+          <p>{renderGuideText(current.group.note.text)}</p>
+        </aside>}
+      </> : <p className="muted-copy">Nessuna variabile corrisponde alla ricerca.</p>}
     </div>
   </div>;
 }
@@ -400,19 +519,26 @@ function Dashboard() {
 function GuidesPage() {
   const { bootstrap } = useApp();
   const [selected, setSelected] = useState<Guide | undefined>(bootstrap.guides[0]);
-  const renderText = (text?: string) => (text ?? "").split(/(\[[^\]]+\]\(\/(?:[^)]*)\))/g).map((part, index) => {
-    const match = part.match(/^\[([^\]]+)\]\((\/[^)]*)\)$/);
-    return match ? <Link key={index} to={match[2]}>{match[1]}</Link> : part;
-  });
+  // The Elder rules are injected as raw HTML, so cross-guide links arrive as
+  // anchors carrying the target guide name instead of React elements.
+  const openLinkedGuide = (event: MouseEvent<HTMLElement>) => {
+    const anchor = (event.target as HTMLElement).closest<HTMLAnchorElement>("a[data-guide]");
+    const target = anchor && bootstrap.guides.find((guide) => guide.name === anchor.dataset.guide);
+    if (!target) return;
+    event.preventDefault();
+    setSelected(target);
+  };
   const renderBlock = (block: Guide["content"][number], index: number) => {
-    if (block.type === "legacy_html") return <section className="elder-rules-guide" key={index} dangerouslySetInnerHTML={{ __html: block.html ?? "" }} />;
-    if (block.type === "heading") return <h3 key={index}>{renderText(block.text)}</h3>;
-    if (block.type === "list") return <ul key={index}>{(block.items as string[] | undefined)?.map((item) => <li key={item}>{renderText(item)}</li>)}</ul>;
-    if (block.type === "entries") return <div className="guide-entries" key={index}>{(block.items as GuideEntry[] | undefined)?.map((entry) => <article key={entry.title}><strong>{entry.title}</strong>{entry.meta && <span>{entry.meta}</span>}{entry.note && <p>{renderText(entry.note)}</p>}</article>)}</div>;
+    if (block.type === "legacy_html") return <section className="elder-rules-guide" key={index} onClick={openLinkedGuide} dangerouslySetInnerHTML={{ __html: block.html ?? "" }} />;
+    if (block.type === "variable_reference") return <VariableReferenceBlock key={index} groups={block.groups ?? []} />;
+    if (block.type === "item_compendium") return <ItemCompendium key={index} />;
+    if (block.type === "heading") return <h3 key={index}>{renderGuideText(block.text)}</h3>;
+    if (block.type === "list") return <ul key={index}>{(block.items as string[] | undefined)?.map((item) => <li key={item}>{renderGuideText(item)}</li>)}</ul>;
+    if (block.type === "entries") return <div className="guide-entries" key={index}>{(block.items as GuideEntry[] | undefined)?.map((entry) => <article key={entry.title}><strong>{entry.title}</strong>{entry.meta && <span>{entry.meta}</span>}{entry.note && <p>{renderGuideText(entry.note)}</p>}</article>)}</div>;
     if (block.type === "code") return <pre data-language={block.language} key={index}>{block.text}</pre>;
-    if (block.type === "callout") return <aside className="callout" key={index}><strong>{block.title}</strong><p>{renderText(block.text)}</p></aside>;
-    if (block.type === "warning") return <aside className="callout guide-warning" key={index}><strong>{block.title}</strong><p>{renderText(block.text)}</p></aside>;
-    return <p key={index}>{renderText(block.text)}</p>;
+    if (block.type === "callout") return <aside className="callout" key={index}><strong>{block.title}</strong><p>{renderGuideText(block.text)}</p></aside>;
+    if (block.type === "warning") return <aside className="callout guide-warning" key={index}><strong>{block.title}</strong><p>{renderGuideText(block.text)}</p></aside>;
+    return <p key={index}>{renderGuideText(block.text)}</p>;
   };
   return <div className="page"><PageHeader eyebrow="Conoscenza" title="Guide" /><div className="selection-layout guide-layout"><aside className="panel guide-index">{bootstrap.guides.map((guide) => <button className={selected?.name === guide.name ? "active" : ""} onClick={() => setSelected(guide)} key={guide.name}><strong>{guide.name}</strong><span>{guide.category}</span></button>)}</aside><article className="panel guide-reader"><p className="eyebrow">{selected?.category}</p><h2>{selected?.name}</h2>{selected?.content.map(renderBlock)}</article></div></div>;
 }
@@ -879,5 +1005,5 @@ export function App() {
 
   const context = { bootstrap: bootstrap.data, personaggi: personaggi.data, settings: settings.data, media: media.data.assets, mediaCategories: media.data.categories, notify };
   // The player sits above the router: changing page must never cut the soundtrack.
-  return <AppContext.Provider value={context}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/dice" element={<AdminOnly><DiceManagementPage /></AdminOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
+  return <AppContext.Provider value={context}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/players" element={<AdminOnly><PlayerManagementPage /></AdminOnly>} /><Route path="/tools/backups" element={<AdminOnly><BackupManagementPage /></AdminOnly>} /><Route path="/tools/dice" element={<AdminOnly><DiceManagementPage /></AdminOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
 }

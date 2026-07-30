@@ -5,7 +5,7 @@ from backend.core.api import ApiError
 from backend.core.item_selectors import item_catalog_payload
 from backend.core.item_services import archive_item, recheck_items_special, restore_item, set_items_special, update_item
 from backend.core.item_special import compute_special_reasons
-from backend.core.models import Giocatore, Oggetto
+from backend.core.models import Giocatore, Oggetto, TipoArma
 
 
 class ItemArchiveStateTests(TestCase):
@@ -201,3 +201,79 @@ class ItemCatalogPaginationTests(TestCase):
         payload = self.page(limit=100, region="skyrim")
         self.assertEqual(payload["total"], 4)
         self.assertIn("Skyrim", payload["regions"])
+
+
+class ItemCatalogExtendedFilterTests(TestCase):
+    """Scoped by name so a seeded catalogue row cannot shift the counts."""
+
+    PREFIX = "Filtro"
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.spada = TipoArma.objects.create(nome=f"{cls.PREFIX} spada")
+        cls.ascia = TipoArma.objects.create(nome=f"{cls.PREFIX} ascia")
+        Oggetto.objects.create(
+            nome=f"{cls.PREFIX} lieve", tipo_1="arma", tipo_2="taglio", tipo_3="corta",
+            rarita=1, peso=1.5, valore=10, tipo_arma=cls.spada, numero_ordine=1,
+        )
+        Oggetto.objects.create(
+            nome=f"{cls.PREFIX} media", tipo_1="arma", tipo_2="contundente", tipo_3="",
+            rarita=3, peso=5.0, valore=50, tipo_arma=cls.ascia, numero_ordine=2,
+        )
+        Oggetto.objects.create(
+            nome=f"{cls.PREFIX} pesante", tipo_1="armatura", tipo_2="", tipo_3="",
+            rarita=5, peso=20.0, valore=200, tipo_arma=None, numero_ordine=3,
+        )
+        Oggetto.objects.create(
+            nome=f"{cls.PREFIX} senza regione", tipo_1="pozione", regione_loot="", numero_ordine=4,
+        )
+        Oggetto.objects.create(
+            nome=f"{cls.PREFIX} con regione", tipo_1="pozione", regione_loot="Skyrim", numero_ordine=5,
+        )
+
+    def page(self, **kwargs):
+        return item_catalog_payload(self.PREFIX, **kwargs)
+
+    def test_type_2_narrows_results(self):
+        payload = self.page(limit=100, type_2="taglio")
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} lieve"])
+
+    def test_type_3_narrows_results(self):
+        payload = self.page(limit=100, type_3="corta")
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} lieve"])
+
+    def test_rarity_filters_exactly(self):
+        payload = self.page(limit=100, rarity=5)
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} pesante"])
+
+    def test_weapon_type_id_filters_exactly(self):
+        payload = self.page(limit=100, weapon_type_id=self.ascia.id)
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} media"])
+
+    def test_weight_range_is_inclusive_on_both_ends(self):
+        payload = self.page(limit=100, weight_min=5.0, weight_max=5.0)
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} media"])
+
+    def test_value_range_narrows_results(self):
+        payload = self.page(limit=100, value_min=100)
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} pesante"])
+
+    def test_sort_by_rarity_descending(self):
+        payload = self.page(limit=100, sort="rarity_desc")
+        names = [entry["name"] for entry in payload["items"]]
+        self.assertEqual(names[:3], [f"{self.PREFIX} pesante", f"{self.PREFIX} media", f"{self.PREFIX} lieve"])
+
+    def test_sort_by_value_ascending(self):
+        payload = self.page(limit=100, sort="value")
+        weapon_names = [entry["name"] for entry in payload["items"] if entry["name"].startswith(f"{self.PREFIX} ") and entry["value"]]
+        self.assertEqual(weapon_names[:3], [f"{self.PREFIX} lieve", f"{self.PREFIX} media", f"{self.PREFIX} pesante"])
+
+    def test_none_sentinel_on_region_finds_untagged_items(self):
+        payload = self.page(limit=100, region="__none__")
+        names = {entry["name"] for entry in payload["items"]}
+        self.assertIn(f"{self.PREFIX} senza regione", names)
+        self.assertNotIn(f"{self.PREFIX} con regione", names)
+
+    def test_none_sentinel_on_type_2_finds_items_without_that_type(self):
+        payload = self.page(limit=100, type_1="armatura", type_2="__none__")
+        self.assertEqual([entry["name"] for entry in payload["items"]], [f"{self.PREFIX} pesante"])

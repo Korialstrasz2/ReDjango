@@ -2,6 +2,7 @@ from django.db.models import Q
 
 from backend.characters.models import Personaggio
 
+from .backup_defaults import BACKUP_SETTING_KEYS
 from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme
 from .security import effective_role, has_minimum_role, security_payload
 
@@ -20,6 +21,7 @@ ADMIN_MANAGED_SETTING_KEYS = frozenset({
     "mercato.locations",
     "mercato.shop_types",
     "mercato.generator_rules",
+    *BACKUP_SETTING_KEYS,
 })
 GLOBAL_EDITABLE_SETTING_KEYS = frozenset({
     "security.access_mode",

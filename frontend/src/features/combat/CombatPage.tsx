@@ -667,6 +667,15 @@ function CharacterImportModal({ workspace, busy, onClose, onImport }: {
 
 type CharacterManagerSource = { characterId?: number; templateId?: number; footprint: Axial[] };
 type UnitGenerationSource = { unitId: number; level: number; variant: string; footprint: Axial[] };
+const LEVEL_PRESETS = [1, 5, 10, 15, 20];
+const clampLevel = (value: number) => Math.max(1, Math.min(20, Math.round(value) || 1));
+
+function LevelControl({ value, onChange, label }: { value: number; onChange: (level: number) => void; label: string }) {
+  return <div className="combat-level-control" role="group" aria-label={label}>
+    <input type="range" min="1" max="20" value={value} onChange={(event) => onChange(clampLevel(Number(event.target.value)))} />
+    <input type="number" min="1" max="20" value={value} onChange={(event) => onChange(clampLevel(Number(event.target.value)))} />
+  </div>;
+}
 
 function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplicate, onGenerate, onRemove }: {
   workspace: CombatWorkspace;
@@ -683,8 +692,17 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
   const [shape, setShape] = useState("1");
   const [unitLevels, setUnitLevels] = useState<Record<number, number>>({});
   const [unitVariant, setUnitVariant] = useState("auto");
+  const [unitCategory, setUnitCategory] = useState("");
+  const [unitKind, setUnitKind] = useState("");
+  const [unitReadyOnly, setUnitReadyOnly] = useState(false);
+  const [defaultUnitLevel, setDefaultUnitLevel] = useState(1);
   const [working, setWorking] = useState(false);
   const [duplicate, setDuplicate] = useState<{ id: number; name: string } | null>(null);
+  const unitCategories = useMemo(
+    () => Array.from(new Set(workspace.unitCatalog.map((unit) => unit.category).filter(Boolean))).sort((left, right) => left.localeCompare(right, "it")),
+    [workspace.unitCatalog],
+  );
+  const unitFiltersActive = Boolean(unitCategory || unitKind || unitReadyOnly);
   const footprints: Record<string, Axial[]> = {
     "1": [{ q: 0, r: 0 }],
     "2h": [{ q: 0, r: 0 }, { q: 1, r: 0 }],
@@ -701,7 +719,13 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
       : workspace.unitCatalog;
   const visible = [...entries]
     .filter((entry) => `${entry.name} ${"description" in entry ? entry.description : ""} ${"category" in entry ? entry.category : ""}`.toLocaleLowerCase("it").includes(query.toLocaleLowerCase("it")))
-    .sort((left, right) => Number(tab === "existing" && activeIds.has(left.id)) - Number(tab === "existing" && activeIds.has(right.id)) || left.name.localeCompare(right.name, "it"));
+    .filter((entry) => tab !== "units" || !unitCategory || ("category" in entry && entry.category === unitCategory))
+    .filter((entry) => tab !== "units" || !unitKind || ("generationKind" in entry && (unitKind === "none" ? entry.generationKind === "" : entry.generationKind === unitKind)))
+    .filter((entry) => tab !== "units" || !unitReadyOnly || ("ready" in entry && entry.ready))
+    .sort((left, right) => {
+      if (tab === "units" && "ready" in left && "ready" in right) return Number(right.ready) - Number(left.ready) || left.name.localeCompare(right.name, "it");
+      return Number(tab === "existing" && activeIds.has(left.id)) - Number(tab === "existing" && activeIds.has(right.id)) || left.name.localeCompare(right.name, "it");
+    });
   const run = async (operation: () => Promise<void>) => {
     setWorking(true);
     try { await operation(); }
@@ -729,7 +753,27 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
             <p className="eyebrow">Aggiungi</p>
             <div className="segmented"><button className={tab === "existing" ? "active" : ""} onClick={() => setTab("existing")}>Personaggi</button><button className={tab === "templates" ? "active" : ""} onClick={() => setTab("templates")}>Template</button><button className={tab === "units" ? "active" : ""} onClick={() => setTab("units")}>Unità rapide</button></div>
             <label>Cerca<input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nome o tipo…" /></label>
-            {tab === "units" && <label>Variante<input value={unitVariant} maxLength={80} onChange={(event) => setUnitVariant(event.target.value)} placeholder="auto" /></label>}
+            {tab === "units" && <>
+              <div className="combat-unit-filters">
+                <header><span>Filtri</span>{unitFiltersActive && <button type="button" className="lore-link-button" onClick={() => { setUnitCategory(""); setUnitKind(""); setUnitReadyOnly(false); }}>Reimposta</button>}</header>
+                <label>Categoria<select value={unitCategory} onChange={(event) => setUnitCategory(event.target.value)}>
+                  <option value="">Tutte</option>
+                  {unitCategories.map((category) => <option key={category} value={category}>{category}</option>)}
+                </select></label>
+                <label>Tipo<select value={unitKind} onChange={(event) => setUnitKind(event.target.value)}>
+                  <option value="">Tutti</option>
+                  <option value="humanoid">Umanoide</option>
+                  <option value="creature">Creatura</option>
+                  <option value="none">Non configurato</option>
+                </select></label>
+                <label className="combat-unit-filter-check"><input type="checkbox" checked={unitReadyOnly} onChange={(event) => setUnitReadyOnly(event.target.checked)} />Solo pronte</label>
+              </div>
+              <label>Variante<input value={unitVariant} maxLength={80} onChange={(event) => setUnitVariant(event.target.value)} placeholder="auto" /></label>
+              <label>Livello predefinito<LevelControl value={defaultUnitLevel} onChange={setDefaultUnitLevel} label="Livello predefinito" /></label>
+              <div className="combat-level-presets">{LEVEL_PRESETS.map((level) => <button key={level} type="button" className={defaultUnitLevel === level ? "active" : ""} onClick={() => setDefaultUnitLevel(level)}>Lv {level}</button>)}</div>
+              <button type="button" className="button secondary small" disabled={!Object.keys(unitLevels).length} onClick={() => setUnitLevels({})}>Reimposta livelli personalizzati</button>
+              <p className="combat-unit-count">{visible.length} unità corrispondenti</p>
+            </>}
             <label>Sagoma<select value={shape} onChange={(event) => setShape(event.target.value)}><option value="1">1 esagono</option><option value="2h">2 orizzontali</option><option value="2v">2 verticali</option><option value="3">3 a triangolo</option><option value="4">4 compatta</option></select></label>
             <p>{tab === "units" ? "Auto crea ogni volta una combinazione diversa. Scrivi una Variante per riprodurre le stesse Skill, i perk e l'equipaggiamento di una squadra coerente." : "Un personaggio non attivo viene aggiunto senza copiarlo. Se è già attivo, puoi creare una copia del personaggio dopo conferma."}</p>
           </aside>
@@ -739,7 +783,7 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
             const isActive = !isTemplate && !isUnit && activeIds.has(entry.id);
             const unit = isUnit && "generationKind" in entry ? entry : null;
             const unitTargetLevel = unit
-              ? Math.max(1, Math.min(20, unitLevels[unit.id] ?? 1))
+              ? clampLevel(unitLevels[unit.id] ?? defaultUnitLevel)
               : 1;
             const subtitle = unit
               ? `${unit.generationKindLabel}${unit.coreLabel ? ` · Core ${unit.coreLabel}` : ""} · lv 1-20${unit.description ? ` · ${unit.description}` : ""}`
@@ -750,8 +794,8 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
               {"imageUrl" in entry && entry.imageUrl ? <img src={entry.imageUrl} alt="" /> : <span>{entry.name.slice(0, 2).toUpperCase()}</span>}
               <div><header><strong>{entry.name}</strong>{isActive && <em>Attivo</em>}{unit && !unit.ready && <em>Da configurare</em>}</header><small>{subtitle}</small></div>
               {unit ? <div className="combat-unit-generate">
-                <label>Livello<select aria-label={`Livello di ${unit.name}`} value={unitTargetLevel} onChange={(event) => setUnitLevels((current) => ({ ...current, [unit.id]: Number(event.target.value) }))}>{Array.from({ length: 20 }, (_, index) => index + 1).map((level) => <option key={level} value={level}>Lv {level}</option>)}</select></label>
-                <button type="button" className="button primary small" disabled={locked || !unit.ready} onClick={() => run(() => onGenerate({ unitId: unit.id, level: unitTargetLevel, variant: unitVariant.trim() || "auto", footprint: footprints[shape] }))}>Genera</button>
+                <LevelControl value={unitTargetLevel} onChange={(level) => setUnitLevels((current) => ({ ...current, [unit.id]: level }))} label={`Livello di ${unit.name}`} />
+                <button type="button" className="button primary small" disabled={locked || !unit.ready} onClick={() => run(() => onGenerate({ unitId: unit.id, level: unitTargetLevel, variant: unitVariant.trim() || "auto", footprint: footprints[shape] }))}>Genera lv {unitTargetLevel}</button>
               </div> : <button type="button" className={isActive ? "button secondary small" : "button primary small"} disabled={locked} onClick={() => {
                 if (isTemplate) run(() => onDuplicate({ templateId: entry.id, footprint: footprints[shape] }));
                 else if (isActive) setDuplicate({ id: entry.id, name: entry.name });

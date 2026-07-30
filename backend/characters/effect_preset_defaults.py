@@ -13,6 +13,19 @@ from typing import Any
 EFFECT_PRESET_CATEGORIES = ("Condizioni", "Malattie", "Cibo", "Bagni")
 
 
+# "Tick Giallo" toglie 1 a ogni competenza, non al modificatore generale.
+# L'elenco rispecchia COMPETENCE_DEFINITIONS ma resta letterale: questo modulo è
+# importato dalle migrazioni e non deve dipendere da un'altra app al caricamento.
+# EffectPresetTests.test_tick_giallo_covers_every_competence segnala eventuali derive.
+TICK_GIALLO_COMPETENCE_KEYS = (
+    "scalare", "manovrare_veicoli", "nuotare", "rapidita_di_mano", "suonare",
+    "cavalcare", "furtivita", "sapienza_magica", "ingegneria", "strategia_militare",
+    "conoscenze_naturaegeografia", "conoscenze_religioni", "conoscenze_storiaenobilta",
+    "percezione", "diplomazia", "intimidire", "camuffare", "raggirare",
+    "sopravvivenza", "gestione_risorse", "intuizione",
+)
+
+
 DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
     {
         "name": "Scosso",
@@ -236,7 +249,8 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "category": "Malattie",
         "order": 23,
         "operations": [
-            {"target": "modificatore_generale", "operation": "subtract", "value": "1", "condition": ""},
+            {"target": f"competenza.{key}", "operation": "subtract", "value": "1", "condition": ""}
+            for key in TICK_GIALLO_COMPETENCE_KEYS
         ],
     },
     {
@@ -246,9 +260,9 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "icon": "malattia",
         "category": "Malattie",
         "order": 24,
-        "operations": [
-            {"target": "modificatore_generale", "operation": "subtract", "value": "1", "condition": ""},
-        ],
+        # "Tutti i tiri" non è esprimibile: nessun bersaglio copre ogni tiro di dado.
+        # Resta descrittivo e arbitrato al tavolo.
+        "operations": [],
     },
     {
         "name": "C-Stufato di Carne",

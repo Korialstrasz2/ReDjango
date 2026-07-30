@@ -193,6 +193,268 @@
         ]
       }
     },
+    "/api/v1/compendium/items/reference": {
+      "get": {
+        "operationId": "backend_api_v1_api_compendium_reference",
+        "summary": "Compendium Reference",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemCompendiumReferenceEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "description": "Filter vocabulary and connected rules for the \"Oggetti\" guide.\n\nReadable by every authenticated player: the compendium is game knowledge,\nnot campaign information, so it carries no per-character or hidden data.",
+        "tags": [
+          "compendium"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/compendium/items": {
+      "get": {
+        "operationId": "backend_api_v1_api_compendium_items",
+        "summary": "Compendium Items",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "schema": {
+              "default": "",
+              "title": "Query",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 48,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_1",
+            "schema": {
+              "default": "",
+              "title": "Type 1",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_2",
+            "schema": {
+              "default": "",
+              "title": "Type 2",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_3",
+            "schema": {
+              "default": "",
+              "title": "Type 3",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_4",
+            "schema": {
+              "default": "",
+              "title": "Type 4",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "rarity",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rarity"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weapon_category",
+            "schema": {
+              "default": "",
+              "title": "Weapon Category",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "region",
+            "schema": {
+              "default": "",
+              "title": "Region",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "loot_level",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Loot Level"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weight_min",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Weight Min"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weight_max",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Weight Max"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "value_min",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Value Min"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "value_max",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Value Max"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "with_effects",
+            "schema": {
+              "default": false,
+              "title": "With Effects",
+              "type": "boolean"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "default": "",
+              "title": "Sort",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemCompendiumPageEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "compendium"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/market": {
       "get": {
         "operationId": "backend_api_v1_api_market",
@@ -437,6 +699,26 @@
           },
           {
             "in": "query",
+            "name": "type_2",
+            "schema": {
+              "default": "",
+              "title": "Type 2",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type_3",
+            "schema": {
+              "default": "",
+              "title": "Type 3",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
             "name": "region",
             "schema": {
               "default": "",
@@ -461,6 +743,112 @@
             "schema": {
               "default": "",
               "title": "Special",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "rarity",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rarity"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weapon_type_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Weapon Type Id"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weight_min",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Weight Min"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "weight_max",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Weight Max"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "value_min",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Value Min"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "value_max",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Value Max"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "default": "",
+              "title": "Sort",
               "type": "string"
             },
             "required": false
@@ -604,6 +992,43 @@
           },
           "404": {
             "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "management"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/management/players": {
+      "get": {
+        "operationId": "backend_api_v1_api_managed_players",
+        "summary": "Managed Players",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagementEnvelopeSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "application/json": {
                 "schema": {
@@ -953,6 +1378,43 @@
       "get": {
         "operationId": "backend_api_v1_api_managed_game_variables",
         "summary": "Managed Game Variables",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagementEnvelopeSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "management"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/management/backups": {
+      "get": {
+        "operationId": "backend_api_v1_api_managed_backups",
+        "summary": "Managed Backups",
         "parameters": [],
         "responses": {
           "200": {
@@ -1649,11 +2111,19 @@
                     "lore.relations.save": "#/components/schemas/LoreRelationsSaveActionSchema",
                     "lore.timeline.archive": "#/components/schemas/LoreTimelineArchiveActionSchema",
                     "lore.timeline.save": "#/components/schemas/LoreTimelineSaveActionSchema",
+                    "management.backups.create": "#/components/schemas/ManagedBackupCreateActionSchema",
+                    "management.backups.delete": "#/components/schemas/ManagedBackupDeleteActionSchema",
+                    "management.backups.inspect": "#/components/schemas/ManagedBackupInspectActionSchema",
+                    "management.backups.saveSettings": "#/components/schemas/ManagedBackupSettingsActionSchema",
                     "management.characters.attach": "#/components/schemas/ManagedCharacterAttachActionSchema",
                     "management.characters.delete": "#/components/schemas/ManagedCharacterDeleteActionSchema",
                     "management.characters.update": "#/components/schemas/ManagedCharacterUpdateActionSchema",
                     "management.damageRules.save": "#/components/schemas/ManagedDamageRulesSaveActionSchema",
                     "management.damageRules.validate": "#/components/schemas/ManagedDamageRulesValidateActionSchema",
+                    "management.players.assignCharacters": "#/components/schemas/ManagedPlayerCharactersActionSchema",
+                    "management.players.create": "#/components/schemas/ManagedPlayerCreateActionSchema",
+                    "management.players.setPassword": "#/components/schemas/ManagedPlayerPasswordActionSchema",
+                    "management.players.update": "#/components/schemas/ManagedPlayerUpdateActionSchema",
                     "management.skills.family.save": "#/components/schemas/ManagedSkillFamilySaveActionSchema",
                     "management.skills.family.state": "#/components/schemas/ManagedSkillFamilyStateActionSchema",
                     "management.skills.group.save": "#/components/schemas/ManagedSkillGroupSaveActionSchema",
@@ -1760,6 +2230,18 @@
                     "$ref": "#/components/schemas/ManagedCharacterAttachActionSchema"
                   },
                   {
+                    "$ref": "#/components/schemas/ManagedPlayerCreateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedPlayerUpdateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedPlayerPasswordActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedPlayerCharactersActionSchema"
+                  },
+                  {
                     "$ref": "#/components/schemas/ManagedSkillGroupSaveActionSchema"
                   },
                   {
@@ -1803,6 +2285,18 @@
                   },
                   {
                     "$ref": "#/components/schemas/ManagedVariablesSaveActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedBackupSettingsActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedBackupCreateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedBackupDeleteActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManagedBackupInspectActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/ManagedThemeSaveActionSchema"
@@ -3953,6 +4447,843 @@
           "name"
         ],
         "title": "WeaponTypeSchema",
+        "type": "object"
+      },
+      "CompendiumAxisOptionSchema": {
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "CompendiumAxisOptionSchema",
+        "type": "object"
+      },
+      "CompendiumAxisSchema": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "options": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumAxisOptionSchema"
+            },
+            "title": "Options",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label"
+        ],
+        "title": "CompendiumAxisSchema",
+        "type": "object"
+      },
+      "CompendiumGlossaryEntrySchema": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "text"
+        ],
+        "title": "CompendiumGlossaryEntrySchema",
+        "type": "object"
+      },
+      "CompendiumLabelSchema": {
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "CompendiumLabelSchema",
+        "type": "object"
+      },
+      "CompendiumOperationSchema": {
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "CompendiumOperationSchema",
+        "type": "object"
+      },
+      "CompendiumRaritySchema": {
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "shopShare": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shopshare"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "CompendiumRaritySchema",
+        "type": "object"
+      },
+      "CompendiumTypeGroupSchema": {
+        "properties": {
+          "position": {
+            "enum": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "title": "Position",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "options": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemTypeOptionSchema"
+            },
+            "title": "Options",
+            "type": "array"
+          }
+        },
+        "required": [
+          "position",
+          "label"
+        ],
+        "title": "CompendiumTypeGroupSchema",
+        "type": "object"
+      },
+      "CompendiumWeaponCategorySchema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "combatMode": {
+            "default": "",
+            "title": "Combatmode",
+            "type": "string"
+          },
+          "combatModeLabel": {
+            "default": "",
+            "title": "Combatmodelabel",
+            "type": "string"
+          },
+          "length": {
+            "default": "",
+            "title": "Length",
+            "type": "string"
+          },
+          "lengthLabel": {
+            "default": "",
+            "title": "Lengthlabel",
+            "type": "string"
+          },
+          "lengthNote": {
+            "default": "",
+            "title": "Lengthnote",
+            "type": "string"
+          },
+          "lengthNotes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Lengthnotes",
+            "type": "array"
+          },
+          "actionPointCost": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actionpointcost"
+          },
+          "heaviness": {
+            "default": "",
+            "title": "Heaviness",
+            "type": "string"
+          },
+          "heavinessLabel": {
+            "default": "",
+            "title": "Heavinesslabel",
+            "type": "string"
+          },
+          "heavinessNotes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Heavinessnotes",
+            "type": "array"
+          },
+          "power": {
+            "default": "",
+            "title": "Power",
+            "type": "string"
+          },
+          "powerLabel": {
+            "default": "",
+            "title": "Powerlabel",
+            "type": "string"
+          },
+          "powerSkill": {
+            "default": "",
+            "title": "Powerskill",
+            "type": "string"
+          },
+          "damageType": {
+            "default": "",
+            "title": "Damagetype",
+            "type": "string"
+          },
+          "damageTypeLabel": {
+            "default": "",
+            "title": "Damagetypelabel",
+            "type": "string"
+          },
+          "damageNotes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Damagenotes",
+            "type": "array"
+          },
+          "handling": {
+            "default": "",
+            "title": "Handling",
+            "type": "string"
+          },
+          "handlingLabel": {
+            "default": "",
+            "title": "Handlinglabel",
+            "type": "string"
+          },
+          "costBand": {
+            "default": "",
+            "title": "Costband",
+            "type": "string"
+          },
+          "costBandLabel": {
+            "default": "",
+            "title": "Costbandlabel",
+            "type": "string"
+          },
+          "baseRangeMeters": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baserangemeters"
+          },
+          "ammunitionType": {
+            "default": "",
+            "title": "Ammunitiontype",
+            "type": "string"
+          },
+          "ammunitionLabel": {
+            "default": "",
+            "title": "Ammunitionlabel",
+            "type": "string"
+          },
+          "magazineSize": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Magazinesize"
+          },
+          "reloadBaseCost": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reloadbasecost"
+          },
+          "reloadPerProjectileCost": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reloadperprojectilecost"
+          },
+          "uniquePowers": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Uniquepowers",
+            "type": "array"
+          },
+          "specialRules": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Specialrules",
+            "type": "array"
+          },
+          "incomplete": {
+            "default": false,
+            "title": "Incomplete",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "CompendiumWeaponCategorySchema",
+        "type": "object"
+      },
+      "ItemCompendiumReferenceDataSchema": {
+        "properties": {
+          "typeGroups": {
+            "items": {
+              "$ref": "#/components/schemas/CompendiumTypeGroupSchema"
+            },
+            "title": "Typegroups",
+            "type": "array"
+          },
+          "subtypesByCategory": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "default": {},
+            "title": "Subtypesbycategory",
+            "type": "object"
+          },
+          "rarityChoices": {
+            "items": {
+              "$ref": "#/components/schemas/CompendiumRaritySchema"
+            },
+            "title": "Raritychoices",
+            "type": "array"
+          },
+          "regions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Regions",
+            "type": "array"
+          },
+          "lootLevels": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Lootlevels",
+            "type": "array"
+          },
+          "sortOptions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumLabelSchema"
+            },
+            "title": "Sortoptions",
+            "type": "array"
+          },
+          "weaponCategories": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumWeaponCategorySchema"
+            },
+            "title": "Weaponcategories",
+            "type": "array"
+          },
+          "weaponAxes": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CompendiumAxisSchema"
+            },
+            "default": {},
+            "title": "Weaponaxes",
+            "type": "object"
+          },
+          "effectTargets": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumLabelSchema"
+            },
+            "title": "Effecttargets",
+            "type": "array"
+          },
+          "effectOperations": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumOperationSchema"
+            },
+            "title": "Effectoperations",
+            "type": "array"
+          },
+          "equipmentSlots": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumLabelSchema"
+            },
+            "title": "Equipmentslots",
+            "type": "array"
+          },
+          "glossary": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumGlossaryEntrySchema"
+            },
+            "title": "Glossary",
+            "type": "array"
+          }
+        },
+        "required": [
+          "typeGroups",
+          "rarityChoices"
+        ],
+        "title": "ItemCompendiumReferenceDataSchema",
+        "type": "object"
+      },
+      "ItemCompendiumReferenceEnvelopeSchema": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ItemCompendiumReferenceDataSchema"
+          },
+          "events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EventSchema"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "title": "Errors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "requestId",
+          "data"
+        ],
+        "title": "ItemCompendiumReferenceEnvelopeSchema",
+        "type": "object"
+      },
+      "CompendiumItemSchema": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "imageUrl": {
+            "default": "",
+            "title": "Imageurl",
+            "type": "string"
+          },
+          "typeValues": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Typevalues",
+            "type": "array"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          },
+          "rarity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rarity"
+          },
+          "rarityLabel": {
+            "default": "",
+            "title": "Raritylabel",
+            "type": "string"
+          },
+          "lootLevel": {
+            "default": "",
+            "title": "Lootlevel",
+            "type": "string"
+          },
+          "lootLevels": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Lootlevels",
+            "type": "array"
+          },
+          "region": {
+            "default": "",
+            "title": "Region",
+            "type": "string"
+          },
+          "regionWeight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Regionweight"
+          },
+          "operations": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CompendiumOperationEntrySchema"
+            },
+            "title": "Operations",
+            "type": "array"
+          },
+          "elderEffects": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Eldereffects",
+            "type": "array"
+          },
+          "weaponCategory": {
+            "default": "",
+            "title": "Weaponcategory",
+            "type": "string"
+          },
+          "weaponProfile": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Weaponprofile",
+            "type": "object"
+          },
+          "actionPointCost": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actionpointcost"
+          },
+          "alchemyProfile": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Alchemyprofile",
+            "type": "object"
+          },
+          "craftingProfile": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Craftingprofile",
+            "type": "object"
+          },
+          "equipmentSlots": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Equipmentslots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "CompendiumItemSchema",
+        "type": "object"
+      },
+      "CompendiumOperationEntrySchema": {
+        "properties": {
+          "target": {
+            "title": "Target",
+            "type": "string"
+          },
+          "operation": {
+            "title": "Operation",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          },
+          "condition": {
+            "default": "",
+            "title": "Condition",
+            "type": "string"
+          }
+        },
+        "required": [
+          "target",
+          "operation"
+        ],
+        "title": "CompendiumOperationEntrySchema",
+        "type": "object"
+      },
+      "ItemCompendiumPageDataSchema": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CompendiumItemSchema"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "default": 0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "limit": {
+            "default": 0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "hasMore": {
+            "default": false,
+            "title": "Hasmore",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ItemCompendiumPageDataSchema",
+        "type": "object"
+      },
+      "ItemCompendiumPageEnvelopeSchema": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ItemCompendiumPageDataSchema"
+          },
+          "events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EventSchema"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "title": "Errors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "requestId",
+          "data"
+        ],
+        "title": "ItemCompendiumPageEnvelopeSchema",
         "type": "object"
       },
       "MarketEnvelopeSchema": {
@@ -7528,6 +8859,104 @@
         "title": "AssignItemPayloadSchema",
         "type": "object"
       },
+      "BackupConfigurationPayloadSchema": {
+        "properties": {
+          "configuration": {
+            "$ref": "#/components/schemas/BackupConfigurationSchema"
+          }
+        },
+        "required": [
+          "configuration"
+        ],
+        "title": "BackupConfigurationPayloadSchema",
+        "type": "object"
+      },
+      "BackupConfigurationSchema": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "onStartup": {
+            "title": "Onstartup",
+            "type": "boolean"
+          },
+          "intervalMinutes": {
+            "maximum": 120,
+            "minimum": 5,
+            "title": "Intervalminutes",
+            "type": "integer"
+          },
+          "retentionCount": {
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Retentioncount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "enabled",
+          "onStartup",
+          "intervalMinutes",
+          "retentionCount"
+        ],
+        "title": "BackupConfigurationSchema",
+        "type": "object"
+      },
+      "BackupCreatePayloadSchema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "maxLength": 120,
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "title": "BackupCreatePayloadSchema",
+        "type": "object"
+      },
+      "BackupIdPayloadSchema": {
+        "properties": {
+          "backupId": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Backupid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "backupId"
+        ],
+        "title": "BackupIdPayloadSchema",
+        "type": "object"
+      },
+      "BackupInspectPayloadSchema": {
+        "properties": {
+          "backupId": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Backupid",
+            "type": "string"
+          },
+          "characterId": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Characterid"
+          }
+        },
+        "required": [
+          "backupId"
+        ],
+        "title": "BackupInspectPayloadSchema",
+        "type": "object"
+      },
       "CampaignClockUpdateActionSchema": {
         "properties": {
           "requestId": {
@@ -9289,6 +10718,146 @@
         "title": "LoreValuesPayloadSchema",
         "type": "object"
       },
+      "ManagedBackupCreateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.backups.create",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/BackupCreatePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedBackupCreateActionSchema",
+        "type": "object"
+      },
+      "ManagedBackupDeleteActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.backups.delete",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/BackupIdPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedBackupDeleteActionSchema",
+        "type": "object"
+      },
+      "ManagedBackupInspectActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.backups.inspect",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/BackupInspectPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedBackupInspectActionSchema",
+        "type": "object"
+      },
+      "ManagedBackupSettingsActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.backups.saveSettings",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/BackupConfigurationPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedBackupSettingsActionSchema",
+        "type": "object"
+      },
       "ManagedCharacterAttachActionSchema": {
         "properties": {
           "requestId": {
@@ -9564,6 +11133,218 @@
           "rules"
         ],
         "title": "ManagedDamageRulesValidatePayloadSchema",
+        "type": "object"
+      },
+      "ManagedPlayerCharactersActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.players.assignCharacters",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedPlayerCharactersPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedPlayerCharactersActionSchema",
+        "type": "object"
+      },
+      "ManagedPlayerCharactersPayloadSchema": {
+        "properties": {
+          "playerId": {
+            "title": "Playerid",
+            "type": "integer"
+          },
+          "characterIds": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Characterids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "playerId"
+        ],
+        "title": "ManagedPlayerCharactersPayloadSchema",
+        "type": "object"
+      },
+      "ManagedPlayerCreateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.players.create",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedPlayerCreatePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedPlayerCreateActionSchema",
+        "type": "object"
+      },
+      "ManagedPlayerCreatePayloadSchema": {
+        "properties": {
+          "values": {
+            "additionalProperties": true,
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "ManagedPlayerCreatePayloadSchema",
+        "type": "object"
+      },
+      "ManagedPlayerPasswordActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.players.setPassword",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedPlayerPasswordPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedPlayerPasswordActionSchema",
+        "type": "object"
+      },
+      "ManagedPlayerPasswordPayloadSchema": {
+        "properties": {
+          "playerId": {
+            "title": "Playerid",
+            "type": "integer"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "playerId",
+          "password"
+        ],
+        "title": "ManagedPlayerPasswordPayloadSchema",
+        "type": "object"
+      },
+      "ManagedPlayerUpdateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "management.players.update",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManagedPlayerUpdatePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManagedPlayerUpdateActionSchema",
+        "type": "object"
+      },
+      "ManagedPlayerUpdatePayloadSchema": {
+        "properties": {
+          "playerId": {
+            "title": "Playerid",
+            "type": "integer"
+          },
+          "values": {
+            "additionalProperties": true,
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "playerId",
+          "values"
+        ],
+        "title": "ManagedPlayerUpdatePayloadSchema",
         "type": "object"
       },
       "ManagedSkillFamilySaveActionSchema": {

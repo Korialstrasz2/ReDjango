@@ -1069,6 +1069,36 @@ class EffectPresetTests(TestCase):
             [("difesa", "add", "2"), ("attacco", "subtract", "6")],
         )
 
+    def test_preset_descriptions_keep_the_original_elder_wording(self):
+        """La descrizione è la regola: nessun preset può riscriverla."""
+        for definition in DEFAULT_EFFECT_PRESETS:
+            with self.subTest(preset=definition["name"]):
+                stored = EffettoPreset.objects.get(nome=definition["name"]).descrizione
+                self.assertEqual(stored, definition["description"])
+
+    def test_tick_giallo_covers_every_competence(self):
+        from backend.core.competence_defaults import COMPETENCE_DEFINITIONS
+
+        preset = EffettoPreset.objects.get(nome="Tick Giallo")
+        self.assertEqual(
+            [operation["target"] for operation in preset.operazioni],
+            [f"competenza.{definition['key']}" for definition in COMPETENCE_DEFINITIONS],
+            "Tick Giallo deve togliere 1 a ogni competenza: aggiorna TICK_GIALLO_COMPETENCE_KEYS.",
+        )
+        self.assertTrue(all(operation["operation"] == "subtract" and operation["value"] == "1" for operation in preset.operazioni))
+
+    def test_the_general_modifier_is_reserved_for_presets_that_name_it(self):
+        """Solo le Articolazioni dichiarano "modifica generale" nella descrizione."""
+        touching = {
+            preset.nome
+            for preset in EffettoPreset.objects.all()
+            if any(operation["target"] == "modificatore_generale" for operation in preset.operazioni)
+        }
+        self.assertEqual(touching, {"Articolazioni di Roccia", "Articolazioni Infernali"})
+
+    def test_spasmi_stays_descriptive(self):
+        self.assertEqual(EffettoPreset.objects.get(nome="Spasmi").operazioni, [])
+
     def test_skill_passives_still_require_at_least_one_modifier(self):
         with self.assertRaises(ApiError) as caught:
             validate_effect_values({"name": "Passiva vuota", "icon": "runa", "operations": []})

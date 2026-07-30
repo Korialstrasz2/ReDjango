@@ -31,6 +31,12 @@ Ricostruzione moderna, veloce e a pagina singola di **The Elder Django**. Django
 - Pagina **Lore** con tre sezioni. **Fazioni** tiene le carte delle fazioni nella colonna principale e affianca una barra laterale con due schede: `Aggiungi` per registrare o correggere un evento e `Storico` per scorrere la cronologia e modificarne o rimuoverne le voci. Ogni fazione mostra la reputazione verso il gruppo su una scala da -100 a +100 con fascia narrativa, e il nome apre lo storico della singola fazione. La reputazione attuale non è mai salvata: nasce dal valore iniziale ripercorrendo tutti gli eventi in ordine di giorno, quindi rimuovere o retrodatare un evento ricalcola davvero il presente. Il master registra eventi con motivo obbligatorio, su una o più fazioni, in variazione o a valore imposto; una variazione si propaga di un solo passo alle fazioni collegate dalla matrice asimmetrica delle reazioni, mentre un valore imposto resta locale. I giocatori leggono fazioni, punteggi ed eventi, ma non vedono la matrice, i valori base, gli strumenti di modifica né gli eventi marcati come riservati, che continuano comunque a spostare i punteggi visibili. **Personaggi** è una galleria di ritratti con il solo nome: aprendo una carta compaiono descrizione, ruolo e appartenenza, e soltanto lì master e amministratori trovano i comandi per modificarla o archiviarla. **Timeline** porta la cronologia storica dentro la stessa pagina: ricerca, navigazione cronologica, dettaglio, immagini facoltative e authoring riservato a master/amministratori, con anni numerici ordinati rispetto alla caduta di Dagoth Ur. Le schede restano narrative e leggere, indipendenti dalle schede giocabili.
 - Contratto OpenAPI versionato e tipi frontend generati.
 
+## Backup amministrativi
+
+La pagina **Gestione Backup**, disponibile solo agli amministratori in `/tools/backups`, crea snapshot consistenti del database SQLite senza fermare il server. Permette di scegliere se eseguire un backup all'avvio, pianificare copie ogni 5-120 minuti di attività del server, impostare quante copie conservare, creare backup manuali e ispezionare personaggi, valori e inventari contenuti nelle copie precedenti.
+
+Le copie gestite sono salvate nella cartella `backups/` con prefisso `redjango-backup-`. La conservazione automatica riguarda soltanto questi file e non elimina eventuali backup creati manualmente con altri nomi. Gli snapshot includono il database applicativo, ma non i file media caricati.
+
 ## Avvio
 
 Da `C:\Users\alexo\PycharmProjects\ReDjango`:

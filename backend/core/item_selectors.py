@@ -10,9 +10,63 @@ from backend.characters.services.inventory_rules import item_fits_container
 from backend.core.weapon_rules import weapon_configuration_payload
 
 from .models import Oggetto, OpzioneTipoOggetto, TipoArma
+from .weapon_presets import WEAPON_TYPE_PRESETS
 
 
 CATALOG_FILTER_POSITIONS = ("tipo_1", "tipo_2", "tipo_3")
+
+# Sentinel a filter value can carry to mean "explicitly empty" (no region / no type
+# at that position), as opposed to "" which means the filter is not applied at all.
+NONE_SENTINEL = "__none__"
+
+CATALOG_SORT_OPTIONS: dict[str, tuple[str, ...]] = {
+    "": ("numero_ordine", "nome"),
+    "name": ("nome",),
+    "name_desc": ("-nome", "nome"),
+    "rarity": ("rarita", "nome"),
+    "rarity_desc": ("-rarita", "nome"),
+    "weight": ("peso", "nome"),
+    "weight_desc": ("-peso", "nome"),
+    "value": ("valore", "nome"),
+    "value_desc": ("-valore", "nome"),
+}
+
+
+def weapon_type_profiles() -> list[dict]:
+    """Read the weapon catalogue from TipoArma, falling back to the shipped presets.
+
+    Seeded rows keep the whole profile under ``rules["profile"]``; anything saved
+    later by hand may only have the plain columns, so both are merged. Every
+    reader of the catalogue — the weapon guide and the player compendium — must
+    resolve a type the same way, otherwise the same weapon would describe itself
+    differently on two pages.
+    """
+    presets = {entry["name"]: entry["profile"] for entry in WEAPON_TYPE_PRESETS}
+    entries = []
+    for weapon_type in TipoArma.objects.filter(archived_at__isnull=True):
+        rules = weapon_type.rules if isinstance(weapon_type.rules, dict) else {}
+        profile = rules.get("profile") if isinstance(rules.get("profile"), dict) else {}
+        merged = {**presets.get(weapon_type.nome, {}), **profile}
+        notes = merged.get("bonusNotes") or [
+            note for note in (weapon_type.bonus_1, weapon_type.bonus_2) if note
+        ]
+        entries.append(
+            {
+                **merged,
+                "id": weapon_type.id,
+                "name": weapon_type.nome,
+                "bonusNotes": notes,
+                # Without a profile the creator cannot suggest modifiers, so the
+                # guide lists the type as incomplete instead of inventing one.
+                "incomplete": not merged.get("combatMode"),
+            }
+        )
+    if not entries:
+        entries = [
+            {**entry["profile"], "id": None, "name": entry["name"]}
+            for entry in WEAPON_TYPE_PRESETS
+        ]
+    return entries
 
 
 def _catalog_queryset(
@@ -25,6 +79,11 @@ def _catalog_queryset(
     special: bool | None = None,
     region: str = "",
     state: str = "",
+    weight_min: float | None = None,
+    weight_max: float | None = None,
+    value_min: int | None = None,
+    value_max: int | None = None,
+    sort: str = "",
 ):
     queryset = Oggetto.objects.select_related("tipo_arma", "media")
     if not include_archived:
@@ -35,7 +94,9 @@ def _catalog_queryset(
         queryset = queryset.filter(archiviato=False, archived_at__isnull=True)
     if special is not None:
         queryset = queryset.filter(speciale=special)
-    if region:
+    if region == NONE_SENTINEL:
+        queryset = queryset.filter(regione_loot="")
+    elif region:
         queryset = queryset.filter(regione_loot__iexact=region)
     if query:
         queryset = queryset.filter(
@@ -46,13 +107,23 @@ def _catalog_queryset(
             | Q(tipo_3__icontains=query)
         )
     for field, value in zip(CATALOG_FILTER_POSITIONS, types):
-        if value:
+        if value == NONE_SENTINEL:
+            queryset = queryset.filter(**{field: ""})
+        elif value:
             queryset = queryset.filter(**{f"{field}__iexact": value})
     if rarity is not None:
         queryset = queryset.filter(rarita=rarity)
     if weapon_type_id is not None:
         queryset = queryset.filter(tipo_arma_id=weapon_type_id)
-    return queryset.order_by("numero_ordine", "nome")
+    if weight_min is not None:
+        queryset = queryset.filter(peso__gte=weight_min)
+    if weight_max is not None:
+        queryset = queryset.filter(peso__lte=weight_max)
+    if value_min is not None:
+        queryset = queryset.filter(valore__gte=value_min)
+    if value_max is not None:
+        queryset = queryset.filter(valore__lte=value_max)
+    return queryset.order_by(*CATALOG_SORT_OPTIONS.get(sort, CATALOG_SORT_OPTIONS[""]))
 
 
 def _catalog_rows(queryset, *, limit: int, offset: int, group: str, slot: str) -> list[Oggetto]:
@@ -82,6 +153,11 @@ def item_catalog_payload(
     special: bool | None = None,
     region: str = "",
     state: str = "",
+    weight_min: float | None = None,
+    weight_max: float | None = None,
+    value_min: int | None = None,
+    value_max: int | None = None,
+    sort: str = "",
     group: str = "",
     slot: str = "",
 ) -> dict:
@@ -94,6 +170,11 @@ def item_catalog_payload(
         special=special,
         region=region,
         state=state,
+        weight_min=weight_min,
+        weight_max=weight_max,
+        value_min=value_min,
+        value_max=value_max,
+        sort=sort,
     )
     page_size = min(limit, 10000)
     offset = max(0, offset)
@@ -107,9 +188,13 @@ def item_catalog_payload(
         "offset": offset,
         "limit": page_size,
         "hasMore": offset + len(rows) < total,
+        # The default model ordering would otherwise join the DISTINCT: Django
+        # adds `numero_ordine`/`nome` to the SELECT and every region comes back
+        # once per item.
         "regions": sorted(
             value
             for value in Oggetto.objects.exclude(regione_loot="")
+            .order_by()
             .values_list("regione_loot", flat=True)
             .distinct()
         ),

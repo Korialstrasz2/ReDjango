@@ -36,6 +36,16 @@ export function ManagementHub() {
         <span><small>In lavorazione</small><strong>Aiuto Dungeon</strong><p>Trappole, stanze, ritmo e complicazioni da consultare al tavolo. Strumento del Master, non una guida da leggere.</p></span>
         <b aria-hidden="true">Apri →</b>
       </Link>
+      {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/players" data-component-type="card" data-theme="parchment">
+        <span className="management-tool-icon" aria-hidden="true">☺</span>
+        <span><small>Accessi, ruoli e compagnia</small><strong>Gestione Player</strong><p>Crea i giocatori, cambia le loro password, assegna il livello di accesso e decidi quali personaggi vedono nella Sala principale.</p></span>
+        <b aria-hidden="true">Apri →</b>
+      </Link>}
+      {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/backups" data-component-type="card" data-theme="gold">
+        <span className="management-tool-icon" aria-hidden="true">▣</span>
+        <span><small>Pianificazione, conservazione e ispezione</small><strong>Gestione Backup</strong><p>Configura le copie automatiche del database, crea snapshot manuali e consulta personaggi e inventari salvati.</p></span>
+        <b aria-hidden="true">Apri →</b>
+      </Link>}
       {settings.security.canManageAdminSettings && <Link className="management-tool-card" to="/tools/dice" data-component-type="card" data-theme="arcane">
         <span className="management-tool-icon" aria-hidden="true">◆</span>
         <span><small>Set, texture e colori</small><strong>Gestisci Dadi</strong><p>Crea set di dadi personalizzati, assegna texture a ogni dado e imposta il set predefinito per la compagnia.</p></span>

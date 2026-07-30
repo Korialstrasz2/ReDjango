@@ -7,20 +7,22 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET
 
 from backend.characters.services.refresh_personaggio import (
+    extract_characteristic_adjustments,
     extract_formula_map,
     extract_quick_stat_adjustment,
 )
+from backend.combat.damage_rules import configured_damage_rules
 
 from .api import api_response
-from .defaults import FORMULE_BASE_FORMULAS, FORMULE_BASE_VALUE_FLOAT
+from .defaults import CHARACTERISTIC_ADJUSTMENT_DEFAULTS, FORMULE_BASE_FORMULAS, FORMULE_BASE_VALUE_FLOAT
 from .guides_it import (
     V2_GUIDE_DEFAULTS,
     race_guide_html,
     character_variable_guide_blocks,
     weapon_catalogue_guide_blocks,
 )
-from .models import GlobalModifiers, Guida, TipoArma
-from .weapon_presets import WEAPON_TYPE_PRESETS
+from .item_selectors import weapon_type_profiles
+from .models import GlobalModifiers, Guida
 from .security import get_or_create_giocatore_for_user, security_payload
 
 
@@ -52,41 +54,21 @@ def _dynamic_character_variable_blocks():
             base_values.update(profile.value_float)
         value_string = profile.value_string if isinstance(profile.value_string, dict) else {}
         formulas = extract_formula_map(value_string)
+    characteristic_adjustments = {
+        **CHARACTERISTIC_ADJUSTMENT_DEFAULTS,
+        **extract_characteristic_adjustments(value_string),
+    }
     return character_variable_guide_blocks(
         base_values,
         formulas,
         extract_quick_stat_adjustment(value_string),
+        characteristic_adjustments,
+        configured_damage_rules(),
     )
 
 
 def _dynamic_weapon_catalogue_blocks():
-    """Read the weapon catalogue from TipoArma, falling back to the shipped presets.
-
-    Seeded rows keep the whole profile under ``rules["profile"]``; anything saved
-    later by hand may only have the plain columns, so both are merged.
-    """
-    presets = {entry["name"]: entry["profile"] for entry in WEAPON_TYPE_PRESETS}
-    entries = []
-    for weapon_type in TipoArma.objects.filter(archived_at__isnull=True):
-        rules = weapon_type.rules if isinstance(weapon_type.rules, dict) else {}
-        profile = rules.get("profile") if isinstance(rules.get("profile"), dict) else {}
-        merged = {**presets.get(weapon_type.nome, {}), **profile}
-        notes = merged.get("bonusNotes") or [
-            note for note in (weapon_type.bonus_1, weapon_type.bonus_2) if note
-        ]
-        entries.append(
-            {
-                **merged,
-                "name": weapon_type.nome,
-                "bonusNotes": notes,
-                # Without a profile the creator cannot suggest modifiers, so the
-                # guide lists the type as incomplete instead of inventing one.
-                "incomplete": not merged.get("combatMode"),
-            }
-        )
-    if not entries:
-        entries = [{**entry["profile"], "name": entry["name"]} for entry in WEAPON_TYPE_PRESETS]
-    return weapon_catalogue_guide_blocks(entries)
+    return weapon_catalogue_guide_blocks(weapon_type_profiles())
 
 
 def _guide_blocks(raw_content):

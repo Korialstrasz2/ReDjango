@@ -85,6 +85,52 @@ export type CharacterManagementDetail = {
   };
 };
 
+export type ManagedPlayerCharacter = {
+  id: number;
+  name: string;
+  campaignName: string;
+  inActiveCampaign: boolean;
+};
+
+export type ManagedPlayer = {
+  id: number;
+  name: string;
+  displayName: string;
+  role: string;
+  roleLabel: string;
+  username: string;
+  hasAccount: boolean;
+  accountActive: boolean;
+  canUseDjangoAdmin: boolean;
+  lastLogin: string;
+  activeCampaignId: number | null;
+  activeCampaignName: string;
+  activeCharacterId: number | null;
+  activeCharacterName: string;
+  characters: ManagedPlayerCharacter[];
+  missingCharacterIds: number[];
+  pendingRequests: Array<{ characterId: number; characterName: string; message: string }>;
+};
+
+export type PlayerManagementOverview = {
+  players: ManagedPlayer[];
+  roles: Array<{ value: string; label: string }>;
+  campaigns: Array<{ value: string; label: string }>;
+  characters: Array<{
+    id: number;
+    name: string;
+    type: string;
+    level: number;
+    campaignId: number | null;
+    campaignName: string;
+    assignedTo: string[];
+  }>;
+  currentPlayerId: number | null;
+  passwordHelp: string[];
+  /** Set only on the payload returned by a write action: the player just saved. */
+  savedPlayerId: number | null;
+};
+
 export type ManagedSkillGroup = {
   id: number;
   name: string;
@@ -349,4 +395,70 @@ export type UnitGenerationPreview = {
     xp: Record<string, number>;
     competences: Record<string, number | string>;
   };
+};
+
+export type BackupConfiguration = {
+  enabled: boolean;
+  onStartup: boolean;
+  intervalMinutes: number;
+  retentionCount: number;
+};
+
+export type ManagedBackup = {
+  id: string;
+  kind: "automatic" | "manual";
+  label: string;
+  createdAt: string;
+  createdBy: string;
+  sizeBytes: number;
+};
+
+export type BackupCharacterValue = {
+  key: string;
+  label: string;
+  value: number | string;
+};
+
+export type BackupCharacterSummary = {
+  id: number;
+  name: string;
+  type: string;
+  level: number;
+  coins: number;
+  damage: number;
+  coreValues: BackupCharacterValue[];
+};
+
+export type BackupContainerEntry = {
+  slot: number;
+  name: string;
+  quantity: number;
+};
+
+export type BackupCharacterDetail = BackupCharacterSummary & {
+  backpack: BackupContainerEntry[];
+  containers: Array<{
+    name: string;
+    capacity: number;
+    entries: BackupContainerEntry[];
+  }>;
+};
+
+export type BackupInspection = {
+  backupId: string;
+  characterCount: number;
+  characters: BackupCharacterSummary[];
+  selectedCharacter: BackupCharacterDetail | null;
+};
+
+export type BackupManagementData = {
+  configuration: BackupConfiguration;
+  backups: ManagedBackup[];
+  createdBackupId: string | null;
+  storage: {
+    count: number;
+    usedBytes: number;
+    content: string;
+  };
+  inspection?: BackupInspection;
 };

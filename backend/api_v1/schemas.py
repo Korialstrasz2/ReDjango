@@ -373,6 +373,157 @@ class ItemCatalogEnvelopeSchema(Schema):
     errors: list[ErrorSchema] = []
 
 
+class CompendiumTypeGroupSchema(Schema):
+    position: Literal[1, 2, 3, 4]
+    label: str
+    note: str = ""
+    options: list[ItemTypeOptionSchema] = []
+
+
+class CompendiumRaritySchema(Schema):
+    value: int
+    label: str
+    note: str = ""
+    shopShare: float | None = None
+
+
+class CompendiumWeaponCategorySchema(Schema):
+    id: int | None = None
+    key: str
+    label: str
+    combatMode: str = ""
+    combatModeLabel: str = ""
+    length: str = ""
+    lengthLabel: str = ""
+    lengthNote: str = ""
+    lengthNotes: list[str] = []
+    actionPointCost: int | None = None
+    heaviness: str = ""
+    heavinessLabel: str = ""
+    heavinessNotes: list[str] = []
+    power: str = ""
+    powerLabel: str = ""
+    powerSkill: str = ""
+    damageType: str = ""
+    damageTypeLabel: str = ""
+    damageNotes: list[str] = []
+    handling: str = ""
+    handlingLabel: str = ""
+    costBand: str = ""
+    costBandLabel: str = ""
+    baseRangeMeters: int | None = None
+    ammunitionType: str = ""
+    ammunitionLabel: str = ""
+    magazineSize: int | None = None
+    reloadBaseCost: int | None = None
+    reloadPerProjectileCost: int | None = None
+    uniquePowers: list[str] = []
+    specialRules: list[str] = []
+    incomplete: bool = False
+
+
+class CompendiumAxisOptionSchema(Schema):
+    value: str
+    label: str
+    note: str = ""
+    notes: list[str] = []
+
+
+class CompendiumAxisSchema(Schema):
+    label: str
+    note: str = ""
+    options: list[CompendiumAxisOptionSchema] = []
+
+
+class CompendiumLabelSchema(Schema):
+    value: str
+    label: str
+
+
+class CompendiumOperationSchema(Schema):
+    value: str
+    label: str
+    description: str = ""
+
+
+class CompendiumGlossaryEntrySchema(Schema):
+    key: str
+    title: str
+    text: str
+
+
+class ItemCompendiumReferenceDataSchema(Schema):
+    typeGroups: list[CompendiumTypeGroupSchema]
+    subtypesByCategory: dict[str, list[str]] = {}
+    rarityChoices: list[CompendiumRaritySchema]
+    regions: list[str] = []
+    lootLevels: list[int] = []
+    sortOptions: list[CompendiumLabelSchema] = []
+    weaponCategories: list[CompendiumWeaponCategorySchema] = []
+    weaponAxes: dict[str, CompendiumAxisSchema] = {}
+    effectTargets: list[CompendiumLabelSchema] = []
+    effectOperations: list[CompendiumOperationSchema] = []
+    equipmentSlots: list[CompendiumLabelSchema] = []
+    glossary: list[CompendiumGlossaryEntrySchema] = []
+
+
+class ItemCompendiumReferenceEnvelopeSchema(Schema):
+    ok: bool
+    requestId: str
+    data: ItemCompendiumReferenceDataSchema
+    events: list[EventSchema] = []
+    warnings: list[dict[str, Any]] = []
+    errors: list[ErrorSchema] = []
+
+
+class CompendiumOperationEntrySchema(Schema):
+    target: str
+    operation: str
+    value: str = ""
+    condition: str = ""
+
+
+class CompendiumItemSchema(Schema):
+    id: int
+    name: str
+    imageUrl: str = ""
+    typeValues: list[str] = []
+    description: str = ""
+    value: int | None = None
+    weight: float | None = None
+    rarity: int | None = None
+    rarityLabel: str = ""
+    lootLevel: str = ""
+    lootLevels: list[int] = []
+    region: str = ""
+    regionWeight: float | None = None
+    operations: list[CompendiumOperationEntrySchema] = []
+    elderEffects: list[str] = []
+    weaponCategory: str = ""
+    weaponProfile: dict[str, Any] = {}
+    actionPointCost: int | None = None
+    alchemyProfile: dict[str, Any] = {}
+    craftingProfile: dict[str, Any] = {}
+    equipmentSlots: list[str] = []
+
+
+class ItemCompendiumPageDataSchema(Schema):
+    items: list[CompendiumItemSchema]
+    total: int = 0
+    offset: int = 0
+    limit: int = 0
+    hasMore: bool = False
+
+
+class ItemCompendiumPageEnvelopeSchema(Schema):
+    ok: bool
+    requestId: str
+    data: ItemCompendiumPageDataSchema
+    events: list[EventSchema] = []
+    warnings: list[dict[str, Any]] = []
+    errors: list[ErrorSchema] = []
+
+
 class ManagementEnvelopeSchema(Schema):
     ok: bool
     requestId: str
@@ -506,6 +657,25 @@ class ManagedCharacterAttachPayloadSchema(Schema):
     characterId: int
     kind: str
     recordId: int
+
+
+class ManagedPlayerCreatePayloadSchema(Schema):
+    values: dict[str, Any]
+
+
+class ManagedPlayerUpdatePayloadSchema(Schema):
+    playerId: int
+    values: dict[str, Any]
+
+
+class ManagedPlayerPasswordPayloadSchema(Schema):
+    playerId: int
+    password: str
+
+
+class ManagedPlayerCharactersPayloadSchema(Schema):
+    playerId: int
+    characterIds: list[int] = []
 
 
 class ManagedSkillStructureWritePayloadSchema(Schema):
@@ -1329,6 +1499,29 @@ class MarketPurchasePayloadSchema(MarketQuotePayloadSchema):
     stockRevision: int
 
 
+class BackupConfigurationSchema(Schema):
+    enabled: bool
+    onStartup: bool
+    intervalMinutes: int = Field(ge=5, le=120)
+    retentionCount: int = Field(ge=1, le=100)
+
+
+class BackupConfigurationPayloadSchema(Schema):
+    configuration: BackupConfigurationSchema
+
+
+class BackupCreatePayloadSchema(Schema):
+    label: str = Field(default="", max_length=120)
+
+
+class BackupIdPayloadSchema(Schema):
+    backupId: str = Field(min_length=1, max_length=120)
+
+
+class BackupInspectPayloadSchema(BackupIdPayloadSchema):
+    characterId: int | None = Field(default=None, ge=1)
+
+
 class ActionBaseSchema(Schema):
     requestId: str
     context: dict[str, Any] = {}
@@ -1445,6 +1638,26 @@ class ManagedCharacterAttachActionSchema(ActionBaseSchema):
     payload: ManagedCharacterAttachPayloadSchema
 
 
+class ManagedPlayerCreateActionSchema(ActionBaseSchema):
+    action: Literal["management.players.create"]
+    payload: ManagedPlayerCreatePayloadSchema
+
+
+class ManagedPlayerUpdateActionSchema(ActionBaseSchema):
+    action: Literal["management.players.update"]
+    payload: ManagedPlayerUpdatePayloadSchema
+
+
+class ManagedPlayerPasswordActionSchema(ActionBaseSchema):
+    action: Literal["management.players.setPassword"]
+    payload: ManagedPlayerPasswordPayloadSchema
+
+
+class ManagedPlayerCharactersActionSchema(ActionBaseSchema):
+    action: Literal["management.players.assignCharacters"]
+    payload: ManagedPlayerCharactersPayloadSchema
+
+
 class ManagedSkillGroupSaveActionSchema(ActionBaseSchema):
     action: Literal["management.skills.group.save"]
     payload: ManagedSkillStructureWritePayloadSchema
@@ -1518,6 +1731,26 @@ class ManagedVariablesValidateActionSchema(ActionBaseSchema):
 class ManagedVariablesSaveActionSchema(ActionBaseSchema):
     action: Literal["management.variables.save"]
     payload: ManagedVariablesSavePayloadSchema
+
+
+class ManagedBackupSettingsActionSchema(ActionBaseSchema):
+    action: Literal["management.backups.saveSettings"]
+    payload: BackupConfigurationPayloadSchema
+
+
+class ManagedBackupCreateActionSchema(ActionBaseSchema):
+    action: Literal["management.backups.create"]
+    payload: BackupCreatePayloadSchema
+
+
+class ManagedBackupDeleteActionSchema(ActionBaseSchema):
+    action: Literal["management.backups.delete"]
+    payload: BackupIdPayloadSchema
+
+
+class ManagedBackupInspectActionSchema(ActionBaseSchema):
+    action: Literal["management.backups.inspect"]
+    payload: BackupInspectPayloadSchema
 
 
 class ManagedThemeSaveActionSchema(ActionBaseSchema):
@@ -1833,6 +2066,10 @@ ActionEnvelopeSchema = Annotated[
     | ManagedCharacterUpdateActionSchema
     | ManagedCharacterDeleteActionSchema
     | ManagedCharacterAttachActionSchema
+    | ManagedPlayerCreateActionSchema
+    | ManagedPlayerUpdateActionSchema
+    | ManagedPlayerPasswordActionSchema
+    | ManagedPlayerCharactersActionSchema
     | ManagedSkillGroupSaveActionSchema
     | ManagedSkillGroupStateActionSchema
     | ManagedSkillFamilySaveActionSchema
@@ -1848,6 +2085,10 @@ ActionEnvelopeSchema = Annotated[
     | ManagedUnitPreviewActionSchema
     | ManagedVariablesValidateActionSchema
     | ManagedVariablesSaveActionSchema
+    | ManagedBackupSettingsActionSchema
+    | ManagedBackupCreateActionSchema
+    | ManagedBackupDeleteActionSchema
+    | ManagedBackupInspectActionSchema
     | ManagedThemeSaveActionSchema
     | ManagedThemeCreateActionSchema
     | ManagedThemeSetDefaultActionSchema

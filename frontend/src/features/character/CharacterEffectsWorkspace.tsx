@@ -99,8 +99,9 @@ function EffectRail({ effects, configuration, selectedKey, onOpen, onSelect, onN
   onSelect: (effect: Effect) => void;
   onNew: () => void;
 }) {
+  const hasTemporary = effects.some((effect) => effect.temporary);
   return <aside
-    className="effect-rail"
+    className={["effect-rail", hasTemporary ? "has-temporary" : ""].filter(Boolean).join(" ")}
     aria-label={`Apri tutti gli effetti (${effects.length})`}
     data-component-type="navigation"
     data-theme="dark"

@@ -2,11 +2,12 @@ from backend.combat.damage_rules import (
     DAMAGE_RULES_CONFIG_KEY,
     DEFAULT_DAMAGE_RULES,
 )
+from backend.core.backup_defaults import BACKUP_SETTING_DEFINITIONS
 
 
 LOCAL_PLAYER_NAME = "local_master"
 DEFAULT_CAMPAIGN_NAME = "Campagna principale"
-V2_SETTINGS_SEED_VERSION = "16"
+V2_SETTINGS_SEED_VERSION = "17"
 V2_THEME_SEED_VERSION = "3"
 
 
@@ -1897,3 +1898,5 @@ V2_SETTING_DEFAULTS.extend([
         ]}, "choices": [], "user_customizable": False, "master_customizable": False, "order": 40,
     },
 ])
+
+V2_SETTING_DEFAULTS.extend(BACKUP_SETTING_DEFINITIONS)

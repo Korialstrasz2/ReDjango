@@ -49,6 +49,11 @@ from backend.core.campaigns import (
     update_campaign_clock,
     update_shared_campaign_notes,
 )
+from backend.core.item_compendium import (
+    COMPENDIUM_PAGE_SIZE,
+    item_compendium_page,
+    item_compendium_reference,
+)
 from backend.core.item_selectors import item_catalog_payload
 from backend.core.item_services import (
     archive_item,
@@ -66,11 +71,27 @@ from backend.core.management_services import (
     require_game_manager,
     update_managed_character,
 )
+from backend.core.player_management_selectors import player_management_overview
+from backend.core.player_management_services import (
+    assign_player_characters,
+    create_player,
+    require_player_manager,
+    set_player_password,
+    update_player,
+)
 from backend.core.game_variable_selectors import game_variables_payload
 from backend.core.game_variable_services import (
     require_game_variable_admin,
     save_game_variables,
     validate_game_variables,
+)
+from backend.core.backup_services import (
+    backup_management_overview,
+    create_manual_backup,
+    delete_backup,
+    inspect_backup,
+    require_backup_admin,
+    save_backup_configuration,
 )
 from backend.core.models import Giocatore, Skill
 from backend.core.theme_selectors import themes_management_payload
@@ -166,7 +187,7 @@ from backend.market.services import (
     set_shop_state as set_market_shop_state,
 )
 
-from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, SkillCatalogEnvelopeSchema
+from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, ItemCompendiumPageEnvelopeSchema, ItemCompendiumReferenceEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, SkillCatalogEnvelopeSchema
 
 
 class SessionCookieAuth(APIKeyCookie):
@@ -321,6 +342,71 @@ def items(
     ))
 
 
+@api.get(
+    "/compendium/items/reference",
+    response={200: ItemCompendiumReferenceEnvelopeSchema},
+    tags=["compendium"],
+)
+def compendium_reference(request: HttpRequest):
+    """Filter vocabulary and connected rules for the "Oggetti" guide.
+
+    Readable by every authenticated player: the compendium is game knowledge,
+    not campaign information, so it carries no per-character or hidden data.
+    """
+    _identity(request)
+    return _envelope(request, item_compendium_reference())
+
+
+@api.get(
+    "/compendium/items",
+    response={200: ItemCompendiumPageEnvelopeSchema},
+    tags=["compendium"],
+)
+def compendium_items(
+    request: HttpRequest,
+    query: str = "",
+    limit: int = COMPENDIUM_PAGE_SIZE,
+    offset: int = 0,
+    type_1: str = "",
+    type_2: str = "",
+    type_3: str = "",
+    type_4: str = "",
+    rarity: int | None = None,
+    weapon_category: str = "",
+    region: str = "",
+    loot_level: int | None = None,
+    weight_min: float | None = None,
+    weight_max: float | None = None,
+    value_min: int | None = None,
+    value_max: int | None = None,
+    with_effects: bool = False,
+    sort: str = "",
+):
+    _identity(request)
+    return _envelope(
+        request,
+        item_compendium_page(
+            query.strip(),
+            limit=limit,
+            offset=offset,
+            type_1=type_1.strip(),
+            type_2=type_2.strip(),
+            type_3=type_3.strip(),
+            type_4=type_4.strip(),
+            rarity=rarity,
+            weapon_category=weapon_category.strip(),
+            region=region.strip(),
+            loot_level=loot_level,
+            weight_min=weight_min,
+            weight_max=weight_max,
+            value_min=value_min,
+            value_max=value_max,
+            with_effects=with_effects,
+            sort=sort.strip(),
+        ),
+    )
+
+
 @api.get("/market", response={200: MarketEnvelopeSchema}, tags=["market"])
 def market(request: HttpRequest, selected_shop_id: int | None = None, character_id: int | None = None, include_archived: bool = False):
     user, giocatore = _identity(request)
@@ -364,9 +450,18 @@ def managed_items(
     limit: int = 100,
     offset: int = 0,
     type_1: str = "",
+    type_2: str = "",
+    type_3: str = "",
     region: str = "",
     state: str = "",
     special: str = "",
+    rarity: int | None = None,
+    weapon_type_id: int | None = None,
+    weight_min: float | None = None,
+    weight_max: float | None = None,
+    value_min: int | None = None,
+    value_max: int | None = None,
+    sort: str = "",
 ):
     user, giocatore = _identity(request)
     require_game_manager(user, giocatore)
@@ -378,9 +473,18 @@ def managed_items(
             limit=limit,
             offset=offset,
             type_1=type_1.strip(),
+            type_2=type_2.strip(),
+            type_3=type_3.strip(),
             region=region.strip(),
             state=state.strip(),
             special=None if special not in {"special", "standard"} else special == "special",
+            rarity=rarity,
+            weapon_type_id=weapon_type_id,
+            weight_min=weight_min,
+            weight_max=weight_max,
+            value_min=value_min,
+            value_max=value_max,
+            sort=sort.strip(),
         ),
     )
 
@@ -408,6 +512,17 @@ def managed_character_detail(request: HttpRequest, character_id: int):
         return _envelope(request, character_management_detail(character_id))
     except Personaggio.DoesNotExist as exc:
         raise ApiError("management.character_not_found", "Personaggio non trovato.", status=404) from exc
+
+
+@api.get(
+    "/management/players",
+    response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
+    tags=["management"],
+)
+def managed_players(request: HttpRequest):
+    user, giocatore = _identity(request)
+    require_player_manager(user, giocatore)
+    return _envelope(request, player_management_overview(giocatore))
 
 
 @api.get(
@@ -500,6 +615,17 @@ def managed_game_variables(request: HttpRequest):
     user, giocatore = _identity(request)
     require_game_variable_admin(user, giocatore)
     return _envelope(request, game_variables_payload())
+
+
+@api.get(
+    "/management/backups",
+    response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
+    tags=["management"],
+)
+def managed_backups(request: HttpRequest):
+    user, giocatore = _identity(request)
+    require_backup_admin(user, giocatore)
+    return _envelope(request, backup_management_overview())
 
 
 @api.get(
@@ -647,7 +773,11 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
     request_id = command.requestId
     warnings: list[dict[str, str]] = []
     try:
-        if payload.get("characterId") is not None and not action.startswith("management.characters."):
+        if (
+            payload.get("characterId") is not None
+            and not action.startswith("management.characters.")
+            and action != "management.backups.inspect"
+        ):
             _allowed_character(user, giocatore, int(payload["characterId"]))
 
         if action == "inventory.swapItems":
@@ -855,6 +985,26 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             )
             data = {"management": character_management_overview()}
             message = f"{character_name} e i record evidenziati sono stati eliminati."
+        elif action == "management.players.create":
+            result = create_player(user, giocatore, payload.get("values", {}))
+            data = {"management": result["overview"]}
+            message = f"Giocatore {result['playerName']} creato."
+        elif action == "management.players.update":
+            result = update_player(user, giocatore, payload["playerId"], payload.get("values", {}))
+            data = {"management": result["overview"]}
+            message = f"Giocatore {result['playerName']} aggiornato."
+        elif action == "management.players.setPassword":
+            result = set_player_password(user, giocatore, payload["playerId"], payload.get("password"))
+            data = {"management": result["overview"]}
+            message = f"Password di {result['playerName']} aggiornata."
+        elif action == "management.players.assignCharacters":
+            result = assign_player_characters(user, giocatore, payload["playerId"], payload.get("characterIds") or [])
+            data = {"management": result["overview"]}
+            message = (
+                f"{result['assignedCount']} personaggi assegnati a {result['playerName']}."
+                if result["assignedCount"]
+                else f"{result['playerName']} non ha più personaggi assegnati."
+            )
         elif action == "management.skills.group.save":
             group = save_skill_group(user, giocatore, payload.get("values", {}), payload.get("groupId"))
             data = {"management": {"group": serialize_managed_group(group)}}
@@ -956,6 +1106,32 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 }
             }
             message = "Variabili di gioco salvate."
+        elif action == "management.backups.saveSettings":
+            data = {
+                "management": save_backup_configuration(
+                    user,
+                    giocatore,
+                    payload.get("configuration", {}),
+                )
+            }
+            message = "Configurazione backup salvata."
+        elif action == "management.backups.create":
+            backup = create_manual_backup(user, giocatore, payload.get("label", ""))
+            data = {"management": backup_management_overview(created_backup_id=backup["id"])}
+            message = "Backup creato."
+        elif action == "management.backups.delete":
+            delete_backup(user, giocatore, payload["backupId"])
+            data = {"management": backup_management_overview()}
+            message = "Backup eliminato."
+        elif action == "management.backups.inspect":
+            require_backup_admin(user, giocatore)
+            data = {
+                "management": {
+                    **backup_management_overview(),
+                    "inspection": inspect_backup(payload["backupId"], payload.get("characterId")),
+                }
+            }
+            message = "Backup aperto in sola lettura."
         elif action == "management.damageRules.validate":
             data = {
                 "management": {

@@ -22,16 +22,27 @@ export type AlchemyCreationData = components["schemas"]["AlchemyCreationDataSche
 export type AlchemyBrewResult = components["schemas"]["AlchemyBrewResultSchema"];
 export type AlchemyCatalogReagent = components["schemas"]["AlchemyCatalogReagentSchema"];
 
+export type CompendiumReference = components["schemas"]["ItemCompendiumReferenceDataSchema"];
+export type CompendiumPage = components["schemas"]["ItemCompendiumPageDataSchema"];
+export type CompendiumItem = components["schemas"]["CompendiumItemSchema"];
+export type CompendiumWeaponCategory = components["schemas"]["CompendiumWeaponCategorySchema"];
+export type CompendiumAxis = components["schemas"]["CompendiumAxisSchema"];
+export type CompendiumGlossaryEntry = components["schemas"]["CompendiumGlossaryEntrySchema"];
+
 export type GuideEntry = { title: string; meta?: string; note?: string };
 
+export type GuideVariable = { key: string; label: string; description: string; facts: string[] };
+export type GuideVariableGroup = { label: string; variables: GuideVariable[]; note?: { title: string; text: string } };
+
 export type GuideBlock = {
-  type: "heading" | "paragraph" | "list" | "code" | "callout" | "warning" | "legacy_html" | "entries";
+  type: "heading" | "paragraph" | "list" | "code" | "callout" | "warning" | "legacy_html" | "entries" | "variable_reference" | "item_compendium";
   text?: string;
   html?: string;
   level?: number;
   items?: string[] | GuideEntry[];
   title?: string;
   language?: string;
+  groups?: GuideVariableGroup[];
 };
 
 export type Guide = {

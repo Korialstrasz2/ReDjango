@@ -38,6 +38,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/compendium/items/reference": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Compendium Reference
+         * @description Filter vocabulary and connected rules for the "Oggetti" guide.
+         *
+         *     Readable by every authenticated player: the compendium is game knowledge,
+         *     not campaign information, so it carries no per-character or hidden data.
+         */
+        get: operations["backend_api_v1_api_compendium_reference"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/compendium/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Compendium Items */
+        get: operations["backend_api_v1_api_compendium_items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/market": {
         parameters: {
             query?: never;
@@ -157,6 +197,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/management/players": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Managed Players */
+        get: operations["backend_api_v1_api_managed_players"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/management/skills": {
         parameters: {
             query?: never;
@@ -251,6 +308,23 @@ export interface paths {
         };
         /** Managed Game Variables */
         get: operations["backend_api_v1_api_managed_game_variables"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/management/backups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Managed Backups */
+        get: operations["backend_api_v1_api_managed_backups"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1406,6 +1480,485 @@ export interface components {
             rules: {
                 [key: string]: unknown;
             };
+        };
+        /** CompendiumAxisOptionSchema */
+        CompendiumAxisOptionSchema: {
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * Notes
+             * @default []
+             */
+            notes: string[];
+        };
+        /** CompendiumAxisSchema */
+        CompendiumAxisSchema: {
+            /** Label */
+            label: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * Options
+             * @default []
+             */
+            options: components["schemas"]["CompendiumAxisOptionSchema"][];
+        };
+        /** CompendiumGlossaryEntrySchema */
+        CompendiumGlossaryEntrySchema: {
+            /** Key */
+            key: string;
+            /** Title */
+            title: string;
+            /** Text */
+            text: string;
+        };
+        /** CompendiumLabelSchema */
+        CompendiumLabelSchema: {
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
+        };
+        /** CompendiumOperationSchema */
+        CompendiumOperationSchema: {
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+        };
+        /** CompendiumRaritySchema */
+        CompendiumRaritySchema: {
+            /** Value */
+            value: number;
+            /** Label */
+            label: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /** Shopshare */
+            shopShare?: number | null;
+        };
+        /** CompendiumTypeGroupSchema */
+        CompendiumTypeGroupSchema: {
+            /**
+             * Position
+             * @enum {integer}
+             */
+            position: 1 | 2 | 3 | 4;
+            /** Label */
+            label: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * Options
+             * @default []
+             */
+            options: components["schemas"]["ItemTypeOptionSchema"][];
+        };
+        /** CompendiumWeaponCategorySchema */
+        CompendiumWeaponCategorySchema: {
+            /** Id */
+            id?: number | null;
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /**
+             * Combatmode
+             * @default
+             */
+            combatMode: string;
+            /**
+             * Combatmodelabel
+             * @default
+             */
+            combatModeLabel: string;
+            /**
+             * Length
+             * @default
+             */
+            length: string;
+            /**
+             * Lengthlabel
+             * @default
+             */
+            lengthLabel: string;
+            /**
+             * Lengthnote
+             * @default
+             */
+            lengthNote: string;
+            /**
+             * Lengthnotes
+             * @default []
+             */
+            lengthNotes: string[];
+            /** Actionpointcost */
+            actionPointCost?: number | null;
+            /**
+             * Heaviness
+             * @default
+             */
+            heaviness: string;
+            /**
+             * Heavinesslabel
+             * @default
+             */
+            heavinessLabel: string;
+            /**
+             * Heavinessnotes
+             * @default []
+             */
+            heavinessNotes: string[];
+            /**
+             * Power
+             * @default
+             */
+            power: string;
+            /**
+             * Powerlabel
+             * @default
+             */
+            powerLabel: string;
+            /**
+             * Powerskill
+             * @default
+             */
+            powerSkill: string;
+            /**
+             * Damagetype
+             * @default
+             */
+            damageType: string;
+            /**
+             * Damagetypelabel
+             * @default
+             */
+            damageTypeLabel: string;
+            /**
+             * Damagenotes
+             * @default []
+             */
+            damageNotes: string[];
+            /**
+             * Handling
+             * @default
+             */
+            handling: string;
+            /**
+             * Handlinglabel
+             * @default
+             */
+            handlingLabel: string;
+            /**
+             * Costband
+             * @default
+             */
+            costBand: string;
+            /**
+             * Costbandlabel
+             * @default
+             */
+            costBandLabel: string;
+            /** Baserangemeters */
+            baseRangeMeters?: number | null;
+            /**
+             * Ammunitiontype
+             * @default
+             */
+            ammunitionType: string;
+            /**
+             * Ammunitionlabel
+             * @default
+             */
+            ammunitionLabel: string;
+            /** Magazinesize */
+            magazineSize?: number | null;
+            /** Reloadbasecost */
+            reloadBaseCost?: number | null;
+            /** Reloadperprojectilecost */
+            reloadPerProjectileCost?: number | null;
+            /**
+             * Uniquepowers
+             * @default []
+             */
+            uniquePowers: string[];
+            /**
+             * Specialrules
+             * @default []
+             */
+            specialRules: string[];
+            /**
+             * Incomplete
+             * @default false
+             */
+            incomplete: boolean;
+        };
+        /** ItemCompendiumReferenceDataSchema */
+        ItemCompendiumReferenceDataSchema: {
+            /** Typegroups */
+            typeGroups: components["schemas"]["CompendiumTypeGroupSchema"][];
+            /**
+             * Subtypesbycategory
+             * @default {}
+             */
+            subtypesByCategory: {
+                [key: string]: string[];
+            };
+            /** Raritychoices */
+            rarityChoices: components["schemas"]["CompendiumRaritySchema"][];
+            /**
+             * Regions
+             * @default []
+             */
+            regions: string[];
+            /**
+             * Lootlevels
+             * @default []
+             */
+            lootLevels: number[];
+            /**
+             * Sortoptions
+             * @default []
+             */
+            sortOptions: components["schemas"]["CompendiumLabelSchema"][];
+            /**
+             * Weaponcategories
+             * @default []
+             */
+            weaponCategories: components["schemas"]["CompendiumWeaponCategorySchema"][];
+            /**
+             * Weaponaxes
+             * @default {}
+             */
+            weaponAxes: {
+                [key: string]: components["schemas"]["CompendiumAxisSchema"];
+            };
+            /**
+             * Effecttargets
+             * @default []
+             */
+            effectTargets: components["schemas"]["CompendiumLabelSchema"][];
+            /**
+             * Effectoperations
+             * @default []
+             */
+            effectOperations: components["schemas"]["CompendiumOperationSchema"][];
+            /**
+             * Equipmentslots
+             * @default []
+             */
+            equipmentSlots: components["schemas"]["CompendiumLabelSchema"][];
+            /**
+             * Glossary
+             * @default []
+             */
+            glossary: components["schemas"]["CompendiumGlossaryEntrySchema"][];
+        };
+        /** ItemCompendiumReferenceEnvelopeSchema */
+        ItemCompendiumReferenceEnvelopeSchema: {
+            /** Ok */
+            ok: boolean;
+            /** Requestid */
+            requestId: string;
+            data: components["schemas"]["ItemCompendiumReferenceDataSchema"];
+            /**
+             * Events
+             * @default []
+             */
+            events: components["schemas"]["EventSchema"][];
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Errors
+             * @default []
+             */
+            errors: components["schemas"]["ErrorSchema"][];
+        };
+        /** CompendiumItemSchema */
+        CompendiumItemSchema: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Imageurl
+             * @default
+             */
+            imageUrl: string;
+            /**
+             * Typevalues
+             * @default []
+             */
+            typeValues: string[];
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Value */
+            value?: number | null;
+            /** Weight */
+            weight?: number | null;
+            /** Rarity */
+            rarity?: number | null;
+            /**
+             * Raritylabel
+             * @default
+             */
+            rarityLabel: string;
+            /**
+             * Lootlevel
+             * @default
+             */
+            lootLevel: string;
+            /**
+             * Lootlevels
+             * @default []
+             */
+            lootLevels: number[];
+            /**
+             * Region
+             * @default
+             */
+            region: string;
+            /** Regionweight */
+            regionWeight?: number | null;
+            /**
+             * Operations
+             * @default []
+             */
+            operations: components["schemas"]["CompendiumOperationEntrySchema"][];
+            /**
+             * Eldereffects
+             * @default []
+             */
+            elderEffects: string[];
+            /**
+             * Weaponcategory
+             * @default
+             */
+            weaponCategory: string;
+            /**
+             * Weaponprofile
+             * @default {}
+             */
+            weaponProfile: {
+                [key: string]: unknown;
+            };
+            /** Actionpointcost */
+            actionPointCost?: number | null;
+            /**
+             * Alchemyprofile
+             * @default {}
+             */
+            alchemyProfile: {
+                [key: string]: unknown;
+            };
+            /**
+             * Craftingprofile
+             * @default {}
+             */
+            craftingProfile: {
+                [key: string]: unknown;
+            };
+            /**
+             * Equipmentslots
+             * @default []
+             */
+            equipmentSlots: string[];
+        };
+        /** CompendiumOperationEntrySchema */
+        CompendiumOperationEntrySchema: {
+            /** Target */
+            target: string;
+            /** Operation */
+            operation: string;
+            /**
+             * Value
+             * @default
+             */
+            value: string;
+            /**
+             * Condition
+             * @default
+             */
+            condition: string;
+        };
+        /** ItemCompendiumPageDataSchema */
+        ItemCompendiumPageDataSchema: {
+            /** Items */
+            items: components["schemas"]["CompendiumItemSchema"][];
+            /**
+             * Total
+             * @default 0
+             */
+            total: number;
+            /**
+             * Offset
+             * @default 0
+             */
+            offset: number;
+            /**
+             * Limit
+             * @default 0
+             */
+            limit: number;
+            /**
+             * Hasmore
+             * @default false
+             */
+            hasMore: boolean;
+        };
+        /** ItemCompendiumPageEnvelopeSchema */
+        ItemCompendiumPageEnvelopeSchema: {
+            /** Ok */
+            ok: boolean;
+            /** Requestid */
+            requestId: string;
+            data: components["schemas"]["ItemCompendiumPageDataSchema"];
+            /**
+             * Events
+             * @default []
+             */
+            events: components["schemas"]["EventSchema"][];
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Errors
+             * @default []
+             */
+            errors: components["schemas"]["ErrorSchema"][];
         };
         /** MarketEnvelopeSchema */
         MarketEnvelopeSchema: {
@@ -3180,6 +3733,41 @@ export interface components {
              */
             quantity: number;
         };
+        /** BackupConfigurationPayloadSchema */
+        BackupConfigurationPayloadSchema: {
+            configuration: components["schemas"]["BackupConfigurationSchema"];
+        };
+        /** BackupConfigurationSchema */
+        BackupConfigurationSchema: {
+            /** Enabled */
+            enabled: boolean;
+            /** Onstartup */
+            onStartup: boolean;
+            /** Intervalminutes */
+            intervalMinutes: number;
+            /** Retentioncount */
+            retentionCount: number;
+        };
+        /** BackupCreatePayloadSchema */
+        BackupCreatePayloadSchema: {
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+        };
+        /** BackupIdPayloadSchema */
+        BackupIdPayloadSchema: {
+            /** Backupid */
+            backupId: string;
+        };
+        /** BackupInspectPayloadSchema */
+        BackupInspectPayloadSchema: {
+            /** Backupid */
+            backupId: string;
+            /** Characterid */
+            characterId?: number | null;
+        };
         /** CampaignClockUpdateActionSchema */
         CampaignClockUpdateActionSchema: {
             /** Requestid */
@@ -4255,6 +4843,106 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** ManagedBackupCreateActionSchema */
+        ManagedBackupCreateActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.backups.create";
+            payload: components["schemas"]["BackupCreatePayloadSchema"];
+        };
+        /** ManagedBackupDeleteActionSchema */
+        ManagedBackupDeleteActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.backups.delete";
+            payload: components["schemas"]["BackupIdPayloadSchema"];
+        };
+        /** ManagedBackupInspectActionSchema */
+        ManagedBackupInspectActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.backups.inspect";
+            payload: components["schemas"]["BackupInspectPayloadSchema"];
+        };
+        /** ManagedBackupSettingsActionSchema */
+        ManagedBackupSettingsActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.backups.saveSettings";
+            payload: components["schemas"]["BackupConfigurationPayloadSchema"];
+        };
         /** ManagedCharacterAttachActionSchema */
         ManagedCharacterAttachActionSchema: {
             /** Requestid */
@@ -4430,6 +5118,139 @@ export interface components {
         ManagedDamageRulesValidatePayloadSchema: {
             /** Rules */
             rules: {
+                [key: string]: unknown;
+            };
+        };
+        /** ManagedPlayerCharactersActionSchema */
+        ManagedPlayerCharactersActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.players.assignCharacters";
+            payload: components["schemas"]["ManagedPlayerCharactersPayloadSchema"];
+        };
+        /** ManagedPlayerCharactersPayloadSchema */
+        ManagedPlayerCharactersPayloadSchema: {
+            /** Playerid */
+            playerId: number;
+            /**
+             * Characterids
+             * @default []
+             */
+            characterIds: number[];
+        };
+        /** ManagedPlayerCreateActionSchema */
+        ManagedPlayerCreateActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.players.create";
+            payload: components["schemas"]["ManagedPlayerCreatePayloadSchema"];
+        };
+        /** ManagedPlayerCreatePayloadSchema */
+        ManagedPlayerCreatePayloadSchema: {
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            };
+        };
+        /** ManagedPlayerPasswordActionSchema */
+        ManagedPlayerPasswordActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.players.setPassword";
+            payload: components["schemas"]["ManagedPlayerPasswordPayloadSchema"];
+        };
+        /** ManagedPlayerPasswordPayloadSchema */
+        ManagedPlayerPasswordPayloadSchema: {
+            /** Playerid */
+            playerId: number;
+            /** Password */
+            password: string;
+        };
+        /** ManagedPlayerUpdateActionSchema */
+        ManagedPlayerUpdateActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "management.players.update";
+            payload: components["schemas"]["ManagedPlayerUpdatePayloadSchema"];
+        };
+        /** ManagedPlayerUpdatePayloadSchema */
+        ManagedPlayerUpdatePayloadSchema: {
+            /** Playerid */
+            playerId: number;
+            /** Values */
+            values: {
                 [key: string]: unknown;
             };
         };
@@ -6095,6 +6916,64 @@ export interface operations {
             };
         };
     };
+    backend_api_v1_api_compendium_reference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ItemCompendiumReferenceEnvelopeSchema"];
+                };
+            };
+        };
+    };
+    backend_api_v1_api_compendium_items: {
+        parameters: {
+            query?: {
+                query?: string;
+                limit?: number;
+                offset?: number;
+                type_1?: string;
+                type_2?: string;
+                type_3?: string;
+                type_4?: string;
+                rarity?: number | null;
+                weapon_category?: string;
+                region?: string;
+                loot_level?: number | null;
+                weight_min?: number | null;
+                weight_max?: number | null;
+                value_min?: number | null;
+                value_max?: number | null;
+                with_effects?: boolean;
+                sort?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ItemCompendiumPageEnvelopeSchema"];
+                };
+            };
+        };
+    };
     backend_api_v1_api_market: {
         parameters: {
             query?: {
@@ -6208,9 +7087,18 @@ export interface operations {
                 limit?: number;
                 offset?: number;
                 type_1?: string;
+                type_2?: string;
+                type_3?: string;
                 region?: string;
                 state?: string;
                 special?: string;
+                rarity?: number | null;
+                weapon_type_id?: number | null;
+                weight_min?: number | null;
+                weight_max?: number | null;
+                value_min?: number | null;
+                value_max?: number | null;
+                sort?: string;
             };
             header?: never;
             path?: never;
@@ -6302,6 +7190,35 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
+                };
+            };
+        };
+    };
+    backend_api_v1_api_managed_players: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagementEnvelopeSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6491,6 +7408,35 @@ export interface operations {
         };
     };
     backend_api_v1_api_managed_game_variables: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagementEnvelopeSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
+                };
+            };
+        };
+    };
+    backend_api_v1_api_managed_backups: {
         parameters: {
             query?: never;
             header?: never;
@@ -6781,7 +7727,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketProfileAssignmentActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"];
+                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketProfileAssignmentActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"];
             };
         };
         responses: {

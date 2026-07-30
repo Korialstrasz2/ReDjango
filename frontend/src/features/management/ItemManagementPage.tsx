@@ -260,6 +260,22 @@ function SpecialReasonChips({ item }: { item: Item }) {
 
 const PAGE_SIZE = 100;
 
+// Mirrors backend.core.item_selectors.NONE_SENTINEL: an explicit "empty" value,
+// distinct from "" which means the filter is not applied at all.
+const NONE_SENTINEL = "__none__";
+
+const SORT_OPTIONS: { value: string; label: string }[] = [
+  { value: "", label: "Ordine catalogo" },
+  { value: "name", label: "Nome (A → Z)" },
+  { value: "name_desc", label: "Nome (Z → A)" },
+  { value: "rarity", label: "Rarità (crescente)" },
+  { value: "rarity_desc", label: "Rarità (decrescente)" },
+  { value: "weight", label: "Peso (crescente)" },
+  { value: "weight_desc", label: "Peso (decrescente)" },
+  { value: "value", label: "Valore (crescente)" },
+  { value: "value_desc", label: "Valore (decrescente)" },
+];
+
 export function ItemManagementPage() {
   const { media, notify } = useApp();
   const queryClient = useQueryClient();
@@ -267,9 +283,18 @@ export function ItemManagementPage() {
   const [queryInput, setQueryInput] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [type2Filter, setType2Filter] = useState("");
+  const [type3Filter, setType3Filter] = useState("");
   const [regionFilter, setRegionFilter] = useState("");
   const [stateFilter, setStateFilter] = useState<"active" | "archived" | "all">("active");
   const [specialFilter, setSpecialFilter] = useState<"all" | "special" | "standard">("all");
+  const [rarityFilter, setRarityFilter] = useState("");
+  const [weaponTypeFilter, setWeaponTypeFilter] = useState("");
+  const [weightMin, setWeightMin] = useState("");
+  const [weightMax, setWeightMax] = useState("");
+  const [valueMin, setValueMin] = useState("");
+  const [valueMax, setValueMax] = useState("");
+  const [sort, setSort] = useState("");
   const [offset, setOffset] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [editorItem, setEditorItem] = useState<Item | null | undefined>(undefined);
@@ -282,8 +307,12 @@ export function ItemManagementPage() {
     const timer = window.setTimeout(() => setQuery(queryInput.trim()), 300);
     return () => window.clearTimeout(timer);
   }, [queryInput]);
-  useEffect(() => setOffset(0), [query, typeFilter, regionFilter, stateFilter, specialFilter]);
-  useEffect(() => setTriageSelection([]), [query, typeFilter, regionFilter, stateFilter, specialFilter, offset]);
+  const filterDependencies = [
+    query, typeFilter, type2Filter, type3Filter, regionFilter, stateFilter, specialFilter,
+    rarityFilter, weaponTypeFilter, weightMin, weightMax, valueMin, valueMax, sort,
+  ];
+  useEffect(() => setOffset(0), filterDependencies);
+  useEffect(() => setTriageSelection([]), [...filterDependencies, offset]);
 
   const catalogParameters = new URLSearchParams({
     limit: String(PAGE_SIZE),
@@ -294,6 +323,15 @@ export function ItemManagementPage() {
     state: stateFilter === "all" ? "" : stateFilter,
     special: specialFilter === "all" ? "" : specialFilter,
   });
+  if (type2Filter) catalogParameters.set("type_2", type2Filter);
+  if (type3Filter) catalogParameters.set("type_3", type3Filter);
+  if (rarityFilter) catalogParameters.set("rarity", rarityFilter);
+  if (weaponTypeFilter) catalogParameters.set("weapon_type_id", weaponTypeFilter);
+  if (weightMin) catalogParameters.set("weight_min", weightMin);
+  if (weightMax) catalogParameters.set("weight_max", weightMax);
+  if (valueMin) catalogParameters.set("value_min", valueMin);
+  if (valueMax) catalogParameters.set("value_max", valueMax);
+  if (sort) catalogParameters.set("sort", sort);
   const catalogQuery = useQuery({
     queryKey: ["management-items", catalogParameters.toString()],
     queryFn: () => getData<ItemCatalog>(`/api/v1/management/items?${catalogParameters}`),
@@ -331,6 +369,8 @@ export function ItemManagementPage() {
     onError: (error: Error) => notify(error.message, "error"),
   });
   const types = useMemo(() => (catalog?.typeOptions || []).filter((option) => option.position === 1), [catalog]);
+  const types2 = useMemo(() => (catalog?.typeOptions || []).filter((option) => option.position === 2), [catalog]);
+  const types3 = useMemo(() => (catalog?.typeOptions || []).filter((option) => option.position === 3), [catalog]);
   const items = catalog?.items || [];
   const total = catalog?.total ?? 0;
   useEffect(() => {
@@ -343,6 +383,27 @@ export function ItemManagementPage() {
     if (editorItem && window.confirm(`Archiviare ${editorItem.name}?`)) mutation.mutate({ action: "items.archive", itemId: editorItem.id });
   };
   const toggleTriage = (itemId: number) => setTriageSelection((current) => current.includes(itemId) ? current.filter((entry) => entry !== itemId) : [...current, itemId]);
+  const resetFilters = () => {
+    setQueryInput("");
+    setTypeFilter("");
+    setType2Filter("");
+    setType3Filter("");
+    setRegionFilter("");
+    setStateFilter("active");
+    setSpecialFilter("all");
+    setRarityFilter("");
+    setWeaponTypeFilter("");
+    setWeightMin("");
+    setWeightMax("");
+    setValueMin("");
+    setValueMax("");
+    setSort("");
+  };
+  const hasActiveFilters = Boolean(
+    queryInput || typeFilter || type2Filter || type3Filter || regionFilter
+    || stateFilter !== "active" || specialFilter !== "all" || rarityFilter || weaponTypeFilter
+    || weightMin || weightMax || valueMin || valueMax || sort,
+  );
 
   return <div className="page management-page">
     <header className="page-header"><div><p className="eyebrow">Gestione del gioco</p><h1>Catalogo oggetti</h1></div><div className="button-row"><Link className="button secondary" to="/tools">Tutti gli strumenti</Link><button className="button secondary" disabled={!selected} onClick={() => { if (selected) { setCloning(true); setEditorItem(selected); } }}>Clona selezionato</button><button className="button primary" onClick={() => { setCloning(false); setEditorItem(null); }}>Crea oggetto</button></div></header>
@@ -350,7 +411,21 @@ export function ItemManagementPage() {
     {catalogQuery.isLoading && <section className="panel"><p>Caricamento catalogo…</p></section>}
     {catalogQuery.error && <section className="panel danger-panel"><p>{(catalogQuery.error as Error).message}</p></section>}
     {mode === "catalog" && catalog && <>
-      <section className="panel management-filterbar item-filters" data-component-type="toolbar" data-theme="default"><label>Cerca<input type="search" value={queryInput} onChange={(event) => setQueryInput(event.target.value)} placeholder="Nome, descrizione, tipo…" /></label><label>Tipo<select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="">Tutti</option>{types.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></label><label>Regione<select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}><option value="">Tutte</option>{(catalog.regions || []).map((region) => <option key={region}>{region}</option>)}</select></label><label>Stato<select value={stateFilter} onChange={(event) => setStateFilter(event.target.value as typeof stateFilter)}><option value="active">Attivi</option><option value="archived">Archiviati</option><option value="all">Tutti</option></select></label><label>Revisione<select value={specialFilter} onChange={(event) => setSpecialFilter(event.target.value as typeof specialFilter)}><option value="all">Tutti</option><option value="special">Solo Speciali</option><option value="standard">Solo standard</option></select></label></section>
+      <section className="panel management-filterbar item-filters" data-component-type="toolbar" data-theme="default">
+        <label>Cerca<input type="search" value={queryInput} onChange={(event) => setQueryInput(event.target.value)} placeholder="Nome, descrizione, tipo…" /></label>
+        <label>Tipo 1<select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="">Tutti</option><option value={NONE_SENTINEL}>Senza tipo</option>{types.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></label>
+        <label>Tipo 2<select value={type2Filter} onChange={(event) => setType2Filter(event.target.value)}><option value="">Tutti</option><option value={NONE_SENTINEL}>Senza tipo</option>{types2.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></label>
+        <label>Tipo 3<select value={type3Filter} onChange={(event) => setType3Filter(event.target.value)}><option value="">Tutti</option><option value={NONE_SENTINEL}>Senza tipo</option>{types3.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}</select></label>
+        <label>Tipo arma<select value={weaponTypeFilter} onChange={(event) => setWeaponTypeFilter(event.target.value)}><option value="">Tutti</option>{catalog.weaponTypes.map((weapon) => <option key={weapon.id} value={weapon.id}>{weapon.name}</option>)}</select></label>
+        <label>Rarità<select value={rarityFilter} onChange={(event) => setRarityFilter(event.target.value)}><option value="">Tutte</option>{catalog.rarityChoices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}</select></label>
+        <label>Regione<select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}><option value="">Tutte</option><option value={NONE_SENTINEL}>Senza regione</option>{(catalog.regions || []).map((region) => <option key={region}>{region}</option>)}</select></label>
+        <label>Stato<select value={stateFilter} onChange={(event) => setStateFilter(event.target.value as typeof stateFilter)}><option value="active">Attivi</option><option value="archived">Archiviati</option><option value="all">Tutti</option></select></label>
+        <label>Revisione<select value={specialFilter} onChange={(event) => setSpecialFilter(event.target.value as typeof specialFilter)}><option value="all">Tutti</option><option value="special">Solo Speciali</option><option value="standard">Solo standard</option></select></label>
+        <label>Ordina per<select value={sort} onChange={(event) => setSort(event.target.value)}>{SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label className="filter-range">Peso<span><input type="number" min="0" step="0.01" value={weightMin} onChange={(event) => setWeightMin(event.target.value)} placeholder="min" /><input type="number" min="0" step="0.01" value={weightMax} onChange={(event) => setWeightMax(event.target.value)} placeholder="max" /></span></label>
+        <label className="filter-range">Valore<span><input type="number" min="0" value={valueMin} onChange={(event) => setValueMin(event.target.value)} placeholder="min" /><input type="number" min="0" value={valueMax} onChange={(event) => setValueMax(event.target.value)} placeholder="max" /></span></label>
+        <button type="button" className="button secondary" disabled={!hasActiveFilters} onClick={resetFilters}>Reset filtri</button>
+      </section>
       {specialFilter === "special" && <section className="panel item-triage-bar" data-component-type="toolbar" data-theme="gold">
         <div>
           <strong>{catalog.specialCount ?? 0} oggetti sono marcati Speciali</strong>

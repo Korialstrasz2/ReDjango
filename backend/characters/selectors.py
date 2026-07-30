@@ -265,7 +265,9 @@ def ordered_personaggi_for(
 
     if include_all:
         return list(queryset.order_by("nome", "id"))
-    return list(queryset.filter(metadata__seed_kind="poc_personaggio").order_by("nome"))
+    # Un giocatore senza assegnazioni non ha compagnia: la Sala principale non deve
+    # mai ricadere sui personaggi di prova, che appartengono a qualcun altro.
+    return []
 
 
 def _related_item_ids(personaggio: Personaggio) -> set[int]:
@@ -296,7 +298,7 @@ def item_special_icon_path(item_name: str) -> str:
     return f"{ITEM_ICON_SPECIAL_DIRECTORY}/{name_key}.webp" if name_key else ""
 
 
-def _item_image_url(item: Oggetto) -> str:
+def item_image_url(item: Oggetto) -> str:
     # Most specific first: an icon drawn for this exact item, then an image
     # picked from the media library, then the shared icon for its category.
     special = item_special_icon_path(item.nome)
@@ -351,7 +353,7 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
         "weaponRules": item.tipo_arma.rules if item.tipo_arma_id and item.tipo_arma else {},
         "weaponProfile": weapon_profile,
         "actionPointCost": item.pa_per_attacco,
-        "imageUrl": _item_image_url(item),
+        "imageUrl": item_image_url(item),
         "archived": item.archiviato,
         "special": item.speciale,
         "systemManaged": bool(

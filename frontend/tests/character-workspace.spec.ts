@@ -8,8 +8,9 @@ test("la scheda personaggio completa funziona dal bundle di produzione", async (
 
   await page.goto(`/character/${characterId}`);
   await expect(page.locator(".side-nav .campaign-selector")).toHaveCount(0);
-  const sidebarPortrait = page.locator(".brand-block > img");
+  const sidebarPortrait = page.locator(".brand-portrait img");
   await expect(sidebarPortrait).toBeVisible();
+  await expect(page.locator(".brand-portrait")).toHaveAttribute("href", `/character/${characterId}`);
   const sidebarPortraitBox = await sidebarPortrait.boundingBox();
   expect(sidebarPortraitBox?.width).toBeGreaterThan(100);
   expect(sidebarPortraitBox?.height).toBeGreaterThan(100);

@@ -2,15 +2,16 @@ import json
 import re
 import unicodedata
 from collections.abc import Mapping
-from html import unescape
+from html import escape, unescape
 from pathlib import Path
 from typing import Any
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-07-28-guide-system-review-v4"
+V2_GUIDE_DEFAULT_VERSION = "2026-07-29-variable-reference-ui-v2"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
+ITEM_COMPENDIUM_GUIDE_NAME = "Oggetti"
 
 RACE_GUIDE_RACES = (
     "Bosmer", "Dunmer", "Orsimer", "Altmer", "Imperiale", "Bretone",
@@ -94,8 +95,8 @@ CHARACTER_VARIABLE_GROUPS = (
     (
         "Regole globali e caratteristiche",
         (
-            ("stanchezza", "Stanchezza", "Ogni punto applica una penalità percentuale ai valori rapidi configurati dall'amministratore."),
-            ("modificatore_generale", "Modificatore generale", "Ogni punto applica un bonus percentuale ai valori rapidi configurati dall'amministratore; può compensare la Stanchezza."),
+            ("stanchezza", "Stanchezza", "Ogni punto applica una penalità (percentuale e fissa) ai valori rapidi configurati dall'amministratore."),
+            ("modificatore_generale", "Modificatore generale", "Ogni punto applica un bonus (percentuale e fisso) ai valori rapidi configurati dall'amministratore; può compensare la Stanchezza."),
             ("forza", "Forza", "Misura la potenza fisica. Le formule amministrative possono usarla per PF, Attacco o altri valori."),
             ("resistenza", "Resistenza", "Misura robustezza e tenuta. Le formule amministrative possono usarla per PF, Energia o altri valori."),
             ("velocita", "Velocità", "Misura rapidità e movimento. Le formule amministrative possono usarla per Energia, PA o altri valori."),
@@ -104,7 +105,7 @@ CHARACTER_VARIABLE_GROUPS = (
             ("concentrazione", "Concentrazione", "Misura attenzione e controllo. Le formule amministrative possono usarla per Mana, Difesa o altri valori."),
             ("personalita", "Personalità", "Misura presenza e influenza sociale; alimenta anche il relativo modificatore di dado."),
             ("saggezza", "Saggezza", "Misura intuito e giudizio. Le formule amministrative possono usarla per Potere, PA o altri valori."),
-            ("fortuna", "Fortuna", "Misura la sorte del personaggio, alimenta il relativo modificatore di dado e interviene due volte in combattimento: nella differenza d'attacco (per l'attaccante conta come minimo 12) e nella potenza dei critici."),
+            ("fortuna", "Fortuna", "Misura la sorte del personaggio, alimenta il relativo modificatore di dado e interviene due volte in combattimento: nella differenza d'attacco (per l'attaccante conta come minimo 12) e nella potenza dei critici. Tramite la formula amministrativa Fortuna, aggiunge inoltre automaticamente un bonus a ciascuna delle altre otto caratteristiche, prima del loro arrotondamento finale."),
         ),
     ),
     (
@@ -115,9 +116,9 @@ CHARACTER_VARIABLE_GROUPS = (
             ("energia", "Energia", "È l'Energia massima usata dalle azioni che richiedono sforzo."),
             ("potere", "Potere", "È il Potere massimo, usato anche dagli sconti delle magie quando la relativa regola è attiva."),
             ("pa", "Punti azione", "Sono i PA disponibili nelle azioni di combattimento. Il carico li riduce, senza scendere sotto 4."),
-            ("attacco", "Attacco", "È il valore sommato al d20 nella risoluzione d'attacco, prima delle specializzazioni d'arma e dei modificatori situazionali."),
-            ("difesa", "Difesa", "È il valore sottratto al totale d'attacco per ottenere la differenza d'attacco, e il riferimento delle prove che richiedono una difesa."),
-            ("tier", "Tier", "Indica la fascia di potenza del personaggio e sceglie la formula dei dadi di danno usata dalla risoluzione d'attacco (tabella configurabile da −5 a 30). È il bersaglio su cui il creator armi salva i bonus chiamati DMG."),
+            ("attacco", "Attacco", "È il valore sommato al d20 nella risoluzione d'attacco. Include già le specializzazioni d'arma (atk_skill_*) dell'arma attualmente equipaggiata: il sistema le ricalcola e le somma qui automaticamente a ogni aggiornamento della scheda, prima di Stanchezza e Modificatore generale."),
+            ("difesa", "Difesa", "È il valore sottratto al totale d'attacco per ottenere la differenza d'attacco, e il riferimento delle prove che richiedono una difesa. Include già le specializzazioni di difesa (def_skill_*) di armatura e scudo attualmente equipaggiati, sommate qui automaticamente."),
+            ("tier", "Tier", "Indica la fascia di potenza del personaggio e sceglie la formula dei dadi di danno usata dalla risoluzione d'attacco, in una tabella configurabile dall'amministratore. Include già tier_skill_maninude quando non è equipaggiata un'arma. È il bersaglio su cui il creator armi salva i bonus chiamati DMG."),
         ),
     ),
     (
@@ -171,8 +172,8 @@ CHARACTER_VARIABLE_GROUPS = (
             ("sifone_di_mana", "Sifone di Mana", "Percentuale del Mana speso che il regolamento originario accumula nel sifone, arrotondata per difetto, per un successivo recupero."),
             ("ogni_en_x_mana", "Mana ogni N energia", "Quantità di Mana richiesto che costa 1 Energia quando lanci una magia; il costo viene arrotondato per eccesso."),
             ("ogni_pa_x_mana", "Mana ogni N PA", "Quantità di Mana richiesto che costa 1 PA quando lanci una magia; il costo viene arrotondato per eccesso."),
-            ("sconto_mana_per_potere", "Sconto Mana per Potere", "Mana sottratto al requisito della magia per ogni punto di Potere."),
-            ("sconto_pa_per_potere", "Sconto PA per Potere", "PA sottratti al costo della magia per ogni punto di Potere."),
+            ("sconto_mana_per_potere", "Sconto Mana per Potere", "Nell'anteprima costi di una magia, Mana sottratto al requisito per ogni punto di Potere investito nel lancio (speso o messo a disposizione liberamente, la somma dei due conta)."),
+            ("sconto_pa_per_potere", "Sconto PA per Potere", "Nell'anteprima costi di una magia, PA sottratti alla conversione in PA per ogni punto di Potere investito nel lancio (speso o messo a disposizione liberamente, la somma dei due conta)."),
         ),
     ),
     (
@@ -223,10 +224,18 @@ def _display_number(value: Any) -> str:
     return str(int(number)) if number.is_integer() else f"{number:g}"
 
 
+_CHARACTERISTIC_KEYS = {
+    "forza", "resistenza", "velocita", "agilita", "intelligenza",
+    "concentrazione", "personalita", "saggezza", "fortuna",
+}
+
+
 def character_variable_guide_blocks(
     base_values: Mapping[str, Any],
     formulas: Mapping[str, str],
     quick_stat_adjustment: Mapping[str, Any],
+    characteristic_adjustments: Mapping[str, str],
+    damage_rules: Mapping[str, Any],
 ) -> list[dict[str, Any]]:
     """Build the guide from the active administrator-controlled formula profile."""
     labels = {
@@ -248,6 +257,23 @@ def character_variable_guide_blocks(
     general_fixed_rate = _display_number(
         quick_stat_adjustment.get("general_modifier_fixed_per_point", 0)
     )
+    level_formula = str(characteristic_adjustments.get("livello") or "").strip()
+    fortuna_formula = str(characteristic_adjustments.get("fortuna") or "").strip()
+
+    bounds = damage_rules.get("bounds") if isinstance(damage_rules.get("bounds"), Mapping) else {}
+    resistance_percentages = (
+        damage_rules.get("resistancePercentages")
+        if isinstance(damage_rules.get("resistancePercentages"), Mapping)
+        else {}
+    )
+    resistance_min = int(bounds.get("resistanceLevelMinimum", -4))
+    resistance_max = int(bounds.get("resistanceLevelMaximum", 9))
+    resistance_scale_text = ", ".join(
+        f"{level} → {_display_number(resistance_percentages.get(str(level), 0))}%"
+        for level in range(resistance_min, resistance_max + 1)
+    )
+    tier_min = int(bounds.get("tierMinimum", -5))
+    tier_max = int(bounds.get("tierMaximum", 30))
 
     dependencies: dict[str, list[str]] = {key: [] for key in labels}
     for result_key, formula in formulas.items():
@@ -255,7 +281,7 @@ def character_variable_guide_blocks(
             if re.search(rf"\b(?:final|pre)\.{re.escape(source_key)}\b", str(formula)):
                 dependencies[source_key].append(str(result_key))
 
-    blocks: list[dict[str, Any]] = [
+    intro_blocks: list[dict[str, Any]] = [
         {
             "type": "paragraph",
             "text": (
@@ -268,95 +294,127 @@ def character_variable_guide_blocks(
             "type": "callout",
             "title": "Ordine di calcolo",
             "text": (
-                "Il sistema parte dai valori base, applica formule ed effetti, calcola il carico e infine "
-                f"applica Stanchezza (-{fatigue_rate}% e -{fatigue_fixed_rate} fisso per punto) "
+                "Il sistema parte dai valori base, applica le caratteristiche (comprese le variazioni di Livello "
+                "e Fortuna) e le loro formule derivate, aggiunge le specializzazioni di equipaggiamento ad "
+                "Attacco, Difesa e Tier, calcola il carico e infine applica Stanchezza "
+                f"(-{fatigue_rate}% e -{fatigue_fixed_rate} fisso per punto) "
                 f"e Modificatore generale (+{general_rate}% e +{general_fixed_rate} fisso per punto) "
                 f"a: {target_names}. Percentuali e valori fissi precedono l'arrotondamento per difetto."
             ),
         },
     ]
 
+    groups: list[dict[str, Any]] = []
     for group_label, entries in CHARACTER_VARIABLE_GROUPS:
-        items: list[str] = []
+        variables: list[dict[str, Any]] = []
         for key, label, description in entries:
-            details = [description]
+            facts: list[str] = []
             if key == "stanchezza":
-                details.append(
+                facts.append(
                     f"Configurazione attuale: -{fatigue_rate}% e "
                     f"-{fatigue_fixed_rate} fisso per punto su {target_names}."
                 )
             elif key == "modificatore_generale":
-                details.append(
+                facts.append(
                     f"Configurazione attuale: +{general_rate}% e "
                     f"+{general_fixed_rate} fisso per punto su {target_names}."
                 )
+            elif key == "tier":
+                facts.append(f"Intervallo attuale della tabella dadi: da {tier_min} a {tier_max}.")
+
+            if key in _CHARACTERISTIC_KEYS:
+                if level_formula:
+                    facts.append(f"Bonus automatico attuale da Livello: {level_formula}.")
+                if key != "fortuna" and fortuna_formula:
+                    facts.append(f"Bonus automatico attuale da Fortuna: {fortuna_formula}.")
 
             if key.startswith("mod_") and key not in {"mod_carico", "mod_peso_equip"}:
                 characteristic = key.removeprefix("mod_")
-                details.append(f"Calcolo attuale: ⌊({labels.get(characteristic, characteristic)} - 10) / 2⌋.")
+                facts.append(
+                    f"Calcolo attuale: ⌊({labels.get(characteristic, characteristic)} finale − 10) / 2⌋."
+                )
             else:
                 if key in base_values:
-                    details.append(f"Valore base attuale: {_display_number(base_values[key])}.")
+                    facts.append(f"Valore base attuale: {_display_number(base_values[key])}.")
                 if key in formulas:
-                    details.append(f"Formula attuale: {formulas[key]}.")
+                    facts.append(f"Formula attuale: {formulas[key]}.")
 
             if dependencies[key]:
                 dependent_labels = ", ".join(labels.get(item, item) for item in dependencies[key])
-                details.append(f"È richiamata dalle formule attuali di: {dependent_labels}.")
-            items.append(f"{label} ({key}) — {' '.join(details)}")
-        blocks.extend(({"type": "heading", "text": group_label}, {"type": "list", "items": items}))
-        if group_label == "Resistenze, riduzioni e perforazione":
-            blocks.append(
-                {
-                    "type": "callout",
-                    "title": "Scala delle resistenze",
-                    "text": (
-                        "Conversione livello → percentuale: -4 → -45%, -3 → -35%, -2 → -25%, -1 → -15%, "
-                        "0 → 0%, 1 → 15%, 2 → 23%, 3 → 30%, 4 → 35%, 5 → 40%, 6 → 45%, "
-                        "7 → 50%, 8 → 55%, 9 → 60%. La scala è modificabile dall'amministratore e i livelli "
-                        "sono comunque limitati fra -4 e 9. L'attacco applica prima questa percentuale, "
-                        "poi la RD fissa, infine il recupero da perforazione."
-                    ),
-                }
-            )
+                facts.append(f"È richiamata dalle formule attuali di: {dependent_labels}.")
 
-    blocks.extend(
-        (
-            {"type": "heading", "text": "Borsa dei reagenti e alchimia"},
-            {
-                "type": "paragraph",
+            variables.append({"key": key, "label": label, "description": description, "facts": facts})
+
+        group: dict[str, Any] = {"label": group_label, "variables": variables}
+        if group_label == "Regole globali e caratteristiche" and (level_formula or fortuna_formula):
+            group["note"] = {
+                "title": "Livello e Fortuna influenzano tutte le caratteristiche",
                 "text": (
-                    "La borsa conserva quantità di ingredienti e capacità massima. I moltiplicatori alchemici "
-                    "sono invece variabili calcolate del personaggio, con valore base amministrativo e contributi "
-                    "automatici di abilità, equipaggiamento ed effetti. "
-                    "Nella scheda, Spazi occupati è la somma delle quantità positive e Spazi liberi è la capacità "
-                    "meno tale somma. I nomi possono essere quelli classici per colore/livello oppure reagenti personalizzati."
+                    "A ogni ricalcolo della scheda, il sistema aggiunge a ciascuna delle nove caratteristiche "
+                    f"il valore della formula amministrativa di Livello ({level_formula or '—'}), e a ciascuna "
+                    f"caratteristica diversa da Fortuna aggiunge anche il valore della formula di Fortuna "
+                    f"({fortuna_formula or '—'}), prima dell'arrotondamento per difetto finale. Questo è "
+                    "automatico e indipendente da qualunque effetto personalizzato che il giocatore crei per "
+                    "una caratteristica preferita."
                 ),
-            },
-            {
-                "type": "list",
-                "items": [
-                    "Regolamento originario: i reagenti sono Rossi, Verdi o Blu e hanno livello da 1 a 4.",
-                    "Per creare una pozione si consumano fino a quattro reagenti; ciascuno contribuisce con il moltiplicatore del proprio livello.",
-                    "Potenza finale originaria: (somma dei quattro moltiplicatori di livello) × (bonus del set alchemico + abilità).",
-                    "Soglie originarie delle pozioni: livello 1 da potenza 3, poi un livello ogni 3 punti, fino al livello 10 da potenza 30.",
-                    "Rosso: cura, difesa, attacco, riduzione PA, danno alla vita, vita temporanea, energia spesa.",
-                    "Verde: aumento PA, visione, cura effetti, esplosione, stanchezza spesa, fumogeno.",
-                    "Blu: mana, danno al mana, potere speso, resistenza magica, volo, invisibilità, intangibilità.",
-                ],
-            },
-            {
-                "type": "callout",
-                "title": "Moltiplicatori colore",
+            }
+        elif group_label == "Resistenze, riduzioni e perforazione":
+            group["note"] = {
+                "title": "Scala delle resistenze",
                 "text": (
-                    "Rosso, Verde, Blu e i quattro livelli sono bersagli del normale sistema effetti. La scheda "
-                    "mostra sempre il totale finale; rimuovere una skill o un oggetto rimuove automaticamente "
-                    "anche il relativo contributo."
+                    f"Conversione livello → percentuale: {resistance_scale_text}. La scala è modificabile "
+                    f"dall'amministratore e i livelli sono comunque limitati fra {resistance_min} e "
+                    f"{resistance_max}. L'attacco applica prima questa percentuale, poi la RD fissa, infine "
+                    "il recupero da perforazione."
                 ),
-            },
-        )
+            }
+        groups.append(group)
+
+    reference_block: dict[str, Any] = {"type": "variable_reference", "groups": groups}
+
+    alchemy_blocks: list[dict[str, Any]] = [
+        {"type": "heading", "text": "Borsa dei reagenti e alchimia"},
+        {
+            "type": "paragraph",
+            "text": (
+                "La borsa conserva quantità di ingredienti e capacità massima. I moltiplicatori alchemici "
+                "sono invece variabili calcolate del personaggio, con valore base amministrativo e contributi "
+                "automatici di abilità, equipaggiamento ed effetti. "
+                "Nella scheda, Spazi occupati è la somma delle quantità positive e Spazi liberi è la capacità "
+                "meno tale somma. I nomi possono essere quelli classici per colore/livello oppure reagenti personalizzati."
+            ),
+        },
+        {
+            "type": "list",
+            "items": [
+                "Regolamento originario: i reagenti sono Rossi, Verdi o Blu e hanno livello da 1 a 4.",
+                "Per creare una pozione si selezionano da uno a quattro reagenti; ciascuno contribuisce con il moltiplicatore del proprio livello.",
+                "Potenza della miscela: (somma dei moltiplicatori di livello dei reagenti scelti) × (bonus del set alchemico + moltiplicatore del colore scelto).",
+                "Soglie delle pozioni: livello 1 da potenza 3, poi un livello ogni 3 punti, fino al livello 10 da potenza 30 (il livello non supera mai 10).",
+                "Rosso: cura, difesa, attacco, riduzione PA, danno alla vita, vita temporanea, energia spesa.",
+                "Verde: aumento PA, visione, cura effetti, esplosione, stanchezza spesa, fumogeno.",
+                "Blu: mana, danno al mana, potere speso, resistenza magica, volo, invisibilità, intangibilità.",
+            ],
+        },
+        {
+            "type": "callout",
+            "title": "Moltiplicatori colore",
+            "text": (
+                "Rosso, Verde, Blu e i quattro livelli sono bersagli del normale sistema effetti. La scheda "
+                "mostra sempre il totale finale; rimuovere una skill o un oggetto rimuove automaticamente "
+                "anche il relativo contributo. Solo il moltiplicatore del colore scelto per la pozione entra "
+                "nel calcolo della potenza, non tutti e tre insieme."
+            ),
+        },
+    ]
+
+    warning_block = _difference_warning(
+        "Alcune variabili sono calcolate e mostrate ma non ancora spese automaticamente: i PA non hanno uno "
+        "storico di spesa persistente lato server, l'anteprima degli incantesimi non consuma risorse, e "
+        "il Sifone di Mana resta un valore compatibile con Elder senza automazione attiva."
     )
-    return blocks
+
+    return [*intro_blocks, reference_block, *alchemy_blocks, warning_block]
 
 
 WEAPON_TYPE_LABELS = {
@@ -549,29 +607,8 @@ _ELDER_RULES_PATH = Path(__file__).with_name("regole_varie_elder.html")
 
 _RULE_STATUS_NOTES: dict[str | tuple[str, str], tuple[str, str]] = {
     "INDICE": ("implemented", "INDICE ORIGINALE — I collegamenti restano interni a questa guida e portano alle sezioni Elder sottostanti."),
-    "BASE": ("partial", "PARZIALMENTE IMPLEMENTATO — In ReDjango si possono usare tutti i dadi: il d20 risolve gli attacchi, le competenze salgono da d6 a d12 e gli strumenti rapidi tirano qualsiasi set configurato. Le risorse sono conservate, ma non tutte le eccezioni Elder sono applicate automaticamente."),
-    "Risorse del Personaggio": ("partial", "PARZIALMENTE IMPLEMENTATO — PF, Mana, Energia, Potere, PA e Stanchezza sono presenti. NON ANCORA IMPLEMENTATI: morte a −Resistenza PF, raddoppio automatico dei PA a 0 PF, ciclo Energia −1/Stanchezza e recuperi completi del riposo."),
-    "Competenze e Barre": ("implemented", "IMPLEMENTATO — Due barre 0–7, costo progressivo, tecniche in Energia, dadi superiori e reroll giornalieri sono gestiti nella pagina Competenze."),
-    "Lista Competenze": ("implemented", "IMPLEMENTATO — Le 21 competenze Elder sono presenti nell’atlante ReDjango."),
-    "Check di Competenza": ("implemented", "IMPLEMENTATO — Il tiro è server-side e somma i bonus; soglia e interpretazione restano al Master, come previsto dalla guida."),
-    "Equipaggiamento e Slot": ("partial", "PARZIALMENTE IMPLEMENTATO — Slot, zaino, faretre, limiti di anelli/orecchini/sacchi, compatibilità e peso sono gestiti. Alcune incompatibilità narrative Elder fra strati di vestiario non sono ancora automatizzate."),
-    "COMBAT": ("implemented", "IMPLEMENTATO — La postazione Combattimento risolve l’attacco lato server: d20, differenza d’attacco, moltiplicatore di danno, Tier, critici, resistenze, RD e perforazione. Restano manuali soltanto iniziativa e ordine dei turni."),
-    "Turni, Iniziativa e Punti Azione": ("partial", "PARZIALMENTE IMPLEMENTATO — Movimento su griglia e costo in PA sono calcolati (percorso più rapido, moltiplicatori di terreno, celle bloccate o invalicabili, PA arrotondati per eccesso). NON ANCORA IMPLEMENTATI iniziativa e ordine dei turni: il Master li gestisce a mano."),
-    "Attacco, Difesa e Risoluzione": ("implemented", "IMPLEMENTATO — Catena completa: differenza = −4 + Attacco + d20 − Difesa + mod. Fortuna attaccante (calcolato su una Fortuna minima di 12) − mod. Fortuna difensore, limitata da −25 a +45; la tabella d20 × differenza dà la percentuale di danno; il Tier sceglie la formula dei dadi; poi resistenza percentuale, RD fissa e recupero da perforazione. Il tiro di 1 è sempre fallimento critico."),
     "Critici": ("partial", "PARZIALMENTE IMPLEMENTATO — I critici sono risolti: le soglie crit_min/crit_nor/crit_mag danno +40%/+60%/+80% di danno, corretti dalla Fortuna e dalla differenza d’attacco. NON ANCORA IMPLEMENTATI gittata, malus in mischia e attacchi di opportunità, che restano regole manuali; la ricarica delle armi a distanza è invece gestita dalla postazione."),
-    "MALATTIE E STATUS": ("partial", "PARZIALMENTE IMPLEMENTATO — Gli effetti strutturati possono rappresentare stati e malattie; NON ANCORA IMPLEMENTATI guarigione giornaliera, Cura Effetti e scadenza completa legata alla causa."),
-    "Status": ("partial", "PARZIALMENTE IMPLEMENTATO — I singoli status possono essere creati come effetti, ma questo catalogo Elder non è ancora applicato e risolto automaticamente."),
-    "Malattie": ("partial", "PARZIALMENTE IMPLEMENTATO — Le malattie possono essere registrate come effetti persistenti, ma tiri, progressione, Astinenza e guarigione non sono automatizzati."),
     "SCASSINARE e BORSEGGIARE": ("missing", "NON ANCORA IMPLEMENTATO — Mancano workflow dedicati per serrature, usura degli attrezzi, soglie, furtività e borseggio."),
-    "LIVELLI": ("missing", "NON ANCORA IMPLEMENTATO — La tabella XP, le quattro categorie di PE e l’assegnazione automatica dei perk per livello non sono attive in ReDjango."),
-    "Caratteristiche e Influenza sulle Statistiche": ("partial", "PARZIALMENTE IMPLEMENTATO — Le caratteristiche e le dipendenze esistono, ma le formule ReDjango sono amministrabili. Verificare sempre la guida dinamica “Variabili del personaggio e alchimia”."),
-    "Calcolo delle Statistiche di Base": ("incorrect", "NON CORRETTO COME FORMULA FISSA PER REDJANGO — Queste sono le formule Elder originali; ReDjango usa il profilo Formule_base attivo, che può essere modificato dall’amministratore."),
-    "CREA PG": ("partial", "PARZIALMENTE IMPLEMENTATO — Personaggi, razze, caratteristiche ed effetti sono gestibili; NON ANCORA IMPLEMENTATO un wizard giocatore che esegua l’intera procedura Elder."),
-    "RESURREZIONE": ("missing", "NON ANCORA IMPLEMENTATO — Finestra di 48 ore, integrità del corpo, sacrificio e malus post-resurrezione sono regole manuali."),
-    "EVOCAZIONE": ("missing", "NON ANCORA IMPLEMENTATO — Creature evocate, limiti, cattura anima, durata e costi non hanno un sistema dedicato."),
-    "INSEGNAMENTO": ("missing", "NON ANCORA IMPLEMENTATO — Gli sconti alle skill esistono, ma lezioni, tempo, pagamento e trasferimento fra PG non sono un workflow automatico."),
-    "GRIMORI": ("missing", "NON ANCORA IMPLEMENTATO — Scrittura, cancellazione, mani libere, voce, magie contenute e cariche del grimorio non sono automatizzati."),
-    "CAVALCARE": ("missing", "NON ANCORA IMPLEMENTATO — Selle, andature, movimento, malus e prove in combattimento non hanno un sistema dedicato."),
     "ALCHIMIA, INCANTAMENTO E FORGIATURA": ("partial", "PARZIALMENTE IMPLEMENTATO — Alchimia è operativa; Incantamento e Forgiatura sono visibili nella Creazione ma non ancora implementati."),
     "Alchimia": ("implemented", "IMPLEMENTATO CON DIFFERENZE REDJANGO — Borsa, 42 ingredienti Elder, estrazione, anteprima e distillazione transazionale sono attive."),
     ("Alchimia", "Introduzione"): ("partial", "PARZIALMENTE IMPLEMENTATO — La creazione è attiva; tempi narrativi di 15/10 minuti e percentuale del set non fanno avanzare automaticamente un orologio di campagna."),
@@ -586,36 +623,14 @@ _RULE_STATUS_NOTES: dict[str | tuple[str, str], tuple[str, str]] = {
     "Creazione degli Oggetti": ("missing", "NON ANCORA IMPLEMENTATO — Lingotti, tempi e rese delle munizioni non vengono consumati o prodotti automaticamente."),
     "Miglioramento degli Oggetti": ("missing", "NON ANCORA IMPLEMENTATO — I miglioramenti elencati non hanno ancora un servizio transazionale di forgiatura."),
     "Cumulare Miglioramenti": ("missing", "NON ANCORA IMPLEMENTATO — Il raddoppio cumulativo dei costi non è calcolato dal sistema."),
-    "MODIFICATORI DI GIOCO": ("partial", "PARZIALMENTE IMPLEMENTATO — Le variabili esistono e possono ricevere effetti. Quelle di combattimento (Tier, resistenze, RD, perforazione, Attacco, Difesa, Fortuna) sono calcolate e applicate; altre sono conservate in attesa delle regole che le useranno."),
-    "stanchezza": ("implemented", "IMPLEMENTATO CON CONFIGURAZIONE REDJANGO — Il valore entra nei totali secondo il profilo amministrativo attivo; la percentuale Elder −8% non è necessariamente fissa."),
-    "modificatore_generale": ("implemented", "IMPLEMENTATO CON CONFIGURAZIONE REDJANGO — Il valore modifica i bersagli configurati; il +12% Elder non è necessariamente fisso."),
-    "fortuna": ("partial", "PARZIALMENTE IMPLEMENTATO — Fortuna e relativo modificatore sono disponibili ai dadi e alle formule; non tutti gli effetti indiretti Elder sono automatizzati."),
-    "rd_fis": ("implemented", "IMPLEMENTATO — RD fisica è sottratta dopo la resistenza a ogni danno Contundente, Perforante e Taglio. La perforazione dell’attaccante può recuperare quanto è stato assorbito, mai di più."),
-    "res_contundente": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale dalla scala configurata e sottratto al danno contundente. L'ordine è: resistenza percentuale, poi RD fissa, poi recupero da perforazione."),
-    "res_taglio": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale dalla scala configurata e sottratto al danno da taglio. L'ordine è: resistenza percentuale, poi RD fissa, poi recupero da perforazione."),
-    "res_perforante": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale dalla scala configurata e sottratto al danno perforante. L'ordine è: resistenza percentuale, poi RD fissa, poi recupero da perforazione."),
-    "res_fuoco": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale e sottratto al danno da fuoco; la riduzione fissa usata è rd_fuoco, non rd_fis."),
-    "res_gelo": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale e sottratto al danno da gelo; la riduzione fissa usata è rd_gelo, non rd_fis."),
-    "res_elettro": ("implemented", "IMPLEMENTATO — Il livello è convertito in percentuale e sottratto al danno elettrico; la riduzione fissa usata è rd_elettro, non rd_fis."),
-    "rd_fuoco": ("implemented", "IMPLEMENTATO — Sottratta al danno da fuoco dopo la resistenza. La perforazione non la recupera: agisce solo sui danni fisici."),
-    "rd_gelo": ("implemented", "IMPLEMENTATO — Sottratta al danno da gelo dopo la resistenza. La perforazione non la recupera: agisce solo sui danni fisici."),
-    "rd_elettro": ("implemented", "IMPLEMENTATO — Sottratta al danno elettrico dopo la resistenza. La perforazione non la recupera: agisce solo sui danni fisici."),
-    "slot_magici": ("incorrect", "NON CORRETTO PER REDJANGO — Qui la descrizione Elder parla di equipaggiamento magico; in ReDjango slot_magici indica gli spazi iniziali dello zaino che ignorano il peso."),
-    "slot_non_magici": ("implemented", "IMPLEMENTATO — Aggiunge spazi normali allo zaino ReDjango."),
-    "monete_per_slot": ("implemented", "IMPLEMENTATO — Le monete personali occupano automaticamente spazi protetti nello zaino; l'eccedenza può essere trasferita esplicitamente alle monete condivise della campagna."),
-    "tier": ("implemented", "IMPLEMENTATO — Il Tier totale dell’attaccante sceglie la formula dei dadi di danno nella tabella configurata (da −5 a 30, per esempio 0 → 1d8, 4 → 2d6, 10 → 3d10). È il bersaglio su cui il creator armi salva i bonus chiamati DMG."),
-    "sifone_di_mana": ("missing", "NON ANCORA IMPLEMENTATO — La variabile è disponibile, ma accumulo e recupero del sifone non hanno un flusso completo."),
-    "ogni_en_x_mana_ordine": ("incorrect", "NOME LEGACY NON CORRETTO PER REDJANGO — ReDjango usa il rapporto unificato ogni_en_x_mana nell’anteprima magie, senza rami Ordine/Caos separati."),
-    "ogni_pa_x_mana_ordine": ("incorrect", "NOME LEGACY NON CORRETTO PER REDJANGO — ReDjango usa il rapporto unificato ogni_pa_x_mana nell’anteprima magie, senza rami Ordine/Caos separati."),
-    "ogni_en_x_mana_caos": ("incorrect", "NON PRESENTE COME VARIABILE SEPARATA IN REDJANGO — Usare ogni_en_x_mana."),
-    "ogni_pa_x_mana_caos": ("incorrect", "NON PRESENTE COME VARIABILE SEPARATA IN REDJANGO — Usare ogni_pa_x_mana."),
-    "sconto_mana_per_potere": ("partial", "PARZIALMENTE IMPLEMENTATO — Lo sconto entra nell’anteprima magia; esecuzione e spesa completa della magia non sono ancora implementate."),
-    "sconto_pa_per_potere": ("partial", "PARZIALMENTE IMPLEMENTATO — Lo sconto entra nell’anteprima magia; esecuzione e spesa completa della magia non sono ancora implementate."),
-    "mod_carico": ("implemented", "IMPLEMENTATO — Il malus usa floor(peso / mod_carico) e riduce i PA senza scendere sotto 4."),
-    "mod_peso_equip": ("implemented", "IMPLEMENTATO — Riduce percentualmente il peso equipaggiato prima del calcolo del carico."),
-    "orecchini_max": ("implemented", "IMPLEMENTATO — Gli slot oltre il limite sono bloccati."),
-    "anelli_max": ("implemented", "IMPLEMENTATO — Gli slot oltre il limite sono bloccati."),
-    "sacchi_max": ("implemented", "IMPLEMENTATO — Gli slot oltre il limite sono bloccati."),
+}
+
+
+_RULE_GUIDE_LINKS: dict[str, tuple[str, str]] = {
+    "Risorse del Personaggio": (
+        CHARACTER_VARIABLE_GUIDE_NAME,
+        "Valori base, formule attive e dipendenze di PF, Mana, Energia, Potere e PA sono elencati nella guida",
+    ),
 }
 
 
@@ -663,6 +678,13 @@ def _annotated_elder_rules_html() -> str:
         title = _heading_text(match.group(2))
         if level == "2":
             current_h2 = title
+        link = _RULE_GUIDE_LINKS.get(title)
+        if link:
+            guide_name, lead = link
+            heading += (
+                f'<p class="guide-cross-link"><a href="#" data-guide="{escape(guide_name, quote=True)}">'
+                f'{lead} “{guide_name}”.</a></p>'
+            )
         note = _RULE_STATUS_NOTES.get((current_h2, title)) or _RULE_STATUS_NOTES.get(title)
         if not note:
             return heading
@@ -733,10 +755,36 @@ CODE_DISEASE = """{
 V2_GUIDE_DEFAULTS = [
     {
         "seed_key": "regole-varie",
-        "nome": "Regole Varie — ReDjango",
+        "nome": "Regole Varie",
         "categoria": "Regolamento",
         "ordine": 5,
         "contenuto": _redjango_rules_guide_content(),
+    },
+    {
+        "seed_key": "compendio-oggetti",
+        "nome": ITEM_COMPENDIUM_GUIDE_NAME,
+        "categoria": "Compendio",
+        "ordine": 8,
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Il catalogo completo degli oggetti del gioco: armi, armature, monili, pozioni, "
+                    "pergamene, reagenti, strumenti e bottino. Filtra per categoria, rarità, regione o "
+                    "livello, poi apri una scheda per leggere ogni dato del pezzo."
+                ),
+            },
+            {
+                "type": "callout",
+                "title": "Le voci sottolineate si aprono",
+                "text": (
+                    "Nella scheda di un oggetto, categoria d'arma, effetti, rarità e livello di bottino "
+                    "hanno una nota consultabile: la categoria di un'arma mostra il suo potere unico, "
+                    "gli assi che la definiscono e i PA per attacco."
+                ),
+            },
+            {"type": "item_compendium"},
+        ),
     },
     {
         "seed_key": "oggetti",
@@ -984,13 +1032,6 @@ V2_GUIDE_DEFAULTS = [
         "nome": CHARACTER_VARIABLE_GUIDE_NAME,
         "categoria": "Personaggio",
         "ordine": 60,
-        "contenuto": _guide_content(
-            {"type": "dynamic_character_variables"},
-            _difference_warning(
-                "Alcune variabili sono calcolate e mostrate ma non ancora spese automaticamente: i PA non hanno uno "
-                "storico di spesa persistente lato server, l'anteprima degli incantesimi non consuma risorse, e "
-                "il Sifone di Mana resta un valore compatibile con Elder senza automazione attiva."
-            ),
-        ),
+        "contenuto": _guide_content({"type": "dynamic_character_variables"}),
     },
 ]
