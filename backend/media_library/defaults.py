@@ -10,7 +10,7 @@ IMAGE_CATEGORY_DEFAULTS = [
         "name": "Personaggi",
         "slug": "personaggi",
         "description": "Ritratti, sagome e immagini dei personaggi.",
-        "usage_types": ["character_portrait"],
+        "usage_types": ["character_portrait", "race_portrait"],
         "order": 20,
     },
     {

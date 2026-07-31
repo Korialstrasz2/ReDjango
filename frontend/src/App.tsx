@@ -223,8 +223,8 @@ function Shell({ children }: { children: ReactNode }) {
   const background = settings.theme?.backgrounds?.[screen] || "";
   const characterPath = personaggi.giocatore.activePersonaggioId ? `/character/${personaggi.giocatore.activePersonaggioId}` : "/characters";
   const links: Array<[string, string, string, PageShortcutTarget?]> = [
-    ["/", "Sala principale", "⌂", "dashboard"],
-    [characterPath, "Scheda personaggio", "⚔", "character"],
+    ["/", "Menu", "⌂", "dashboard"],
+    [characterPath, "PG", "⚔", "character"],
     ["/skills", "Abilità", "✦", "skills"],
     ["/competencies", "Competenze", "✧", "competencies"],
     ["/creation", "Creazione", "⚗", "creation"],
@@ -232,7 +232,7 @@ function Shell({ children }: { children: ReactNode }) {
     ["/travel", "Viaggio", "⌖", "travel"],
     ["/market", "Mercato", "¤", "market"],
     ["/lore", "Lore", "◈", "lore"],
-    ["/media", "Archivio immagini", "▧", "media"],
+    ["/media", "Immagini", "▧", "media"],
     ["/guides", "Guide", "☷", "guides"],
     ["/settings", "Impostazioni", "⚙", "settings"]
   ];

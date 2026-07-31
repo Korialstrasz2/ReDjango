@@ -2005,12 +2005,22 @@ html[data-reduced-motion="true"] .audio-mini-progress i { transition: none; }
 .name-advanced { display: grid; gap: 11px; align-content: start; min-height: 0; }
 .name-hint { margin: 0; color: var(--muted); font-size: .58rem; line-height: 1.55; }
 
-/* La cascata: razze in colonna, culture e generi in pop-out ancorati alla riga.
-   Ogni livello vive dentro il <li> del livello precedente, così spostare il
-   mouse dentro il pop-out non conta come uscita e il menu non si chiude. */
-.name-cascade { position: relative; z-index: 1; }
+/* Cascata a sinistra, colonna anteprima+risultato a destra. La cascata aperta
+   occupa circa 660 px, quindi questo strumento usa il cassetto largo: nei 570 px
+   standard il pannello non avrebbe spazio e i pop-out finirebbero sotto l'immagine. */
+.name-picker { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+
+/* La cascata: razze in due colonne — giocabili e solo narrative — con culture e
+   generi in pop-out ancorati alla riga. Ogni livello vive dentro il <li> del
+   livello precedente, così spostare il mouse dentro il pop-out non conta come
+   uscita e il menu non si chiude. */
+.name-cascade { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, 160px); gap: 0 19px; justify-content: start; align-items: start; }
 .name-cascade ul { display: grid; margin: 0; padding: 0; list-style: none; }
-.name-cascade-races { gap: 3px; width: 152px; }
+.name-cascade-races { gap: 3px; align-content: start; }
+/* Un filo verticale separa i due gruppi: la distinzione si vede senza doverla
+   scrivere con un'intestazione sopra ciascuna colonna. */
+.name-cascade-lore { position: relative; }
+.name-cascade-lore::before { content: ""; position: absolute; top: 3px; bottom: 3px; left: -10px; width: 1px; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--gold), transparent 62%), transparent); }
 .name-cascade li { position: relative; }
 .name-cascade button { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 7px; width: 100%; padding: 7px 9px; border: 1px solid color-mix(in srgb, var(--line), transparent 30%); border-radius: 2px; background: color-mix(in srgb, var(--panel), transparent 34%); color: var(--muted); text-align: left; cursor: pointer; transition: border-color 140ms ease, background 140ms ease, color 140ms ease; }
 .name-cascade button strong { overflow: hidden; color: color-mix(in srgb, var(--text), transparent 14%); font-size: .69rem; text-overflow: ellipsis; white-space: nowrap; }
@@ -2046,6 +2056,33 @@ html[data-reduced-motion="true"] .audio-mini-progress i { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .name-flyout, .name-cascade-cultures > li, .name-cascade-genders > button { animation: none; }
   .name-cascade-arrow, .name-cascade button { transition: none; }
+  .name-preview-stage img, .name-preview-clip { animation: none; }
+}
+
+/* Anteprima: l'immagine è sempre montata, la clip solo quando il puntatore si
+   ferma, e le due si sovrappongono così il passaggio non fa sfarfallare il box. */
+.name-rail { position: sticky; top: 0; display: grid; gap: 11px; align-content: start; }
+.name-preview { display: grid; gap: 8px; }
+.name-preview-stage { position: relative; margin: 0; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold), transparent 50%); border-radius: 4px; background: color-mix(in srgb, var(--panel), transparent 20%); box-shadow: inset 0 0 30px #0006; }
+.name-preview-stage img, .name-preview-clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.name-preview-stage img { animation: name-preview-in 220ms ease-out both; }
+.name-preview-clip { z-index: 1; animation: name-preview-in 320ms ease-out both; }
+.name-preview-missing { display: grid; place-items: center; width: 100%; height: 100%; color: color-mix(in srgb, var(--gold), transparent 66%); font-size: 2.4rem; }
+.name-preview-caption { display: grid; gap: 1px; }
+.name-preview-caption strong { color: color-mix(in srgb, var(--gold), white 34%); font-size: .84rem; }
+.name-preview-caption small { color: var(--muted); font-size: .53rem; letter-spacing: .06em; text-transform: uppercase; }
+.name-preview-empty { margin: 0; color: var(--muted); font-size: .58rem; font-style: italic; line-height: 1.5; }
+
+@keyframes name-preview-in {
+  from { opacity: 0; transform: scale(1.03); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 900px) {
+  .name-picker { grid-template-columns: minmax(0, 1fr); }
+  .name-rail { position: static; }
+  .name-preview { justify-items: start; }
+  .name-preview-stage { max-width: 240px; }
 }
 
 .name-result-empty { color: var(--muted); font-size: .62rem; font-style: italic; }
@@ -2055,7 +2092,7 @@ html[data-reduced-motion="true"] .audio-mini-progress i { transition: none; }
 
 .name-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .name-result { display: grid; gap: 4px; padding: 13px 15px; border: 1px solid color-mix(in srgb, var(--gold), transparent 46%); border-radius: 3px; background: linear-gradient(150deg, color-mix(in srgb, var(--panel-strong), transparent 10%), color-mix(in srgb, var(--panel), transparent 18%)); box-shadow: inset 0 0 34px #0005; }
-.name-result > strong { color: color-mix(in srgb, var(--gold), white 38%); font-size: 1.5rem; line-height: 1.2; text-shadow: 0 0 18px color-mix(in srgb, var(--gold), transparent 60%); }
+.name-result > strong { color: color-mix(in srgb, var(--gold), white 38%); font-size: 1.5rem; line-height: 1.2; overflow-wrap: anywhere; text-shadow: 0 0 18px color-mix(in srgb, var(--gold), transparent 60%); }
 .name-result > span { color: var(--muted); font-size: .55rem; letter-spacing: .04em; text-transform: uppercase; }
 .name-warning { color: color-mix(in srgb, #d8a24a, white 12%); font-style: normal; font-size: .58rem; }
 .name-result .button-row { margin-top: 6px; }
@@ -3814,6 +3851,8 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-hex.direct .hex-line { fill: #5ca5d72c; stroke: #78c8ee; stroke-width: 2; }
 .combat-hex.fastest .hex-line { fill: #6bb76f3b; stroke: #86e083; stroke-width: 3; }
 .combat-hex text { fill: #fff1ca; font-size: 10px; font-weight: 800; pointer-events: none; }
+.combat-hex-terrain-badge rect { fill-opacity: .94; stroke-opacity: .38; stroke-width: 1; vector-effect: non-scaling-stroke; paint-order: stroke; }
+.combat-hex-terrain-badge text { font-weight: 900; letter-spacing: .04em; text-transform: uppercase; pointer-events: none; }
 .combat-token { cursor: grab; }
 .combat-token.locked { cursor: default; }
 .combat-token:active { cursor: grabbing; }
@@ -4296,7 +4335,7 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-color-tab, .combat-type-tab { display: grid; gap: 9px; }.combat-color-presets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }.combat-color-presets button { min-height: 34px; border: 2px solid transparent; border-radius: 7px; background: var(--hex-preset); box-shadow: inset 0 0 0 1px #fff4; }.combat-color-presets button.active { border-color: #fff1b8; box-shadow: 0 0 0 2px var(--gold); }
 .combat-color-controls { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 8px; }.combat-color-controls label { display: grid; gap: 3px; color: var(--muted); font-size: .6rem; }.combat-color-controls label:last-child { grid-template-columns: 1fr 40px; }.combat-color-controls label:last-child input { grid-column: 1 / -1; }.combat-color-controls input[type="color"] { width: 100%; min-height: 32px; padding: 2px; }.combat-color-controls output { color: var(--gold); text-align: right; }
 .combat-hex-apply-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }.combat-fog-preset { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; align-items: center; padding: 8px; border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line)); border-radius: 8px; background: color-mix(in srgb, var(--gold) 6%, transparent); }.combat-fog-preset > div { display: grid; }.combat-fog-preset strong { color: var(--text); font-size: .66rem; }.combat-fog-preset span, .combat-color-tab details, .combat-type-tab > p { margin: 0; color: var(--muted); font-size: .6rem; line-height: 1.45; }.combat-color-tab details { padding-top: 4px; border-top: 1px solid var(--line); }.combat-color-tab details summary { cursor: pointer; color: var(--gold); }
-.combat-hex-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: 260px; overflow-y: auto; }.combat-hex-type-grid > button { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 2px 6px; align-items: center; padding: 7px; color: var(--text); border: 1px solid var(--line); border-left: 3px solid var(--terrain-color); border-radius: 7px; background: color-mix(in srgb, var(--text) 3%, transparent); text-align: left; }.combat-hex-type-grid > button > span { grid-row: 1 / 3; width: 10px; height: 28px; border-radius: 5px; }.combat-hex-type-grid strong { font-size: .56rem; }.combat-hex-type-grid small { color: var(--muted); font-size: .47rem; }
+.combat-hex-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: 260px; overflow-y: auto; }.combat-hex-type-grid > button { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 6px; align-items: center; padding: 7px; color: var(--text); border: 1px solid var(--line); border-left: 3px solid var(--terrain-color); border-radius: 7px; background: color-mix(in srgb, var(--text) 3%, transparent); text-align: left; }.combat-hex-type-grid > button > span { display: grid; grid-row: 1 / 3; width: 30px; height: 24px; align-content: center; justify-content: center; border-radius: 12px; font-size: .5rem; font-weight: 900; letter-spacing: .04em; }.combat-hex-type-grid strong { font-size: .56rem; }.combat-hex-type-grid small { color: var(--muted); font-size: .47rem; }
 
 .combat-selected-quiver article { position: relative; }
 .combat-selected-quiver article > button { display: grid; width: 100%; min-width: 0; justify-items: center; gap: 3px; padding: 0; color: inherit; border: 0; background: transparent; }

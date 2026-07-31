@@ -1106,6 +1106,44 @@ class NomiRazzeInfo(V2Model):
     names_female = models.JSONField(default=list, blank=True)
     surnames = models.JSONField(default=list, blank=True)
     description = models.TextField(blank=True)
+    # La razza non ha una tabella propria: è una colonna di testo su questa. Il
+    # ritratto di razza viene quindi ripetuto su tutte le culture della stessa
+    # razza, così il selettore lo legge da qualunque riga senza un modello in più.
+    immagine_razza = models.ForeignKey(
+        "media_library.UploadedImage",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="razze_come_ritratto",
+    )
+    immagine_maschile = models.ForeignKey(
+        "media_library.UploadedImage",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="culture_come_ritratto_maschile",
+    )
+    immagine_femminile = models.ForeignKey(
+        "media_library.UploadedImage",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="culture_come_ritratto_femminile",
+    )
+    clip_maschile = models.ForeignKey(
+        "media_library.VideoClip",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="culture_come_clip_maschile",
+    )
+    clip_femminile = models.ForeignKey(
+        "media_library.VideoClip",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="culture_come_clip_femminile",
+    )
 
     class Meta:
         ordering = ["race", "name"]

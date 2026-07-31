@@ -1,4 +1,4 @@
-import { type CSSProperties, type FocusEvent, useState } from "react";
+import { type CSSProperties, type FocusEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -22,9 +22,17 @@ import {
   nameSubtitle,
   poolHint,
   raceRoll,
+  resolvePreview,
   rolledParts,
   pushHistory,
 } from "./nameRules";
+
+/**
+ * Le clip pesano circa 1 MB: passare il mouse lungo l'elenco non deve avviare
+ * uno scaricamento per ogni riga sfiorata. L'immagine cambia subito, il video
+ * solo quando l'anteprima è rimasta ferma abbastanza.
+ */
+const CLIP_SETTLE_MS = 260;
 
 type Props = { notify: (message: string, kind?: "success" | "error" | "info") => void };
 
@@ -38,6 +46,7 @@ export function NameTool({ notify }: Props) {
   // La cascata: una razza aperta, e dentro di essa una cultura aperta.
   const [openRace, setOpenRace] = useState<string | null>(null);
   const [openCulture, setOpenCulture] = useState<number | null>(null);
+  const [hoverGender, setHoverGender] = useState<NameGender | null>(null);
   const [lastRequest, setLastRequest] = useState<RollRequest | null>(null);
   const [current, setCurrent] = useState<GeneratedName | null>(null);
   const [history, setHistory] = useState<GeneratedName[]>([]);
@@ -50,6 +59,10 @@ export function NameTool({ notify }: Props) {
   const [saved, setSaved] = useState(false);
 
   const races = catalog.data?.races ?? [];
+  // Diciassette razze in colonna unica spingevano il risultato sotto la piega:
+  // giocabili e solo narrative stanno affiancate, senza intestazioni a dirlo.
+  const playableRaces = races.filter((entry) => entry.playable);
+  const loreRaces = races.filter((entry) => !entry.playable);
 
   const roll = useMutation({
     mutationFn: (request: RollRequest) => {
@@ -136,6 +149,7 @@ export function NameTool({ notify }: Props) {
   const closeCascade = () => {
     setOpenRace(null);
     setOpenCulture(null);
+    setHoverGender(null);
   };
 
   // Aprire al focus rende la cascata percorribile da tastiera; si chiude solo
@@ -147,7 +161,37 @@ export function NameTool({ notify }: Props) {
   const enterRace = (entry: NameRaceEntry) => {
     setOpenRace(entry.race);
     setOpenCulture(null);
+    setHoverGender(null);
   };
+
+  const enterCulture = (culture: NameCultureEntry) => {
+    setOpenCulture(culture.id);
+    setHoverGender(null);
+  };
+
+  // Quando nulla è sotto il puntatore l'anteprima resta su ciò che è stato
+  // generato per ultimo: il pannello non torna vuoto appena si sposta il mouse.
+  const hoveredRace = races.find((entry) => entry.race === openRace) || null;
+  const hoveredCulture = openCulture
+    ? hoveredRace?.cultures.find((entry) => entry.id === openCulture) || null
+    : null;
+  const currentCulture = current
+    ? races.flatMap((entry) => entry.cultures).find((entry) => entry.id === current.cultureId) || null
+    : null;
+  const preview = hoveredRace || hoveredCulture
+    ? resolvePreview(hoveredRace, hoveredCulture, hoverGender)
+    : resolvePreview(null, currentCulture, current?.gender ?? null);
+
+  const [settledClip, setSettledClip] = useState("");
+  const previewClip = preview?.clip || "";
+  useEffect(() => {
+    if (!previewClip) {
+      setSettledClip("");
+      return;
+    }
+    const timer = window.setTimeout(() => setSettledClip(previewClip), CLIP_SETTLE_MS);
+    return () => window.clearTimeout(timer);
+  }, [previewClip]);
 
   if (catalog.isLoading) return <p className="empty-copy">Apertura dei registri…</p>;
   if (catalog.isError) return <p className="form-error">{(catalog.error as Error).message}</p>;
@@ -161,6 +205,74 @@ export function NameTool({ notify }: Props) {
   const ai = workspace.data;
   const canAdvance = Boolean(ai?.canManage && ai?.ready);
   const allowContext = Boolean(ai?.npcGeneration?.allowCampaignContext);
+
+  const raceItem = (entry: NameRaceEntry, index: number) => {
+    const isOpen = openRace === entry.race;
+    return <li
+      key={entry.race}
+      style={{ "--i": index } as CSSProperties}
+      onMouseEnter={() => enterRace(entry)}
+    >
+      <button
+        type="button"
+        className={isOpen ? "open" : ""}
+        data-playable={entry.playable}
+        aria-expanded={isOpen}
+        title={entry.playable ? `${entry.race} · genera con cultura e genere casuali` : `${entry.race} · solo narrativa`}
+        onFocus={() => enterRace(entry)}
+        onClick={() => {
+          // Il clic genera e apre: su touch, dove il passaggio del mouse
+          // non esiste, è l'unico modo di raggiungere le culture.
+          enterRace(entry);
+          roll.mutate(raceRoll(entry));
+        }}
+      >
+        <strong>{entry.race}</strong>
+        <em>{entry.cultures.length}</em>
+        <span className="name-cascade-arrow" aria-hidden="true">›</span>
+      </button>
+
+      {isOpen && <ul className="name-flyout name-cascade-cultures" aria-label={`Culture ${entry.race}`}>
+        {entry.cultures.map((cultureEntry, cultureIndex) => {
+          const cultureOpen = openCulture === cultureEntry.id;
+          return <li
+            key={cultureEntry.id}
+            style={{ "--i": cultureIndex } as CSSProperties}
+            onMouseEnter={() => enterCulture(cultureEntry)}
+          >
+            <button
+              type="button"
+              className={cultureOpen ? "open" : ""}
+              aria-expanded={cultureOpen}
+              title={`${cultureEntry.name} · ${poolHint(cultureEntry)}`}
+              onFocus={() => enterCulture(cultureEntry)}
+              onClick={() => {
+                enterCulture(cultureEntry);
+                roll.mutate(cultureRoll(cultureEntry));
+              }}
+            >
+              <strong>{cultureEntry.name}</strong>
+              <span className="name-cascade-arrow" aria-hidden="true">›</span>
+            </button>
+
+            {cultureOpen && <div className="name-flyout name-cascade-genders" aria-label={`Genere per ${cultureEntry.name}`}>
+              {(["maschile", "femminile"] as const).map((genderValue) => <button
+                key={genderValue}
+                type="button"
+                className={hoverGender === genderValue ? "open" : ""}
+                onMouseEnter={() => setHoverGender(genderValue)}
+                onFocus={() => setHoverGender(genderValue)}
+                onClick={() => roll.mutate(genderRoll(cultureEntry, genderValue))}
+              >
+                <span aria-hidden="true">{genderValue === "maschile" ? "♂" : "♀"}</span>
+                {genderValue === "maschile" ? "Maschile" : "Femminile"}
+              </button>)}
+            </div>}
+          </li>;
+        })}
+      </ul>}
+    </li>;
+  };
 
   return <div className="name-tool" data-component-type="panel" data-theme="parchment">
     <nav className="name-tabs" role="tablist" aria-label="Modalità del generatore" data-component-type="tabset" data-theme="gold">
@@ -178,73 +290,18 @@ export function NameTool({ notify }: Props) {
         sul genere non lascia nulla al dado.
       </p>
 
+      <div className="name-picker">
       <div className="name-cascade" onMouseLeave={closeCascade} onBlur={handleBlur}>
-        <ul className="name-cascade-races">
-          {races.map((entry, index) => {
-            const isOpen = openRace === entry.race;
-            return <li
-              key={entry.race}
-              style={{ "--i": index } as CSSProperties}
-              onMouseEnter={() => enterRace(entry)}
-            >
-              <button
-                type="button"
-                className={isOpen ? "open" : ""}
-                data-playable={entry.playable}
-                aria-expanded={isOpen}
-                title={entry.playable ? `${entry.race} · genera con cultura e genere casuali` : `${entry.race} · solo narrativa`}
-                onFocus={() => enterRace(entry)}
-                onClick={() => {
-                  // Il clic genera e apre: su touch, dove il passaggio del mouse
-                  // non esiste, è l'unico modo di raggiungere le culture.
-                  enterRace(entry);
-                  roll.mutate(raceRoll(entry));
-                }}
-              >
-                <strong>{entry.race}</strong>
-                <em>{entry.cultures.length}</em>
-                <span className="name-cascade-arrow" aria-hidden="true">›</span>
-              </button>
-
-              {isOpen && <ul className="name-flyout name-cascade-cultures" aria-label={`Culture ${entry.race}`}>
-                {entry.cultures.map((cultureEntry, cultureIndex) => {
-                  const cultureOpen = openCulture === cultureEntry.id;
-                  return <li
-                    key={cultureEntry.id}
-                    style={{ "--i": cultureIndex } as CSSProperties}
-                    onMouseEnter={() => setOpenCulture(cultureEntry.id)}
-                  >
-                    <button
-                      type="button"
-                      className={cultureOpen ? "open" : ""}
-                      aria-expanded={cultureOpen}
-                      title={`${cultureEntry.name} · ${poolHint(cultureEntry)}`}
-                      onFocus={() => setOpenCulture(cultureEntry.id)}
-                      onClick={() => {
-                        setOpenCulture(cultureEntry.id);
-                        roll.mutate(cultureRoll(cultureEntry));
-                      }}
-                    >
-                      <strong>{cultureEntry.name}</strong>
-                      <span className="name-cascade-arrow" aria-hidden="true">›</span>
-                    </button>
-
-                    {cultureOpen && <div className="name-flyout name-cascade-genders" aria-label={`Genere per ${cultureEntry.name}`}>
-                      <button type="button" onClick={() => roll.mutate(genderRoll(cultureEntry, "maschile"))}>
-                        <span aria-hidden="true">♂</span>Maschile
-                      </button>
-                      <button type="button" onClick={() => roll.mutate(genderRoll(cultureEntry, "femminile"))}>
-                        <span aria-hidden="true">♀</span>Femminile
-                      </button>
-                    </div>}
-                  </li>;
-                })}
-              </ul>}
-            </li>;
-          })}
-        </ul>
+        <ul className="name-cascade-races" aria-label="Razze giocabili">{playableRaces.map(raceItem)}</ul>
+        {loreRaces.length > 0 && <ul className="name-cascade-races name-cascade-lore" aria-label="Razze solo narrative">
+          {loreRaces.map(raceItem)}
+        </ul>}
       </div>
 
+      <div className="name-rail">
+      {/* Il risultato apre la colonna invece di seguire l'elenco: è sullo
+          schermo dal primo istante, e passare il mouse sulle razze non lo
+          sposta perché a crescere è solo l'anteprima, che gli sta sotto. */}
       <output className={`name-result ${roll.isPending ? "pending" : ""}`} aria-live="polite">
         {current ? <>
           <strong>{current.name}</strong>
@@ -259,6 +316,35 @@ export function NameTool({ notify }: Props) {
           </div>
         </> : <span className="name-result-empty">Scegli una razza per cominciare.</span>}
       </output>
+
+      <aside className="name-preview" aria-live="polite" aria-label="Anteprima">
+        {preview ? <>
+          <figure className="name-preview-stage">
+            {preview.image
+              ? <img src={preview.image} alt={`${preview.title} · ${preview.subtitle}`} width={640} height={640} />
+              : <span className="name-preview-missing" aria-hidden="true">◈</span>}
+            {settledClip && settledClip === previewClip && <video
+              // La chiave forza il rimontaggio: cambiare `src` a caldo non
+              // riavvia sempre la riproduzione.
+              key={settledClip}
+              className="name-preview-clip"
+              src={settledClip}
+              poster={preview.image || undefined}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="none"
+            />}
+          </figure>
+          <figcaption className="name-preview-caption">
+            <strong>{preview.title}</strong>
+            <small>{preview.subtitle}</small>
+          </figcaption>
+        </> : <p className="name-preview-empty">Passa sopra una razza per vederne il ritratto.</p>}
+      </aside>
+      </div>
+      </div>
 
       {history.length > 1 && <details className="name-history">
         <summary>Nomi precedenti ({history.length - 1})</summary>

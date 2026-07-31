@@ -20,6 +20,7 @@ INLINE_MEDIA_EXTENSIONS = {
     ".jpg",
     ".m4a",
     ".mp3",
+    ".mp4",
     ".oga",
     ".ogg",
     ".opus",
@@ -31,7 +32,7 @@ INLINE_MEDIA_EXTENSIONS = {
 
 # Django's FileResponse still streams the whole file, so a player could not seek
 # inside a long track. Range support is limited to media that is actually played.
-RANGE_MEDIA_EXTENSIONS = {".flac", ".m4a", ".mp3", ".oga", ".ogg", ".opus", ".wav", ".webm"}
+RANGE_MEDIA_EXTENSIONS = {".flac", ".m4a", ".mp3", ".mp4", ".oga", ".ogg", ".opus", ".wav", ".webm"}
 RANGE_PATTERN = re.compile(r"^bytes=(\d*)-(\d*)$")
 
 

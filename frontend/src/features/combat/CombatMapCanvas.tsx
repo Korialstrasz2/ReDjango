@@ -1,13 +1,15 @@
 import { type PointerEvent, type WheelEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { axialVectorToPixel, cellKey, gridToPixel, pixelToGrid, polygonPoints } from "./hex";
-import type { Axial, CombatMap, MapParticipant, PathResult } from "./types";
+import type { Axial, CombatMap, MapParticipant, PathResult, TerrainBadge } from "./types";
 
 type Props = {
   map: CombatMap;
   selected: Axial | null;
   selectedCells: Axial[];
   selectionEnabled: boolean;
+  /** Sigle da stampare sugli esagoni tipizzati; `null` quando la scheda Tipologia è chiusa. */
+  terrainBadges: Record<number, TerrainBadge> | null;
   paths: PathResult | null;
   pathStart: Axial | null;
   controlledCharacterId: number | null;
@@ -24,7 +26,7 @@ type SelectionDrag = { mode: "add" | "remove"; cells: Map<string, Axial>; visite
 const clamp = (value: number, minimum: number, maximum: number) => Math.min(maximum, Math.max(minimum, value));
 
 export function CombatMapCanvas({
-  map, selected, selectedCells, selectionEnabled, paths, pathStart, controlledCharacterId, canControlAll,
+  map, selected, selectedCells, selectionEnabled, terrainBadges, paths, pathStart, controlledCharacterId, canControlAll,
   onHexClick, onSelectionChange, onMoveParticipant, onContextParticipant,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -56,6 +58,8 @@ export function CombatMapCanvas({
   const gridOriginX = map.gridOffsetX + map.hexSize * 1.2;
   const gridOriginY = map.gridOffsetY + map.hexSize * 1.2;
   const centers = cells.map((cell) => gridToPixel(cell, map.hexSize, map.orientation, gridOriginX, gridOriginY));
+  const badgeFont = Math.max(7, Math.min(15, map.hexSize * .46));
+  const badgeHeight = badgeFont * 1.55;
   const maxX = Math.max(600, imageSize.width * map.imageScale + map.imageOffsetX, ...centers.map((entry) => entry.x + map.hexSize * 1.4));
   const maxY = Math.max(420, imageSize.height * map.imageScale + map.imageOffsetY, ...centers.map((entry) => entry.y + map.hexSize * 1.4));
 
@@ -196,11 +200,24 @@ export function CombatMapCanvas({
             const isPendingSelection = selectedKeys.has(key);
             const center = centers[index];
             const pathClass = fastest.has(key) ? "fastest" : direct.has(key) ? "direct" : "";
+            const badges = terrainBadges && state?.terrainTypeIds.length
+              ? state.terrainTypeIds.map((terrainId) => terrainBadges[terrainId]).filter(Boolean)
+              : [];
+            const badgeTop = center.y - (badges.length * badgeHeight + (badges.length - 1) * 2) / 2;
             return <g key={key} className={`combat-hex ${pathClass} ${isSelected ? "selected" : ""} ${isPendingSelection ? "pending-selection" : ""}`}>
               <polygon points={polygonPoints(center, map.hexSize - .8, map.orientation)} fill={state?.overlayColor || "transparent"} fillOpacity={state?.overlayOpacity ?? 0} />
               {state?.blocked && <polygon points={polygonPoints(center, map.hexSize - 1, map.orientation)} fill="url(#blocked-pattern)" />}
               <polygon className="hex-line" points={polygonPoints(center, map.hexSize - .8, map.orientation)} />
-              {(isSelected || pathStart && cellKey(pathStart) === key) && <text x={center.x} y={center.y + 4} textAnchor="middle">{cell.q},{cell.r}</text>}
+              {(isSelected || pathStart && cellKey(pathStart) === key) && <text x={center.x} y={badges.length ? badgeTop - badgeFont * .5 : center.y + 4} textAnchor="middle">{cell.q},{cell.r}</text>}
+              {badges.map((badge, position) => {
+                const width = Math.min(map.hexSize * 1.6, badge.label.length * badgeFont * .68 + badgeFont * .85);
+                const top = badgeTop + position * (badgeHeight + 2);
+                return <g key={badge.id} className="combat-hex-terrain-badge">
+                  <rect x={center.x - width / 2} y={top} width={width} height={badgeHeight} rx={badgeHeight / 2} fill={badge.color} stroke={badge.ink} />
+                  <text x={center.x} y={top + badgeHeight / 2} style={{ fontSize: `${badgeFont}px`, fill: badge.ink }} textAnchor="middle" dominantBaseline="central">{badge.label}</text>
+                  <title>{badge.name} · {badge.detail}</title>
+                </g>;
+              })}
             </g>;
           })}
         </g>

@@ -13,7 +13,7 @@ import { AttackPanel as CompactAttackPanel } from "./AttackPanel";
 import { cellKey, offsetToAxial } from "./hex";
 import { MapCalibrationPreview, type MapCalibrationDraft } from "./MapCalibrationPreview";
 import { NoteSectionEditor } from "../notes/NoteSectionEditor";
-import type { AttackResult, Axial, CombatMap, CombatResource, CombatWorkspace, MapParticipant, PathResult, SpellEconomy } from "./types";
+import type { AttackResult, Axial, CombatMap, CombatResource, CombatWorkspace, MapParticipant, PathResult, SpellEconomy, TerrainBadge } from "./types";
 
 const HEX_COLOR_PRESETS = ["#c96e3f", "#d7a63d", "#779447", "#3f8c78", "#397fa9", "#545bb2", "#8755a5", "#b64f78", "#8b6550", "#d8d1b8"] as const;
 const EMPTY_COSTS = { pf: 0, mana: 0, energia: 0, potere: 0, pa: 0, stanchezza: 0 };
@@ -25,6 +25,54 @@ export const UNTAGGED_ACTION_TAG = "no tag";
 export const ACTION_TAGS = ["preferito", "incantesimo", "utility", "combat", "non combat", "distanza", "melee", "modalità", UNTAGGED_ACTION_TAG] as const;
 export const STORABLE_ACTION_TAGS = ACTION_TAGS.filter((tag) => tag !== UNTAGGED_ACTION_TAG);
 export const DEFAULT_ACTION_TAG_FILTERS = ["preferito", "combat", UNTAGGED_ACTION_TAG];
+
+/**
+ * Sigle brevi e univoche per i tipi di esagono: le iniziali delle parole nei nomi
+ * composti ("Acqua bassa" → AB) e altrimenti il prefisso del nome, allungato finché
+ * non smette di collidere ("Sabbia" → SA, "Salita" → SAL).
+ */
+function terrainLabelCandidates(name: string): string[] {
+  const words = name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean);
+  if (!words.length) return [];
+  const candidates = words.length > 1
+    ? [words.map((word) => word[0]).join(""), `${words[0].slice(0, 2)}${words[1][0]}`, `${words[0].slice(0, 3)}${words[1][0]}`]
+    : [];
+  for (let size = 2; size <= 4; size += 1) candidates.push(words[0].slice(0, size));
+  return [...new Set(candidates.map((candidate) => candidate.slice(0, 4)).filter((candidate) => candidate.length > 1))];
+}
+
+/** Inchiostro leggibile sopra il colore del terreno. */
+function terrainInk(color: string): string {
+  const hex = /^#[0-9a-f]{6}$/i.test(color) ? color.slice(1) : "808080";
+  const [red, green, blue] = [0, 2, 4].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255);
+  return .2126 * red + .7152 * green + .0722 * blue > .55 ? "#12160f" : "#fdf6e3";
+}
+
+/** Etichette pronte per la mappa: sigla univoca, colore del terreno e testo del tooltip. */
+export function buildTerrainBadges(types: CombatWorkspace["hexTypes"]): Record<number, TerrainBadge> {
+  const used = new Set<string>();
+  const badges: Record<number, TerrainBadge> = {};
+  types.forEach((entry) => {
+    const candidates = terrainLabelCandidates(entry.name);
+    let label = candidates.find((candidate) => !used.has(candidate));
+    if (!label) {
+      const base = candidates[0] || "TP";
+      let suffix = 2;
+      while (used.has(`${base}${suffix}`)) suffix += 1;
+      label = `${base}${suffix}`;
+    }
+    used.add(label);
+    badges[entry.id] = {
+      id: entry.id,
+      label,
+      name: entry.name,
+      color: entry.color,
+      ink: terrainInk(entry.color),
+      detail: entry.impassable ? "Intransitabile" : `Costo ×${entry.movementMultiplier}`,
+    };
+  });
+  return badges;
+}
 
 /**
  * Un incantesimo può costare solo Mana per effetto ("2 Mana per effetto") oppure
@@ -822,15 +870,18 @@ function hexSelectionArea(map: CombatMap, center: Axial, radius: number) {
   });
 }
 
-function HexInspector({ workspace, selectedCells, canManage, onSelectionChange, onApply, onFog }: {
+function HexInspector({ workspace, selectedCells, canManage, tab, terrainBadges, onTabChange, onSelectionChange, onApply, onFog }: {
   workspace: CombatWorkspace; selectedCells: Axial[]; canManage: boolean;
+  tab: "colors" | "types";
+  terrainBadges: Record<number, TerrainBadge>;
+  onTabChange: (tab: "colors" | "types") => void;
   onSelectionChange: (cells: Axial[]) => void;
   onApply: (payload: Record<string, unknown>) => void;
   onFog: (payload: Record<string, unknown>) => void;
 }) {
   const map = workspace.map;
   const anchor = selectedCells.at(-1) || null;
-  const [tab, setTab] = useState<"colors" | "types">("colors");
+  const setTab = onTabChange;
   const [color, setColor] = useState<string>(HEX_COLOR_PRESETS[0]);
   const [opacity, setOpacity] = useState(.42);
   const [radius, setRadius] = useState(0);
@@ -860,8 +911,8 @@ function HexInspector({ workspace, selectedCells, canManage, onSelectionChange, 
         <div className="combat-fog-preset"><div><strong>Nebbia di guerra</strong><span>Desatura, scurisce e sfoca gli esagoni scelti.</span></div><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ fogEffect: true })}>Applica nebbia</button><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ fogEffect: false })}>Rimuovi</button></div>
         <details><summary>Visibilità per i giocatori</summary><div className="button-row"><button className="button secondary" onClick={() => onFog({ enabled: !map?.fogEnabled })}>{map?.fogEnabled ? "Disattiva maschera globale" : "Attiva maschera globale"}</button><button className="button secondary" disabled={!anchor} onClick={() => onFog({ mode: "reveal", center: anchor, radius, enabled: true })}>Rivela area</button><button className="button secondary" disabled={!anchor} onClick={() => onFog({ mode: "hide", center: anchor, radius })}>Nascondi area</button></div></details>
       </div> : <div className="combat-type-tab" role="tabpanel">
-        <p>Scegli una tipologia: il tag, il costo di movimento e l'eventuale blocco vengono applicati a tutti gli esagoni selezionati.</p>
-        <div className="combat-hex-type-grid">{workspace.hexTypes.map((terrain) => <button key={terrain.id} type="button" style={{ "--terrain-color": terrain.color } as React.CSSProperties} disabled={!selectedCells.length} onClick={() => apply({ terrainTypeIds: [terrain.id], blocked: terrain.impassable })}><span style={{ background: terrain.color }} /><strong>{terrain.name}</strong><small>{terrain.impassable ? "Intransitabile" : `Costo ×${terrain.movementMultiplier}`}</small></button>)}</div>
+        <p>Scegli una tipologia: il tag, il costo di movimento e l'eventuale blocco vengono applicati a tutti gli esagoni selezionati. Finché resti su questa scheda la mappa mostra la sigla di ogni esagono già tipizzato.</p>
+        <div className="combat-hex-type-grid">{workspace.hexTypes.map((terrain) => <button key={terrain.id} type="button" style={{ "--terrain-color": terrain.color } as React.CSSProperties} disabled={!selectedCells.length} onClick={() => apply({ terrainTypeIds: [terrain.id], blocked: terrain.impassable })}><span style={{ background: terrain.color, color: terrainBadges[terrain.id]?.ink }}>{terrainBadges[terrain.id]?.label}</span><strong>{terrain.name}</strong><small>{terrain.impassable ? "Intransitabile" : `Costo ×${terrain.movementMultiplier}`}</small></button>)}</div>
         <button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ terrainTypeIds: [], blocked: false })}>Rimuovi tipologia</button>
       </div>}
     </section>}
@@ -1138,11 +1189,13 @@ export function CombatPage() {
   const [attackSelection, setAttackSelection] = useState<AttackSelection | null>(null);
   const [draggedCharacterId, setDraggedCharacterId] = useState<number | null>(null);
   const [hexOpen, setHexOpen] = useState(false);
+  const [hexTab, setHexTab] = useState<"colors" | "types">("colors");
   const [plannerOpen, setPlannerOpen] = useState(false);
   const [attackOpen, setAttackOpen] = useState(false);
   const [localActionPoints, setLocalActionPoints] = useState<Record<number, number>>({});
   const query = useQuery({ queryKey: ["combat", mapId], queryFn: () => getData<CombatWorkspace>(`/api/combat/${mapId ? `?map_id=${mapId}` : ""}`) });
   const workspace = query.data;
+  const terrainBadges = useMemo(() => buildTerrainBadges(workspace?.hexTypes || []), [workspace?.hexTypes]);
   const rawMap = workspace?.map;
   const map = useMemo(() => rawMap ? {
     ...rawMap,
@@ -1359,9 +1412,9 @@ export function CombatPage() {
           <div className="combat-map-status"><span>{map.name}{workspace.permissions.canManageMaps ? ` · revisione ${map.revision}` : ""}</span>{pathMode && <strong>{pathStart ? "Scegli la destinazione" : "Scegli la partenza"}</strong>}{paths && <div><b>Rapido</b> {paths.fastest.distance ?? "—"} esa. · {paths.fastest.actionPoints ?? "—"} PA <i /> <b>Diretto</b> {paths.direct.distance} esa.</div>}</div>
           <div className="combat-map-surface">
             <DraggableHexTool open={hexOpen} selectionCount={selectedHexes.length} onToggle={() => setHexOpen((current) => { const next = !current; if (next) { setPlannerOpen(false); setAttackOpen(false); if (selectedHex && !selectedHexes.length) setSelectedHexes([selectedHex]); } return next; })}>
-              <HexInspector workspace={workspace} selectedCells={selectedHexes} canManage={workspace.permissions.canManageMaps} onSelectionChange={handleHexSelection} onApply={(payload) => act("maps.paintHexes", payload)} onFog={(payload) => act("maps.updateFog", payload)} />
+              <HexInspector workspace={workspace} selectedCells={selectedHexes} canManage={workspace.permissions.canManageMaps} tab={hexTab} terrainBadges={terrainBadges} onTabChange={setHexTab} onSelectionChange={handleHexSelection} onApply={(payload) => act("maps.paintHexes", payload)} onFog={(payload) => act("maps.updateFog", payload)} />
             </DraggableHexTool>
-            <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen && workspace.permissions.canManageMaps} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} />
+            <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen && workspace.permissions.canManageMaps} terrainBadges={hexOpen && hexTab === "types" && workspace.permissions.canManageMaps ? terrainBadges : null} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} />
           </div>
         </section>
         <aside className={`combat-attack-drawer ${attackOpen ? "open" : ""}`} data-component-type="drawer" data-theme="combat">

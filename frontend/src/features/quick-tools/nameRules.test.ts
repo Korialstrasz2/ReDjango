@@ -11,6 +11,7 @@ import {
   poolSize,
   pushHistory,
   raceRoll,
+  resolvePreview,
   rolledParts,
 } from "./nameRules";
 
@@ -24,6 +25,18 @@ const culture = (overrides: Partial<NameCultureEntry> = {}): NameCultureEntry =>
   femaleCount: 18,
   surnameCount: 12,
   usable: true,
+  images: { maschile: "/media/dunmer-m.webp", femminile: "/media/dunmer-f.webp" },
+  clips: { maschile: "/media/dunmer-m.mp4", femminile: "/media/dunmer-f.mp4" },
+  ...overrides,
+});
+
+const raceEntry = (overrides: Partial<NameRaceEntry> = {}): NameRaceEntry => ({
+  race: "Dunmer",
+  slug: "dunmer",
+  playable: true,
+  defaultCulture: "Dunmer",
+  image: "/media/razze/dunmer.webp",
+  cultures: [culture()],
   ...overrides,
 });
 
@@ -44,24 +57,17 @@ const generated = (overrides: Partial<GeneratedName> = {}): GeneratedName => ({
 
 describe("scelta della cultura", () => {
   it("preferisce la cultura omonima della razza", () => {
-    const race: NameRaceEntry = {
-      race: "Dunmer",
-      slug: "dunmer",
-      playable: true,
-      defaultCulture: "Dunmer",
-      cultures: [culture({ id: 2, name: "Ashlander" }), culture({ id: 1, name: "Dunmer" })],
-    };
+    const race = raceEntry({ cultures: [culture({ id: 2, name: "Ashlander" }), culture({ id: 1, name: "Dunmer" })] });
     expect(defaultCultureFor(race)?.name).toBe("Dunmer");
   });
 
   it("ricade sulla prima cultura quando l'omonima non esiste", () => {
-    const race: NameRaceEntry = {
+    const race = raceEntry({
       race: "Argoniano",
       slug: "argoniano",
-      playable: true,
       defaultCulture: "Hist-Born",
       cultures: [culture({ id: 3, name: "Hist-Born", race: "Argoniano" })],
-    };
+    });
     expect(defaultCultureFor(race)?.name).toBe("Hist-Born");
     expect(defaultCultureFor(null)).toBeNull();
   });
@@ -102,13 +108,7 @@ describe("cronologia", () => {
 });
 
 describe("cascata: che cosa chiede ogni livello", () => {
-  const race: NameRaceEntry = {
-    race: "Dunmer",
-    slug: "dunmer",
-    playable: true,
-    defaultCulture: "Dunmer",
-    cultures: [culture()],
-  };
+  const race = raceEntry();
 
   it("il clic sulla razza fa tirare cultura e genere", () => {
     expect(raceRoll(race)).toEqual({ race: "Dunmer", gender: "casuale", randomCulture: true });
@@ -127,6 +127,47 @@ describe("cascata: che cosa chiede ogni livello", () => {
     expect(rolledParts(cultureRoll(culture()))).toBe("Sorteggiati: genere");
     expect(rolledParts(genderRoll(culture(), "maschile"))).toBe("");
     expect(rolledParts(null)).toBe("");
+  });
+});
+
+describe("anteprima laterale", () => {
+  it("mostra il ritratto della razza quando è aperto solo quel livello", () => {
+    const preview = resolvePreview(raceEntry(), null, null);
+    expect(preview).toEqual({
+      title: "Dunmer",
+      subtitle: "1 culture",
+      image: "/media/razze/dunmer.webp",
+      clip: "",
+    });
+  });
+
+  it("segnala una razza solo narrativa nel sottotitolo", () => {
+    expect(resolvePreview(raceEntry({ playable: false }), null, null)?.subtitle).toBe("Solo narrativa");
+  });
+
+  it("il livello più profondo vince sulla razza", () => {
+    const preview = resolvePreview(raceEntry(), culture({ name: "Telvanni" }), null);
+    expect(preview?.title).toBe("Telvanni");
+  });
+
+  it("senza sesso scelto la cultura mostra il ritratto maschile", () => {
+    const preview = resolvePreview(null, culture(), null);
+    expect(preview?.image).toBe("/media/dunmer-m.webp");
+    expect(preview?.clip).toBe("/media/dunmer-m.mp4");
+    expect(preview?.subtitle).toBe("Dunmer");
+  });
+
+  it("il sesso sotto il puntatore scambia immagine e clip", () => {
+    const preview = resolvePreview(null, culture(), "femminile");
+    expect(preview?.image).toBe("/media/dunmer-f.webp");
+    expect(preview?.clip).toBe("/media/dunmer-f.mp4");
+    expect(preview?.subtitle).toBe("Femminile");
+  });
+
+  it("un asset mancante resta stringa vuota invece di un'immagine rotta", () => {
+    const bare = culture({ images: { maschile: "", femminile: "" }, clips: { maschile: "", femminile: "" } });
+    expect(resolvePreview(null, bare, "maschile")).toMatchObject({ image: "", clip: "" });
+    expect(resolvePreview(null, null, null)).toBeNull();
   });
 });
 

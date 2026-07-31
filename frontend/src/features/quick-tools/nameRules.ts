@@ -95,6 +95,44 @@ export function rolledParts(request: RollRequest | null): string {
   return `Sorteggiati: ${parts.join(" e ")}`;
 }
 
+/** Che cosa mostra il pannello laterale in questo istante. */
+export type NamePreview = {
+  title: string;
+  subtitle: string;
+  image: string;
+  clip: string;
+};
+
+/**
+ * L'anteprima segue il livello più profondo su cui è il puntatore: il sesso se
+ * c'è, altrimenti la cultura, altrimenti la razza. Senza un sesso scelto vale il
+ * ritratto maschile, così la cultura ha comunque un volto invece di un vuoto.
+ */
+export function resolvePreview(
+  race: NameRaceEntry | null,
+  culture: NameCultureEntry | null,
+  gender: NameGender | null,
+): NamePreview | null {
+  if (culture) {
+    const key = gender === "femminile" ? "femminile" : "maschile";
+    return {
+      title: culture.name,
+      subtitle: gender ? genderLabel(gender) : culture.race,
+      image: culture.images[key],
+      clip: culture.clips[key],
+    };
+  }
+  if (race) {
+    return {
+      title: race.race,
+      subtitle: race.playable ? `${race.cultures.length} culture` : "Solo narrativa",
+      image: race.image,
+      clip: "",
+    };
+  }
+  return null;
+}
+
 /** Riepilogo dei bacini di una cultura, mostrato come suggerimento sulla riga. */
 export function poolHint(culture: NameCultureEntry, gender: NameGender = "casuale"): string {
   const first = poolSize(culture, gender);

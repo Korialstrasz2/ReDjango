@@ -546,8 +546,13 @@ export type NameRaceEntry = {
   slug: string;
   playable: boolean;
   defaultCulture: string;
+  /** Ritratto della razza; stringa vuota quando l'asset non è stato importato. */
+  image: string;
   cultures: NameCultureEntry[];
 };
+
+/** Le due varianti per sesso di un ritratto o di una clip. */
+export type NameMediaPair = { maschile: string; femminile: string };
 
 export type NameCultureEntry = {
   id: number;
@@ -559,6 +564,8 @@ export type NameCultureEntry = {
   femaleCount: number;
   surnameCount: number;
   usable: boolean;
+  images: NameMediaPair;
+  clips: NameMediaPair;
 };
 
 export type GeneratedName = {

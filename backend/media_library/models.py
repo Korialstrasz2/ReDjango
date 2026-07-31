@@ -18,6 +18,12 @@ def v2_image_upload_path(instance, filename: str) -> str:
     return f"v2/images/{folder}/{uuid4().hex}_{safe_name}"
 
 
+def v2_video_upload_path(instance, filename: str) -> str:
+    safe_name = Path(filename).name.replace(" ", "_")
+    usage = getattr(instance, "usage_type", "") or "generic"
+    return f"v2/video/{slugify(usage) or 'generic'}/{uuid4().hex}_{safe_name}"
+
+
 def v2_audio_upload_path(instance, filename: str) -> str:
     safe_name = Path(filename).name.replace(" ", "_")
     tag = getattr(instance, "primary_tag", "") or "general"
@@ -143,6 +149,39 @@ class DatiMappa(V2Model):
 
     def __str__(self) -> str:
         return self.nome
+
+
+class VideoClip(V2Model):
+    """Una clip breve e senza audio, mostrata accanto a un'immagine.
+
+    Non è un `UploadedImage`: l'Archivio immagini renderizza ogni riga come
+    `<img>`, quindi un mp4 archiviato lì comparirebbe come miniatura rotta. È un
+    tipo di media nuovo, con il suo modello, come l'audio ha il suo.
+    """
+
+    title = models.CharField(max_length=180)
+    file = models.FileField(upload_to=v2_video_upload_path)
+    usage_type = models.CharField(max_length=80, default="generic")
+    poster = models.ForeignKey(
+        "media_library.UploadedImage",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="video_clips",
+        help_text="Fotogramma statico mostrato prima della riproduzione.",
+    )
+    source = models.CharField(max_length=80, blank=True)
+    duration_seconds = models.FloatField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["usage_type", "title"]
+        verbose_name = "clip video"
+        verbose_name_plural = "clip video"
+        indexes = [models.Index(fields=["usage_type", "title"])]
+
+    def __str__(self) -> str:
+        return self.title
 
 
 class AudioFile(V2Model):

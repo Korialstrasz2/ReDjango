@@ -83,7 +83,7 @@ export function QuickTools({ characterId, characterName, campaign, settings, not
     {tool === "ai" && <ToolDrawer title="AI" eyebrow={campaign?.name || "Assistente di campagna"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.ai} draggable resizable>
       <AITool notify={notify} />
     </ToolDrawer>}
-    {tool === "names" && <ToolDrawer title="Nomi" eyebrow={campaign?.name || "Generatore nomi"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.guide} draggable resizable>
+    {tool === "names" && <ToolDrawer title="Nomi" eyebrow={campaign?.name || "Generatore nomi"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.guide} wide draggable resizable>
       <NameTool notify={notify} />
     </ToolDrawer>}
   </>;

@@ -36,6 +36,8 @@ export type CombatCharacter = {
 export type MapParticipant = {
   id: number; character: CombatCharacter; anchor: Axial; footprint: Axial[]; tokenColor: string; order: number;
 };
+/** Etichetta breve mostrata sull'esagono quando l'ispettore è sulla scheda Tipologia. */
+export type TerrainBadge = { id: number; label: string; name: string; color: string; ink: string; detail: string };
 export type EditedHex = {
   id: number; q: number; r: number; overlayColor: string; overlayOpacity: number; blocked: boolean; revealed: boolean; fogEffect: boolean; terrainTypeIds: number[];
 };

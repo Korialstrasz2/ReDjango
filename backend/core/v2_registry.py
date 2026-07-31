@@ -34,6 +34,7 @@ V2_MODEL_LABELS = [
     "core.Guida",
     "core.Curiosita",
     "media_library.AudioFile",
+    "media_library.VideoClip",
     "core.TimelineEvent",
     "core.HallOfFameCharacter",
     "core.Messaggio",

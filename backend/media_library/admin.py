@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AudioFile, DatiMappa, ImageCategory, UploadedImage
+from .models import AudioFile, DatiMappa, ImageCategory, UploadedImage, VideoClip
 
 
 class V2MediaAdmin(admin.ModelAdmin):
@@ -50,4 +50,4 @@ class UploadedImageAdmin(V2MediaAdmin):
     autocomplete_fields = ("category",)
 
 
-admin.site.register([AudioFile, DatiMappa], V2MediaAdmin)
+admin.site.register([AudioFile, DatiMappa, VideoClip], V2MediaAdmin)

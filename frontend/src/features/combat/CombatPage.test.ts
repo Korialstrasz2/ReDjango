@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   actionMatchesTagFilters,
   actionTagsFor,
+  buildTerrainBadges,
   combatEventNeedsRefresh,
   healthBand,
   manaForEffect,
@@ -198,5 +199,35 @@ describe("visibilità dei combattenti per i giocatori", () => {
     expect(publicEquipmentValue(ring, false)).toBe("Vedi a 0 PF");
     expect(publicEquipmentValue(ring, true)).toBe("Anello del silenzio");
     expect(publicEquipmentValue({ slot: "mantello", item: null }, true)).toBe("VUOTO");
+  });
+});
+
+describe("sigle delle tipologie di esagono", () => {
+  const terrain = (id: number, name: string, extra: Record<string, unknown> = {}) => ({
+    id, name, slug: name.toLowerCase(), description: "", movementMultiplier: 1, color: "#6f9559", impassable: false, ...extra,
+  });
+
+  it("usa le iniziali per i nomi composti e allunga il prefisso solo sui conflitti", () => {
+    const badges = buildTerrainBadges([
+      terrain(1, "Strada"), terrain(2, "Sentiero"), terrain(3, "Sabbia"), terrain(4, "Salita"),
+      terrain(5, "Acqua bassa"), terrain(6, "Acqua profonda"), terrain(7, "Roccia"), terrain(8, "Rovi"),
+    ]);
+    expect(Object.values(badges).map((badge) => badge.label))
+      .toEqual(["ST", "SE", "SA", "SAL", "AB", "AP", "RO", "ROV"]);
+  });
+
+  it("mantiene le sigle univoche anche quando ogni variante è già occupata", () => {
+    const badges = buildTerrainBadges([terrain(1, "Neve"), terrain(2, "Neve alta"), terrain(3, "Neve")]);
+    const labels = Object.values(badges).map((badge) => badge.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
+  it("sceglie un inchiostro scuro sui terreni chiari e descrive il costo", () => {
+    const badges = buildTerrainBadges([
+      terrain(1, "Neve", { color: "#d8e2e3", movementMultiplier: 1.4 }),
+      terrain(2, "Baratro", { color: "#20252b", impassable: true }),
+    ]);
+    expect(badges[1]).toMatchObject({ ink: "#12160f", detail: "Costo ×1.4" });
+    expect(badges[2]).toMatchObject({ ink: "#fdf6e3", detail: "Intransitabile" });
   });
 });
