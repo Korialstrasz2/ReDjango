@@ -156,10 +156,22 @@ Active flagged templates after that batch: **56**. Two families were deliberatel
   family here, `descrizione` already states the full mechanical rule in prose (e.g. *"Abbigliamento
   povero. -1 Personalità e Fortuna +1 Saggezza"*), and most of those stat names are structured
   `effects` targets that already exist (`personalita`, `fortuna`, `saggezza`, `competenza.diplomazia`,
-  etc. — see `effect_target_values()` in `backend/characters/services/custom_effects.py`). These
-  were converted to real structured effects rather than curated prose; see the dedicated note
-  below since two of the fifteen have a genuinely non-computable remainder (no "resistenza magica
-  generica" stat exists, and "skill fisiche (rosse)" is a UI colour-group label, not one target).
+  etc. — see `effect_target_values()` in `backend/characters/services/custom_effects.py`).
+
+A seventh pass converted all 15 "Vestiti" into real structured `effects` instead of curated prose,
+since the underlying stats already exist — a one-off, hand-checked mapping (not a regex rule; each
+garment has a distinct stat combination), applied via a dry-run-then-apply script mirroring
+`curate_item_special_rules`'s own apply loop. 13 of the 15 became fully structured, with
+`regole_speciali` left as a short administrative note recording the review. Two keep a genuine
+text remainder because no matching target exists:
+
+- **Vestiti rinforzati** — `+1 a tutte le resistenze fisiche e magiche` has no generic-resistance
+  stat (only `res_fuoco`/`res_gelo`/`res_elettro` and `res_contundente`/`res_taglio`/`res_perforante`).
+- **Vestiti grigi con insegne varie** — `-1 a skill fisiche (rosse)` is an Elder UI colour-group
+  label with no representation in this codebase at all (checked `competence_defaults.py`: no
+  colour/group field exists).
+
+Active flagged templates after that batch: **41**.
 
 ## 3. Decision tree for one descriptive text
 
