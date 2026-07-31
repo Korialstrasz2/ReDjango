@@ -3,6 +3,13 @@ import { useEffect, useMemo, useState } from "react";
 import type { AttackResult, CombatAttackButton, CombatMap } from "./types";
 
 const DAMAGE_TYPES = ["Contundente", "Perforante", "Taglio", "Gelo", "Fuoco", "Elettro", "Puro"] as const;
+type DamageType = (typeof DAMAGE_TYPES)[number];
+/** Etichette corte: a piena larghezza i nomi non stanno in una griglia da quattro colonne. */
+const DAMAGE_TYPE_LABELS: Record<DamageType, string> = {
+  Contundente: "Cont.", Perforante: "Perf.", Taglio: "Tagl.", Gelo: "Gelo",
+  Fuoco: "Fuoco", Elettro: "Elet.", Puro: "Puro",
+};
+const DAMAGE_ADJUSTMENT_PRESETS = [-10, 10, 33, 50] as const;
 
 type AttackSelection = { attackerId: number; defenderId: number; sequence: number };
 type ManualValues = {
@@ -100,13 +107,12 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   const active = map.activeCharacterId || map.participants[0]?.character.id || 0;
   const [attackerId, setAttackerId] = useState(active);
   const [defenderId, setDefenderId] = useState(map.participants.find((entry) => entry.character.id !== active)?.character.id || active);
-  const [damageType, setDamageType] = useState<(typeof DAMAGE_TYPES)[number]>("Contundente");
+  const [damageType, setDamageType] = useState<DamageType>("Contundente");
   const [values, setValues] = useState<ManualValues>(EMPTY_MANUAL_VALUES);
   const [activeButtonIdsByCharacter, setActiveButtonIdsByCharacter] = useState<Record<number, number[]>>({});
-  const [manualMenu, setManualMenu] = useState<ManualKey | null>(null);
-  const [damageMenuOpen, setDamageMenuOpen] = useState(false);
   const [attackRoll, setAttackRoll] = useState(0);
   const [damageBase, setDamageBase] = useState(0);
+  const [damageRolled, setDamageRolled] = useState(false);
   const [damageAdjustment, setDamageAdjustment] = useState(0);
   const [preview, setPreview] = useState<AttackResult | null>(null);
   const [rollingD20, setRollingD20] = useState(false);
@@ -115,7 +121,6 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   const [automaticRunning, setAutomaticRunning] = useState(false);
 
   const attacker = map.participants.find((entry) => entry.character.id === attackerId)?.character;
-  const defender = map.participants.find((entry) => entry.character.id === defenderId)?.character;
   const weapon = activeWeapon(attacker);
   const combatButtons = attacker?.combatButtons || [];
   const activeCombatButtonIds = (activeButtonIdsByCharacter[attackerId] || []).filter((id) => combatButtons.some((button) => button.id === id));
@@ -124,6 +129,10 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   const selectedTotalsLabel = combatButtonTotalsSummary(selectedTotals);
   const adjustedDamage = adjustedAttackDamage(damageBase, damageAdjustment);
   const sameCombatant = attackerId === defenderId;
+  const missed = preview?.hit === false;
+  const canAttack = Boolean(attackRoll) && !sameCombatant && !busy && !automaticRunning;
+  const canRollDamage = Boolean(preview) && !missed && canAttack;
+  const canApply = damageRolled && adjustedDamage > 0 && !missed && canAttack;
 
   useEffect(() => {
     if (!selection) return;
@@ -142,24 +151,33 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     setPreview(result);
     setAttackRoll(result.attackRoll);
     setDamageBase(result.rawDamage);
+    setDamageRolled(result.rawDamage > 0);
     setDamageAdjustment(0);
   }, [attackerId, defenderId, result]);
 
   const resetSequence = () => {
     setAttackRoll(0);
     setDamageBase(0);
+    setDamageRolled(false);
     setDamageAdjustment(0);
-    setDamageMenuOpen(false);
     setPreview(null);
   };
 
-  const attackPayload = (options: { apply: boolean; roll: number; rawDamage: number; damagePercentBonus?: number; damageType?: (typeof DAMAGE_TYPES)[number] }) => ({
+  const attackPayload = (options: {
+    apply: boolean;
+    roll: number;
+    rawDamage: number;
+    rollDamage: boolean;
+    damagePercentBonus?: number;
+    damageType?: DamageType;
+  }) => ({
     attackerId,
     defenderId,
     damageType: options.damageType || damageType,
     ...values,
     attackRoll: options.roll,
     rawDamage: options.rawDamage,
+    rollDamage: options.rollDamage,
     damagePercentBonus: options.damagePercentBonus ?? values.damagePercentBonus,
     combatButtonIds: activeCombatButtonIds,
     attributeKeys: [],
@@ -181,31 +199,50 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     setRollingD20(true);
     try {
       const rolled = await onRollD20(attackerId);
-      if (!rolled) return;
+      if (!rolled) return rolled;
       setAttackRoll(rolled);
       setDamageBase(0);
+      setDamageRolled(false);
       setDamageAdjustment(0);
       setPreview(null);
+      return rolled;
     } finally {
       setRollingD20(false);
     }
   };
 
-  const rollDamage = async () => {
-    if (!attackRoll) return;
-    const resolved = await onResolve(attackPayload({ apply: false, roll: attackRoll, rawDamage: 0 }));
-    if (!resolved) return;
+  /** Passo 2: risolve l'attacco e pubblica la formula, senza tirare il danno. */
+  const resolveAttackStep = async (roll = attackRoll) => {
+    if (!roll) return undefined;
+    const resolved = await onResolve(attackPayload({ apply: false, roll, rawDamage: 0, rollDamage: false }));
+    if (!resolved) return undefined;
     setPreview(resolved);
-    setDamageBase(resolved.rawDamage);
+    setDamageBase(0);
+    setDamageRolled(false);
     setDamageAdjustment(0);
+    return resolved;
   };
 
-  const applyAttack = async (selectedDamageType = damageType) => {
+  /** Passo 3: tira la formula appena pubblicata. */
+  const rollDamage = async (roll = attackRoll) => {
+    if (!roll) return undefined;
+    const resolved = await onResolve(attackPayload({ apply: false, roll, rawDamage: 0, rollDamage: true }));
+    if (!resolved) return undefined;
+    setPreview(resolved);
+    setDamageBase(resolved.rawDamage);
+    setDamageRolled(true);
+    setDamageAdjustment(0);
+    return resolved;
+  };
+
+  /** Passo 5: applica il danno già tirato. rollDamage resta false per non ritirarlo mai. */
+  const applyAttack = async (selectedDamageType = damageType, rawDamage = adjustedDamage) => {
     if (!attackRoll) return;
     const resolved = await onResolve(attackPayload({
       apply: true,
       roll: attackRoll,
-      rawDamage: adjustedDamage,
+      rawDamage,
+      rollDamage: false,
       damagePercentBonus: 0,
       damageType: selectedDamageType,
     }));
@@ -220,38 +257,38 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     try {
       setAutomaticStage("1 · Tiro d20…");
       await wait(400);
-      const rolled = await onRollD20(attackerId);
+      const rolled = await rollD20();
       if (!rolled) return;
-      setAttackRoll(rolled);
-      setAutomaticStage(`1 · d20: ${rolled}`);
+      setAutomaticStage(`2 · d20 ${rolled} · risoluzione attacco…`);
       await wait(400);
-      setAutomaticStage("2 · Calcolo attacco e danno…");
-      const previewResult = await onResolve(attackPayload({ apply: false, roll: rolled, rawDamage: 0 }));
-      if (!previewResult) return;
-      setPreview(previewResult);
-      setDamageBase(previewResult.rawDamage);
-      setDamageAdjustment(0);
-      setAutomaticStage(previewResult.hit ? `2 · Colpito, danno ${previewResult.rawDamage}` : "2 · Mancato");
+      const attacked = await resolveAttackStep(rolled);
+      if (!attacked) return;
+      if (!attacked.hit) {
+        setAutomaticStage("2 · Mancato");
+        await wait(400);
+        return;
+      }
+      setAutomaticStage(`3 · ${attacked.damageFormula} · tiro danno…`);
+      await wait(400);
+      const rolledDamage = await rollDamage(rolled);
+      if (!rolledDamage) return;
+      setAutomaticStage(`3 · Danno ${rolledDamage.rawDamage}`);
       if (!automaticDamage) {
         await wait(400);
         return;
       }
       await wait(400);
-      setAutomaticStage(previewResult.hit ? "3 · Applicazione danno…" : "3 · Registrazione mancato…");
-      const applied = await onResolve(attackPayload({ apply: true, roll: rolled, rawDamage: previewResult.rawDamage, damagePercentBonus: 0 }));
-      if (applied) {
-        setPreview(applied);
-        retainPersistentButtons(applied);
-      }
+      setAutomaticStage("5 · Applicazione danno…");
+      await applyAttack(damageType, rolledDamage.rawDamage);
     } finally {
       setAutomaticStage("");
       setAutomaticRunning(false);
     }
   };
 
-  const selectAndApplyDamageType = async (type: (typeof DAMAGE_TYPES)[number]) => {
+  const selectAndApplyDamageType = async (type: DamageType) => {
     setDamageType(type);
-    if (attackRoll && preview?.hit !== false && adjustedDamage > 0) await applyAttack(type);
+    if (canApply) await applyAttack(type);
   };
 
   const updateManualValue = (key: ManualKey, value: number) => {
@@ -266,80 +303,122 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     }));
   };
 
-  const status = preview
+  const statusHeadline = preview
     ? preview.applied
-      ? preview.hit
-        ? "APPLICATO · " + preview.finalDamage + " " + preview.damageType
-        : "APPLICATO · mancato"
-      : preview.hit
-        ? "COLPITO · " + preview.attackTotal + " vs " + preview.defense + " · T" + preview.damageTier + " " + preview.damageFormula + " · " + damageBase + " → " + adjustedDamage
-        : "MANCATO · " + preview.attackTotal + " vs " + preview.defense
-    : attackRoll
-      ? "d20 " + attackRoll + " · tira o inserisci il danno"
-      : "Pronto";
+      ? preview.hit ? `Applicato · ${preview.finalDamage} ${preview.damageType}` : "Applicato · mancato"
+      : preview.hit ? `Colpito · ${preview.attackTotal} vs ${preview.defense}` : `Mancato · ${preview.attackTotal} vs ${preview.defense}`
+    : attackRoll ? `d20 ${attackRoll} · premi Attacca` : "Pronto";
+  const statusDetail = preview && preview.hit && !preview.applied
+    ? [
+      `T${preview.damageTier}`,
+      preview.damageFormula,
+      preview.critical !== "none" ? `critico ${preview.critical}` : "",
+      damageRolled ? `danno ${damageBase}${damageAdjustment ? ` → ${adjustedDamage}` : ""}` : "",
+    ].filter(Boolean).join(" · ")
+    : "";
 
-  return <div className="combat-compact-attack" data-component-type="panel" data-theme="combat">
-    <div className="combat-compact-versus">
-      <label><span>Attaccante</span><select value={attackerId} onChange={(event) => { setAttackerId(Number(event.target.value)); resetSequence(); }}>{map.participants.map((entry) => <option key={entry.id} value={entry.character.id}>{entry.character.name}</option>)}</select></label>
-      <button type="button" title="Scambia" aria-label="Scambia attaccante e difensore" onClick={() => { setAttackerId(defenderId); setDefenderId(attackerId); resetSequence(); }}>⇄</button>
-      <label><span>Difensore</span><select value={defenderId} onChange={(event) => { setDefenderId(Number(event.target.value)); resetSequence(); }}>{map.participants.map((entry) => <option key={entry.id} value={entry.character.id}>{entry.character.name}</option>)}</select></label>
-    </div>
+  return <div className="combat-attack" data-component-type="panel" data-theme="combat">
 
-    {combatButtons.length > 0 && <div className="combat-compact-modifiers">
-      <div className="combat-compact-line-label"><strong>Bottoni</strong><output aria-live="polite">{selectedButtons.length ? "Applicati: " + selectedTotalsLabel : "Nessuno attivo"}</output></div>
-      <div className="combat-compact-button-strip">{combatButtons.map((button) => {
-        const selected = activeCombatButtonIds.includes(button.id);
-        const summary = attackButtonModifierSummary(button);
-        return <button type="button" key={button.id} className={selected ? "active" : ""} aria-pressed={selected} onClick={() => toggleCombatButton(button.id)}>
-          <span className="combat-compact-check" aria-hidden="true">{selected ? "✓" : ""}</span>
-          <strong>{button.name}</strong>
-          <small>{summary === "Nessun bonus numerico" ? "Effetto" : summary}</small>
-          <span className="combat-compact-tooltip" role="tooltip"><strong>{summary}</strong>{button.helpText && <em>{button.helpText}</em>}</span>
-        </button>;
-      })}</div>
-    </div>}
+    <section className="ca-combatants">
+      <div className="ca-versus">
+        <label><span>Attaccante</span><select value={attackerId} onChange={(event) => { setAttackerId(Number(event.target.value)); resetSequence(); }}>{map.participants.map((entry) => <option key={entry.id} value={entry.character.id}>{entry.character.name}</option>)}</select></label>
+        <button type="button" className="ca-swap" title="Scambia" aria-label="Scambia attaccante e difensore" onClick={() => { setAttackerId(defenderId); setDefenderId(attackerId); resetSequence(); }}>⇄</button>
+        <label><span>Difensore</span><select value={defenderId} onChange={(event) => { setDefenderId(Number(event.target.value)); resetSequence(); }}>{map.participants.map((entry) => <option key={entry.id} value={entry.character.id}>{entry.character.name}</option>)}</select></label>
+      </div>
 
-    <div className="combat-compact-manual">
-      <div className="combat-manual-button-strip"><span>Manuali</span>{MANUAL_FIELDS.map((field) => <button
-        type="button"
-        key={field.key}
-        className={(manualMenu === field.key ? "open " : "") + (values[field.key] ? "changed" : "")}
-        aria-expanded={manualMenu === field.key}
-        title={field.label}
-        onClick={() => setManualMenu((current) => current === field.key ? null : field.key)}
-      ><small>{field.short}</small><strong>{signed(values[field.key])}</strong>{generatedModifierValue(selectedTotals, field.key) !== 0 && <em title="Da bottoni attivi">{signed(generatedModifierValue(selectedTotals, field.key))}</em>}</button>)}</div>
-      {manualMenu && <div className="combat-instant-menu">
-        <strong>{MANUAL_FIELDS.find((field) => field.key === manualMenu)?.label}</strong>
-        <button type="button" onClick={() => updateManualValue(manualMenu, values[manualMenu] - 1)}>−1</button>
-        <input type="number" aria-label={MANUAL_FIELDS.find((field) => field.key === manualMenu)?.label} value={values[manualMenu]} onChange={(event) => updateManualValue(manualMenu, Number(event.target.value))} />
-        <button type="button" onClick={() => updateManualValue(manualMenu, values[manualMenu] + 1)}>+1</button>
-        <button type="button" className="reset" onClick={() => updateManualValue(manualMenu, 0)}>Azzera</button>
+      {combatButtons.length > 0 && <div className="ca-buttons">
+        <p className="ca-heading"><strong>Bottoni</strong><output aria-live="polite">{selectedButtons.length ? selectedTotalsLabel : "Nessuno attivo"}</output></p>
+        <div className="ca-button-strip">{combatButtons.map((button) => {
+          const selected = activeCombatButtonIds.includes(button.id);
+          const summary = attackButtonModifierSummary(button);
+          return <button type="button" key={button.id} className={selected ? "active" : ""} aria-pressed={selected} onClick={() => toggleCombatButton(button.id)}>
+            <span className="ca-check" aria-hidden="true">{selected ? "✓" : ""}</span>
+            <strong>{button.name}</strong>
+            <small>{summary === "Nessun bonus numerico" ? "Effetto" : summary}</small>
+            <span className="ca-tooltip" role="tooltip"><strong>{summary}</strong>{button.helpText && <em>{button.helpText}</em>}</span>
+          </button>;
+        })}</div>
       </div>}
+    </section>
+
+    <div className="ca-split">
+      <section className="ca-modifiers">
+        <p className="ca-heading"><strong>Modificatori</strong><output>man. + bottoni</output></p>
+        <div className="ca-mod-list">{MANUAL_FIELDS.map((field) => {
+          const generated = generatedModifierValue(selectedTotals, field.key);
+          const total = values[field.key] + generated;
+          return <div className={`ca-mod-row${total ? " changed" : ""}`} key={field.key}>
+            <span title={field.label}>{field.short}</span>
+            <button type="button" aria-label={`${field.label}: meno uno`} onClick={() => updateManualValue(field.key, values[field.key] - 1)}>−</button>
+            <input type="number" aria-label={field.label} value={values[field.key]} onChange={(event) => updateManualValue(field.key, Number(event.target.value))} />
+            <button type="button" aria-label={`${field.label}: più uno`} onClick={() => updateManualValue(field.key, values[field.key] + 1)}>+</button>
+            <b title={generated ? `manuale ${signed(values[field.key])} + bottoni ${signed(generated)}` : "Totale"}>{signed(total)}</b>
+          </div>;
+        })}</div>
+      </section>
+
+      <section className="ca-sequence">
+        <p className="ca-heading"><strong>Sequenza</strong></p>
+
+        <div className="ca-step">
+          <span>1 · d20</span>
+          <div className="ca-field">
+            <input type="number" min="1" max="20" aria-label="Tiro d20" value={attackRoll || ""} onChange={(event) => { setAttackRoll(Number(event.target.value)); setPreview(null); setDamageRolled(false); }} />
+            <button type="button" title="Tira d20" disabled={busy || rollingD20 || automaticRunning || sameCombatant} onClick={() => rollD20()}>↻</button>
+          </div>
+        </div>
+
+        <div className="ca-step">
+          <span>2 · Attacca</span>
+          <button type="button" className="ca-action" disabled={!canAttack} onClick={() => resolveAttackStep()}>Attacca</button>
+          {preview && <em className="ca-note">{preview.damageFormula}</em>}
+        </div>
+
+        <div className="ca-step">
+          <span>3 · Tira danno</span>
+          <div className="ca-field">
+            <input type="number" min="0" aria-label="Danno" value={damageBase || ""} onChange={(event) => { setDamageBase(Math.max(0, Number(event.target.value))); setDamageRolled(Number(event.target.value) > 0); }} />
+            <button type="button" title="Tira il danno" disabled={!canRollDamage} onClick={() => rollDamage()}>↻</button>
+          </div>
+        </div>
+
+        <div className="ca-step">
+          <span>4 · Mod. danno</span>
+          <div className="ca-presets">
+            {DAMAGE_ADJUSTMENT_PRESETS.map((preset) => <button type="button" key={preset} disabled={!damageRolled} onClick={() => setDamageAdjustment((current) => current + preset)}>{signed(preset)}</button>)}
+            <button type="button" className={damageAdjustment ? "ca-preset-total changed" : "ca-preset-total"} title="Azzera la modifica" disabled={!damageAdjustment} onClick={() => setDamageAdjustment(0)}>{signed(damageAdjustment)}%</button>
+          </div>
+          {damageAdjustment !== 0 && <em className="ca-note">{damageBase} → {adjustedDamage}</em>}
+        </div>
+      </section>
     </div>
 
-    <div className="combat-compact-sequence">
-      <div className="combat-compact-roll"><span>1 · d20</span><input type="number" min="1" max="20" value={attackRoll || ""} onChange={(event) => { setAttackRoll(Number(event.target.value)); setPreview(null); }} /><button type="button" title="Tira d20" disabled={busy || rollingD20 || sameCombatant} onClick={rollD20}>↻</button></div>
-      <div className="combat-compact-roll"><span>2 · Danno</span><input type="number" min="0" value={damageBase || ""} onChange={(event) => { setDamageBase(Math.max(0, Number(event.target.value))); setPreview((current) => current?.applied ? null : current); }} /><button type="button" title="Tira danno" disabled={busy || !attackRoll || sameCombatant} onClick={rollDamage}>↻</button></div>
-      <button type="button" className={(damageMenuOpen ? "open " : "") + (damageAdjustment ? "changed" : "")} aria-expanded={damageMenuOpen} onClick={() => setDamageMenuOpen((current) => !current)}><span>3 · Mod.</span><strong>{signed(damageAdjustment)}%</strong></button>
-    </div>
+    <section className="ca-outcome">
+      <div className={`ca-status${preview?.applied ? " applied" : ""}${missed ? " miss" : ""}`} aria-live="polite">
+        <strong>{automaticStage || statusHeadline}</strong>
+        {!automaticStage && statusDetail && <span>{statusDetail}</span>}
+        {sameCombatant && <span className="ca-warning">Scegli un altro difensore</span>}
+      </div>
 
-    <div className="combat-compact-damage-types" aria-label="Tipo di danno"><span>4 · Tipo — seleziona per applicare</span><div className="damage-type-grid">{DAMAGE_TYPES.map((entry) => <button type="button" key={entry} className={`${entry.toLocaleLowerCase("it")} ${damageType === entry ? "active" : ""}`} aria-pressed={damageType === entry} disabled={busy || automaticRunning || !attackRoll || preview?.hit === false || adjustedDamage <= 0} onClick={() => selectAndApplyDamageType(entry)}>{entry}</button>)}</div></div>
+      <div className="ca-types">
+        <p className="ca-heading"><strong>5 · Tipo</strong><output>seleziona per applicare</output></p>
+        <div className="ca-type-grid">{DAMAGE_TYPES.map((entry) => <button
+          type="button"
+          key={entry}
+          className={`${entry.toLocaleLowerCase("it")}${damageType === entry ? " active" : ""}`}
+          title={entry}
+          aria-pressed={damageType === entry}
+          disabled={!canApply}
+          onClick={() => selectAndApplyDamageType(entry)}
+        >{DAMAGE_TYPE_LABELS[entry]}</button>)}</div>
+      </div>
 
-    {damageMenuOpen && <div className="combat-instant-menu combat-damage-menu">
-      <strong>{damageBase} → {adjustedDamage}</strong>
-      <button type="button" onClick={() => setDamageAdjustment((current) => current - 10)}>−10%</button>
-      <button type="button" onClick={() => setDamageAdjustment((current) => current + 10)}>+10%</button>
-      <button type="button" onClick={() => setDamageAdjustment((current) => current + 33)}>+33%</button>
-      <button type="button" onClick={() => setDamageAdjustment((current) => current + 50)}>+50%</button>
-      <button type="button" className="reset" onClick={() => setDamageAdjustment(0)}>Azzera</button>
-    </div>}
-
-    <div className={(preview?.applied ? "applied " : "") + (preview?.hit === false ? "miss " : "") + "combat-compact-status"} aria-live="polite"><strong>{automaticStage || status}</strong>{sameCombatant && <span>Scegli un altro difensore</span>}</div>
-    <div className="combat-compact-actions">
-      <button type="button" className="button secondary small" disabled={busy || rollingD20} onClick={resetSequence}>Reset</button>
-      <label className="combat-auto-damage"><input type="checkbox" checked={automaticDamage} onChange={(event) => setAutomaticDamage(event.target.checked)} /> Danno automatico</label>
-      <button type="button" className="button secondary small" disabled={busy || rollingD20 || automaticRunning || sameCombatant} onClick={automaticAttack}>{automaticRunning ? "In corso…" : "Automatico"}</button>
-      {preview?.hit === false && <button type="button" className="button primary small" disabled={busy || !attackRoll || sameCombatant} onClick={() => applyAttack()}>Registra mancato</button>}
-    </div>
+      <div className="ca-actions">
+        <button type="button" className="button secondary small" disabled={busy || rollingD20} onClick={resetSequence}>Reset</button>
+        <label className="ca-auto"><input type="checkbox" checked={automaticDamage} onChange={(event) => setAutomaticDamage(event.target.checked)} /> Danno automatico</label>
+        <button type="button" className="button secondary small" disabled={busy || rollingD20 || automaticRunning || sameCombatant} onClick={automaticAttack}>{automaticRunning ? "In corso…" : "Automatico"}</button>
+        {missed && !preview?.applied && <button type="button" className="button primary small" disabled={!canAttack} onClick={() => applyAttack(damageType, 0)}>Registra mancato</button>}
+      </div>
+    </section>
   </div>;
 }

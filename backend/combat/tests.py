@@ -20,7 +20,7 @@ from backend.media_library.models import ImageCategory, UploadedImage
 
 from .damage_rules import DAMAGE_RULES_CONFIG_KEY, default_damage_rules
 from .models import CombatEvent, HexType, MapHex, MapMetadata, MapParticipant, MapParticipantFootprint, MapSnapshot, MapType
-from .rules import direct_hex_line, hex_distance, resolve_attack_values
+from .rules import direct_hex_line, hex_distance, resolve_attack_values, resolve_direct_damage_values
 from .selectors import combat_workspace_payload
 from .services import (
     _participant_cells,
@@ -672,6 +672,74 @@ class AttackRulesTests(CombatTestCase):
         self.assertGreater(result["damageMultiplier"], 0)
         self.assertIn("d", result["damageFormula"])
         self.assertGreater(result["finalDamage"], 0)
+
+    def _critical_bonus_at_defense(self, defense):
+        attacker = self.character("Sfortunato", attacco=4, tier=6, fortuna=12)
+        attacker.crit_mag = "20"
+        attacker.save(update_fields=["crit_mag", "updated_at"])
+        defender = self.character(f"Muro{defense}", difesa=defense, fortuna=10)
+        result = resolve_attack_values(
+            attacker, defender, {"damageType": "Taglio", "attackRoll": 20}, rng=random.Random(3),
+        )
+        return result["attackDifference"], result["criticalMultiplier"]
+
+    def test_critical_bonus_never_grows_as_the_attack_lands_worse(self):
+        # La penalità di fortuna deve crescere in modo monotono: un attacco
+        # peggiore non può produrre un critico più forte di uno migliore.
+        bonuses = []
+        for defense in range(20, 70, 4):
+            difference, bonus = self._critical_bonus_at_defense(defense)
+            self.assertLessEqual(difference, 45)
+            bonuses.append(bonus)
+        self.assertEqual(bonuses, sorted(bonuses, reverse=True))
+
+    def test_attack_step_publishes_the_formula_without_rolling_the_damage(self):
+        attacker = self.character("Tiratore", attacco=18, tier=6, fortuna=12)
+        defender = self.character("Bersaglio", difesa=8)
+        payload = {"damageType": "Taglio", "attackRoll": 15, "damageBonus": 2}
+        attack_only = resolve_attack_values(
+            attacker, defender, {**payload, "rollDamage": False}, rng=random.Random(5),
+        )
+        self.assertTrue(attack_only["hit"])
+        self.assertIn("d", attack_only["damageFormula"])
+        self.assertEqual(attack_only["damageRoll"], 0)
+        self.assertEqual(attack_only["rawDamage"], 0)
+        self.assertEqual(attack_only["finalDamage"], 0)
+        rolled = resolve_attack_values(attacker, defender, payload, rng=random.Random(5))
+        # L'attacco è aritmetica pura: i due passaggi devono concordare su tutto
+        # tranne il tiro del danno.
+        for field in ("hit", "attackTotal", "defense", "attackDifference", "damageTier",
+                      "critical", "damageMultiplier", "appliedMultiplier", "damageFormula"):
+            self.assertEqual(attack_only[field], rolled[field], field)
+        self.assertGreater(rolled["damageRoll"], 0)
+
+    def test_penetration_recovers_the_armour_only_never_the_resistance(self):
+        attacker = self.character("Perforatore")
+        defender = self.character("Corazzato", res_contundente=3, rd_fis=4)
+        # res_contundente 3 assorbe il 30%: 100 -> 70, poi rd_fis 4 -> 66.
+        base = resolve_direct_damage_values(attacker, defender, {
+            "damageType": "Contundente", "rawDamage": 100,
+        })
+        self.assertEqual(base["finalDamage"], 66)
+        # Anche con perforazione totale si recuperano solo i 4 punti di armatura:
+        # il 30% di resistenza non è perforabile.
+        pierced = resolve_direct_damage_values(attacker, defender, {
+            "damageType": "Contundente", "rawDamage": 100,
+            "penetrationFlat": 50, "penetrationPercent": 100,
+        })
+        self.assertEqual(pierced["finalDamage"], 70)
+
+    def test_cancelled_critical_is_not_reported_as_a_critical(self):
+        attacker = self.character("Iellato", attacco=18, tier=6, fortuna=1)
+        attacker.crit_mag = "20"
+        attacker.save(update_fields=["crit_mag", "updated_at"])
+        defender = self.character("Bersaglio", difesa=8)
+        result = resolve_attack_values(
+            attacker, defender, {"damageType": "Taglio", "attackRoll": 20}, rng=random.Random(11),
+        )
+        self.assertTrue(result["hit"])
+        self.assertEqual(result["criticalMultiplier"], 0)
+        self.assertEqual(result["critical"], "none")
 
 
 class FogBackupAndControlTests(CombatTestCase):

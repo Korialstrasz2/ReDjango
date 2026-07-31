@@ -389,7 +389,7 @@ V2_SETTING_DEFAULTS = [
         "user_customizable": True,
         "master_customizable": True,
         "ui_token": "shortcut-audio",
-        "order": 95,
+        "order": 96,
     },
     {
         "key": "shortcuts.ai",

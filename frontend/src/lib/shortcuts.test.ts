@@ -37,7 +37,7 @@ describe("keyboard shortcuts", () => {
     expect(shortcutValue({}, "journal")).toBe("Alt+J");
     expect(shortcutValue({ "shortcuts.profile": "fast" }, "dashboard")).toBe("Alt+A");
     expect(shortcutValue({ "shortcuts.profile": "fast" }, "settings")).toBe("Alt+Ù");
-    expect(shortcutValue({ "shortcuts.profile": "fast" }, "ai")).toBe("Alt+V");
+    expect(shortcutValue({ "shortcuts.profile": "fast" }, "ai")).toBe("Alt+C");
     expect(shortcutValue({ "shortcuts.profile": "custom", "shortcuts.journal": "Alt+K" }, "journal")).toBe("Alt+K");
   });
 

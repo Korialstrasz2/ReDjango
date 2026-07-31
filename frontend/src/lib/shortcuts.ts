@@ -35,7 +35,7 @@ export const STANDARD_SHORTCUTS: Record<ShortcutTarget, string> = {
 export const FAST_SHORTCUTS: Record<ShortcutTarget, string> = {
   dashboard: "Alt+A", character: "Alt+S", skills: "Alt+D", competencies: "Alt+F", creation: "Alt+G",
   combat: "Alt+H", travel: "Alt+J", market: "Alt+K", lore: "Alt+L", media: "Alt+Ò", guides: "Alt+À",
-  settings: "Alt+Ù", tools: "Alt+T", journal: "Alt+Z", dice: "Alt+X", theft: "Alt+B", audio: "Alt+C", ai: "Alt+V",
+  settings: "Alt+Ù", tools: "Alt+T", journal: "Alt+Z", dice: "Alt+X", theft: "Alt+B", audio: "Alt+V", ai: "Alt+C",
   names: "Alt+N",
 };
 

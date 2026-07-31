@@ -189,7 +189,9 @@ def _mitigate_damage(
     else:
         after_resistance = raw_damage * (100 - resistance_percent) / 100
         after_flat = max(0, math.floor(after_resistance - flat_reduction))
-        removed = max(0, math.floor(raw_damage - after_flat))
+        # Penetration only recovers what the armour absorbed: percentage resistance
+        # is not pierceable, so it is excluded from the recoverable pool.
+        removed = max(0, math.floor(after_resistance) - after_flat)
         recovered = 0
         if damage_type in ("Contundente", "Perforante", "Taglio"):
             recovered = min(removed, max(0, math.floor(removed * penetration_percent / 100) + penetration_flat))
@@ -273,20 +275,27 @@ def resolve_attack_values(attacker, defender, payload: dict, *, rng: random.Rand
     critical_bonus = 0.0
     if hit and tier > 0:
         luck_delta = attacker_luck - 10
+        # The penalty grows as the attack lands worse; the last band stays open so a
+        # very poor attack can never come back around to the smallest penalty.
         if attack_difference > -10:
             luck_delta -= 1
         elif attack_difference > -15:
             luck_delta -= 3
-        elif attack_difference > -20:
+        else:
             luck_delta -= 5
         if attack_roll in _critical_rolls(attacker.crit_minor if hasattr(attacker, "crit_minor") else attacker.crit_min):
-            critical_level, critical_bonus = "minor", max(0, .4 + .05 * luck_delta)
+            critical_level, critical_bonus = "minor", .4 + .05 * luck_delta
         elif attack_roll in _critical_rolls(attacker.crit_nor):
-            critical_level, critical_bonus = "normal", max(0, .6 + .07 * luck_delta)
+            critical_level, critical_bonus = "normal", .6 + .07 * luck_delta
         elif attack_roll in _critical_rolls(attacker.crit_mag):
-            critical_level, critical_bonus = "major", max(0, .8 + .1 * luck_delta)
+            critical_level, critical_bonus = "major", .8 + .1 * luck_delta
+        if critical_bonus <= 0:
+            # Low luck can cancel the bonus entirely: report a normal hit rather than
+            # announcing a critical that adds nothing.
+            critical_level, critical_bonus = "none", 0.0
     attribute_bonus = _attribute_bonus(attacker_tot, payload.get("attributeKeys") or [])
     fixed_damage = max(0, int(payload.get("rawDamage") or 0))
+    roll_damage = payload.get("rollDamage", True) is not False
     damage_formula = damage_rules["tierDamageFormulas"].get(str(tier))
     if fixed_damage:
         damage_roll = fixed_damage
@@ -294,10 +303,15 @@ def resolve_attack_values(attacker, defender, payload: dict, *, rng: random.Rand
         applied_multiplier = 1.0
         damage_formula_label = str(fixed_damage)
     elif hit and damage_formula:
-        damage_roll = _roll_formula(damage_formula, rng)
         applied_multiplier = max(0, damage_multiplier + critical_bonus)
-        raw_after_critical = max(0, math.floor((damage_roll + damage_bonus + attribute_bonus) * applied_multiplier))
         damage_formula_label = f"({damage_formula}+{damage_bonus + attribute_bonus}) x {applied_multiplier:.2f}"
+        # "Attacca" resolves the attack and publishes the formula; "Tira danno" rolls it.
+        # The attack half is pure arithmetic once attackRoll is given, so the two passes agree.
+        damage_roll = _roll_formula(damage_formula, rng) if roll_damage else 0
+        raw_after_critical = max(
+            0,
+            math.floor((damage_roll + damage_bonus + attribute_bonus) * applied_multiplier),
+        ) if roll_damage else 0
     else:
         damage_roll = 0
         raw_after_critical = 0
