@@ -1,6 +1,8 @@
 import { type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { useSurfaceBackground } from "../lib/surfaces";
+
 type Props = {
   title: string;
   children: ReactNode;
@@ -13,6 +15,8 @@ type Props = {
   hideHeader?: boolean;
   /** Rende trascinabile anche il corpo: qualsiasi spazio vuoto diventa una maniglia. */
   dragFromBody?: boolean;
+  /** Superficie del tema da cui prendere lo sfondo: vedi backend/core/theme_surfaces.py. */
+  surface?: string;
 };
 
 type ResizeEdge = "top" | "right" | "bottom" | "left";
@@ -20,8 +24,9 @@ type ResizeEdge = "top" | "right" | "bottom" | "left";
 const MIN_MODAL_WIDTH = 360;
 const MIN_MODAL_HEIGHT = 240;
 
-export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false, hideHeader = false, dragFromBody = false }: Props) {
+export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false, hideHeader = false, dragFromBody = false, surface }: Props) {
   const modalRef = useRef<HTMLElement>(null);
+  const background = useSurfaceBackground(surface);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const drag = useRef<{ x: number; y: number; startX: number; startY: number } | null>(null);
@@ -126,14 +131,16 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section
         ref={modalRef}
-        className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${hideHeader ? "rd-modal-headless" : ""} ${className}`.trim()}
+        className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${hideHeader ? "rd-modal-headless" : ""} ${background ? "rd-modal-dressed" : ""} ${className}`.trim()}
         data-component-type="modal"
         data-theme="parchment"
+        data-surface={surface}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        style={{ transform: `translate(${position.x}px, ${position.y}px)`, width: size?.width, height: size?.height } as CSSProperties}
+        style={{ "--modal-background": background ? `url(${background})` : "none", transform: `translate(${position.x}px, ${position.y}px)`, width: size?.width, height: size?.height } as CSSProperties}
       >
+        {background && <div className="rd-modal-atmosphere" aria-hidden="true" />}
         {!hideHeader && <header className="modal-header" {...dragHandlers}>
           <h2>{title}</h2>
           <button className="icon-button" type="button" onClick={onClose} aria-label="Chiudi">×</button>

@@ -127,7 +127,7 @@ export function ImagePickerModal({
     });
   };
 
-  return <Modal
+  return <Modal surface="image-picker"
     title="Scegli un'immagine"
     onClose={onClose}
     wide

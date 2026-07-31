@@ -270,7 +270,7 @@ export function PlayerManagementPage() {
         ? <PlayerEditor key={selected.id} player={selected} overview={overview} />
         : <div className="management-empty-state"><strong>Nessun giocatore selezionato</strong><p>Crea il primo giocatore per assegnargli un personaggio.</p></div>}</div>
     </div>}
-    {showCreate && overview && <Modal title="Nuovo giocatore" onClose={() => setShowCreate(false)} wide>
+    {showCreate && overview && <Modal surface="tools" title="Nuovo giocatore" onClose={() => setShowCreate(false)} wide>
       <NewPlayerForm overview={overview} onCreated={(playerId) => { setShowCreate(false); if (playerId) setSelectedId(playerId); }} />
     </Modal>}
   </div>;

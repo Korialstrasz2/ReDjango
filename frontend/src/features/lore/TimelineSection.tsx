@@ -245,7 +245,7 @@ export function TimelineSection({ events, canManage, isPending, run }: Props) {
       </article>}
     </section>
 
-    {draft && <Modal
+    {draft && <Modal surface="lore-timeline-event"
       title={draft.id ? "Modifica evento della Timeline" : "Nuovo evento della Timeline"}
       onClose={() => setDraft(null)}
       wide

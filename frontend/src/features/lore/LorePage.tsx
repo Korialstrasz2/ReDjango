@@ -450,7 +450,7 @@ export function LorePage() {
         run={run}
       />}
 
-      {openNpc && <Modal title={openNpc.name} onClose={() => setOpenNpcId(null)}>
+      {openNpc && <Modal surface="lore-npc" title={openNpc.name} onClose={() => setOpenNpcId(null)}>
         <div className="lore-npc-detail">
           {openNpc.portraitUrl && <img src={openNpc.portraitUrl} alt="" className="lore-npc-detail-portrait" />}
           <div className="lore-npc-detail-body">
@@ -480,7 +480,7 @@ export function LorePage() {
         </div>
       </Modal>}
 
-      {factionDraft && <Modal title={factionDraft.id ? "Modifica fazione" : "Nuova fazione"} onClose={() => setFactionDraft(null)}>
+      {factionDraft && <Modal surface="lore-faction-editor" title={factionDraft.id ? "Modifica fazione" : "Nuova fazione"} onClose={() => setFactionDraft(null)}>
         <div className="lore-form">
           <label><span>Nome</span>
             <input value={factionDraft.name} onChange={(event) => setFactionDraft({ ...factionDraft, name: event.target.value })} />
@@ -510,7 +510,7 @@ export function LorePage() {
         </div>
       </Modal>}
 
-      {npcDraft && <Modal title={npcDraft.id ? "Modifica personaggio" : "Nuovo personaggio"} onClose={() => setNpcDraft(null)}>
+      {npcDraft && <Modal surface="lore-npc-editor" title={npcDraft.id ? "Modifica personaggio" : "Nuovo personaggio"} onClose={() => setNpcDraft(null)}>
         <div className="lore-form">
           <label><span>Nome</span>
             <input value={npcDraft.name} onChange={(event) => setNpcDraft({ ...npcDraft, name: event.target.value })} />
@@ -550,7 +550,7 @@ export function LorePage() {
         </div>
       </Modal>}
 
-      {gridOpen && <Modal title="Matrice delle reazioni" onClose={() => setGridOpen(false)}>
+      {gridOpen && <Modal surface="lore-reactions" title="Matrice delle reazioni" onClose={() => setGridOpen(false)}>
         <div className="lore-form">
           <p className="lore-hint">
             Ogni cella indica quanto cambia la fazione in colonna per ogni punto guadagnato o perso dalla fazione in riga.
@@ -587,7 +587,7 @@ export function LorePage() {
         </div>
       </Modal>}
 
-      {historyFaction && <Modal title={`Storico: ${historyFaction.name}`} onClose={() => setHistoryFactionId(null)}>
+      {historyFaction && <Modal surface="lore-faction-history" title={`Storico: ${historyFaction.name}`} onClose={() => setHistoryFactionId(null)}>
         <div className="lore-form">
           <p className="lore-hint">Reputazione attuale: <strong>{signed(historyFaction.reputation)}</strong> · {historyFaction.tier.label}</p>
           {!historyEvents.length && <p className="lore-empty">Nessun evento ha ancora toccato questa fazione.</p>}

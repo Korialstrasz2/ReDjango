@@ -29,10 +29,12 @@ from .models import (
     SettingDefinition,
     SettingOverride,
     Theme,
+    ThemeBackground,
     TimelineEvent,
     TipoArma,
     Unit,
 )
+from .theme_surfaces import THEME_SURFACES
 from .defaults import (
     QUICK_STAT_ADJUSTMENT_CONFIG_KEY,
     QUICK_STAT_ADJUSTMENT_DEFAULTS,
@@ -544,6 +546,26 @@ class SettingOverrideAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
 
+class ThemeBackgroundInline(admin.TabularInline):
+    model = ThemeBackground
+    extra = 0
+    verbose_name = "sfondo"
+    verbose_name_plural = "sfondi delle superfici"
+    fields = ("surface_key", "image")
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        # Le superfici sono un elenco in core/theme_surfaces.py, non colonne:
+        # qui diventano una tendina così non si scrivono chiavi inesistenti.
+        if db_field.name == "surface_key":
+            kwargs["widget"] = forms.Select(
+                choices=[("", "---------")] + [
+                    (entry["key"], f"{entry['label']} · {entry['section']}")
+                    for entry in THEME_SURFACES
+                ]
+            )
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+
 @admin.register(Theme)
 class ThemeAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "is_active", "is_default", "order", "updated_at")
@@ -551,6 +573,7 @@ class ThemeAdmin(admin.ModelAdmin):
     list_filter = ("is_active", "is_default")
     search_fields = ("name", "slug", "description")
     readonly_fields = ("created_at", "updated_at")
+    inlines = [ThemeBackgroundInline]
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name.endswith("_color"):
@@ -602,27 +625,6 @@ class ThemeAdmin(admin.ModelAdmin):
                     "background_position",
                     "background_blur",
                 )
-            },
-        ),
-        (
-            "Sfondi delle schermate",
-            {
-                "description": (
-                    "Le immagini provengono dall'Archivio immagini. È possibile riusarle tra più schermate "
-                    "oppure assegnarne una diversa a ogni area."
-                ),
-                "fields": (
-                    "dashboard_background",
-                    "characters_background",
-                    "personaggio_background",
-                    "media_background",
-                    "guide_background",
-                    "settings_background",
-                    "dice_background",
-                    "journal_background",
-                    "lore_background",
-                    "market_background",
-                ),
             },
         ),
         ("Informazioni di sistema", {"fields": ("created_at", "updated_at", "metadata"), "classes": ("collapse",)}),

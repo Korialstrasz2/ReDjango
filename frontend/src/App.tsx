@@ -32,6 +32,7 @@ import { QuickTools } from "./features/quick-tools/QuickTools";
 import { SkillsPage } from "./features/skills/SkillsPage";
 import { TravelPage } from "./features/TravelPage";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
+import { ThemeSurfacesContext } from "./lib/surfaces";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
 import { FIXED_SHORTCUTS, pageShortcutTargets, quickToolShortcutTargets, SHORTCUT_CATEGORY, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
 import type { AuthData, BootstrapData, Guide, GuideEntry, GuideVariable, GuideVariableGroup, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
@@ -190,22 +191,28 @@ export function applyUiPreferences(settings: SettingsData | undefined, preview: 
   applyTextAwareOutlineMode(textOutlineAware);
 }
 
+// Ogni pagina ha la propria superficie: nessuna eredita lo sfondo di un'altra.
+// L'unica eccezione è /tools, riservata a Master e amministratori, che usa un
+// solo sfondo per tutte le sue schermate. Le chiavi stanno in
+// backend/core/theme_surfaces.py.
+const PAGE_SURFACES: Array<[string, string]> = [
+  ["/character/", "personaggio"],
+  ["/skills", "skills"],
+  ["/competencies", "competencies"],
+  ["/creation", "creation"],
+  ["/combat", "combat"],
+  ["/travel", "travel"],
+  ["/market", "market"],
+  ["/lore", "lore"],
+  ["/media", "media"],
+  ["/guides", "guide"],
+  ["/settings", "settings"],
+  ["/tools", "tools"]
+];
+
 function screenFromPath(path: string): string {
-  if (path.startsWith("/creation")) return "personaggio";
-  if (path.startsWith("/competencies")) return "personaggio";
-  if (path.startsWith("/skills")) return "personaggio";
-  if (path.startsWith("/character/")) return "personaggio";
-  if (path.startsWith("/combat")) return "personaggio";
-  // Reuse the campaign background until Theme has a dedicated Viaggio surface.
-  if (path.startsWith("/travel")) return "dashboard";
-  if (path.startsWith("/lore")) return "lore";
-  if (path.startsWith("/characters")) return "characters";
-  if (path.startsWith("/media")) return "media";
-  if (path.startsWith("/market")) return "market";
-  if (path.startsWith("/guides")) return "guide";
-  if (path.startsWith("/settings")) return "settings";
-  if (path.startsWith("/tools")) return "settings";
-  return "dashboard";
+  const match = PAGE_SURFACES.find(([prefix]) => path.startsWith(prefix));
+  return match ? match[1] : "dashboard";
 }
 
 function Shell({ children }: { children: ReactNode }) {
@@ -738,16 +745,16 @@ function MediaPage() {
         {!visible.length && <div className="management-empty-state"><strong>Nessuna immagine trovata</strong><p>Prova a cambiare categoria, gruppo o ricerca.</p></div>}
       </section>
     </div>
-    {previewAsset && <Modal title={previewAsset.title} onClose={() => setPreviewAsset(null)} wide className="media-preview-modal">
+    {previewAsset && <Modal surface="media-preview" title={previewAsset.title} onClose={() => setPreviewAsset(null)} wide className="media-preview-modal">
       <div className="media-asset-preview">
         <img src={previewAsset.url} alt={previewAsset.title} />
         <footer><span>{previewAsset.category || "Senza categoria"} · {previewAsset.group}</span><a className="button secondary" href={previewAsset.url} target="_blank" rel="noreferrer">Apri originale</a></footer>
       </div>
     </Modal>}
-    {moveDraft && <Modal title="Sposta immagine" onClose={() => setMoveDraft(null)} footer={<><button type="button" className="button secondary" onClick={() => setMoveDraft(null)}>Annulla</button><button type="button" className="button primary" onClick={continueMove}>Continua</button></>}>
+    {moveDraft && <Modal surface="media-move" title="Sposta immagine" onClose={() => setMoveDraft(null)} footer={<><button type="button" className="button secondary" onClick={() => setMoveDraft(null)}>Annulla</button><button type="button" className="button primary" onClick={continueMove}>Continua</button></>}>
       <div className="media-move-form"><div className="media-move-preview"><img src={moveDraft.detail.asset.thumbnailUrl || moveDraft.detail.asset.url} alt="" /><span><strong>{moveDraft.detail.asset.title}</strong><small>{moveDraft.detail.asset.category} · {moveDraft.detail.asset.group}</small></span></div><label>Categoria di destinazione<select value={moveDraft.categoryId} onChange={(event) => setMoveDraft({ ...moveDraft, categoryId: event.target.value })}><option value="" disabled>Scegli categoria</option>{mediaCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label><label>Gruppo di destinazione<input value={moveDraft.group} maxLength={160} onChange={(event) => setMoveDraft({ ...moveDraft, group: event.target.value })} /></label></div>
     </Modal>}
-    {confirmation && <Modal title={confirmation.kind === "delete" ? "Elimina immagine" : "Conferma spostamento"} onClose={() => !actionPending && setConfirmation(null)} footer={<><button type="button" className="button secondary" disabled={actionPending} onClick={() => setConfirmation(null)}>Annulla</button><button type="button" className={`button ${confirmation.kind === "delete" ? "danger" : "primary"}`} disabled={actionPending} onClick={confirmAction}>{confirmation.kind === "delete" ? "Sì, elimina" : "Sì, sposta"}</button></>}>
+    {confirmation && <Modal surface="media-confirm" title={confirmation.kind === "delete" ? "Elimina immagine" : "Conferma spostamento"} onClose={() => !actionPending && setConfirmation(null)} footer={<><button type="button" className="button secondary" disabled={actionPending} onClick={() => setConfirmation(null)}>Annulla</button><button type="button" className={`button ${confirmation.kind === "delete" ? "danger" : "primary"}`} disabled={actionPending} onClick={confirmAction}>{confirmation.kind === "delete" ? "Sì, elimina" : "Sì, sposta"}</button></>}>
       <MediaUsageConfirmation state={confirmation} />
       {confirmation.kind === "move" && <p className="media-move-destination">Destinazione: <strong>{mediaCategories.find((category) => category.id === confirmation.categoryId)?.name} · {confirmation.group}</strong></p>}
     </Modal>}
@@ -947,7 +954,7 @@ function SettingsPage() {
         <div className="sticky-actions">{shortcutConflicts.size > 0 ? <small className="setting-save-warning" role="alert">Risolvi i conflitti tra scorciatoie prima di salvare.</small> : dirtyKeys.size > 0 && <small>{dirtyKeys.size === 1 ? "1 modifica non salvata" : `${dirtyKeys.size} modifiche non salvate`}</small>}<button className="button primary" disabled={mutation.isPending || !dirtyKeys.size || shortcutConflicts.size > 0}>Salva impostazioni</button></div>
       </form>}
     </div>}
-    {restartConfirmation && <Modal
+    {restartConfirmation && <Modal surface="settings-restart"
       title="Riavvio necessario"
       onClose={() => !mutation.isPending && setRestartConfirmation(false)}
       footer={<>
@@ -1033,5 +1040,5 @@ export function App() {
 
   const context = { bootstrap: bootstrap.data, personaggi: personaggi.data, settings: settings.data, media: media.data.assets, mediaCategories: media.data.categories, notify };
   // The player sits above the router: changing page must never cut the soundtrack.
-  return <AppContext.Provider value={context}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/new-character" element={<NewCharacterPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/players" element={<AdminOnly><PlayerManagementPage /></AdminOnly>} /><Route path="/tools/backups" element={<AdminOnly><BackupManagementPage /></AdminOnly>} /><Route path="/tools/dice" element={<AdminOnly><DiceManagementPage /></AdminOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
+  return <AppContext.Provider value={context}><ThemeSurfacesContext.Provider value={settings.data?.theme?.backgrounds || {}}><AudioPlayerProvider settings={settings.data} notify={notify}><Shell><Routes><Route path="/" element={<Dashboard />} /><Route path="/characters" element={<Navigate to="/" replace />} /><Route path="/character/:characterId" element={<CharacterPage />} /><Route path="/skills" element={<SkillsPage />} /><Route path="/competencies" element={<CompetenciesPage />} /><Route path="/creation" element={<CreationPage />} /><Route path="/new-character" element={<NewCharacterPage />} /><Route path="/combat" element={<CombatPage />} /><Route path="/travel" element={<TravelPage categories={context.mediaCategories} notify={notify} />} /><Route path="/market" element={<MarketPage />} /><Route path="/lore" element={<LorePage />} /><Route path="/media" element={<MediaPage />} /><Route path="/guides" element={<GuidesPage />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/tools" element={<GameManagerOnly><ManagementHub /></GameManagerOnly>} /><Route path="/tools/characters" element={<GameManagerOnly><CharacterManagementPage /></GameManagerOnly>} /><Route path="/tools/items" element={<GameManagerOnly><ItemManagementPage /></GameManagerOnly>} /><Route path="/tools/skills" element={<GameManagerOnly><SkillManagementPage /></GameManagerOnly>} /><Route path="/tools/units" element={<GameManagerOnly><UnitManagementPage /></GameManagerOnly>} /><Route path="/tools/shops" element={<GameManagerOnly><ShopManagementPage /></GameManagerOnly>} /><Route path="/tools/dungeon" element={<GameManagerOnly><DungeonHelperPage /></GameManagerOnly>} /><Route path="/tools/ai" element={<GameManagerOnly><AIManagementPage /></GameManagerOnly>} /><Route path="/tools/players" element={<AdminOnly><PlayerManagementPage /></AdminOnly>} /><Route path="/tools/backups" element={<AdminOnly><BackupManagementPage /></AdminOnly>} /><Route path="/tools/dice" element={<AdminOnly><DiceManagementPage /></AdminOnly>} /><Route path="/tools/themes" element={<AdminOnly><ThemeManagementPage /></AdminOnly>} /><Route path="/tools/variables" element={<AdminOnly><GameVariablesPage /></AdminOnly>} /><Route path="/tools/variables/damage" element={<AdminOnly><DamageRulesPage /></AdminOnly>} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Shell></AudioPlayerProvider></ThemeSurfacesContext.Provider>{toast && <div className={`toast ${toast.kind}`} role="status">{toast.message}</div>}</AppContext.Provider>;
 }

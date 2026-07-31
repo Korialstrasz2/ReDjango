@@ -62,6 +62,7 @@ from backend.core.models import (
     SettingDefinition,
     Skill,
     Theme,
+    ThemeBackground,
     TipoArma,
 )
 from backend.core.weapon_presets import WEAPON_TYPE_PRESETS
@@ -334,16 +335,17 @@ class Command(BaseCommand):
             assets[filename] = asset
 
         for definition in V2_THEME_DEFAULTS:
-            image_defaults = {
-                field_name: assets.get(filename)
-                for field_name, filename in V2_THEME_ASSET_MAPS.get(
+            # Gli sfondi sono righe figlie: il tema si crea senza, poi si
+            # riempiono le superfici una per una.
+            surface_assets = {
+                surface_key: assets.get(filename)
+                for surface_key, filename in V2_THEME_ASSET_MAPS.get(
                     definition["slug"],
                     V2_THEME_PLACEHOLDER_ASSETS,
                 ).items()
             }
             defaults = {
                 **definition,
-                **image_defaults,
                 "metadata": {
                     "seed_kind": "theme",
                     "seed_version": V2_THEME_SEED_VERSION,
@@ -352,6 +354,7 @@ class Command(BaseCommand):
             theme, created = Theme.objects.get_or_create(slug=definition["slug"], defaults=defaults)
             if created:
                 touched += 1
+                touched += self._seed_theme_backgrounds(theme, surface_assets, refresh=True)
                 continue
 
             theme_metadata = theme.metadata if isinstance(theme.metadata, dict) else {}
@@ -366,22 +369,8 @@ class Command(BaseCommand):
                     for key, value in definition.items()
                     if key not in {"slug", "is_active", "is_default"}
                 }
-            image_updates = {}
-            for field_name, asset in image_defaults.items():
-                current_asset = getattr(theme, field_name)
-                current_metadata = (
-                    current_asset.metadata
-                    if current_asset and isinstance(current_asset.metadata, dict)
-                    else {}
-                )
-                if asset is not None and (
-                    current_asset is None
-                    or (refresh_seed_images and current_metadata.get("seed_kind") == "theme_placeholder")
-                ):
-                    image_updates[field_name] = asset
             update_values = {
                 **theme_updates,
-                **image_updates,
                 "metadata": {
                     **theme_metadata,
                     "seed_kind": "theme",
@@ -389,6 +378,27 @@ class Command(BaseCommand):
                 },
             }
             touched += self._save_if_changed(theme, update_values)
+            touched += self._seed_theme_backgrounds(theme, surface_assets, refresh=refresh_seed_images)
+        return touched
+
+    def _seed_theme_backgrounds(self, theme, surface_assets: dict, *, refresh: bool) -> int:
+        """Riempie le superfici ancora vuote e, a ogni nuova versione del seed,
+        rinfresca quelle rimaste sui segnaposto. Le scelte fatte a mano restano."""
+        touched = 0
+        existing = {row.surface_key: row for row in theme.backgrounds.select_related("image")}
+        for surface_key, asset in surface_assets.items():
+            if asset is None:
+                continue
+            row = existing.get(surface_key)
+            if row is None:
+                ThemeBackground.objects.create(theme=theme, surface_key=surface_key, image=asset)
+                touched += 1
+                continue
+            current_metadata = row.image.metadata if isinstance(row.image.metadata, dict) else {}
+            if refresh and current_metadata.get("seed_kind") == "theme_placeholder" and row.image_id != asset.id:
+                row.image = asset
+                row.save(update_fields=["image", "updated_at"])
+                touched += 1
         return touched
 
     def _seed_skill_families_without_art(self) -> int:

@@ -74,13 +74,13 @@ export function QuickTools({ characterId, characterName, campaign, settings, not
     {tool === "dice" && <ToolDrawer title="Dadi" eyebrow={characterName || "Tiro libero"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.dice} compact draggable resizable>
       <DiceTool characterId={characterId} settings={settings} notify={notify} />
     </ToolDrawer>}
-    {tool === "theft" && <ToolDrawer title="Furto" eyebrow={characterName || "Scasso e borseggio"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.guide} draggable resizable>
+    {tool === "theft" && <ToolDrawer title="Furto" eyebrow={characterName || "Scasso e borseggio"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.theft} draggable resizable>
       <TheftTool characterId={characterId} notify={notify} />
     </ToolDrawer>}
-    {tool === "audio" && <ToolDrawer title="Audio" eyebrow={campaign?.name || "Colonna sonora"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.dice} draggable resizable>
+    {tool === "audio" && <ToolDrawer title="Audio" eyebrow={campaign?.name || "Colonna sonora"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.audio} draggable resizable>
       <AudioTool notify={notify} />
     </ToolDrawer>}
-    {tool === "ai" && <ToolDrawer title="AI" eyebrow={campaign?.name || "Assistente di campagna"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.guide} draggable resizable>
+    {tool === "ai" && <ToolDrawer title="AI" eyebrow={campaign?.name || "Assistente di campagna"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.ai} draggable resizable>
       <AITool notify={notify} />
     </ToolDrawer>}
     {tool === "names" && <ToolDrawer title="Nomi" eyebrow={campaign?.name || "Generatore nomi"} onClose={() => setTool(null)} background={settings.theme?.backgrounds?.guide} draggable resizable>

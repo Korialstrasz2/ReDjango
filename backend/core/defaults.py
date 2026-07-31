@@ -8,7 +8,7 @@ from backend.core.backup_defaults import BACKUP_SETTING_DEFINITIONS
 LOCAL_PLAYER_NAME = "local_master"
 DEFAULT_CAMPAIGN_NAME = "Campagna principale"
 V2_SETTINGS_SEED_VERSION = "17"
-V2_THEME_SEED_VERSION = "3"
+V2_THEME_SEED_VERSION = "4"
 
 
 V2_RETIRED_SETTING_KEYS = (
@@ -812,27 +812,38 @@ V2_THEME_DEFAULTS = [
 ]
 
 
+# Superfici che i temi di serie riempiono da subito: le pagine, gli strumenti
+# rapidi e l'area Strumenti. Le modali restano volutamente senza sfondo, come
+# sono sempre state: chi cura il tema le accende una per una dall'editor.
 V2_THEME_PLACEHOLDER_ASSETS = {
-    "dashboard_background": "pergamena-menu.webp",
-    "characters_background": "pergamena-personaggi.webp",
-    "personaggio_background": "pergamena-personaggi.webp",
-    "media_background": "pergamena-media.webp",
-    "guide_background": "pergamena-guide.webp",
-    "settings_background": "pergamena-guide.webp",
-    "dice_background": "pergamena-media.webp",
-    "journal_background": "pergamena-guide.webp",
-    "lore_background": "pergamena-guide.webp",
-    "market_background": "pergamena-media.webp",
+    "dashboard": "pergamena-menu.webp",
+    "personaggio": "pergamena-personaggi.webp",
+    "skills": "pergamena-personaggi.webp",
+    "competencies": "pergamena-personaggi.webp",
+    "creation": "pergamena-personaggi.webp",
+    "combat": "pergamena-personaggi.webp",
+    "travel": "pergamena-menu.webp",
+    "market": "pergamena-media.webp",
+    "lore": "pergamena-guide.webp",
+    "media": "pergamena-media.webp",
+    "guide": "pergamena-guide.webp",
+    "settings": "pergamena-guide.webp",
+    "journal": "pergamena-guide.webp",
+    "dice": "pergamena-media.webp",
+    "ai": "pergamena-guide.webp",
+    "audio": "pergamena-media.webp",
+    "theft": "pergamena-guide.webp",
+    "tools": "pergamena-menu.webp",
 }
 
 
 V2_THEME_ASSET_MAPS = {
     "parchment": V2_THEME_PLACEHOLDER_ASSETS,
-    "midnight": {field_name: "notte.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
-    "arcane": {field_name: "arcano.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
-    "skyrim": {field_name: "skyrim.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
-    "morrowind": {field_name: "morrowind.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
-    "oblivion": {field_name: "oblivion.webp" for field_name in V2_THEME_PLACEHOLDER_ASSETS},
+    "midnight": {surface_key: "notte.webp" for surface_key in V2_THEME_PLACEHOLDER_ASSETS},
+    "arcane": {surface_key: "arcano.webp" for surface_key in V2_THEME_PLACEHOLDER_ASSETS},
+    "skyrim": {surface_key: "skyrim.webp" for surface_key in V2_THEME_PLACEHOLDER_ASSETS},
+    "morrowind": {surface_key: "morrowind.webp" for surface_key in V2_THEME_PLACEHOLDER_ASSETS},
+    "oblivion": {surface_key: "oblivion.webp" for surface_key in V2_THEME_PLACEHOLDER_ASSETS},
 }
 
 

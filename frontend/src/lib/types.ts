@@ -252,10 +252,15 @@ export type ManagedTheme = {
   preview: ThemeData;
 };
 
+export type ThemeSurface = { key: string; label: string; section: string; hint: string };
+
+export type ThemeSurfaceSection = { key: string; label: string; description: string };
+
 export type ManagedThemesData = {
   themes: ManagedTheme[];
   colorFields: Array<{ field: string; key: string; label: string; fallbackSetting: string }>;
-  backgroundFields: Array<{ field: string; key: string; label: string }>;
+  surfaces: ThemeSurface[];
+  surfaceSections: ThemeSurfaceSection[];
   fallbacks: Record<string, string>;
   activeCount: number;
 };

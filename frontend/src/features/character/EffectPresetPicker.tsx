@@ -55,7 +55,7 @@ export function EffectPresetPicker({ configuration, onClose, onPick }: Props) {
 
   const targetLabel = (value: string) => configuration.targets.find((target) => target.value === value)?.label || value;
 
-  return <Modal title="Preset effetto" wide className="effect-preset-modal" onClose={onClose}>
+  return <Modal surface="effect-preset" title="Preset effetto" wide className="effect-preset-modal" onClose={onClose}>
     <div className="effect-preset-tools">
       <input
         type="search"

@@ -24,3 +24,20 @@ export function colorLuminance(value: string): number {
 export function contrastingTextOutline(value: string): "#000000" | "#ffffff" {
   return colorLuminance(value) > 0.179 ? "#000000" : "#ffffff";
 }
+
+/** Rapporto di contrasto WCAG fra due colori: da 1 (identici) a 21 (nero su bianco). */
+export function contrastRatio(foreground: string, background: string): number {
+  const first = colorLuminance(foreground);
+  const second = colorLuminance(background);
+  const lighter = Math.max(first, second);
+  const darker = Math.min(first, second);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/** Il livello WCAG raggiunto dal rapporto, per il testo normale. */
+export function contrastLevel(ratio: number): "AAA" | "AA" | "AA Large" | "insufficiente" {
+  if (ratio >= 7) return "AAA";
+  if (ratio >= 4.5) return "AA";
+  if (ratio >= 3) return "AA Large";
+  return "insufficiente";
+}

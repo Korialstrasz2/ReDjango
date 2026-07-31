@@ -114,7 +114,7 @@ export function CampaignStatus({ campaign, settings, notify }: Props) {
       </span>
     </div>
     {/* The bar blurs its backdrop, which would trap a fixed overlay inside it. */}
-    {reminderOpen && createPortal(<Modal
+    {reminderOpen && createPortal(<Modal surface="weather"
       title="Tempo atmosferico"
       className="campaign-weather-reminder-modal"
       onClose={() => setReminderOpen(false)}

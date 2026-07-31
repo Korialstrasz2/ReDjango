@@ -207,6 +207,7 @@ def create_theme(user, giocatore: Giocatore, payload: dict) -> dict:
     if not isinstance(payload, dict):
         raise ApiError("management.themes.invalid_payload", "I dati del tema non sono validi.", "theme")
 
+    source = None
     source_id = payload.get("duplicateOfId")
     if source_id:
         source = _get_theme(source_id)
@@ -220,6 +221,7 @@ def create_theme(user, giocatore: Giocatore, payload: dict) -> dict:
         theme = Theme(metadata={"seed_kind": "theme_custom"})
         theme.is_default = False
 
+    backgrounds = _clean_backgrounds(payload)
     _apply_payload(theme, payload, partial=False)
     theme.is_active = bool(payload.get("isActive", True))
     theme.slug = _unique_slug(theme.name)
@@ -228,6 +230,15 @@ def create_theme(user, giocatore: Giocatore, payload: dict) -> dict:
         theme.order = highest + 10
     theme.full_clean()
     theme.save()
+
+    # Gli sfondi non seguono la copia del record: vanno duplicati riga per riga.
+    if source is not None:
+        ThemeBackground.objects.bulk_create([
+            ThemeBackground(theme=theme, surface_key=row.surface_key, image_id=row.image_id)
+            for row in source.backgrounds.all()
+        ])
+    _write_backgrounds(theme, backgrounds)
+    theme.refresh_from_db()
     return {"theme": serialize_managed_theme(theme), **themes_management_payload()}
 
 

@@ -42,7 +42,7 @@ function ShopEditor({ market, shop, saving, onClose, onSave }: {
   const profileConfiguration = market.configuration.generationProfiles;
   const defaultProfile = profileConfiguration?.profiles.find((profile) => profile.key === profileConfiguration.defaultProfileKey);
   const update = <K extends keyof ShopDraft>(key: K, value: ShopDraft[K]) => setDraft((current) => ({ ...current, [key]: value }));
-  return <Modal title={shop ? `Modifica · ${shop.name}` : "Nuovo negozio"} onClose={onClose} wide className="market-shop-modal" footer={<>
+  return <Modal surface="market-shop-editor" title={shop ? `Modifica · ${shop.name}` : "Nuovo negozio"} onClose={onClose} wide className="market-shop-modal" footer={<>
     <button type="button" className="button secondary" onClick={onClose}>Annulla</button>
     <button type="submit" form="market-shop-form" className="button primary" disabled={saving || !draft.locationKey || !draft.categoryKey}>{saving ? "Salvataggio…" : shop ? "Salva negozio" : "Crea e genera"}</button>
   </>}>

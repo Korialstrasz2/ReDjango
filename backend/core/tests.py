@@ -10,12 +10,14 @@ from django.test import TestCase
 
 from backend.characters.models import PERSONAGGIO_TOT_KEYS, Personaggio
 from backend.core.legacy_race_import import import_legacy_races
-from backend.core.defaults import SAFE_ALT_SHORTCUT_CHOICES, V2_SETTING_DEFAULTS
+from backend.core.defaults import SAFE_ALT_SHORTCUT_CHOICES, V2_SETTING_DEFAULTS, V2_THEME_PLACEHOLDER_ASSETS
 from backend.core.guides_it import ITEM_COMPENDIUM_GUIDE_NAME, V2_GUIDE_DEFAULTS
+from backend.media_library.models import UploadedImage
 
 from .admin import GlobalModifiersAdminForm, OggettoAdminForm
-from .models import CharacterAssignmentRequest, FamigliaSkill, Giocatore, GlobalModifiers, GruppoFamiglieSkill, Guida, Oggetto, OpzioneTipoOggetto, SettingDefinition, SettingOverride, Theme
+from .models import CharacterAssignmentRequest, FamigliaSkill, Giocatore, GlobalModifiers, GruppoFamiglieSkill, Guida, Oggetto, OpzioneTipoOggetto, SettingDefinition, SettingOverride, Theme, ThemeBackground
 from .settings_selectors import global_setting_value
+from .theme_surfaces import THEME_SURFACE_KEYS
 from .settings_services import approve_character_assignment
 
 
@@ -598,19 +600,12 @@ class HierarchicalSettingsTests(TestCase):
                 self.assertGreaterEqual(contrast(theme.muted_text_color, theme.panel_color), 4.5)
                 if theme.slug in expected_art:
                     expected = expected_art[theme.slug]
-                    for field_name in (
-                        "dashboard_background",
-                        "characters_background",
-                        "personaggio_background",
-                        "media_background",
-                        "guide_background",
-                        "settings_background",
-                        "dice_background",
-                        "journal_background",
-                        "lore_background",
-                        "market_background",
-                    ):
-                        self.assertTrue(getattr(theme, field_name).file.name.endswith(expected))
+                    chosen = theme.background_map()
+                    # I temi di serie vestono pagine e strumenti; le modali
+                    # restano volutamente senza sfondo finché non le si sceglie.
+                    for surface_key in V2_THEME_PLACEHOLDER_ASSETS:
+                        self.assertIn(surface_key, chosen)
+                        self.assertTrue(chosen[surface_key].file.name.endswith(expected))
 
     def test_typography_settings_expose_five_fonts_and_the_expanded_scale(self):
         response = self.client.get("/api/settings/")
@@ -907,21 +902,85 @@ class ThemeManagementTests(TestCase):
             content_type="application/json",
         )
 
-    def test_payload_exposes_every_screen_including_lore_and_market(self):
+    def test_payload_exposes_a_surface_for_every_page_modal_and_tool(self):
         response = self.client.get("/api/v1/management/themes")
         self.assertEqual(response.status_code, 200)
         data = response.json()["data"]
 
-        background_keys = [entry["key"] for entry in data["backgroundFields"]]
-        self.assertIn("lore", background_keys)
-        self.assertIn("market", background_keys)
+        surface_keys = [entry["key"] for entry in data["surfaces"]]
+        self.assertEqual(surface_keys, THEME_SURFACE_KEYS)
+        # Ogni pagina ha la propria superficie: niente più schermate accorpate.
+        for surface_key in ("lore", "market", "combat", "travel", "skills", "competencies", "creation"):
+            self.assertIn(surface_key, surface_keys)
+        # Le modali sono configurabili una per una.
+        for surface_key in ("item-editor", "lore-npc-editor", "combat-map-editor", "skills-detail"):
+            self.assertIn(surface_key, surface_keys)
+        # L'area riservata resta un solo sfondo.
+        self.assertEqual([entry["key"] for entry in data["surfaces"] if entry["section"] == "strumenti"], ["tools"])
+        self.assertEqual(
+            [entry["key"] for entry in data["surfaceSections"]],
+            ["pagine", "modali", "strumenti-rapidi", "strumenti"],
+        )
         self.assertEqual(len(data["themes"]), 6)
 
         parchment = next(theme for theme in data["themes"] if theme["slug"] == "parchment")
-        self.assertTrue(parchment["backgrounds"]["lore_background"]["url"])
-        self.assertTrue(parchment["backgrounds"]["market_background"]["url"])
+        # L'editor riceve una voce per ogni superficie, anche quando è vuota.
+        self.assertEqual(sorted(parchment["backgrounds"]), sorted(THEME_SURFACE_KEYS))
+        self.assertTrue(parchment["backgrounds"]["lore"]["url"])
+        self.assertTrue(parchment["backgrounds"]["market"]["url"])
+        self.assertTrue(parchment["backgrounds"]["combat"]["url"])
+        self.assertIsNone(parchment["backgrounds"]["item-editor"]["id"])
         self.assertTrue(parchment["preview"]["backgrounds"]["lore"])
         self.assertTrue(parchment["preview"]["backgrounds"]["market"])
+        # Il payload runtime porta solo le superfici davvero vestite.
+        self.assertNotIn("item-editor", parchment["preview"]["backgrounds"])
+
+    def test_saving_a_surface_writes_one_row_and_clearing_it_removes_the_row(self):
+        theme = Theme.objects.get(slug="parchment")
+        image = UploadedImage.objects.filter(usage_type="theme_background").first()
+
+        response = self.action(
+            "management.themes.save",
+            {"themeId": theme.id, "theme": {"backgrounds": {"item-editor": image.id}}},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            ThemeBackground.objects.filter(theme=theme, surface_key="item-editor", image=image).exists()
+        )
+
+        response = self.action(
+            "management.themes.save",
+            {"themeId": theme.id, "theme": {"backgrounds": {"item-editor": None}}},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(ThemeBackground.objects.filter(theme=theme, surface_key="item-editor").exists())
+        # Le altre superfici non si toccano: nessuna eredita dalle vicine.
+        self.assertTrue(ThemeBackground.objects.filter(theme=theme, surface_key="dashboard").exists())
+
+    def test_saving_an_unknown_surface_is_rejected(self):
+        theme = Theme.objects.get(slug="parchment")
+        image = UploadedImage.objects.filter(usage_type="theme_background").first()
+
+        response = self.action(
+            "management.themes.save",
+            {"themeId": theme.id, "theme": {"backgrounds": {"non-esiste": image.id}}},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["errors"][0]["code"], "management.themes.surface_unknown")
+
+    def test_duplicating_a_theme_copies_every_surface(self):
+        source = Theme.objects.get(slug="parchment")
+        response = self.action(
+            "management.themes.create",
+            {"theme": {"name": "Pergamena scura", "duplicateOfId": source.id}},
+        )
+        self.assertEqual(response.status_code, 200)
+
+        copy = Theme.objects.get(slug="pergamena-scura")
+        self.assertEqual(
+            sorted(copy.background_map()),
+            sorted(source.background_map()),
+        )
 
     def test_accent_gold_and_sidebar_can_fall_back_to_the_global_settings(self):
         theme = Theme.objects.get(slug="midnight")

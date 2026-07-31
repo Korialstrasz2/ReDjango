@@ -59,7 +59,7 @@ function DamageRulesReview({
   onConfirm: () => void;
 }) {
   return (
-    <Modal
+    <Modal surface="tools"
       title="Conferma regole del danno"
       onClose={onClose}
       wide

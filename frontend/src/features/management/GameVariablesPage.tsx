@@ -130,7 +130,7 @@ function ValidationReview({
   onConfirm: () => void;
 }) {
   return (
-    <Modal
+    <Modal surface="tools"
       title="Conferma variabili validate"
       onClose={onClose}
       wide

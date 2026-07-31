@@ -487,7 +487,7 @@ function MapEditorModal({ workspace, onClose, onSave, onCreateType, busy }: {
   const number = (key: keyof MapDraft, value: string) => setDraft((current) => ({ ...current, [key]: Number(value) }));
   const selectedType = workspace.mapTypes.find((entry) => entry.id === draft.mapTypeId);
   return <>
-    <Modal title={map ? "Editor della mappa" : "Crea una mappa di combattimento"} onClose={onClose} wide footer={<>
+    <Modal surface="combat-map-editor" title={map ? "Editor della mappa" : "Crea una mappa di combattimento"} onClose={onClose} wide footer={<>
       <span className="wizard-progress">Passo {step} di 3</span>
       {step > 1 && <button className="button secondary" onClick={() => setStep(step - 1)}>Indietro</button>}
       {step < 3 ? <button className="button primary" onClick={() => setStep(step + 1)}>Continua</button> : <button className="button primary" disabled={busy || !draft.mapTypeId} onClick={() => onSave(draft)}>Salva mappa</button>}
@@ -587,7 +587,7 @@ function UnifiedMapEditorModal({ workspace, createNew, onClose, onSave, onCreate
     finally { setSaving(false); }
   };
 
-  return <Modal
+  return <Modal surface="combat-map-settings"
     title={map ? `Modifica ${map.name}` : "Nuova mappa di combattimento"}
     onClose={onClose}
     wide
@@ -648,7 +648,7 @@ function CharacterImportModal({ workspace, busy, onClose, onImport }: {
   const footprint: Record<string, Axial[]> = { "1": [{ q: 0, r: 0 }], "2h": [{ q: 0, r: 0 }, { q: 1, r: 0 }], "2v": [{ q: 0, r: 0 }, { q: 0, r: 1 }], "3": [{ q: 0, r: 0 }, { q: 1, r: 0 }, { q: 0, r: 1 }], "4": [{ q: 0, r: 0 }, { q: 1, r: 0 }, { q: 0, r: 1 }, { q: 1, r: 1 }] };
   const entries = tab === "existing" ? workspace.characterCatalog : workspace.templates;
   const visible = entries.filter((entry) => `${entry.name} ${"description" in entry ? entry.description : ""}`.toLocaleLowerCase("it").includes(query.toLocaleLowerCase("it")));
-  return <Modal title="Importa combattenti" onClose={onClose} wide footer={<><button className="button secondary" onClick={onClose}>Annulla</button><button className="button primary" disabled={!selected || busy} onClick={() => onImport({ [tab === "existing" ? "characterId" : "templateId"]: selected, count, footprint: footprint[shape] })}>Importa {count > 1 ? `${count} copie` : "copia completa"}</button></>}>
+  return <Modal surface="combat-import-fighters" title="Importa combattenti" onClose={onClose} wide footer={<><button className="button secondary" onClick={onClose}>Annulla</button><button className="button primary" disabled={!selected || busy} onClick={() => onImport({ [tab === "existing" ? "characterId" : "templateId"]: selected, count, footprint: footprint[shape] })}>Importa {count > 1 ? `${count} copie` : "copia completa"}</button></>}>
     <div className="combat-import-layout">
       <aside>
         <div className="segmented"><button className={tab === "existing" ? "active" : ""} onClick={() => { setTab("existing"); setSelected(null); }}>Esistenti</button><button className={tab === "templates" ? "active" : ""} onClick={() => { setTab("templates"); setSelected(null); }}>Template</button></div>
@@ -734,7 +734,7 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
   const locked = busy || working;
 
   return <>
-    <Modal title="Gestisci personaggi" onClose={onClose} wide className="combat-character-manager-modal" footer={<><span className="wizard-progress">I personaggi attivi restano associati a questa mappa.</span><button className="button secondary" onClick={onClose}>Chiudi</button></>}>
+    <Modal surface="combat-manage-characters" title="Gestisci personaggi" onClose={onClose} wide className="combat-character-manager-modal" footer={<><span className="wizard-progress">I personaggi attivi restano associati a questa mappa.</span><button className="button secondary" onClick={onClose}>Chiudi</button></>}>
       <div className="combat-character-manager">
         <section className="combat-manager-active">
           <header><div><p className="eyebrow">Sulla mappa</p><h3>Personaggi attivi</h3></div><strong>{map.participants.length}</strong></header>
@@ -806,7 +806,7 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
         </section>
       </div>
     </Modal>
-    {duplicate && <Modal title="Importare una copia?" onClose={() => setDuplicate(null)} footer={<><button className="button secondary" onClick={() => setDuplicate(null)}>No</button><button className="button primary" disabled={locked} onClick={() => run(async () => { await onDuplicate({ characterId: duplicate.id, footprint: footprints[shape] }); setDuplicate(null); })}>Sì, crea una copia</button></>}>
+    {duplicate && <Modal surface="combat-import-copy" title="Importare una copia?" onClose={() => setDuplicate(null)} footer={<><button className="button secondary" onClick={() => setDuplicate(null)}>No</button><button className="button primary" disabled={locked} onClick={() => run(async () => { await onDuplicate({ characterId: duplicate.id, footprint: footprints[shape] }); setDuplicate(null); })}>Sì, crea una copia</button></>}>
       <p><strong>{duplicate.name}</strong> è già attivo sulla mappa. Vuoi creare e aggiungere una copia indipendente del personaggio? Equipaggiamento, zaino, faretra, note ed effetti personali saranno duplicati; gli oggetti e gli effetti del catalogo resteranno record condivisi.</p>
     </Modal>}
   </>;
@@ -916,7 +916,7 @@ function MapVersionsModal({ map, busy, onClose, onCreate, onRestore, onDuplicate
 }) {
   const [label, setLabel] = useState("");
   const [duplicateName, setDuplicateName] = useState(`${map.name} (copia)`);
-  return <Modal title="Backup e copie della mappa" onClose={onClose} wide footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
+  return <Modal surface="combat-map-backups" title="Backup e copie della mappa" onClose={onClose} wide footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
     <div className="combat-version-layout" data-component-type="panel" data-theme="combat">
       <section><h3>Crea backup</h3><p>Salva griglia, nebbia, personaggi, sagome e modificatori.</p><label>Etichetta<input value={label} onChange={(event) => setLabel(event.target.value)} placeholder={`Revisione ${map.revision}`} /></label><button className="button primary" disabled={busy} onClick={() => { onCreate(label || `Revisione ${map.revision}`); setLabel(""); }}>Crea backup</button></section>
       <section><h3>Duplica mappa</h3><p>La copia è indipendente e parte dalla revisione 1.</p><label>Nome<input value={duplicateName} onChange={(event) => setDuplicateName(event.target.value)} /></label><button className="button primary" disabled={busy || !duplicateName.trim()} onClick={() => onDuplicate(duplicateName.trim())}>Duplica</button></section>
@@ -938,7 +938,7 @@ function CharacterContextModal({ participant, busy, canManage, onClose, onSelect
   if (!canManage) {
     const revealAll = (health?.current ?? 0) <= 0;
     const slots = character.equipment.slots.filter((slot) => !slot.isLocked || PUBLIC_EQUIPMENT_SLOTS.includes(slot.slot));
-    return <Modal title={character.name} onClose={onClose} footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
+    return <Modal surface="combat-character-public" title={character.name} onClose={onClose} footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
       <div className="combat-context-character" data-component-type="card" data-theme="combat">{character.portrait && <img src={character.portrait} alt="" />}<div><p>Livello {character.level} · {character.type || "Personaggio"}</p><strong>{band.label}</strong><span>{revealAll ? "Equipaggiamento completo visibile." : "Solo l'equipaggiamento in vista."}</span></div></div>
       <dl className="combat-context-equipment">{slots.map((slot) => {
         const value = publicEquipmentValue(slot, revealAll);
@@ -949,7 +949,7 @@ function CharacterContextModal({ participant, busy, canManage, onClose, onSelect
       })}</dl>
     </Modal>;
   }
-  return <Modal title={character.name} onClose={onClose} footer={<><button className="button secondary" onClick={onClose}>Chiudi</button><button className="button secondary" onClick={onDetails}>Vedi dettagli</button><button className="button secondary" disabled={busy} onClick={onSelect}>Metti in primo piano</button><button className="button primary" disabled={busy} onClick={onTakeControl}>Prendi il controllo</button></>}>
+  return <Modal surface="combat-character-manage" title={character.name} onClose={onClose} footer={<><button className="button secondary" onClick={onClose}>Chiudi</button><button className="button secondary" onClick={onDetails}>Vedi dettagli</button><button className="button secondary" disabled={busy} onClick={onSelect}>Metti in primo piano</button><button className="button primary" disabled={busy} onClick={onTakeControl}>Prendi il controllo</button></>}>
     <div className="combat-context-character" data-component-type="card" data-theme="combat">{character.portrait && <img src={character.portrait} alt="" />}<div><p>Livello {character.level} · {character.type || "Personaggio"}</p><strong>{weapon?.name || "Mani nude"}</strong><span>{character.effects.length} effetti · {character.quiver.occupied}/{character.quiver.capacity} faretra · sagoma {participant.footprint.length} esa.</span></div></div>
   </Modal>;
 }
@@ -959,7 +959,7 @@ function MapManagerModal({ workspace, busy, onClose, onSelect, onEdit, onVersion
   onEdit: () => void; onVersions: () => void; onCharacters: () => void;
 }) {
   const current = workspace.map;
-  return <Modal title="Gestione mappe" onClose={onClose} wide className="combat-map-manager-modal" footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
+  return <Modal surface="combat-map-manager" title="Gestione mappe" onClose={onClose} wide className="combat-map-manager-modal" footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
     <div className="combat-map-manager" data-component-type="panel" data-theme="combat">
       <header><div><p className="eyebrow">Tavoli disponibili</p><h3>Scegli, prepara, gioca</h3><p>Le operazioni sulla mappa sono raccolte qui; durante il combattimento resta visibile solo ciò che serve.</p></div>{workspace.permissions.canManageMaps && <button className="button primary" onClick={onEdit}>{current ? "Modifica mappa attiva" : "Crea mappa"}</button>}</header>
       <div className="combat-map-card-grid">{workspace.maps.map((entry) => <article key={entry.id} className={entry.id === current?.id ? "active" : ""}>
@@ -1364,7 +1364,7 @@ export function CombatPage() {
         </aside>
       </div>
     </>}
-    {plannerOpen && map && <Modal title={`Azioni rapide · ${map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.character.name || "Combattimento"}`} onClose={() => setPlannerOpen(false)} wide resizable hideHeader dragFromBody className="combat-quick-actions-modal" footer={<><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 8).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details><button className="button secondary" onClick={() => setPlannerOpen(false)}>Chiudi</button></>}><QuickActionsPanel map={map} paths={paths} busy={mutation.isPending} notify={notify} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} onClearQueue={clearPlannedActions} onSaveActionSettings={(targetCharacterId, settings) => act("combat.updateActionSettings", { characterId: targetCharacterId, ...settings })} /></Modal>}
+    {plannerOpen && map && <Modal surface="combat-quick-actions" title={`Azioni rapide · ${map.participants.find((entry) => entry.character.id === map.activeCharacterId)?.character.name || "Combattimento"}`} onClose={() => setPlannerOpen(false)} wide resizable hideHeader dragFromBody className="combat-quick-actions-modal" footer={<><details className="combat-event-log"><summary>Registro sincronizzato ({map.events.length})</summary>{map.events.slice(0, 8).map((event) => <p key={event.id}><time>{new Date(event.createdAt).toLocaleTimeString("it", { hour: "2-digit", minute: "2-digit" })}</time>{event.message}</p>)}</details><button className="button secondary" onClick={() => setPlannerOpen(false)}>Chiudi</button></>}><QuickActionsPanel map={map} paths={paths} busy={mutation.isPending} notify={notify} onCreate={(payload) => act("combat.planAction", payload)} onCommit={commitPlannedAction} onDelete={(actionId) => act("combat.deletePlannedAction", { actionId })} onClearQueue={clearPlannedActions} onSaveActionSettings={(targetCharacterId, settings) => act("combat.updateActionSettings", { characterId: targetCharacterId, ...settings })} /></Modal>}
     {mapManagerOpen && <MapManagerModal workspace={workspace} busy={mutation.isPending} onClose={() => setMapManagerOpen(false)} onSelect={(id) => { setMapId(id); setPaths(null); setSelectedHex(null); setSelectedHexes([]); setMapManagerOpen(false); }} onEdit={() => { setMapManagerOpen(false); setMapEditorMode("edit"); }} onVersions={() => { setMapManagerOpen(false); setVersionsOpen(true); }} onCharacters={() => { setMapManagerOpen(false); setCharacterManager(true); }} />}
     {mapEditorMode && <UnifiedMapEditorModal workspace={workspace} createNew={mapEditorMode === "create"} busy={mutation.isPending} onClose={() => setMapEditorMode(null)} onSave={async (draft, file, convertToWebp) => {
       let imageId = draft.imageId;

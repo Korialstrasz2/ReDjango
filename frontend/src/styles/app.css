@@ -1482,6 +1482,9 @@ label > input, label > select, label > textarea { display: block; margin-top: 6p
 .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 30px; background: rgb(2 4 3 / var(--overlay-opacity)); backdrop-filter: blur(4px); }
 .rd-modal { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; width: min(680px, calc(100vw - 80px)); max-height: calc(100vh - 70px); border: 1px solid var(--gold); border-radius: 5px; background: var(--theme-overlay-strong-surface); box-shadow: 0 30px 90px #000c; backdrop-filter: blur(12px); }
 .rd-modal-wide { width: min(1060px, calc(100vw - 80px)); }
+/* Una modale con sfondo dedicato: il velo tiene leggibile il testo sopra l'immagine. */
+.rd-modal-dressed { position: relative; overflow: hidden; isolation: isolate; }
+.rd-modal-atmosphere { position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(var(--theme-background-veil), var(--theme-background-veil)), var(--modal-background); background-size: cover; background-position: var(--background-position); }
 .rd-modal-headless { grid-template-rows: minmax(0, 1fr) auto; }
 .rd-modal-headless .modal-footer { cursor: move; user-select: none; }
 .modal-drag-grip { margin-right: auto; color: var(--gold); font-size: .8rem; letter-spacing: .1em; opacity: .7; }
@@ -4693,6 +4696,26 @@ html[data-reduced-motion="true"] .alchemy-slot-epic, html[data-reduced-motion="t
 .theme-preview-buttons em { padding: 6px 13px; border: 1px solid transparent; border-radius: 4px; font-size: .7rem; font-style: normal; font-weight: 700; }
 .theme-preview-resources { display: flex; gap: 7px; flex-wrap: wrap; }
 .theme-preview-resources span { padding: 5px 12px; border-radius: 3px; font-size: .66rem; font-weight: 700; }
+.theme-preview-slots { display: flex; gap: 7px; flex-wrap: wrap; }
+.theme-preview-slots span { padding: 5px 12px; border-radius: 3px; font-size: .66rem; font-weight: 700; }
+
+/* Selettore della schermata mostrata nell'anteprima. */
+.theme-preview-shell-outer { display: grid; gap: 8px; }
+.theme-preview-scenes { display: flex; gap: 6px; flex-wrap: wrap; }
+.theme-preview-scenes button { padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--theme-overlay-surface); color: var(--muted); font-size: .66rem; font-weight: 700; cursor: pointer; }
+.theme-preview-scenes button:hover { border-color: var(--gold); color: var(--text); }
+.theme-preview-scenes button.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 82%); color: var(--text); }
+
+/* Controllo di leggibilità delle coppie testo/sfondo. */
+.theme-contrast-list { display: grid; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.theme-contrast-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 5px; background: var(--theme-overlay-surface); }
+.theme-contrast-list li[data-level="insufficiente"] { border-color: var(--slot-invalid); }
+.theme-contrast-swatch { display: grid; place-items: center; width: 34px; height: 26px; border: 1px solid var(--line); border-radius: 3px; font-size: .72rem; font-weight: 700; }
+.theme-contrast-label { color: var(--text); font-size: .7rem; }
+.theme-contrast-list strong { color: var(--text); font-size: .7rem; font-variant-numeric: tabular-nums; }
+.theme-contrast-list em { color: var(--muted); font-size: .58rem; font-style: normal; text-transform: uppercase; letter-spacing: .04em; }
+.theme-contrast-list li[data-level="insufficiente"] em { color: var(--slot-invalid); }
+.theme-contrast-list li[data-level="AAA"] em { color: var(--slot-valid); }
 
 .theme-color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 10px; margin-top: 12px; }
 .theme-color-field { display: grid; gap: 4px; padding: 9px; border: 1px solid var(--line); border-radius: 5px; background: var(--theme-overlay-surface); }
@@ -4714,6 +4737,21 @@ html[data-reduced-motion="true"] .alchemy-slot-epic, html[data-reduced-motion="t
 .theme-background-field img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 3px; }
 .theme-background-field strong { font-size: .7rem; font-weight: 700; }
 .theme-background-empty { display: grid; place-items: center; aspect-ratio: 16/10; border: 1px dashed var(--line); border-radius: 3px; color: var(--muted); font-size: .6rem; }
+
+/* Le superfici sono decine: intestazione, ricerca e sezioni richiudibili. */
+.theme-backgrounds-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 260px); align-items: end; gap: 14px; }
+.theme-surface-search { display: grid; gap: 5px; margin: 0; color: var(--muted); font-size: .62rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.theme-surface-search input { width: 100%; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: #0003; color: var(--text); font-family: var(--font-body); font-size: .78rem; letter-spacing: normal; text-transform: none; }
+.theme-surface-search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.theme-surface-total { margin: 8px 0 0; font-size: .66rem; }
+.theme-surface-section { margin-top: 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--theme-overlay-surface); }
+.theme-surface-section-header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 10px 13px; border: 0; background: none; color: var(--text); text-align: left; cursor: pointer; }
+.theme-surface-section-header:hover { color: var(--gold); }
+.theme-surface-section-header > span:first-child { color: var(--gold); font-size: .7rem; }
+.theme-surface-section-header strong { display: block; font: 700 .84rem var(--font-display); }
+.theme-surface-section-header small { display: block; color: var(--muted); font-size: .62rem; }
+.theme-surface-count { color: var(--muted); font-size: .64rem; font-variant-numeric: tabular-nums; }
+.theme-surface-section .theme-background-grid { margin: 0; padding: 0 13px 13px; }
 
 @media (max-width: 1180px) {
   .theme-management-layout { grid-template-columns: 1fr; }

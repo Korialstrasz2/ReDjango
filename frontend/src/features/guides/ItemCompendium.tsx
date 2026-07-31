@@ -147,7 +147,7 @@ function ItemSheet({ item, reference, onClose }: {
     return entry ? <InfoPopover label={entry.title} title={entry.title} className="codex-link-label"><p>{entry.text}</p></InfoPopover> : entry;
   };
 
-  return <Modal title={item.name} wide className="compendium-sheet" onClose={onClose} footer={
+  return <Modal surface="item-detail" title={item.name} wide className="compendium-sheet" onClose={onClose} footer={
     <button type="button" className="button secondary" onClick={onClose}>Chiudi</button>
   }>
     <header className="compendium-sheet-heading">
