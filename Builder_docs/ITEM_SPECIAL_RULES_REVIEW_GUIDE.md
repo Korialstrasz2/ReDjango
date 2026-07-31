@@ -103,13 +103,26 @@ each confirmed against the item's own `descrizione` field, not guessed from the 
 - **`Curati da Effetti nocivi -M`** — the item's own `descrizione` ("Ne curi X random") confirms
   `M` random harmful effects/illnesses are cured, not a flat list.
 
-Active flagged templates after that batch: **193**. Residue includes two more families surfaced by
-this pass that need the same descrizione-first check before curating: `50% di evitare danno
-fisico -M` (Pozione intangibilità — its `descrizione` says only "Segna su Note", unhelpful) and
-`crei fumo per 2 turni -M` (Pozione fumogeno — its `descrizione` says "Il numero indica il
-raggio", so `M` is a radius, but the unit is still unconfirmed), plus a newly visible
-`Attacco 5 Turni -N` family and the older `Dopo 10 turni, -50% energia(sul massimale)` (15
-occurrences) and light/darkvision utility texts.
+Active flagged templates after that batch: **193**.
+
+A fifth pass, same day, curated the remaining potion families once the table master supplied what
+`descrizione` alone couldn't (28 items):
+
+- **`crei fumo per 2 turni -M`** (fumogeno) — `M` is a radius (per `descrizione`); confirmed unit
+  is metres (1 hex = 1 metro in this system).
+- **`50% di evitare danno fisico -M`** (intangibilità) — `M` counts **attacks that had a chance
+  to hit**, not attacks actually evaded: the effect wears off after `M` such attacks regardless of
+  whether the 50% ever favoured the drinker, and an attack the enemy misses on its own doesn't
+  count. Easy to get wrong from the text alone — this needed the master's ruling, not a guess.
+- **`Attacco 5 Turni -M`** — for 5 turns, +M to `Personaggio.attacco`. Left as curated text rather
+  than a structured effect because the field only carries permanent equipment bonuses, not timed
+  consumable buffs.
+- **`Dopo 10 turni, -50% energia(sul massimale)`** (15 items, all alcoholic drinks) — no formula
+  to derive, just "you get drunk": max Energia halves 10 turns after drinking.
+
+Active flagged templates after that batch: **165**. Residue: `mod_gen`'s sibling families are
+gone; what's left is smaller and more heterogeneous — light/darkvision utility texts, a
+`-PA nemico` / `+ danno a nemico` counter-attack family, and a long tail of near-unique texts.
 
 ## 3. Decision tree for one descriptive text
 

@@ -179,6 +179,33 @@ RULES: tuple[Rule, ...] = (
              f"Curati casualmente da {_number(m.group(1))} "
              f"{_plural(m.group(1), 'effetto nocivo o malattia', 'effetti nocivi o malattie')}."
          )),
+    # 1 hex = 1 metro in questo sistema, quindi "raggio" si esprime in metri.
+    Rule("pozione_fumogeno", re.compile(r"^crei\s+fumo\s+per\s+2\s+turni\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             f"Crei una nuvola di fumo per 2 turni, con un raggio di {_number(m.group(1))} "
+             f"{_plural(m.group(1), 'metro', 'metri')}."
+         )),
+    # M conta gli attacchi subiti che avevano una possibilità di colpire, non
+    # gli attacchi effettivamente evitati: l'effetto scala anche se il 50% non
+    # è mai scattato, e un attacco mancato per conto del nemico non conta.
+    Rule("pozione_intangibilita", re.compile(r"^50%\s+di\s+evitare\s+danno\s+fisico\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             f"Per i prossimi {_number(m.group(1))} "
+             f"{_plural(m.group(1), 'attacco fisico subito', 'attacchi fisici subiti')} che "
+             f"{_plural(m.group(1), 'aveva', 'avevano')} la possibilità di colpirti, hai il 50% "
+             "di possibilità di evitare il danno. "
+             f"L'effetto svanisce dopo {_number(m.group(1))} "
+             f"{_plural(m.group(1), 'attacco così conteggiato', 'attacchi così conteggiati')}, "
+             "anche se il 50% non è mai scattato a tuo favore; un attacco che il nemico manca per "
+             "conto proprio non viene conteggiato."
+         )),
+    Rule("pozione_attacco", re.compile(r"^attacco\s+5\s+turni\s*-\s*(\d+)$", re.I),
+         lambda m: f"Per 5 turni, aggiunge +{_number(m.group(1))} ad Attacco."),
+
+    # Alcoholic drinks: no formula to derive, just "you get drunk". 15 items,
+    # all beverages (Cognac Bretone, Vino Pregiato, ...).
+    Rule("sbornia", re.compile(r"^dopo\s+10\s+turni,\s*-50%\s*energia\s*\(sul\s+massimale\)$", re.I),
+         lambda m: "Dopo 10 turni dall'attivazione, l'Energia massima viene dimezzata (-50%)."),
 
     # --- Consumables that restore a resource ---------------------------------
     # Elder wrote these as a negative on the "spent" counter; at the table they
