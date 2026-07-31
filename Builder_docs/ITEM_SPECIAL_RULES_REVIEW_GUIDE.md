@@ -178,6 +178,64 @@ structured, with `regole_speciali` left as a short administrative note recording
 
 Active flagged templates after that batch: **41**.
 
+An eighth pass, 2026-08-01, closed out the remaining 41 — the last true one-offs, no more
+regex-shaped families. Full `effetto_N`/`descrizione` pull showed the 41 split four ways:
+
+- **7 already decided**: the `Pozione visione` tier (`Visione min/med/mag/sup`) — confirmed still
+  correctly outcome 3 (scrying, master-narrated), no action.
+- **4 out of scope**: `compute_special_reasons()` showed these were never flagged for
+  `effetti_descrittivi` at all — 3 items (Anello del buco nero, Moschetto...(Touka), Armatura di
+  Reinort) carry `item.temporaneo=True`, and one (Altro (vedi note)) has an empty `tipo_1`. Neither
+  reason is affected by `regole_speciali`; writing it there would not have cleared the flag.
+- **10 one-offs, hand-curated prose**: Vestiti comuni, Anello del desiderio, Orecchino della
+  connessione, Gemma della bestia and Polvere di Sanguine (already near-complete Italian prose in
+  their own `effetto_N`, including a self-contained d10 "piano di Sanguine" chaos table), Veste da
+  Bardo (`Iconica!`, resolved as a flavour/roleplay marker with no mechanical rule), and the five
+  Trappola items — same generic `effetto_1` ("Infliggi danni") on all five, but `descrizione` has
+  the real per-tier content (dice, damage type, riutilizzabile/non riutilizzabile, invisibile).
+- **20 items, a genuine drink/drug family**: Flin, Idromele Nordico, Vino Surilie, Skooma, Shein,
+  Birra Rovo Nero, Mazte, Brandy Coloviano, Vino delle Summerset, Sweet Roll, Vino Sangue di
+  Sanguine, Liquore Lacrime di Sanguine, Vino Economico, Vino Pregiato, Distillato di Marshmarrow,
+  Zucchero Lunare, Distillato Nord, Cognac Bretone, Distillato Del Tempio di Sanguine. 15 of them
+  share one line verbatim (`Dopo 10 turni, -50% energia(sul massimale)`, already covered by
+  `curate_item_special_rules`'s `sbornia` rule) but were blocked because their *other* line had no
+  rule yet.
+
+For that 20-item family, the table master redirected the approach mid-review: these are timed
+consumable buffs, and `Oggetto.effects` is reserved for permanent equipment bonuses — "temporary
+things are to be added as an effetto preset." A "Bevande" category was added to
+`EffettoPreset` (`backend/characters/effect_preset_defaults.py`, seeded by migration
+`0031_seed_bevande_presets`), with 25 presets: one per distinct buff shape, plus a shared
+`Sbornia` preset for the common line, plus separate "(contraccolpo)" presets for the three items
+whose buff and after-effect are sequential, not simultaneous (Flin, Skooma, Zucchero Lunare — the
+latter also gets a third, manually-gated `Zucchero Lunare (khajiit)` preset for its race-only
+clause). Presets deliberately ignore duration: `EffettoPreset` has no time concept at all
+(`temporaneo` is just a display flag, already true by default), so the master applies and removes
+them by hand, exactly as they already do for every other preset. A few sub-mechanics have no
+target that expresses them honestly and stay descriptive with empty `operations`, mirroring the
+existing `Spasmi` ("tutti i tiri", no target covers every roll) and `Vermi infetti` (a periodic
+grant, not a stat ceiling) precedents: Cognac Bretone and Mazte's "gratis a turno" lines (`energia`
+and `potere` are spent-counter pools, not turn-refreshed like `pa`, so a static op would only raise
+the ceiling once, not refund every turn), Vino Sangue di Sanguine's PA-to-Energia conversion, and
+Distillato Del Tempio di Sanguine's "+1 a tutti i tiri".
+
+Because there is no FK from `Oggetto` to `EffettoPreset`, creating a preset alone does not clear an
+item's flag — each item still needed a short `regole_speciali` line naming the preset(s) to apply
+(e.g. *"Applica il preset effetto 'Idromele Nordico' dal catalogo effetti."*), so
+`sync_special_rules_review()` has text to acknowledge. Liquore Lacrime di Sanguine also kept a
+genuine prose remainder for its d6 "effetto inebriato di Sanguine" clause (table supplied by the
+master: 1 Bere, 2 Mangiare, 3 Sesso, 4 Droga, 5 Musica, 6 Gioco d'azzardo) — chaotic per-roll
+content stays curated text, not a preset, per the master's own call ("special stuff... just done by
+regola speciale").
+
+Applied via a new one-off command, `manage.py curate_remaining_special_rules` (dry-run-then-apply,
+same shape as `curate_vestiti_effects`), covering all 30 curated items in one PLAN dict since every
+one of them is bespoke text, not a regex family.
+
+Active flagged templates after this batch: **0**. The 11 remaining `speciale=True` template items
+are the 7 already-decided `Pozione visione` plus the 4 out-of-scope `temporaneo`/`tipo_1_vuoto`
+items above — neither group is a `regole_speciali` review candidate.
+
 ## 3. Decision tree for one descriptive text
 
 For each unconvertible text on an item, pick exactly one outcome:
