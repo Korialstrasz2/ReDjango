@@ -13,7 +13,25 @@ export type CreationDraft = {
   caratteristicaPreferita: string;
 };
 
-export type RaceOption = { value: string; label: string; subraces: Array<{ value: string; label: string }> };
+export type Bonus = { label: string; value: string; kind: "bonus" | "malus" };
+export type SubraceOption = { value: string; label: string; note: string; bonuses: Bonus[] };
+export type RaceOption = {
+  value: string;
+  label: string;
+  subraces: SubraceOption[];
+  modifiers: Bonus[];
+  trait: { note: string; bonuses: Bonus[] };
+};
+export type CharacteristicOption = {
+  value: string;
+  label: string;
+  description: string;
+  feeds: string[];
+  levelFormula: string;
+};
+
+export const MIN_AGE = 1;
+export const MAX_AGE = 999;
 
 export const emptyDraft: CreationDraft = {
   nome: "",
@@ -31,10 +49,12 @@ export function stepIssues(step: CreationStep, draft: CreationDraft, races: Race
   const issues: string[] = [];
   if (step === "identity") {
     if (!draft.nome.trim()) issues.push("Serve un nome.");
-    if (draft.eta.trim()) {
+    if (!draft.eta.trim()) issues.push("Serve un'età.");
+    else {
       const eta = Number(draft.eta);
-      if (!Number.isInteger(eta) || eta < 1 || eta > 999) issues.push("L'età deve essere un numero fra 1 e 999.");
+      if (!Number.isInteger(eta) || eta < MIN_AGE || eta > MAX_AGE) issues.push(`L'età deve essere un numero fra ${MIN_AGE} e ${MAX_AGE}.`);
     }
+    if (!draft.sesso) issues.push("Scegli il sesso.");
   }
   if (step === "race") {
     const race = races.find((entry) => entry.value === draft.razza);
@@ -64,7 +84,7 @@ export function creationPayload(draft: CreationDraft): Record<string, unknown> {
     razza: draft.razza,
     sottorazza: draft.sottorazza,
     caratteristicaPreferita: draft.caratteristicaPreferita,
-    eta: draft.eta.trim() ? Number(draft.eta) : null,
+    eta: Number(draft.eta.trim()),
     sesso: draft.sesso,
     dettagliPersonaggio: draft.dettagliPersonaggio.trim(),
     background: draft.background.trim(),

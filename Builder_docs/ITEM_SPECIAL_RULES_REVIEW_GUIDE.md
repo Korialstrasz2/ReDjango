@@ -68,6 +68,11 @@ Re-check these numbers before starting; they are the baseline the diff report is
 
 Active flagged templates after those three actions: **1 670**. Market pool: 3 491.
 
+The first full curation pass then ran on the same day and wrote **1 168** items, all of which left
+the queue. Active flagged templates: **502**. Market pool: **4 659**, up from 3 443 at the start.
+The residue is `mod.gen.` (60), `blink` (60), `recast` (60), `raggioarcano` (60), `pontedimana` (42)
+and a tail of families with fewer than 30 items each.
+
 ## 3. Decision tree for one descriptive text
 
 For each unconvertible text on an item, pick exactly one outcome:
@@ -118,7 +123,9 @@ The field is read at the table, mid-session, by someone who has never seen the E
 - Write full Italian sentences, not the Elder shorthand. `Cast Silenzioso SI` becomes
   *"Chi lo indossa può lanciare incantesimi senza pronunciare formule."*
 - State cost, duration, and frequency explicitly when the original implies them:
-  `1 reroll, costo en: 9` becomes *"Una volta per scena si può ripetere un tiro spendendo 9 Energia."*
+  `1 reroll, costo en: 9` becomes *"Concede 1 reroll al costo di 9 Energia."*
+- Keep the table's own vocabulary. **"reroll" is the term in use — never paraphrase it as
+  "ripetere il tiro".** The same goes for any other word the group already says out loud.
 - One rule per line. Several Elder texts on one item become several lines in one field.
 - Do not restate what the structured effects already do — the sheet shows those.
 - Do not invent numbers the original did not have. If a value is missing, that is outcome 3.
@@ -159,6 +166,17 @@ Useful flags: `--rule <key>` (repeatable) to run one family at a time, `--limit 
 write, `--samples N` to widen the examples in the report. The command writes through
 `sync_special_rules_review`, so the acknowledgement is recorded exactly as the item editor
 records it, and it recomputes `speciale` per item as it goes.
+
+A curated item is no longer `speciale`, so a later change to the rule table would never reach it.
+`--recurate` reopens exactly the items this command wrote — they carry
+`metadata.specialRulesSource` — and rewrites them with the current wording. Rules a master typed
+by hand carry no marker and are never overwritten.
+
+When you edit a sentence in the table, re-run the affected family:
+
+```bash
+python manage.py curate_item_special_rules --recurate --rule rigenerazione --apply
+```
 
 Dry-run first, always. The pass mutates the live catalogue and there is no undo beyond `backups/`.
 

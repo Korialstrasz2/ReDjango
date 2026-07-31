@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 
+from .theme_surfaces import THEME_SURFACE_KEY_SET
+
 
 V2_SCHEMA_VERSION = "1.2"
 
@@ -319,86 +321,8 @@ class Theme(V2Model):
         validators=[MaxValueValidator(20)],
     )
 
-    dashboard_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo menu principale",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="dashboard_themes",
-    )
-    characters_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo selezione personaggi",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="characters_themes",
-    )
-    personaggio_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo scheda personaggio",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="personaggio_themes",
-    )
-    media_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo archivio multimediale",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="media_themes",
-    )
-    guide_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo guide",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="guide_themes",
-    )
-    settings_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo impostazioni",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="settings_themes",
-    )
-    dice_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo area dadi",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="dice_themes",
-    )
-    journal_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo diario",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="journal_themes",
-    )
-    lore_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo lore",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="lore_themes",
-    )
-    market_background = models.ForeignKey(
-        "media_library.UploadedImage",
-        verbose_name="sfondo mercato",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="market_themes",
-    )
+    # Gli sfondi vivono in ThemeBackground, una riga per superficie: vedi
+    # core/theme_surfaces.py per l'elenco di pagine, modali e strumenti.
 
     class Meta:
         ordering = ["order", "name"]
@@ -429,6 +353,55 @@ class Theme(V2Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def background_map(self) -> dict:
+        """Immagine scelta per ogni superficie, senza ereditarietà fra superfici."""
+        return {row.surface_key: row.image for row in self.backgrounds.all()}
+
+
+class ThemeBackground(V2Model):
+    """Lo sfondo che un tema assegna a una singola superficie.
+
+    Una riga per coppia (tema, superficie). Le superfici non sono una colonna
+    ma una chiave testuale definita in core/theme_surfaces.py, così aggiungere
+    una pagina o una modale non richiede una migrazione.
+    """
+
+    theme = models.ForeignKey(
+        Theme,
+        verbose_name="tema",
+        on_delete=models.CASCADE,
+        related_name="backgrounds",
+    )
+    surface_key = models.CharField("superficie", max_length=64)
+    image = models.ForeignKey(
+        "media_library.UploadedImage",
+        verbose_name="immagine",
+        on_delete=models.CASCADE,
+        related_name="theme_backgrounds",
+    )
+
+    class Meta:
+        ordering = ["theme__order", "surface_key"]
+        verbose_name = "sfondo del tema"
+        verbose_name_plural = "sfondi dei temi"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["theme", "surface_key"],
+                name="one_background_per_theme_surface",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["theme", "surface_key"], name="core_themebg_theme_surf_idx"),
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.surface_key not in THEME_SURFACE_KEY_SET:
+            raise ValidationError({"surface_key": "Superficie sconosciuta."})
+
+    def __str__(self) -> str:
+        return f"{self.theme.name}: {self.surface_key}"
 
 
 class DatiCampagna(V2Model):

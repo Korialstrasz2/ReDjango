@@ -9,6 +9,7 @@ from typing import Any
 from backend.characters.race_rules import RACE_CATALOG
 
 from .defaults import (
+    CHARACTERISTIC_DESCRIPTIONS,
     CHARACTERISTIC_LABELS,
     PREFERRED_CHARACTERISTIC_EFFECT_NAME,
     PREFERRED_CHARACTERISTIC_FORMULA,
@@ -106,15 +107,12 @@ CHARACTER_VARIABLE_GROUPS = (
         (
             ("stanchezza", "Stanchezza", "Ogni punto applica una penalità (percentuale e fissa) ai valori rapidi configurati dall'amministratore."),
             ("modificatore_generale", "Modificatore generale", "Ogni punto applica un bonus (percentuale e fisso) ai valori rapidi configurati dall'amministratore; può compensare la Stanchezza."),
-            ("forza", "Forza", "Misura la potenza fisica. Le formule amministrative possono usarla per PF, Attacco o altri valori."),
-            ("resistenza", "Resistenza", "Misura robustezza e tenuta. Le formule amministrative possono usarla per PF, Energia o altri valori."),
-            ("velocita", "Velocità", "Misura rapidità e movimento. Le formule amministrative possono usarla per Energia, PA o altri valori."),
-            ("agilita", "Agilità", "Misura coordinazione e destrezza. Le formule amministrative possono usarla per Attacco, Difesa o altri valori."),
-            ("intelligenza", "Intelligenza", "Misura ragionamento e studio. Le formule amministrative possono usarla per Mana, Potere o altri valori."),
-            ("concentrazione", "Concentrazione", "Misura attenzione e controllo. Le formule amministrative possono usarla per Mana, Difesa o altri valori."),
-            ("personalita", "Personalità", "Misura presenza e influenza sociale; alimenta anche il relativo modificatore di dado."),
-            ("saggezza", "Saggezza", "Misura intuito e giudizio. Le formule amministrative possono usarla per Potere, PA o altri valori."),
-            ("fortuna", "Fortuna", "Misura la sorte del personaggio, alimenta il relativo modificatore di dado e interviene due volte in combattimento: nella differenza d'attacco (per l'attaccante conta come minimo 12) e nella potenza dei critici. Tramite la formula amministrativa Fortuna, aggiunge inoltre automaticamente un bonus a ciascuna delle altre otto caratteristiche, prima del loro arrotondamento finale."),
+            # Le nove caratteristiche condividono la descrizione con il pannello
+            # della caratteristica preferita nella creazione del PG.
+            *(
+                (key, CHARACTERISTIC_LABELS[key], CHARACTERISTIC_DESCRIPTIONS[key])
+                for key in CHARACTERISTIC_DESCRIPTIONS
+            ),
         ),
     ),
     (

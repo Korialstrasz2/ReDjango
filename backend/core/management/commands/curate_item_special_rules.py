@@ -20,10 +20,16 @@ from typing import Callable
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.db.models import Q
 
 from backend.core.item_services import sync_special_rules_review
 from backend.core.item_special import compute_special_reasons, descriptive_effects
 from backend.core.models import Oggetto
+
+
+# Stamped on every item this command writes, so `--recurate` can tell its own
+# output from a rule a master typed by hand.
+SOURCE = "curate_item_special_rules"
 
 
 def _number(raw: str) -> str:
@@ -51,6 +57,12 @@ def _duration(count: str, unit: str) -> str:
     return f"{_number(count)} {_plural(count, singular, plural)}"
 
 
+def _every(count: str, unit: str) -> str:
+    """"ogni ora", not "ogni 1 ora": Italian drops the numeral at one."""
+    singular, plural = _TIME_UNITS[unit.lower()]
+    return f"ogni {singular}" if _number(count) == "1" else f"ogni {_number(count)} {plural}"
+
+
 @dataclass(frozen=True)
 class Rule:
     key: str
@@ -76,7 +88,7 @@ RULES: tuple[Rule, ...] = (
     Rule("rigenerazione", re.compile(r"^rigenera\s+(\d+)\s*(pf|mana)\s+ogni\s+(\d+)\s*(sec|min|ora|ore|h)\.?$", re.I),
          lambda m: (
              f"Rigenera {_number(m.group(1))} {'PF' if m.group(2).lower() == 'pf' else 'mana'} "
-             f"ogni {_duration(m.group(3), m.group(4))} di tempo di gioco."
+             f"{_every(m.group(3), m.group(4))} di tempo di gioco."
          )),
 
     # --- Spell range multipliers ---------------------------------------------
@@ -96,10 +108,11 @@ RULES: tuple[Rule, ...] = (
          )),
 
     # --- Costs and counters ---------------------------------------------------
+    # "reroll" is the table's own term: never paraphrase it as "ripetere il tiro".
     Rule("reroll", re.compile(r"^(\d+)\s+reroll,\s*costo\s+en\s*:\s*(\d+)$", re.I),
          lambda m: (
-             f"Permette di ripetere {_number(m.group(1))} "
-             f"{_plural(m.group(1), 'tiro', 'tiri')} spendendo {_number(m.group(2))} Energia ciascuno."
+             f"Concede {_number(m.group(1))} reroll al costo di {_number(m.group(2))} Energia"
+             f"{'' if _number(m.group(1)) == '1' else ' ciascuno'}."
          )),
     Rule("estrazione_costo", re.compile(r"^costo\s+estrazione\s*:\s*(\d+)\s*en$", re.I),
          lambda m: f"Estrarre l'oggetto costa {_number(m.group(1))} Energia."),
@@ -172,6 +185,11 @@ class Command(BaseCommand):
         parser.add_argument("--rule", action="append", default=[], help="Applica solo le regole indicate (ripetibile).")
         parser.add_argument("--limit", type=int, default=0, help="Ferma la scrittura dopo N oggetti.")
         parser.add_argument("--samples", type=int, default=2, help="Righe di esempio per regola nel report.")
+        parser.add_argument(
+            "--recurate",
+            action="store_true",
+            help="Ripassa anche gli oggetti già curati da questo comando, per riscriverli con la tabella aggiornata.",
+        )
 
     def handle(self, *args, **options):
         only = set(options["rule"])
@@ -181,7 +199,12 @@ class Command(BaseCommand):
         blocked_by = Counter()
         curable: list[tuple[Oggetto, str, list[str]]] = []
 
-        items = Oggetto.objects.filter(speciale=True, modello=True, archiviato=False).order_by("id")
+        # Curated items are no longer `speciale`, so a changed rule table would
+        # never reach them again. `--recurate` reopens exactly the ones this
+        # command wrote — a rule the master typed by hand carries no marker and
+        # is never overwritten.
+        scope = Q(speciale=True) | Q(metadata__specialRulesSource=SOURCE) if options["recurate"] else Q(speciale=True)
+        items = Oggetto.objects.filter(scope, modello=True, archiviato=False).order_by("id")
         for item in items:
             texts = descriptive_effects(item)
             if not texts:
@@ -237,6 +260,7 @@ class Command(BaseCommand):
             for item, body, _ in curable[:limit]:
                 item.regole_speciali = body
                 sync_special_rules_review(item)
+                item.metadata = {**item.metadata, "specialRulesSource": SOURCE}
                 item.speciale = bool(compute_special_reasons(item))
                 item.save(update_fields=["regole_speciali", "metadata", "speciale", "updated_at"])
                 written += 1

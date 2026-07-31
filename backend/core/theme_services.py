@@ -8,15 +8,15 @@ from django.utils.text import slugify
 from backend.media_library.models import UploadedImage
 
 from .api import ApiError
-from .models import Giocatore, Theme
+from .models import Giocatore, Theme, ThemeBackground
 from .security import effective_role, has_minimum_role
 from .theme_selectors import (
-    THEME_BACKGROUND_FIELD_NAMES,
     THEME_BLANKABLE_COLOR_FIELDS,
     THEME_COLOR_FIELD_NAMES,
     serialize_managed_theme,
     themes_management_payload,
 )
+from .theme_surfaces import THEME_SURFACE_KEY_SET
 
 
 COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -75,7 +75,7 @@ def _clean_opacity(field_name: str, raw_value, current) -> Decimal:
     return value
 
 
-def _clean_background_image(field_name: str, raw_value) -> UploadedImage | None:
+def _clean_background_image(surface_key: str, raw_value) -> UploadedImage | None:
     if raw_value in (None, "", 0):
         return None
     try:
@@ -84,9 +84,41 @@ def _clean_background_image(field_name: str, raw_value) -> UploadedImage | None:
         raise ApiError(
             "management.themes.background_not_found",
             "L'immagine scelta non esiste più nell'Archivio.",
-            field_name,
+            surface_key,
             404,
         ) from exc
+
+
+def _clean_backgrounds(payload: dict) -> dict:
+    """Le superfici toccate dal payload: chiave della superficie → immagine o None."""
+    raw = payload.get("backgrounds")
+    if not isinstance(raw, dict):
+        return {}
+    cleaned = {}
+    for surface_key, raw_value in raw.items():
+        if surface_key not in THEME_SURFACE_KEY_SET:
+            raise ApiError(
+                "management.themes.surface_unknown",
+                "Questa superficie non fa parte dell'elenco dei temi.",
+                surface_key,
+            )
+        cleaned[surface_key] = _clean_background_image(surface_key, raw_value)
+    return cleaned
+
+
+def _write_backgrounds(theme: Theme, cleaned: dict) -> None:
+    """Scrive una riga per superficie. Nessuna superficie eredita da un'altra:
+    togliere l'immagine lascia semplicemente quella schermata senza sfondo."""
+    emptied = [surface_key for surface_key, image in cleaned.items() if image is None]
+    if emptied:
+        ThemeBackground.objects.filter(theme=theme, surface_key__in=emptied).delete()
+    for surface_key, image in cleaned.items():
+        if image is not None:
+            ThemeBackground.objects.update_or_create(
+                theme=theme,
+                surface_key=surface_key,
+                defaults={"image": image},
+            )
 
 
 def _unique_slug(name: str, exclude_pk=None) -> str:
@@ -139,11 +171,8 @@ def _apply_payload(theme: Theme, payload: dict, *, partial: bool) -> Theme:
             raise ApiError("management.themes.blur_range", "La sfocatura può andare da 0 a 20 pixel.", "backgroundBlur")
         theme.background_blur = blur
 
-    backgrounds = payload.get("backgrounds")
-    if isinstance(backgrounds, dict):
-        for field_name in THEME_BACKGROUND_FIELD_NAMES:
-            if field_name in backgrounds:
-                setattr(theme, field_name, _clean_background_image(field_name, backgrounds[field_name]))
+    # Gli sfondi sono righe figlie: si scrivono dopo il salvataggio, quando il
+    # tema ha una chiave primaria (vedi _write_backgrounds).
 
     if "isActive" in payload:
         is_active = bool(payload["isActive"])
@@ -163,9 +192,12 @@ def save_theme(user, giocatore: Giocatore, theme_id, payload: dict) -> dict:
     if not isinstance(payload, dict):
         raise ApiError("management.themes.invalid_payload", "I dati del tema non sono validi.", "theme")
     theme = _get_theme(theme_id)
+    backgrounds = _clean_backgrounds(payload)
     _apply_payload(theme, payload, partial=True)
     theme.full_clean(exclude=["slug"])
     theme.save()
+    _write_backgrounds(theme, backgrounds)
+    theme.refresh_from_db()
     return {"theme": serialize_managed_theme(theme), **themes_management_payload()}
 
 

@@ -259,6 +259,9 @@ RACE_CATALOG: dict[str, dict[str, Any]] = {
 
 RACE_NAMES = tuple(RACE_CATALOG)
 
+# Valore sentinella con cui le tendine di razza offrono "altro, scritto a mano".
+RACE_EXTRA_VALUE = "__extra__"
+
 
 def subraces_for(race: str) -> tuple[str, ...]:
     return tuple(RACE_CATALOG.get(str(race or "").strip(), {}).get("subraces", {}))
@@ -274,7 +277,7 @@ def race_configuration_payload() -> dict[str, Any]:
             }
             for race in RACE_NAMES
         ],
-        "extraValue": "__extra__",
+        "extraValue": RACE_EXTRA_VALUE,
     }
 
 

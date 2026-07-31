@@ -989,6 +989,27 @@ CHARACTERISTIC_CHOICES = (
 CHARACTERISTIC_KEYS = tuple(key for key, _label in CHARACTERISTIC_CHOICES)
 CHARACTERISTIC_LABELS = dict(CHARACTERISTIC_CHOICES)
 
+# Cosa fa ogni caratteristica, in una frase. Unica fonte per la guida delle
+# variabili e per il pannello della caratteristica preferita nella creazione:
+# i valori derivati che ciascuna alimenta non vanno scritti qui, perché si
+# ricavano dalle formule del profilo Formule_base attivo.
+CHARACTERISTIC_DESCRIPTIONS = {
+    "forza": "Misura la potenza fisica. Le formule amministrative possono usarla per PF, Attacco o altri valori.",
+    "resistenza": "Misura robustezza e tenuta. Le formule amministrative possono usarla per PF, Energia o altri valori.",
+    "velocita": "Misura rapidità e movimento. Le formule amministrative possono usarla per Energia, PA o altri valori.",
+    "agilita": "Misura coordinazione e destrezza. Le formule amministrative possono usarla per Attacco, Difesa o altri valori.",
+    "intelligenza": "Misura ragionamento e studio. Le formule amministrative possono usarla per Mana, Potere o altri valori.",
+    "concentrazione": "Misura attenzione e controllo. Le formule amministrative possono usarla per Mana, Difesa o altri valori.",
+    "personalita": "Misura presenza e influenza sociale; alimenta anche il relativo modificatore di dado.",
+    "saggezza": "Misura intuito e giudizio. Le formule amministrative possono usarla per Potere, PA o altri valori.",
+    "fortuna": (
+        "Misura la sorte del personaggio, alimenta il relativo modificatore di dado e interviene due volte in "
+        "combattimento: nella differenza d'attacco (per l'attaccante conta come minimo 12) e nella potenza dei "
+        "critici. Tramite la formula amministrativa Fortuna, aggiunge inoltre automaticamente un bonus a ciascuna "
+        "delle altre otto caratteristiche, prima del loro arrotondamento finale."
+    ),
+}
+
 # Bonus della caratteristica preferita scelta alla creazione. Si somma al bonus
 # automatico di Livello che CHARACTERISTIC_ADJUSTMENT_DEFAULTS applica già a
 # tutte e nove le caratteristiche: la preferita avanza quindi al doppio della

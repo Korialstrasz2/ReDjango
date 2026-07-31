@@ -80,17 +80,12 @@ def serialize_theme(theme: Theme) -> dict:
         "panelOpacity": float(theme.panel_opacity),
         "backgroundPosition": theme.background_position,
         "backgroundBlur": theme.background_blur,
+        # Solo le superfici con un'immagine: il frontend tratta le assenti come
+        # «nessuno sfondo», senza ereditare da altre schermate.
         "backgrounds": {
-            "dashboard": _image_url(theme.dashboard_background),
-            "characters": _image_url(theme.characters_background),
-            "personaggio": _image_url(theme.personaggio_background),
-            "media": _image_url(theme.media_background),
-            "guide": _image_url(theme.guide_background),
-            "settings": _image_url(theme.settings_background),
-            "dice": _image_url(theme.dice_background),
-            "journal": _image_url(theme.journal_background),
-            "lore": _image_url(theme.lore_background),
-            "market": _image_url(theme.market_background),
+            row.surface_key: _image_url(row.image)
+            for row in theme.backgrounds.all()
+            if _image_url(row.image)
         },
     }
 
@@ -98,18 +93,7 @@ def serialize_theme(theme: Theme) -> dict:
 def active_themes() -> list[Theme]:
     return list(
         Theme.objects.filter(is_active=True, archived_at__isnull=True)
-        .select_related(
-            "dashboard_background",
-            "characters_background",
-            "personaggio_background",
-            "media_background",
-            "guide_background",
-            "settings_background",
-            "dice_background",
-            "journal_background",
-            "lore_background",
-            "market_background",
-        )
+        .prefetch_related("backgrounds__image")
         .order_by("order", "name")
     )
 

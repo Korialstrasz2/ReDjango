@@ -7,11 +7,15 @@ import { command, getData } from "../../lib/api";
 import type { CharacterSheet } from "../../lib/types";
 import {
   CREATION_STEPS,
+  MAX_AGE,
+  MIN_AGE,
   canSubmit,
   creationPayload,
   emptyDraft,
   stepIssues,
   withRace,
+  type Bonus,
+  type CharacteristicOption,
   type CreationDraft,
   type CreationStep,
   type RaceOption,
@@ -20,7 +24,7 @@ import {
 type CreationOptions = {
   races: RaceOption[];
   extraValue: string;
-  characteristics: Array<{ value: string; label: string }>;
+  characteristics: CharacteristicOption[];
   sexes: Array<{ value: string; label: string }>;
   preferredCharacteristicFormula: string;
   startingLevel: number;
@@ -37,13 +41,13 @@ const STEP_LABELS: Record<CreationStep, { number: string; title: string; hint: s
 
 function IdentityStep({ draft, options, update }: { draft: CreationDraft; options: CreationOptions; update: (patch: Partial<CreationDraft>) => void }) {
   return <section className="panel new-pg-step">
-    <header><p className="eyebrow">Passo 01</p><h2>Identità</h2><p>Il nome è l'unico campo obbligatorio. Nulla di qui ha effetti meccanici.</p></header>
+    <header><p className="eyebrow">Passo 01</p><h2>Identità</h2><p>Nome, età e sesso sono obbligatori. Nulla di qui ha effetti meccanici.</p></header>
     <div className="form-grid">
       <label>Nome<input value={draft.nome} onChange={(event) => update({ nome: event.target.value })} maxLength={180} required autoFocus /></label>
-      <label>Età<input value={draft.eta} onChange={(event) => update({ eta: event.target.value })} type="number" min={1} max={999} placeholder="facoltativa" /></label>
+      <label>Età<input value={draft.eta} onChange={(event) => update({ eta: event.target.value })} type="number" min={MIN_AGE} max={MAX_AGE} required /></label>
       <label>Sesso
-        <select value={draft.sesso} onChange={(event) => update({ sesso: event.target.value })}>
-          <option value="">Non specificato</option>
+        <select value={draft.sesso} onChange={(event) => update({ sesso: event.target.value })} required>
+          <option value="" disabled>Scegli…</option>
           {options.sexes.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
         </select>
       </label>
@@ -53,46 +57,115 @@ function IdentityStep({ draft, options, update }: { draft: CreationDraft; option
   </section>;
 }
 
+function BonusList({ bonuses, empty }: { bonuses: Bonus[]; empty: string }) {
+  if (!bonuses.length) return <p className="new-pg-detail-empty">{empty}</p>;
+  return <ul className="new-pg-bonus-list">
+    {bonuses.map((bonus) => <li key={`${bonus.label}:${bonus.value}`} data-kind={bonus.kind}>
+      <span>{bonus.label}</span><strong>{bonus.value}</strong>
+    </li>)}
+  </ul>;
+}
+
+/* Il pannello mostra soltanto ciò che automatic_race_effects applica davvero:
+   modificatori della razza, tratto razziale ed effetto della sottorazza scelta. */
+function RaceDetailPanel({ race, subrace }: { race?: RaceOption; subrace?: string }) {
+  if (!race) return <aside className="new-pg-detail" aria-live="polite">
+    <p className="new-pg-detail-empty">Scegli una razza per vederne modificatori e tratto.</p>
+  </aside>;
+  const chosen = race.subraces.find((entry) => entry.value === subrace);
+  return <aside className="new-pg-detail" aria-live="polite">
+    <p className="eyebrow">Cosa applica</p>
+    <h3>{race.label}</h3>
+    <section>
+      <h4>Modificatori alle caratteristiche</h4>
+      <BonusList bonuses={race.modifiers} empty="Nessun modificatore." />
+    </section>
+    <section>
+      <h4>Tratto razziale</h4>
+      {race.trait.note && <p>{race.trait.note}</p>}
+      <BonusList bonuses={race.trait.bonuses} empty="Nessun bonus numerico: è un tratto narrativo." />
+    </section>
+    <section>
+      <h4>{chosen ? `Sottorazza: ${chosen.label}` : "Sottorazza"}</h4>
+      {chosen
+        ? <>{chosen.note && <p>{chosen.note}</p>}<BonusList bonuses={chosen.bonuses} empty="Nessun bonus numerico: è una specializzazione narrativa." /></>
+        : <p className="new-pg-detail-empty">{race.subraces.length ? "Scegline una per vederne l'effetto." : `${race.label} non ha sottorazze.`}</p>}
+    </section>
+  </aside>;
+}
+
 function RaceStep({ draft, options, update }: { draft: CreationDraft; options: CreationOptions; update: (patch: Partial<CreationDraft>) => void }) {
   const race = options.races.find((entry) => entry.value === draft.razza);
   return <section className="panel new-pg-step">
     <header><p className="eyebrow">Passo 02</p><h2>Razza e sottorazza</h2><p>Modificatori, tratto razziale ed effetto della sottorazza vengono applicati automaticamente alla scheda: non vanno ricreati a mano.</p></header>
-    <div className="new-pg-race-grid" role="radiogroup" aria-label="Razza">
-      {options.races.map((entry) => <button
-        type="button"
-        key={entry.value}
-        role="radio"
-        aria-checked={draft.razza === entry.value}
-        className={draft.razza === entry.value ? "active" : ""}
-        onClick={() => update(withRace(draft, entry.value))}
-      >
-        <strong>{entry.label}</strong>
-        <small>{entry.subraces.length ? `${entry.subraces.length} sottorazze` : "nessuna sottorazza"}</small>
-      </button>)}
+    <div className="new-pg-choice-layout">
+      <div>
+        <div className="new-pg-race-grid" role="radiogroup" aria-label="Razza">
+          {options.races.map((entry) => <button
+            type="button"
+            key={entry.value}
+            role="radio"
+            aria-checked={draft.razza === entry.value}
+            className={draft.razza === entry.value ? "active" : ""}
+            onClick={() => update(withRace(draft, entry.value))}
+          >
+            <strong>{entry.label}</strong>
+            <small>{entry.subraces.length ? `${entry.subraces.length} sottorazze` : "nessuna sottorazza"}</small>
+          </button>)}
+        </div>
+        {race && race.subraces.length > 0 && <label className="new-pg-subrace">Sottorazza di {race.label}
+          <select value={draft.sottorazza} onChange={(event) => update({ sottorazza: event.target.value })}>
+            <option value="">Scegli…</option>
+            {race.subraces.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
+          </select>
+        </label>}
+        {race && race.subraces.length === 0 && <p className="new-pg-inline-hint">{race.label} non ha sottorazze: si prosegue così.</p>}
+      </div>
+      <RaceDetailPanel race={race} subrace={draft.sottorazza} />
     </div>
-    {race && race.subraces.length > 0 && <label className="new-pg-subrace">Sottorazza di {race.label}
-      <select value={draft.sottorazza} onChange={(event) => update({ sottorazza: event.target.value })}>
-        <option value="">Scegli…</option>
-        {race.subraces.map((entry) => <option key={entry.value} value={entry.value}>{entry.label}</option>)}
-      </select>
-    </label>}
-    {race && race.subraces.length === 0 && <p className="new-pg-inline-hint">{race.label} non ha sottorazze: si prosegue così.</p>}
     <aside className="callout"><strong>La guida «Creare un nuovo PG» elenca i modificatori di ogni razza</strong><p>Aprila dalle <Link to="/guides?guida=Creare%20un%20nuovo%20PG">Guide</Link> se vuoi confrontare i bonus prima di scegliere.</p></aside>
   </section>;
 }
 
+/* "Alimenta" arriva dalle formule del profilo Formule_base attivo, non da un
+   elenco scritto a mano: se un amministratore cambia una formula, cambia qui. */
+function CharacteristicDetailPanel({ characteristic, preferredFormula }: { characteristic?: CharacteristicOption; preferredFormula: string }) {
+  if (!characteristic) return <aside className="new-pg-detail" aria-live="polite">
+    <p className="new-pg-detail-empty">Scegli una caratteristica per leggere cosa fa.</p>
+  </aside>;
+  return <aside className="new-pg-detail" aria-live="polite">
+    <p className="eyebrow">Cosa fa</p>
+    <h3>{characteristic.label}</h3>
+    <p>{characteristic.description}</p>
+    <section>
+      <h4>Alimenta</h4>
+      {characteristic.feeds.length
+        ? <ul className="new-pg-bonus-list">{characteristic.feeds.map((feed) => <li key={feed} data-kind="bonus"><span>{feed}</span></li>)}</ul>
+        : <p className="new-pg-detail-empty">Nessun valore derivato la richiama nelle formule attive.</p>}
+    </section>
+    <section>
+      <h4>Se la scegli</h4>
+      <p>Un effetto permanente aggiunge «{preferredFormula}» a {characteristic.label}, che si somma al bonus di livello «{characteristic.levelFormula || "—"}» ricevuto da tutte e nove: cresce quindi al doppio della velocità.</p>
+    </section>
+  </aside>;
+}
+
 function PreferredStep({ draft, options, update }: { draft: CreationDraft; options: CreationOptions; update: (patch: Partial<CreationDraft>) => void }) {
+  const characteristic = options.characteristics.find((entry) => entry.value === draft.caratteristicaPreferita);
   return <section className="panel new-pg-step">
     <header><p className="eyebrow">Passo 03</p><h2>Caratteristica preferita</h2><p>È l'unica scelta meccanica della creazione. Genera un effetto permanente che aggiunge «{options.preferredCharacteristicFormula}» alla caratteristica scelta, cioè +1 ogni cinque livelli.</p></header>
-    <div className="new-pg-characteristic-grid" role="radiogroup" aria-label="Caratteristica preferita">
-      {options.characteristics.map((entry) => <button
-        type="button"
-        key={entry.value}
-        role="radio"
-        aria-checked={draft.caratteristicaPreferita === entry.value}
-        className={draft.caratteristicaPreferita === entry.value ? "active" : ""}
-        onClick={() => update({ caratteristicaPreferita: entry.value })}
-      >{entry.label}</button>)}
+    <div className="new-pg-choice-layout">
+      <div className="new-pg-characteristic-grid" role="radiogroup" aria-label="Caratteristica preferita">
+        {options.characteristics.map((entry) => <button
+          type="button"
+          key={entry.value}
+          role="radio"
+          aria-checked={draft.caratteristicaPreferita === entry.value}
+          className={draft.caratteristicaPreferita === entry.value ? "active" : ""}
+          onClick={() => update({ caratteristicaPreferita: entry.value })}
+        >{entry.label}</button>)}
+      </div>
+      <CharacteristicDetailPanel characteristic={characteristic} preferredFormula={options.preferredCharacteristicFormula} />
     </div>
     <aside className="callout"><strong>Il bonus di livello lo ricevono comunque tutte le caratteristiche</strong><p>ReDjango applica già da solo la formula di livello a tutte e nove. La preferita si somma a quella, quindi cresce al doppio della velocità delle altre. In Elder Django il bonus esisteva solo sulla preferita.</p></aside>
   </section>;
@@ -106,8 +179,8 @@ function SummaryStep({ draft, options }: { draft: CreationDraft; options: Creati
     <header><p className="eyebrow">Passo 04</p><h2>Riepilogo</h2><p>Controlla e conferma. Nome, età, sesso e testi restano modificabili dalla scheda.</p></header>
     <dl className="new-pg-summary">
       <div><dt>Nome</dt><dd>{draft.nome.trim() || "—"}</dd></div>
-      <div><dt>Età</dt><dd>{draft.eta.trim() || "non specificata"}</dd></div>
-      <div><dt>Sesso</dt><dd>{options.sexes.find((entry) => entry.value === draft.sesso)?.label || "non specificato"}</dd></div>
+      <div><dt>Età</dt><dd>{draft.eta.trim() || "—"}</dd></div>
+      <div><dt>Sesso</dt><dd>{options.sexes.find((entry) => entry.value === draft.sesso)?.label || "—"}</dd></div>
       <div><dt>Razza</dt><dd>{race?.label || "—"}</dd></div>
       <div><dt>Sottorazza</dt><dd>{subrace?.label || "nessuna"}</dd></div>
       <div><dt>Caratteristica preferita</dt><dd>{preferred?.label || "—"}</dd></div>

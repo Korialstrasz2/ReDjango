@@ -10,6 +10,7 @@ raddoppierebbe.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Mapping
 from uuid import uuid4
 
@@ -18,12 +19,14 @@ from django.utils.text import slugify
 
 from backend.core.api import ApiError
 from backend.core.defaults import (
+    CHARACTERISTIC_ADJUSTMENT_DEFAULTS,
+    CHARACTERISTIC_DESCRIPTIONS,
     CHARACTERISTIC_KEYS,
     CHARACTERISTIC_LABELS,
     PREFERRED_CHARACTERISTIC_EFFECT_NAME,
     PREFERRED_CHARACTERISTIC_FORMULA,
 )
-from backend.core.models import Giocatore
+from backend.core.models import Giocatore, GlobalModifiers
 
 from ..models import (
     EffettiPersonaggio,
@@ -35,8 +38,13 @@ from ..models import (
     Personaggio,
     Zaino,
 )
-from ..race_rules import RACE_CATALOG, race_configuration_payload, subraces_for
-from .refresh_personaggio import refresh_personaggio
+from ..race_rules import RACE_CATALOG, RACE_EXTRA_VALUE, subraces_for
+from .custom_effects import EFFECT_TARGET_LABELS
+from .refresh_personaggio import (
+    extract_characteristic_adjustments,
+    extract_formula_map,
+    refresh_personaggio,
+)
 
 
 # La rotta è raggiungibile da qualunque giocatore: senza un tetto un account
@@ -46,7 +54,9 @@ MAX_PLAYABLE_CHARACTERS_PER_PLAYER = 5
 
 MIN_AGE = 1
 MAX_AGE = 999
-SEX_CHOICES = (("maschio", "Maschio"), ("femmina", "Femmina"), ("altro", "Altro"))
+# Il tavolo usa due soli sessi. Restare su questa coppia tiene allineati il
+# passo Identità della creazione e la validazione che lo accetta.
+SEX_CHOICES = (("maschio", "Maschio"), ("femmina", "Femmina"))
 CREATION_EFFECT_ORIGIN = "Creazione personaggio"
 
 
@@ -100,22 +110,23 @@ def validate_creation_values(values: Mapping[str, Any]) -> dict[str, Any]:
         )
 
     raw_age = values.get("eta")
-    eta: int | None = None
-    if raw_age not in (None, ""):
-        try:
-            eta = int(raw_age)
-        except (TypeError, ValueError) as exc:
-            raise ApiError("characters.age_invalid", "L'età deve essere un numero.", "eta") from exc
-        if not MIN_AGE <= eta <= MAX_AGE:
-            raise ApiError(
-                "characters.age_invalid",
-                f"L'età deve essere compresa fra {MIN_AGE} e {MAX_AGE}.",
-                "eta",
-            )
+    if raw_age in (None, ""):
+        raise ApiError("characters.age_required", "Il personaggio deve avere un'età.", "eta")
+    try:
+        eta = int(raw_age)
+    except (TypeError, ValueError) as exc:
+        raise ApiError("characters.age_invalid", "L'età deve essere un numero.", "eta") from exc
+    if not MIN_AGE <= eta <= MAX_AGE:
+        raise ApiError(
+            "characters.age_invalid",
+            f"L'età deve essere compresa fra {MIN_AGE} e {MAX_AGE}.",
+            "eta",
+        )
 
-    sesso = _text(values, "sesso", 80)
-    valid_sexes = {key for key, _label in SEX_CHOICES}
-    if sesso and sesso.lower() not in valid_sexes:
+    sesso = _text(values, "sesso", 80).lower()
+    if not sesso:
+        raise ApiError("characters.sex_required", "Scegli il sesso del personaggio.", "sesso")
+    if sesso not in {key for key, _label in SEX_CHOICES}:
         raise ApiError("characters.sex_invalid", "Sesso non valido.", "sesso")
 
     return {
@@ -124,7 +135,7 @@ def validate_creation_values(values: Mapping[str, Any]) -> dict[str, Any]:
         "sottorazza": sottorazza,
         "caratteristica_preferita": preferita,
         "eta": eta,
-        "sesso": dict(SEX_CHOICES).get(sesso.lower(), "") if sesso else "",
+        "sesso": dict(SEX_CHOICES)[sesso],
         "dettagli_personaggio": _text(values, "dettagliPersonaggio", 4000),
         "background": _text(values, "background", 8000),
     }
@@ -170,20 +181,21 @@ def _create_preferred_characteristic_effect(personaggio: Personaggio, stat: str)
 
 
 def _assign_to_player(giocatore: Giocatore, personaggio: Personaggio) -> None:
+    """Assegna il PG appena creato e lo rende subito quello attivo.
+
+    Chi finisce la procedura si aspetta di trovarsi sulla scheda del nuovo
+    personaggio: lasciare attivo quello precedente riportava la barra laterale,
+    la Sala principale e la voce "Scheda personaggio" sul PG di prima.
+    """
     owned = [
         value
         for value in (giocatore.character_ids if isinstance(giocatore.character_ids, list) else [])
         if isinstance(value, int)
     ]
-    fields = []
     if personaggio.pk not in owned:
         giocatore.character_ids = [*owned, personaggio.pk]
-        fields.append("character_ids")
-    if giocatore.active_character_id is None:
-        giocatore.active_character = personaggio
-        fields.append("active_character")
-    if fields:
-        giocatore.save(update_fields=[*fields, "updated_at"])
+    giocatore.active_character = personaggio
+    giocatore.save(update_fields=["character_ids", "active_character", "updated_at"])
 
 
 @transaction.atomic
@@ -232,6 +244,96 @@ def create_personaggio(giocatore: Giocatore, values: Mapping[str, Any]) -> Perso
     return personaggio
 
 
+def _target_label(target: str) -> str:
+    return EFFECT_TARGET_LABELS.get(target, target.replace("_", " ").capitalize())
+
+
+def _bonus_entries(effects: Mapping[str, Any]) -> list[dict[str, str]]:
+    """Rende leggibili i bonus di RACE_CATALOG senza reinterpretarli.
+
+    ``automatic_race_effects`` li applica tutti come somma, quindi un valore
+    numerico negativo è già il malus e una stringa è una formula da mostrare
+    così com'è (``personaggio.livello * 2``).
+    """
+    entries = []
+    for target, value in effects.items():
+        negative = isinstance(value, (int, float)) and value < 0
+        entries.append(
+            {
+                "label": _target_label(target),
+                "value": str(value) if negative else f"+{value}",
+                "kind": "malus" if negative else "bonus",
+            }
+        )
+    return entries
+
+
+def _race_option(race: str, definition: Mapping[str, Any]) -> dict[str, Any]:
+    trait = definition.get("trait")
+    trait_data = trait if isinstance(trait, Mapping) else {"note": trait or ""}
+    subraces = []
+    for subrace, subrace_definition in (definition.get("subraces") or {}).items():
+        subrace_data = (
+            subrace_definition
+            if isinstance(subrace_definition, Mapping)
+            else {"note": subrace_definition or ""}
+        )
+        subraces.append(
+            {
+                "value": subrace,
+                "label": subrace,
+                "note": str(subrace_data.get("note") or ""),
+                "bonuses": _bonus_entries(subrace_data.get("effects") or {}),
+            }
+        )
+    return {
+        "value": race,
+        "label": race,
+        "subraces": subraces,
+        "modifiers": _bonus_entries(definition.get("modifiers") or {}),
+        "trait": {
+            "note": str(trait_data.get("note") or ""),
+            "bonuses": _bonus_entries(trait_data.get("effects") or {}),
+        },
+    }
+
+
+def _active_formule_base() -> Mapping[str, Any]:
+    profile = GlobalModifiers.objects.filter(name="Formule_base").first()
+    if profile is None or not isinstance(profile.value_string, Mapping):
+        return {}
+    return profile.value_string
+
+
+def _characteristic_options() -> list[dict[str, Any]]:
+    """Le nove caratteristiche con ciò che alimentano nel profilo attivo.
+
+    I valori derivati non sono scritti a mano: si ricavano dalle formule di
+    Formule_base, così il pannello non può promettere un contributo che il
+    calcolo non applica.
+    """
+    value_string = _active_formule_base()
+    formulas = extract_formula_map(value_string)
+    adjustments = {
+        **CHARACTERISTIC_ADJUSTMENT_DEFAULTS,
+        **extract_characteristic_adjustments(value_string),
+    }
+    return [
+        {
+            "value": key,
+            "label": CHARACTERISTIC_LABELS[key],
+            "description": CHARACTERISTIC_DESCRIPTIONS[key],
+            "feeds": [
+                _target_label(target)
+                for target, formula in formulas.items()
+                if re.search(rf"\b(?:final|pre)\.{re.escape(key)}\b", str(formula))
+            ],
+            "levelFormula": str(adjustments.get("livello") or ""),
+        }
+        for key in CHARACTERISTIC_KEYS
+    ]
+
+
 def creation_options_payload(giocatore: Giocatore) -> dict[str, Any]:
     """Cataloghi che la procedura di creazione mostra, letti dal codice di gioco."""
     owned = [
@@ -246,10 +348,9 @@ def creation_options_payload(giocatore: Giocatore) -> dict[str, Any]:
     ).count()
     unlimited = giocatore.role in {Giocatore.ROLE_MASTER, Giocatore.ROLE_ADMIN}
     return {
-        **race_configuration_payload(),
-        "characteristics": [
-            {"value": key, "label": CHARACTERISTIC_LABELS[key]} for key in CHARACTERISTIC_KEYS
-        ],
+        "races": [_race_option(race, definition) for race, definition in RACE_CATALOG.items()],
+        "extraValue": RACE_EXTRA_VALUE,
+        "characteristics": _characteristic_options(),
         "sexes": [{"value": key, "label": label} for key, label in SEX_CHOICES],
         "preferredCharacteristicFormula": PREFERRED_CHARACTERISTIC_FORMULA,
         "startingLevel": 1,

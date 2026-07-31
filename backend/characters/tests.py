@@ -8,6 +8,7 @@ from django.test import TestCase
 
 from backend.core.api import ApiError
 from backend.core.defaults import (
+    CHARACTERISTIC_ADJUSTMENT_DEFAULTS,
     FORMULE_BASE_FORMULAS,
     FORMULE_BASE_VALUE_FLOAT,
     PREFERRED_CHARACTERISTIC_EFFECT_NAME,
@@ -1217,6 +1218,41 @@ class NuovoPgCreationTests(TestCase):
         self.assertIn(personaggio.pk, self.giocatore.character_ids)
         self.assertEqual(self.giocatore.active_character_id, personaggio.pk)
 
+    def test_the_new_pg_replaces_the_previously_active_character(self):
+        """Chi finisce la procedura resta sul PG appena creato, non sul precedente."""
+        previous = create_personaggio(self.giocatore, self._values(nome="Vecchia Scelta"))
+        self.giocatore.refresh_from_db()
+        self.assertEqual(self.giocatore.active_character_id, previous.pk)
+
+        created = create_personaggio(self.giocatore, self._values(nome="Nuova Scelta"))
+        self.giocatore.refresh_from_db()
+
+        self.assertEqual(self.giocatore.active_character_id, created.pk)
+        self.assertIn(previous.pk, self.giocatore.character_ids)
+
+    def test_age_is_required(self):
+        for missing in (None, ""):
+            with self.assertRaises(ApiError) as caught:
+                create_personaggio(self.giocatore, self._values(eta=missing))
+            self.assertEqual(caught.exception.code, "characters.age_required")
+
+    def test_an_age_out_of_range_is_rejected(self):
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values(eta=0))
+        self.assertEqual(caught.exception.code, "characters.age_invalid")
+
+    def test_sex_is_required_and_limited_to_the_two_choices(self):
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values(sesso=""))
+        self.assertEqual(caught.exception.code, "characters.sex_required")
+
+        with self.assertRaises(ApiError) as caught:
+            create_personaggio(self.giocatore, self._values(sesso="altro"))
+        self.assertEqual(caught.exception.code, "characters.sex_invalid")
+
+        personaggio = create_personaggio(self.giocatore, self._values(sesso="maschio"))
+        self.assertEqual(personaggio.sesso, "Maschio")
+
     def test_a_subrace_from_another_race_is_rejected(self):
         with self.assertRaises(ApiError) as caught:
             create_personaggio(self.giocatore, self._values(razza="Nord", sottorazza="Retaggio Mago"))
@@ -1257,3 +1293,30 @@ class NuovoPgCreationTests(TestCase):
         self.assertEqual(len(payload["characteristics"]), 9)
         self.assertEqual(payload["startingLevel"], 1)
         self.assertEqual(payload["quota"], {"used": 0, "max": MAX_PLAYABLE_CHARACTERS_PER_PLAYER, "canCreate": True})
+        self.assertEqual([entry["value"] for entry in payload["sexes"]], ["maschio", "femmina"])
+
+    def test_creation_options_describe_the_bonuses_of_each_race(self):
+        """Il pannello della razza legge RACE_CATALOG, non un elenco scritto a mano."""
+        payload = creation_options_payload(self.giocatore)
+        dunmer = next(entry for entry in payload["races"] if entry["value"] == "Dunmer")
+
+        self.assertIn({"label": "Intelligenza", "value": "+2", "kind": "bonus"}, dunmer["modifiers"])
+        self.assertIn({"label": "Fortuna", "value": "-2", "kind": "malus"}, dunmer["modifiers"])
+        self.assertIn("Resistenza naturale al fuoco", dunmer["trait"]["note"])
+        self.assertIn({"label": "Resistenza al fuoco", "value": "+1", "kind": "bonus"}, dunmer["trait"]["bonuses"])
+
+        mago = next(entry for entry in dunmer["subraces"] if entry["value"] == "Retaggio Mago")
+        self.assertEqual(mago["bonuses"], [{"label": "Mana", "value": "+8", "kind": "bonus"}])
+
+        xivilai = next(entry for entry in payload["races"] if entry["value"] == "Xivilai")
+        self.assertEqual(xivilai["subraces"], [])
+
+    def test_creation_options_derive_what_each_characteristic_feeds(self):
+        """«Alimenta» esce dalle formule attive: un elenco fisso mentirebbe appena cambiano."""
+        payload = creation_options_payload(self.giocatore)
+        by_key = {entry["value"]: entry for entry in payload["characteristics"]}
+
+        self.assertEqual(by_key["forza"]["feeds"], ["Punti ferita", "Attacco"])
+        self.assertEqual(by_key["intelligenza"]["feeds"], ["Mana", "Potere"])
+        self.assertTrue(by_key["fortuna"]["description"])
+        self.assertEqual(by_key["forza"]["levelFormula"], CHARACTERISTIC_ADJUSTMENT_DEFAULTS["livello"])
