@@ -11,12 +11,14 @@ from backend.characters.race_rules import RACE_CATALOG
 from .defaults import (
     CHARACTERISTIC_DESCRIPTIONS,
     CHARACTERISTIC_LABELS,
+    MAX_CHARACTER_AGE,
+    MIN_CHARACTER_AGE,
     PREFERRED_CHARACTERISTIC_EFFECT_NAME,
     PREFERRED_CHARACTERISTIC_FORMULA,
 )
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-07-30-nuovo-pg-v1"
+V2_GUIDE_DEFAULT_VERSION = "2026-07-31-nuovo-pg-v2"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
@@ -668,11 +670,21 @@ def nuovo_pg_guide_blocks() -> list[dict[str, Any]]:
                 "Nome: il nome con cui il personaggio compare in tutta l'applicazione. Si può cambiare dopo.",
                 "Nome interno: identificativo tecnico univoco, generato dal sistema e mai mostrato al tavolo. Non va scelto a mano.",
                 "Tipologia: sempre «giocabile» per un PG. Le altre tipologie appartengono a NPC, nemici, evocazioni e unità generate.",
-                "Età e sesso: liberi, senza effetti meccanici.",
+                f"Età: obbligatoria, fra {MIN_CHARACTER_AGE} e {MAX_CHARACTER_AGE}. Non ha effetti meccanici.",
+                "Sesso: obbligatorio, Maschio o Femmina. Non ha effetti meccanici.",
                 "Campagna: il personaggio entra nella campagna attiva del giocatore che lo crea.",
                 "Ritratto: facoltativo alla creazione, si assegna in seguito dalla libreria immagini.",
                 "Dettagli personaggio: descrizione breve. Il background lungo va nella sezione Background del diario.",
             ],
+        },
+        {
+            "type": "callout",
+            "title": "Il PG appena creato diventa quello attivo",
+            "text": (
+                "Chiusa la procedura si arriva sulla scheda del nuovo personaggio, che prende anche il posto di "
+                "quello attivo precedente: barra laterale, Sala principale e voce «Scheda personaggio» lo seguono. "
+                "Il personaggio di prima resta assegnato al giocatore e si riprende dalla Sala principale."
+            ),
         },
         {
             "type": "callout",
@@ -806,8 +818,42 @@ def _heading_text(raw_heading: str) -> str:
     return " ".join(unescape(re.sub(r"<[^>]+>", "", raw_heading)).split())
 
 
+# Correzioni al testo importato da Elder, applicate sia in import sia sulla
+# guida già salvata. Elder parlava di "+1 danno": ReDjango non ha un bersaglio
+# danno, la potenza di un colpo la decide il Tier, e il passivo Orsimer è
+# applicato automaticamente su quello.
+RACE_GUIDE_CORRECTIONS = (
+    (
+        "+1 danno ad attacchi fisici ogni 3 livelli",
+        "+1 Tier agli attacchi fisici ogni 3 livelli",
+    ),
+    # La frase d'apertura di Elder diceva di sommare tutto a mano. In ReDjango i
+    # bonus numerici di razza e sottorazza sono effetti automatici, raddoppi
+    # compresi: lasciarla com'era farebbe contare due volte gli stessi punti.
+    (
+        "Tutti i bonus, esclusi i bonus caratteristica razziali di base che sono "
+        "calcolati automaticamente ma modificabili(li trovi tra gli effetti), vanno "
+        "aggiunti a mano. I bonus attivi e passivi non aumentano, ma quelli di "
+        "sottorazza di raddoppiano, se possibile, a lv 5,10,15,20.",
+        "In ReDjango i bonus numerici di razza e sottorazza sono applicati "
+        "automaticamente alla scheda, raddoppi compresi: non vanno sommati a mano. "
+        "Restano da segnare al tavolo soltanto i poteri che il motore non sa "
+        "rappresentare, e la creazione del PG li elenca uno per uno. I bonus attivi "
+        "e passivi di razza non aumentano, mentre quelli di sottorazza guadagnano "
+        "un'altra volta il valore di partenza a livello 5, 10, 15 e 20.",
+    ),
+)
+
+
+def apply_race_guide_corrections(html: str) -> str:
+    for original, replacement in RACE_GUIDE_CORRECTIONS:
+        html = html.replace(original, replacement)
+    return html
+
+
 def race_guide_html(source: str) -> str:
     """Add stable race anchors and a compact table of contents to Elder's HTML guide."""
+    source = apply_race_guide_corrections(source)
     if not re.search(r"<h3[^>]*>\s*Dremora\s*</h3>", source, flags=re.IGNORECASE):
         source = f"{source}\n{_DREMORA_GUIDE_HTML}"
     if not re.search(r"<h3[^>]*>\s*Xivilai\s*</h3>", source, flags=re.IGNORECASE):

@@ -2064,11 +2064,13 @@ class LoreTimelineArchiveActionSchema(ActionBaseSchema):
 
 class NameGeneratePayloadSchema(Schema):
     """`race` basta alla modalità rapida; `cultureId` serve solo quando il Master
-    sceglie una cultura diversa da quella omonima della razza."""
+    sceglie una cultura precisa. `randomCulture` è il clic sulla sola razza:
+    tira anche la cultura invece di ricadere sempre sulla stessa."""
 
     race: str = ""
     cultureId: int | None = None
     gender: str = "casuale"
+    randomCulture: bool = False
 
 
 class NameGenerateActionSchema(ActionBaseSchema):

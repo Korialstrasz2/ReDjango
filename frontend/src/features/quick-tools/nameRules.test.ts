@@ -1,7 +1,18 @@
 import { describe, expect, it } from "vitest";
 
 import type { GeneratedName, NameCultureEntry, NameRaceEntry } from "../../lib/types";
-import { HISTORY_LIMIT, defaultCultureFor, nameSubtitle, poolSize, pushHistory } from "./nameRules";
+import {
+  HISTORY_LIMIT,
+  cultureRoll,
+  defaultCultureFor,
+  genderRoll,
+  nameSubtitle,
+  poolHint,
+  poolSize,
+  pushHistory,
+  raceRoll,
+  rolledParts,
+} from "./nameRules";
 
 const culture = (overrides: Partial<NameCultureEntry> = {}): NameCultureEntry => ({
   id: 1,
@@ -26,6 +37,7 @@ const generated = (overrides: Partial<GeneratedName> = {}): GeneratedName => ({
   culture: "Dunmer",
   cultureId: 1,
   cultureDescription: "",
+  cultureWasRolled: false,
   alreadyUsed: false,
   ...overrides,
 });
@@ -86,6 +98,45 @@ describe("cronologia", () => {
     }
     expect(history).toHaveLength(HISTORY_LIMIT);
     expect(history[0].name).toBe(`Nome ${HISTORY_LIMIT + 4}`);
+  });
+});
+
+describe("cascata: che cosa chiede ogni livello", () => {
+  const race: NameRaceEntry = {
+    race: "Dunmer",
+    slug: "dunmer",
+    playable: true,
+    defaultCulture: "Dunmer",
+    cultures: [culture()],
+  };
+
+  it("il clic sulla razza fa tirare cultura e genere", () => {
+    expect(raceRoll(race)).toEqual({ race: "Dunmer", gender: "casuale", randomCulture: true });
+  });
+
+  it("il clic sulla cultura lascia al dado solo il genere", () => {
+    expect(cultureRoll(culture())).toEqual({ cultureId: 1, gender: "casuale" });
+  });
+
+  it("il clic sul genere non lascia nulla al dado", () => {
+    expect(genderRoll(culture(), "femminile")).toEqual({ cultureId: 1, gender: "femminile" });
+  });
+
+  it("dichiara che cosa ha deciso il dado", () => {
+    expect(rolledParts(raceRoll(race))).toBe("Sorteggiati: cultura e genere");
+    expect(rolledParts(cultureRoll(culture()))).toBe("Sorteggiati: genere");
+    expect(rolledParts(genderRoll(culture(), "maschile"))).toBe("");
+    expect(rolledParts(null)).toBe("");
+  });
+});
+
+describe("suggerimento sul bacino", () => {
+  it("dice quando una cultura non ha cognomi", () => {
+    expect(poolHint(culture({ surnameCount: 0 }))).toBe("20 nomi · nessun cognome in questa cultura");
+  });
+
+  it("conta nomi e cognomi", () => {
+    expect(poolHint(culture(), "femminile")).toBe("18 nomi · 12 cognomi");
   });
 });
 

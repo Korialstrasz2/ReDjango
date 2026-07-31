@@ -2,22 +2,20 @@ import { describe, expect, it } from "vitest";
 
 import { canSubmit, creationPayload, emptyDraft, stepIssues, withRace, type RaceOption } from "./steps";
 
-const noBonus = { note: "", bonuses: [] };
+const noBonus = { note: "", bonuses: [], manual: "" };
+const subrace = (value: string) => ({ value, label: value, note: "", bonuses: [], manual: "" });
 const races: RaceOption[] = [
   {
     value: "Dunmer",
     label: "Dunmer",
-    subraces: [
-      { value: "Retaggio Mago", label: "Retaggio Mago", note: "", bonuses: [] },
-      { value: "Nobile di Vvardenfell", label: "Nobile di Vvardenfell", note: "", bonuses: [] },
-    ],
-    modifiers: [{ label: "Intelligenza", value: "+2", kind: "bonus" }],
+    subraces: [subrace("Retaggio Mago"), subrace("Nobile di Vvardenfell")],
+    modifiers: [{ label: "Intelligenza", value: "+2", kind: "bonus", growth: "" }],
     trait: noBonus,
   },
   {
     value: "Nord",
     label: "Nord",
-    subraces: [{ value: "Berserker", label: "Berserker", note: "", bonuses: [] }],
+    subraces: [subrace("Berserker")],
     modifiers: [],
     trait: noBonus,
   },

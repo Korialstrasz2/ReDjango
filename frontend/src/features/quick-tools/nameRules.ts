@@ -54,3 +54,51 @@ export function nameSubtitle(entry: GeneratedName): string {
   if (entry.culture !== entry.race) parts.unshift(entry.race);
   return parts.join(" · ");
 }
+
+/** La richiesta inviata al backend: un clic a ogni livello della cascata. */
+export type RollRequest = {
+  race?: string;
+  cultureId?: number;
+  gender: NameGender;
+  randomCulture?: boolean;
+};
+
+/** Clic sulla razza: cultura e genere li tira il dado. */
+export const raceRoll = (race: NameRaceEntry): RollRequest => ({
+  race: race.race,
+  gender: "casuale",
+  randomCulture: true,
+});
+
+/** Clic sulla cultura: resta da tirare il genere. */
+export const cultureRoll = (culture: NameCultureEntry): RollRequest => ({
+  cultureId: culture.id,
+  gender: "casuale",
+});
+
+/** Clic sul genere: nessuna variabile lasciata al dado. */
+export const genderRoll = (culture: NameCultureEntry, gender: NameGender): RollRequest => ({
+  cultureId: culture.id,
+  gender,
+});
+
+/**
+ * Che cosa ha deciso il dado in questo tiro. Serve a rendere leggibile un nome
+ * comparso senza che il Master abbia scelto tutto, invece di lasciarlo indovinare.
+ */
+export function rolledParts(request: RollRequest | null): string {
+  if (!request) return "";
+  const parts: string[] = [];
+  if (request.randomCulture) parts.push("cultura");
+  if (request.gender === "casuale") parts.push("genere");
+  if (!parts.length) return "";
+  return `Sorteggiati: ${parts.join(" e ")}`;
+}
+
+/** Riepilogo dei bacini di una cultura, mostrato come suggerimento sulla riga. */
+export function poolHint(culture: NameCultureEntry, gender: NameGender = "casuale"): string {
+  const first = poolSize(culture, gender);
+  return culture.surnameCount
+    ? `${first} nomi · ${culture.surnameCount} cognomi`
+    : `${first} nomi · nessun cognome in questa cultura`;
+}

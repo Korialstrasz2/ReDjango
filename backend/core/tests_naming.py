@@ -91,6 +91,27 @@ class NamingServiceTests(TestCase):
         self.assertEqual(result["name"], "Rathas Dren")
         self.assertEqual(result["culture"], "Dunmer")
 
+    def test_clicking_only_the_race_rolls_the_culture_too(self):
+        """Il clic sulla sola razza vuol dire «sorprendimi»: su 60 tiri devono
+        comparire entrambe le culture, non sempre quella omonima."""
+        seen = {
+            generate_name(self.giocatore, {"race": "Dunmer", "gender": "maschile", "randomCulture": True})["culture"]
+            for _ in range(60)
+        }
+        self.assertEqual(seen, {"Dunmer", "Telvanni"})
+
+    def test_a_rolled_culture_is_declared_in_the_result(self):
+        rolled = generate_name(self.giocatore, {"race": "Dunmer", "gender": "maschile", "randomCulture": True})
+        self.assertTrue(rolled["cultureWasRolled"])
+        chosen = generate_name(self.giocatore, {"cultureId": self.telvanni.id, "gender": "maschile"})
+        self.assertFalse(chosen["cultureWasRolled"])
+
+    def test_a_random_culture_never_lands_on_an_empty_pool(self):
+        NomiRazzeInfo.objects.create(name="Dunmer Vuoti", race="Dunmer", names_male=[], names_female=[])
+        for _ in range(40):
+            result = generate_name(self.giocatore, {"race": "Dunmer", "gender": "maschile", "randomCulture": True})
+            self.assertNotEqual(result["culture"], "Dunmer Vuoti")
+
     def test_culture_id_wins_over_the_race_default(self):
         result = generate_name(self.giocatore, {"cultureId": self.telvanni.id, "gender": "maschile"})
         self.assertEqual(result["name"], "Neloth Telvanni")

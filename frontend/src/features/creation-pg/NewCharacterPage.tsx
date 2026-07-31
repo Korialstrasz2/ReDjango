@@ -57,13 +57,28 @@ function IdentityStep({ draft, options, update }: { draft: CreationDraft; option
   </section>;
 }
 
+/* I bonus elencati qui sono quelli che la scheda applica da sola: `growth` dice
+   dove arriva la crescita, così nessuno li somma una seconda volta a mano. */
 function BonusList({ bonuses, empty }: { bonuses: Bonus[]; empty: string }) {
   if (!bonuses.length) return <p className="new-pg-detail-empty">{empty}</p>;
   return <ul className="new-pg-bonus-list">
     {bonuses.map((bonus) => <li key={`${bonus.label}:${bonus.value}`} data-kind={bonus.kind}>
-      <span>{bonus.label}</span><strong>{bonus.value}</strong>
+      <span>{bonus.label}{bonus.growth && <small>{bonus.growth}</small>}</span><strong>{bonus.value}</strong>
     </li>)}
   </ul>;
+}
+
+/* Ciò che il motore non sa applicare. Va detto esplicitamente: una regola che
+   non compare né fra i bonus automatici né qui sparisce dal tavolo. */
+function ManualNote({ text }: { text: string }) {
+  if (!text) return null;
+  return <p className="new-pg-manual-note"><strong>Da segnare a mano</strong>{text}</p>;
+}
+
+function AutomationBadge({ automated, manual }: { automated: boolean; manual: boolean }) {
+  const state = automated && manual ? "partial" : automated ? "auto" : "manual";
+  const label = state === "partial" ? "In parte automatico" : state === "auto" ? "Automatico" : "Solo promemoria";
+  return <span className="new-pg-automation" data-state={state}>{label}</span>;
 }
 
 /* Il pannello mostra soltanto ciò che automatic_race_effects applica davvero:
@@ -81,16 +96,25 @@ function RaceDetailPanel({ race, subrace }: { race?: RaceOption; subrace?: strin
       <BonusList bonuses={race.modifiers} empty="Nessun modificatore." />
     </section>
     <section>
-      <h4>Tratto razziale</h4>
+      <h4>Tratto razziale <AutomationBadge automated={race.trait.bonuses.length > 0} manual={!!race.trait.manual} /></h4>
       {race.trait.note && <p>{race.trait.note}</p>}
-      <BonusList bonuses={race.trait.bonuses} empty="Nessun bonus numerico: è un tratto narrativo." />
+      <BonusList bonuses={race.trait.bonuses} empty="Niente che la scheda possa applicare da sola." />
+      <ManualNote text={race.trait.manual} />
     </section>
     <section>
-      <h4>{chosen ? `Sottorazza: ${chosen.label}` : "Sottorazza"}</h4>
+      <h4>
+        {chosen ? `Sottorazza: ${chosen.label}` : "Sottorazza"}
+        {chosen && <AutomationBadge automated={chosen.bonuses.length > 0} manual={!!chosen.manual} />}
+      </h4>
       {chosen
-        ? <>{chosen.note && <p>{chosen.note}</p>}<BonusList bonuses={chosen.bonuses} empty="Nessun bonus numerico: è una specializzazione narrativa." /></>
+        ? <>
+            {chosen.note && <p>{chosen.note}</p>}
+            <BonusList bonuses={chosen.bonuses} empty="Niente che la scheda possa applicare da sola." />
+            <ManualNote text={chosen.manual} />
+          </>
         : <p className="new-pg-detail-empty">{race.subraces.length ? "Scegline una per vederne l'effetto." : `${race.label} non ha sottorazze.`}</p>}
     </section>
+    <p className="new-pg-detail-footnote">I bonus di sottorazza crescono di nuovo a livello 5, 10, 15 e 20.</p>
   </aside>;
 }
 

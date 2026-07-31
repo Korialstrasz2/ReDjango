@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { type CSSProperties, type FocusEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -15,11 +15,14 @@ import type {
 } from "../../lib/types";
 import {
   DOSSIER_FIELDS,
-  defaultCultureFor,
+  type RollRequest,
+  cultureRoll,
   emptyDossierInputs,
-  genderLabel,
+  genderRoll,
   nameSubtitle,
-  poolSize,
+  poolHint,
+  raceRoll,
+  rolledParts,
   pushHistory,
 } from "./nameRules";
 
@@ -32,9 +35,10 @@ export function NameTool({ notify }: Props) {
   const workspace = useQuery({ queryKey: ["aiWorkspace"], queryFn: () => getData<AIWorkspaceData>("/api/ai/") });
 
   const [tab, setTab] = useState<Tab>("rapido");
-  const [raceName, setRaceName] = useState("");
-  const [cultureId, setCultureId] = useState<number | null>(null);
-  const [gender, setGender] = useState<NameGender>("casuale");
+  // La cascata: una razza aperta, e dentro di essa una cultura aperta.
+  const [openRace, setOpenRace] = useState<string | null>(null);
+  const [openCulture, setOpenCulture] = useState<number | null>(null);
+  const [lastRequest, setLastRequest] = useState<RollRequest | null>(null);
   const [current, setCurrent] = useState<GeneratedName | null>(null);
   const [history, setHistory] = useState<GeneratedName[]>([]);
   const [inputs, setInputs] = useState(emptyDossierInputs());
@@ -46,18 +50,12 @@ export function NameTool({ notify }: Props) {
   const [saved, setSaved] = useState(false);
 
   const races = catalog.data?.races ?? [];
-  const race: NameRaceEntry | null = races.find((entry) => entry.race === raceName) || null;
-  const cultures = race?.cultures ?? [];
-  const culture: NameCultureEntry | null =
-    cultures.find((entry) => entry.id === cultureId) || defaultCultureFor(race);
 
   const roll = useMutation({
-    mutationFn: () =>
-      command<{ generatedName: GeneratedName }>(
-        "names.generate",
-        culture ? { cultureId: culture.id, gender } : { race: raceName, gender },
-        "names",
-      ),
+    mutationFn: (request: RollRequest) => {
+      setLastRequest(request);
+      return command<{ generatedName: GeneratedName }>("names.generate", { ...request }, "names");
+    },
     onSuccess: (result) => {
       const generated = result.data.generatedName;
       setCurrent(generated);
@@ -135,18 +133,21 @@ export function NameTool({ notify }: Props) {
     }
   };
 
-  const selectRace = (entry: NameRaceEntry) => {
-    setRaceName(entry.race);
-    setCultureId(defaultCultureFor(entry)?.id ?? null);
+  const closeCascade = () => {
+    setOpenRace(null);
+    setOpenCulture(null);
   };
 
-  const poolHint = useMemo(() => {
-    if (!culture) return "";
-    const first = poolSize(culture, gender);
-    return culture.surnameCount
-      ? `${first} nomi · ${culture.surnameCount} cognomi`
-      : `${first} nomi · nessun cognome in questa cultura`;
-  }, [culture, gender]);
+  // Aprire al focus rende la cascata percorribile da tastiera; si chiude solo
+  // quando il fuoco lascia davvero l'intero albero, non passando fra i livelli.
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) closeCascade();
+  };
+
+  const enterRace = (entry: NameRaceEntry) => {
+    setOpenRace(entry.race);
+    setOpenCulture(null);
+  };
 
   if (catalog.isLoading) return <p className="empty-copy">Apertura dei registri…</p>;
   if (catalog.isError) return <p className="form-error">{(catalog.error as Error).message}</p>;
@@ -172,57 +173,92 @@ export function NameTool({ notify }: Props) {
     </nav>
 
     {tab === "rapido" ? <section className="name-quick" role="tabpanel" aria-label="Generazione rapida">
-      <fieldset className="name-races">
-        <legend>Razza</legend>
-        <div>{races.map((entry) => <button
-          key={entry.race}
-          type="button"
-          className={entry.race === raceName ? "active" : ""}
-          aria-pressed={entry.race === raceName}
-          data-playable={entry.playable}
-          title={entry.playable ? entry.race : `${entry.race} · solo narrativa`}
-          onClick={() => selectRace(entry)}
-        ><strong>{entry.race}</strong><em>{entry.cultures.length > 1 ? `${entry.cultures.length} culture` : "1 cultura"}</em></button>)}</div>
-      </fieldset>
+      <p className="name-hint">
+        Un clic genera subito, a qualunque livello: sulla razza tira cultura e genere, sulla cultura tira il genere,
+        sul genere non lascia nulla al dado.
+      </p>
 
-      <fieldset className="name-genders">
-        <legend>Genere</legend>
-        <div>{(catalog.data?.genders ?? []).map((entry) => <button
-          key={entry.value}
-          type="button"
-          className={entry.value === gender ? "active" : ""}
-          aria-pressed={entry.value === gender}
-          onClick={() => setGender(entry.value)}
-        >{entry.label}</button>)}</div>
-      </fieldset>
+      <div className="name-cascade" onMouseLeave={closeCascade} onBlur={handleBlur}>
+        <ul className="name-cascade-races">
+          {races.map((entry, index) => {
+            const isOpen = openRace === entry.race;
+            return <li
+              key={entry.race}
+              style={{ "--i": index } as CSSProperties}
+              onMouseEnter={() => enterRace(entry)}
+            >
+              <button
+                type="button"
+                className={isOpen ? "open" : ""}
+                data-playable={entry.playable}
+                aria-expanded={isOpen}
+                title={entry.playable ? `${entry.race} · genera con cultura e genere casuali` : `${entry.race} · solo narrativa`}
+                onFocus={() => enterRace(entry)}
+                onClick={() => {
+                  // Il clic genera e apre: su touch, dove il passaggio del mouse
+                  // non esiste, è l'unico modo di raggiungere le culture.
+                  enterRace(entry);
+                  roll.mutate(raceRoll(entry));
+                }}
+              >
+                <strong>{entry.race}</strong>
+                <em>{entry.cultures.length}</em>
+                <span className="name-cascade-arrow" aria-hidden="true">›</span>
+              </button>
 
-      {cultures.length > 1 && <fieldset className="name-cultures">
-        <legend>Cultura <small>facoltativa</small></legend>
-        <select
-          value={culture ? String(culture.id) : ""}
-          onChange={(event) => setCultureId(event.target.value ? Number(event.target.value) : null)}
-        >
-          {cultures.map((entry) => <option key={entry.id} value={String(entry.id)}>{entry.name}</option>)}
-        </select>
-        {culture?.description && <p className="name-culture-note">{culture.description}</p>}
-      </fieldset>}
+              {isOpen && <ul className="name-flyout name-cascade-cultures" aria-label={`Culture ${entry.race}`}>
+                {entry.cultures.map((cultureEntry, cultureIndex) => {
+                  const cultureOpen = openCulture === cultureEntry.id;
+                  return <li
+                    key={cultureEntry.id}
+                    style={{ "--i": cultureIndex } as CSSProperties}
+                    onMouseEnter={() => setOpenCulture(cultureEntry.id)}
+                  >
+                    <button
+                      type="button"
+                      className={cultureOpen ? "open" : ""}
+                      aria-expanded={cultureOpen}
+                      title={`${cultureEntry.name} · ${poolHint(cultureEntry)}`}
+                      onFocus={() => setOpenCulture(cultureEntry.id)}
+                      onClick={() => {
+                        setOpenCulture(cultureEntry.id);
+                        roll.mutate(cultureRoll(cultureEntry));
+                      }}
+                    >
+                      <strong>{cultureEntry.name}</strong>
+                      <span className="name-cascade-arrow" aria-hidden="true">›</span>
+                    </button>
 
-      <div className="name-actions">
-        <button type="button" className="button primary" disabled={!raceName || roll.isPending} onClick={() => roll.mutate()}>
-          {roll.isPending ? "…" : current ? "Genera un altro nome" : "Genera nome"}
-        </button>
-        {poolHint && <small className="muted-copy">{poolHint}</small>}
+                    {cultureOpen && <div className="name-flyout name-cascade-genders" aria-label={`Genere per ${cultureEntry.name}`}>
+                      <button type="button" onClick={() => roll.mutate(genderRoll(cultureEntry, "maschile"))}>
+                        <span aria-hidden="true">♂</span>Maschile
+                      </button>
+                      <button type="button" onClick={() => roll.mutate(genderRoll(cultureEntry, "femminile"))}>
+                        <span aria-hidden="true">♀</span>Femminile
+                      </button>
+                    </div>}
+                  </li>;
+                })}
+              </ul>}
+            </li>;
+          })}
+        </ul>
       </div>
 
-      {current && <output className="name-result" aria-live="polite">
-        <strong>{current.name}</strong>
-        <span>{nameSubtitle(current)}{current.requestedGender === "casuale" ? " · tirato" : ""}</span>
-        {current.alreadyUsed && <em className="name-warning">Un personaggio con questo nome esiste già in campagna.</em>}
-        <div className="button-row">
-          <button type="button" className="button secondary small" onClick={() => copy(current.name)}>Copia</button>
-          {canAdvance && <button type="button" className="button secondary small" onClick={() => setTab("avanzato")}>Continua il personaggio</button>}
-        </div>
-      </output>}
+      <output className={`name-result ${roll.isPending ? "pending" : ""}`} aria-live="polite">
+        {current ? <>
+          <strong>{current.name}</strong>
+          <span>{nameSubtitle(current)}</span>
+          {rolledParts(lastRequest) && <small className="name-rolled">{rolledParts(lastRequest)}</small>}
+          {current.cultureDescription && <p className="name-culture-note">{current.cultureDescription}</p>}
+          {current.alreadyUsed && <em className="name-warning">Un personaggio con questo nome esiste già in campagna.</em>}
+          <div className="button-row">
+            <button type="button" className="button secondary small" disabled={roll.isPending} onClick={() => lastRequest && roll.mutate(lastRequest)}>Tira di nuovo</button>
+            <button type="button" className="button secondary small" onClick={() => copy(current.name)}>Copia</button>
+            {canAdvance && <button type="button" className="button secondary small" onClick={() => setTab("avanzato")}>Continua il personaggio</button>}
+          </div>
+        </> : <span className="name-result-empty">Scegli una razza per cominciare.</span>}
+      </output>
 
       {history.length > 1 && <details className="name-history">
         <summary>Nomi precedenti ({history.length - 1})</summary>

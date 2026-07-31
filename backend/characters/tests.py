@@ -55,6 +55,16 @@ def profile_values(**overrides):
     return values
 
 
+def _subrace_value(expression, livello):
+    """Quanto vale davvero un bonus di sottorazza al livello indicato."""
+    from backend.characters.services.refresh_personaggio import evaluate_expression
+
+    return evaluate_expression(
+        str(expression),
+        {"personaggio": {"livello": livello}, "base": {}, "pre": {}, "final": {}},
+    )
+
+
 class PersonaggioTotSchemaTests(TestCase):
     def test_tot_json_replaces_individual_tot_model_fields(self):
         field_names = {field.name for field in Personaggio._meta.fields}
@@ -126,10 +136,13 @@ class CharacterRaceRulesTests(TestCase):
             [effect["name"] for effect in effects],
             ["RAZZA: Dremora", "Dremora: tratto razziale", "SUBRAZZA: Kynval"],
         )
-        self.assertIn(
-            {"target": "attacco", "operation": "add", "value": "1"},
-            effects[-1]["operations"],
+        attacco = next(
+            operation for operation in effects[-1]["operations"] if operation["target"] == "attacco"
         )
+        self.assertEqual(attacco["operation"], "add")
+        # Anche i ranghi Dremora seguono i raddoppi di sottorazza: +1, poi +5 a livello 20.
+        self.assertEqual(_subrace_value(attacco["value"], 1), 1)
+        self.assertEqual(_subrace_value(attacco["value"], 20), 5)
 
     def test_xivilai_is_a_distinct_balanced_daedric_race_without_dremora_ranks(self):
         modifiers = RACE_CATALOG["Xivilai"]["modifiers"]
@@ -163,11 +176,13 @@ class CharacterRaceRulesTests(TestCase):
             ("Scheletro", "Draugr", "Revenant", "Mummia", "Vampiro", "Lich", "Spettro"),
         )
         effects = automatic_race_effects("Non morto", "Draugr")
+        # Il tratto razziale non raddoppia: resta il valore piatto della guida.
         self.assertEqual(effects[1]["operations"], [{"target": "rd_fis", "operation": "add", "value": "1"}])
-        self.assertIn(
-            {"target": "res_gelo", "operation": "add", "value": "1"},
-            effects[-1]["operations"],
+        res_gelo = next(
+            operation for operation in effects[-1]["operations"] if operation["target"] == "res_gelo"
         )
+        self.assertEqual(_subrace_value(res_gelo["value"], 1), 1)
+        self.assertEqual(_subrace_value(res_gelo["value"], 20), 5)
 
 
 class CharacterAppearanceTests(TestCase):
@@ -1300,16 +1315,76 @@ class NuovoPgCreationTests(TestCase):
         payload = creation_options_payload(self.giocatore)
         dunmer = next(entry for entry in payload["races"] if entry["value"] == "Dunmer")
 
-        self.assertIn({"label": "Intelligenza", "value": "+2", "kind": "bonus"}, dunmer["modifiers"])
-        self.assertIn({"label": "Fortuna", "value": "-2", "kind": "malus"}, dunmer["modifiers"])
+        self.assertIn(
+            {"label": "Intelligenza", "value": "+2", "kind": "bonus", "growth": ""},
+            dunmer["modifiers"],
+        )
+        self.assertIn(
+            {"label": "Fortuna", "value": "-2", "kind": "malus", "growth": ""},
+            dunmer["modifiers"],
+        )
         self.assertIn("Resistenza naturale al fuoco", dunmer["trait"]["note"])
-        self.assertIn({"label": "Resistenza al fuoco", "value": "+1", "kind": "bonus"}, dunmer["trait"]["bonuses"])
+        self.assertIn(
+            {"label": "Resistenza al fuoco", "value": "+1", "kind": "bonus", "growth": ""},
+            dunmer["trait"]["bonuses"],
+        )
 
+        # Il pannello mostra cifre, non formule: +8 subito e dove arriva ai raddoppi.
         mago = next(entry for entry in dunmer["subraces"] if entry["value"] == "Retaggio Mago")
-        self.assertEqual(mago["bonuses"], [{"label": "Mana", "value": "+8", "kind": "bonus"}])
+        self.assertEqual(
+            mago["bonuses"],
+            [{"label": "Mana", "value": "+8", "kind": "bonus", "growth": "+40 a livello 20"}],
+        )
 
         xivilai = next(entry for entry in payload["races"] if entry["value"] == "Xivilai")
         self.assertEqual(xivilai["subraces"], [])
+
+    def test_creation_options_separate_automatic_bonuses_from_manual_reminders(self):
+        """Il pannello deve dire quali poteri applica e quali restano da segnare.
+
+        Una regola che non compare né fra i bonus né fra i promemoria sparisce dal
+        tavolo: è il modo più facile di perdere un potere di sottorazza.
+        """
+        payload = creation_options_payload(self.giocatore)
+        orsimer = next(entry for entry in payload["races"] if entry["value"] == "Orsimer")
+
+        automatic = next(entry for entry in orsimer["subraces"] if entry["value"] == "Selvaggio")
+        self.assertTrue(automatic["bonuses"])
+        self.assertEqual(automatic["manual"], "")
+
+        reminder = next(entry for entry in orsimer["subraces"] if entry["value"] == "Forgiatore d'Armi")
+        self.assertEqual(reminder["bonuses"], [])
+        self.assertIn("a mano", reminder["manual"])
+
+        for race in payload["races"]:
+            for subrace in race["subraces"]:
+                with self.subTest(subrace=f"{race['value']}/{subrace['value']}"):
+                    self.assertTrue(
+                        subrace["bonuses"] or subrace["manual"],
+                        "una sottorazza senza bonus automatici deve almeno avere un promemoria",
+                    )
+
+    def test_the_orsimer_passive_moves_the_tier_and_never_reports_a_fraction(self):
+        """Il passivo Orsimer vive su Tier, non su un inesistente bersaglio danno.
+
+        Il Tier sceglie la formula dei dadi da una tabella con chiavi intere:
+        un valore frazionario non troverebbe alcuna formula di danno.
+        """
+        payload = creation_options_payload(self.giocatore)
+        orsimer = next(entry for entry in payload["races"] if entry["value"] == "Orsimer")
+        labels = [bonus["label"] for bonus in orsimer["trait"]["bonuses"]]
+
+        self.assertEqual(labels, ["Tier"])
+        effects = automatic_race_effects("Orsimer", "Selvaggio")
+        tier = next(
+            operation
+            for effect in effects
+            for operation in effect["operations"]
+            if operation["target"] == "tier"
+        )
+        for livello, expected in ((1, 0), (3, 1), (6, 2), (20, 6)):
+            with self.subTest(livello=livello):
+                self.assertEqual(_subrace_value(tier["value"], livello), expected)
 
     def test_creation_options_derive_what_each_characteristic_feeds(self):
         """«Alimenta» esce dalle formule attive: un elenco fisso mentirebbe appena cambiano."""

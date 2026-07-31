@@ -1988,7 +1988,9 @@ html[data-reduced-motion="true"] .audio-mini-progress i { transition: none; }
   .theft-total { text-align: left; }
 }
 
-.name-tool { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; height: 100%; min-height: 0; }
+/* Nessuna altezza forzata: i pop-out della cascata devono poter sporgere, quindi
+   l'unico contenitore che scorre resta il corpo del pannello. */
+.name-tool { display: grid; grid-template-rows: auto auto; gap: 12px; align-content: start; }
 .name-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .name-tabs button { display: grid; grid-template-columns: 20px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 0 8px; padding: 9px 12px; border: 1px solid color-mix(in srgb, var(--gold), transparent 62%); border-radius: 3px; background: color-mix(in srgb, var(--panel), transparent 22%); color: var(--muted); text-align: left; cursor: pointer; transition: 150ms ease; }
 .name-tabs button > span { grid-row: span 2; color: color-mix(in srgb, var(--gold), transparent 24%); font-size: 1.15rem; text-align: center; }
@@ -1999,24 +2001,56 @@ html[data-reduced-motion="true"] .audio-mini-progress i { transition: none; }
 .name-tabs button.active { border-color: var(--gold); background: linear-gradient(160deg, color-mix(in srgb, var(--gold), transparent 84%), color-mix(in srgb, var(--panel-strong), transparent 12%)); box-shadow: inset 0 0 22px #0004; }
 .name-tabs button.active strong, .name-tabs button.active > span { color: color-mix(in srgb, var(--gold), white 40%); }
 
-.name-quick, .name-advanced { display: grid; gap: 11px; align-content: start; min-height: 0; overflow-y: auto; }
-.name-quick fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
-.name-quick legend { padding: 0 0 5px; color: var(--muted); font-size: .52rem; letter-spacing: .09em; text-transform: uppercase; }
-.name-quick legend small { font-size: .9em; opacity: .7; text-transform: none; }
-.name-races > div { display: flex; flex-wrap: wrap; gap: 6px; }
-.name-races button { display: grid; gap: 1px; padding: 7px 11px; border: 1px solid color-mix(in srgb, var(--line), transparent 24%); border-radius: 2px; background: color-mix(in srgb, var(--panel), transparent 34%); color: var(--muted); text-align: left; cursor: pointer; transition: 140ms ease; }
-.name-races button strong { color: color-mix(in srgb, var(--text), transparent 14%); font-size: .7rem; }
-.name-races button em { color: var(--muted); font-style: normal; font-size: .5rem; letter-spacing: .05em; text-transform: uppercase; }
+.name-quick { display: grid; gap: 11px; align-content: start; }
+.name-advanced { display: grid; gap: 11px; align-content: start; min-height: 0; }
+.name-hint { margin: 0; color: var(--muted); font-size: .58rem; line-height: 1.55; }
+
+/* La cascata: razze in colonna, culture e generi in pop-out ancorati alla riga.
+   Ogni livello vive dentro il <li> del livello precedente, così spostare il
+   mouse dentro il pop-out non conta come uscita e il menu non si chiude. */
+.name-cascade { position: relative; z-index: 1; }
+.name-cascade ul { display: grid; margin: 0; padding: 0; list-style: none; }
+.name-cascade-races { gap: 3px; width: 152px; }
+.name-cascade li { position: relative; }
+.name-cascade button { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 7px; width: 100%; padding: 7px 9px; border: 1px solid color-mix(in srgb, var(--line), transparent 30%); border-radius: 2px; background: color-mix(in srgb, var(--panel), transparent 34%); color: var(--muted); text-align: left; cursor: pointer; transition: border-color 140ms ease, background 140ms ease, color 140ms ease; }
+.name-cascade button strong { overflow: hidden; color: color-mix(in srgb, var(--text), transparent 14%); font-size: .69rem; text-overflow: ellipsis; white-space: nowrap; }
+.name-cascade button em { color: var(--muted); font-style: normal; font-size: .55rem; font-variant-numeric: tabular-nums; }
+.name-cascade-arrow { color: color-mix(in srgb, var(--gold), transparent 46%); font-size: .8rem; line-height: 1; transition: transform 160ms ease, color 160ms ease; }
+.name-cascade button:hover, .name-cascade button:focus-visible { border-color: color-mix(in srgb, var(--gold), transparent 40%); color: var(--text); }
+.name-cascade button.open { border-color: var(--gold); background: linear-gradient(90deg, color-mix(in srgb, var(--gold), transparent 80%), color-mix(in srgb, var(--panel-strong), transparent 22%)); }
+.name-cascade button.open strong { color: color-mix(in srgb, var(--gold), white 52%); }
+.name-cascade button.open .name-cascade-arrow { color: color-mix(in srgb, var(--gold), white 30%); transform: translateX(2px); }
 /* Le razze solo narrative restano disponibili ma non si confondono con le giocabili. */
-.name-races button[data-playable="false"] strong { color: color-mix(in srgb, var(--muted), var(--text) 30%); font-style: italic; }
-.name-races button:hover { border-color: color-mix(in srgb, var(--gold), transparent 46%); color: var(--text); }
-.name-races button.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 82%); }
-.name-races button.active strong, .name-races button.active em { color: color-mix(in srgb, var(--gold), white 52%); }
-.name-genders > div { display: flex; flex-wrap: wrap; gap: 6px; }
-.name-genders button { padding: 7px 14px; border: 1px solid color-mix(in srgb, var(--line), transparent 24%); border-radius: 2px; background: color-mix(in srgb, var(--panel), transparent 34%); color: var(--muted); font-size: .68rem; cursor: pointer; transition: 140ms ease; }
-.name-genders button:hover { border-color: color-mix(in srgb, var(--gold), transparent 46%); color: var(--text); }
-.name-genders button.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 82%); color: color-mix(in srgb, var(--gold), white 52%); }
-.name-cultures select { width: 100%; padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--gold), transparent 58%); border-radius: 2px; background: color-mix(in srgb, var(--panel), transparent 22%); color: var(--text); font-size: .7rem; }
+.name-cascade button[data-playable="false"] strong { color: color-mix(in srgb, var(--muted), var(--text) 30%); font-style: italic; }
+
+/* `left: 100%` con il distacco ottenuto dal padding: la zona sensibile resta
+   contigua alla riga, quindi il mouse non attraversa un vuoto che chiuderebbe. */
+.name-flyout { position: absolute; top: -5px; left: 100%; z-index: 2; padding-left: 6px; animation: name-flyout-in 170ms cubic-bezier(.2, .8, .2, 1) both; }
+.name-cascade-cultures { gap: 3px; width: 186px; padding: 5px; border: 1px solid color-mix(in srgb, var(--gold), transparent 52%); border-radius: 3px; background: var(--theme-overlay-strong-surface); box-shadow: 0 14px 34px #0008; backdrop-filter: blur(10px); }
+.name-cascade-cultures > li { animation: name-flyout-item-in 200ms cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 26ms); }
+.name-cascade-genders { display: grid; gap: 3px; width: 132px; }
+.name-cascade-genders > button { grid-template-columns: auto minmax(0, 1fr); padding: 7px 10px; border-color: color-mix(in srgb, var(--gold), transparent 46%); background: var(--theme-overlay-strong-surface); font-size: .67rem; box-shadow: 0 12px 26px #0007; backdrop-filter: blur(10px); animation: name-flyout-item-in 190ms cubic-bezier(.2, .8, .2, 1) both; }
+.name-cascade-genders > button:first-child { animation-delay: 0ms; }
+.name-cascade-genders > button:last-child { animation-delay: 34ms; }
+.name-cascade-genders > button span { color: color-mix(in srgb, var(--gold), white 22%); font-size: .82rem; }
+.name-cascade-genders > button:hover { border-color: var(--gold); background: linear-gradient(90deg, color-mix(in srgb, var(--gold), transparent 78%), color-mix(in srgb, var(--panel-strong), transparent 18%)); color: color-mix(in srgb, var(--gold), white 52%); }
+
+@keyframes name-flyout-in {
+  from { opacity: 0; transform: translateX(-7px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes name-flyout-item-in {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .name-flyout, .name-cascade-cultures > li, .name-cascade-genders > button { animation: none; }
+  .name-cascade-arrow, .name-cascade button { transition: none; }
+}
+
+.name-result-empty { color: var(--muted); font-size: .62rem; font-style: italic; }
+.name-rolled { color: color-mix(in srgb, var(--gold), transparent 30%); font-size: .53rem; letter-spacing: .06em; text-transform: uppercase; }
+.name-result.pending { opacity: .6; }
 .name-culture-note { margin: 6px 0 0; color: var(--muted); font-size: .57rem; line-height: 1.55; white-space: pre-line; }
 
 .name-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
@@ -5000,6 +5034,17 @@ html[data-reduced-motion="true"] .alchemy-slot-epic, html[data-reduced-motion="t
 .new-pg-bonus-list li strong { font: 700 .7rem var(--font-display); }
 .new-pg-bonus-list li[data-kind="bonus"] strong { color: #8fd694; }
 .new-pg-bonus-list li[data-kind="malus"] strong { color: #e08a8a; }
+.new-pg-bonus-list li span { display: grid; gap: 1px; }
+.new-pg-bonus-list li small { color: var(--muted); font-size: .55rem; letter-spacing: .04em; }
+/* Automatico contro promemoria: la differenza deve leggersi senza aprire nulla,
+   altrimenti un bonus già applicato viene sommato una seconda volta a mano. */
+.new-pg-automation { margin-left: 6px; padding: 1px 6px; border-radius: 999px; font-size: .5rem; text-transform: uppercase; letter-spacing: .07em; vertical-align: middle; }
+.new-pg-automation[data-state="auto"] { color: #8fd694; background: color-mix(in srgb, #8fd694, transparent 85%); }
+.new-pg-automation[data-state="partial"] { color: #e5c27a; background: color-mix(in srgb, #e5c27a, transparent 85%); }
+.new-pg-automation[data-state="manual"] { color: #e0a87a; background: color-mix(in srgb, #e0a87a, transparent 85%); }
+.new-pg-manual-note { display: grid; gap: 3px; margin: 7px 0 0; padding: 7px 9px; border-left: 2px solid #e0a87a; border-radius: 0 4px 4px 0; background: color-mix(in srgb, #e0a87a, transparent 92%); }
+.new-pg-manual-note strong { color: #e0a87a; font-size: .5rem; text-transform: uppercase; letter-spacing: .08em; }
+.new-pg-detail-footnote { margin: 0; padding-top: 9px; border-top: 1px solid color-mix(in srgb, var(--line), transparent 35%); color: var(--muted); font-size: .58rem; font-style: italic; }
 
 @media (max-width: 1100px) {
   .new-pg-choice-layout { grid-template-columns: minmax(0, 1fr); }

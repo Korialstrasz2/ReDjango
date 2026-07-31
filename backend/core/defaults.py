@@ -1028,6 +1028,11 @@ CHARACTERISTIC_DESCRIPTIONS = {
 PREFERRED_CHARACTERISTIC_FORMULA = "personaggio.livello / 5"
 PREFERRED_CHARACTERISTIC_EFFECT_NAME = "Caratteristica preferita"
 
+# Età obbligatoria alla creazione: i limiti stanno qui perché li leggono sia la
+# validazione del servizio sia la guida "Creare un nuovo PG".
+MIN_CHARACTER_AGE = 1
+MAX_CHARACTER_AGE = 999
+
 
 QUICK_STAT_ADJUSTMENT_CONFIG_KEY = "quick_stat_adjustments"
 QUICK_STAT_ADJUSTMENT_TARGET_CHOICES = (

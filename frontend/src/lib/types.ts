@@ -571,6 +571,7 @@ export type GeneratedName = {
   culture: string;
   cultureId: number;
   cultureDescription: string;
+  cultureWasRolled: boolean;
   alreadyUsed: boolean;
 };
 

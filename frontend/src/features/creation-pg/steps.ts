@@ -13,14 +13,14 @@ export type CreationDraft = {
   caratteristicaPreferita: string;
 };
 
-export type Bonus = { label: string; value: string; kind: "bonus" | "malus" };
-export type SubraceOption = { value: string; label: string; note: string; bonuses: Bonus[] };
+export type Bonus = { label: string; value: string; kind: "bonus" | "malus"; growth: string };
+export type SubraceOption = { value: string; label: string; note: string; bonuses: Bonus[]; manual: string };
 export type RaceOption = {
   value: string;
   label: string;
   subraces: SubraceOption[];
   modifiers: Bonus[];
-  trait: { note: string; bonuses: Bonus[] };
+  trait: { note: string; bonuses: Bonus[]; manual: string };
 };
 export type CharacteristicOption = {
   value: string;

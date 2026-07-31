@@ -31,7 +31,11 @@ from .naming_rules import (
 UNIQUENESS_ATTEMPTS = 8
 
 
-def _resolve_culture(payload: dict) -> NomiRazzeInfo:
+def _usable(culture: NomiRazzeInfo) -> bool:
+    return bool(culture.names_male or culture.names_female)
+
+
+def _resolve_culture(payload: dict, *, rng: random.Random) -> NomiRazzeInfo:
     cultures = NomiRazzeInfo.objects.filter(archived_at__isnull=True)
     culture_id = payload.get("cultureId")
     if culture_id not in (None, ""):
@@ -43,19 +47,23 @@ def _resolve_culture(payload: dict) -> NomiRazzeInfo:
     race = str(payload.get("race") or "").strip()
     if not race:
         raise ApiError("names.race_required", "Scegli una razza.", "race")
-    for candidate in cultures.filter(race__iexact=race).order_by("name"):
-        # La cultura omonima della razza è il bacino «semplice» della modalità rapida.
-        if candidate.name.casefold() == race.casefold():
-            return candidate
-    culture = cultures.filter(race__iexact=race).order_by("name").first()
-    if culture is None:
+    candidates = [entry for entry in cultures.filter(race__iexact=race).order_by("name") if _usable(entry)]
+    if not candidates:
         raise ApiError(
             "names.pool_missing",
             f"Nessun bacino di nomi è configurato per «{race}». Importalo o aggiungilo da Django Admin.",
             "race",
             409,
         )
-    return culture
+    # Chi clicca la razza e nient'altro sta chiedendo «sorprendimi»: la cultura
+    # va tirata fra tutte quelle della razza, non fatta cadere sempre sulla stessa.
+    if payload.get("randomCulture"):
+        return rng.choice(candidates)
+    # Altrimenti vince la cultura omonima della razza, il bacino «semplice».
+    return next(
+        (entry for entry in candidates if entry.name.casefold() == race.casefold()),
+        candidates[0],
+    )
 
 
 def _taken_names(giocatore: Giocatore) -> set[str]:
@@ -79,12 +87,12 @@ def generate_name(giocatore: Giocatore, payload: dict) -> dict:
     Non scrive nulla: la generazione è una lettura del bacino più un tiro.
     """
 
-    culture = _resolve_culture(payload)
+    rng = random.Random()
+    culture = _resolve_culture(payload, rng=rng)
     requested_gender = normalize_gender(payload.get("gender") or GENDER_RANDOM)
     if not requested_gender:
         raise ApiError("names.gender_invalid", "Genere non riconosciuto.", "gender")
 
-    rng = random.Random()
     gender = resolve_gender(requested_gender, rng=rng)
     first_pool = pool_for_gender(culture.names_male or [], culture.names_female or [], gender)
     if not first_pool:
@@ -119,6 +127,8 @@ def generate_name(giocatore: Giocatore, payload: dict) -> dict:
         "culture": culture.name,
         "cultureId": culture.id,
         "cultureDescription": culture.description,
+        # Il tavolo deve sapere che cosa ha deciso il dado e che cosa ha deciso lui.
+        "cultureWasRolled": bool(payload.get("randomCulture")) and payload.get("cultureId") in (None, ""),
         # Il tavolo deve sapere se sta per avere due Astrid, non scoprirlo dopo.
         "alreadyUsed": duplicate,
     }

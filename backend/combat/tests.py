@@ -254,6 +254,75 @@ class MapWorkspaceTests(CombatTestCase):
         self.assertFalse(added_again)
         self.assertFalse(participant.active)
 
+    def test_a_character_joining_takes_over_the_map_focus_from_the_previous_one(self):
+        """Chi entra diventa il personaggio attivo della mappa.
+
+        L'inspector, il token evidenziato e il pannello d'attacco leggono tutti
+        `activeCharacterId`: lasciandolo sul PG della sessione precedente, chi
+        apre Combattimento con un personaggio nuovo continuava a vedere quello
+        vecchio a sinistra.
+        """
+        previous = self.character("Occupante")
+        self.map.active_character = previous
+        self.map.save(update_fields=["active_character", "updated_at"])
+
+        arriving = self.character("Nuovo Arrivato")
+        self.giocatore.active_character = arriving
+        self.giocatore.character_ids = [arriving.id]
+        self.giocatore.save(update_fields=["active_character", "character_ids", "updated_at"])
+
+        _map, added = ensure_viewer_character(self.giocatore, {"mapId": self.map.id})
+        self.map.refresh_from_db()
+
+        self.assertTrue(added)
+        self.assertEqual(self.map.active_character_id, arriving.id)
+        payload = combat_workspace_payload(self.user, self.giocatore, self.map.id)
+        self.assertEqual(payload["map"]["activeCharacterId"], arriving.id)
+        self.assertEqual(payload["focusCharacter"]["id"], arriving.id)
+
+    def test_an_already_present_character_reclaims_the_focus_without_being_added_twice(self):
+        """La mappa ricorda i partecipanti: rientrare deve comunque riportare il fuoco.
+
+        È il caso reale, non quello della prima entrata: il PG era già sulla mappa
+        da una visita precedente, quindi il ramo di ingresso non scatta e senza
+        questo l'inspector resterebbe sul personaggio di prima per sempre.
+        """
+        returning = self.character("Ritornante")
+        self.giocatore.active_character = returning
+        self.giocatore.character_ids = [returning.id]
+        self.giocatore.save(update_fields=["active_character", "character_ids", "updated_at"])
+        ensure_viewer_character(self.giocatore, {"mapId": self.map.id})
+
+        occupant = self.character("Occupante")
+        self.map.active_character = occupant
+        self.map.save(update_fields=["active_character", "updated_at"])
+
+        _map, added = ensure_viewer_character(self.giocatore, {"mapId": self.map.id})
+        self.map.refresh_from_db()
+
+        self.assertFalse(added)
+        self.assertEqual(self.map.participants.filter(character=returning).count(), 1)
+        self.assertEqual(self.map.active_character_id, returning.id)
+
+    def test_a_character_removed_by_the_master_does_not_reclaim_the_focus(self):
+        """La disattivazione decisa dal Master vince sul ritorno del giocatore."""
+        removed = self.character("Rimossa")
+        self.giocatore.active_character = removed
+        self.giocatore.character_ids = [removed.id]
+        self.giocatore.save(update_fields=["active_character", "character_ids", "updated_at"])
+        ensure_viewer_character(self.giocatore, {"mapId": self.map.id})
+        participant = self.map.participants.get(character=removed)
+        deactivate_participant(self.user, self.giocatore, {"participantId": participant.id})
+
+        occupant = self.character("Occupante")
+        self.map.active_character = occupant
+        self.map.save(update_fields=["active_character", "updated_at"])
+
+        ensure_viewer_character(self.giocatore, {"mapId": self.map.id})
+        self.map.refresh_from_db()
+
+        self.assertEqual(self.map.active_character_id, occupant.id)
+
     def test_master_adds_inactive_character_without_cloning_and_can_reactivate_it(self):
         character = self.character("Alleata")
         _map, added = activate_character(self.user, self.giocatore, {

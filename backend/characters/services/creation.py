@@ -23,6 +23,8 @@ from backend.core.defaults import (
     CHARACTERISTIC_DESCRIPTIONS,
     CHARACTERISTIC_KEYS,
     CHARACTERISTIC_LABELS,
+    MAX_CHARACTER_AGE,
+    MIN_CHARACTER_AGE,
     PREFERRED_CHARACTERISTIC_EFFECT_NAME,
     PREFERRED_CHARACTERISTIC_FORMULA,
 )
@@ -38,9 +40,11 @@ from ..models import (
     Personaggio,
     Zaino,
 )
-from ..race_rules import RACE_CATALOG, RACE_EXTRA_VALUE, subraces_for
-from .custom_effects import EFFECT_TARGET_LABELS
+from ..race_rules import DOUBLING_LEVELS, RACE_CATALOG, RACE_EXTRA_VALUE, subraces_for
+from .custom_effects import EFFECT_TARGET_LABELS, effect_target_options
 from .refresh_personaggio import (
+    CalculationExpressionError,
+    evaluate_expression,
     extract_characteristic_adjustments,
     extract_formula_map,
     refresh_personaggio,
@@ -52,8 +56,10 @@ from .refresh_personaggio import (
 # esenti perché creano personaggi anche per il tavolo.
 MAX_PLAYABLE_CHARACTERS_PER_PLAYER = 5
 
-MIN_AGE = 1
-MAX_AGE = 999
+# Alias storici: i limiti veri vivono in backend/core/defaults.py, dove anche
+# la guida "Creare un nuovo PG" li legge.
+MIN_AGE = MIN_CHARACTER_AGE
+MAX_AGE = MAX_CHARACTER_AGE
 # Il tavolo usa due soli sessi. Restare su questa coppia tiene allineati il
 # passo Identità della creazione e la validazione che lo accetta.
 SEX_CHOICES = (("maschio", "Maschio"), ("femmina", "Femmina"))
@@ -245,24 +251,61 @@ def create_personaggio(giocatore: Giocatore, values: Mapping[str, Any]) -> Perso
 
 
 def _target_label(target: str) -> str:
-    return EFFECT_TARGET_LABELS.get(target, target.replace("_", " ").capitalize())
+    """Nome leggibile di un bersaglio, competenze comprese.
+
+    ``EFFECT_TARGET_LABELS`` copre solo i valori della scheda: i bersagli
+    ``competenza.*`` hanno la loro etichetta nell'elenco dell'editor effetti.
+    """
+    if target in EFFECT_TARGET_LABELS:
+        return EFFECT_TARGET_LABELS[target]
+    label = next(
+        (option["label"] for option in effect_target_options() if option["value"] == target),
+        "",
+    )
+    if label:
+        return label.replace("Competenza · ", "").replace(" (extra)", "")
+    return target.replace("_", " ").capitalize()
+
+
+PREVIEW_LEVEL = 1
+GROWTH_PREVIEW_LEVEL = DOUBLING_LEVELS[-1]
+
+
+def _value_at(value: Any, livello: int) -> float:
+    if isinstance(value, (int, float)):
+        return float(value)
+    try:
+        return float(
+            evaluate_expression(
+                str(value),
+                {"personaggio": {"livello": livello}, "base": {}, "pre": {}, "final": {}},
+            )
+        )
+    except CalculationExpressionError:
+        return 0.0
+
+
+def _number(value: float) -> str:
+    return str(int(value)) if float(value).is_integer() else f"{value:g}"
 
 
 def _bonus_entries(effects: Mapping[str, Any]) -> list[dict[str, str]]:
-    """Rende leggibili i bonus di RACE_CATALOG senza reinterpretarli.
+    """Traduce i bonus del catalogo in cifre, non in formule.
 
-    ``automatic_race_effects`` li applica tutti come somma, quindi un valore
-    numerico negativo è già il malus e una stringa è una formula da mostrare
-    così com'è (``personaggio.livello * 2``).
+    Il valore mostrato è quello che il personaggio ha davvero al livello di
+    partenza; se la formula cresce, ``growth`` dice dove arriva all'ultima
+    soglia. Stampare l'espressione grezza direbbe la verità a nessuno.
     """
     entries = []
     for target, value in effects.items():
-        negative = isinstance(value, (int, float)) and value < 0
+        start = _value_at(value, PREVIEW_LEVEL)
+        end = _value_at(value, GROWTH_PREVIEW_LEVEL)
         entries.append(
             {
                 "label": _target_label(target),
-                "value": str(value) if negative else f"+{value}",
-                "kind": "malus" if negative else "bonus",
+                "value": _number(start) if start < 0 else f"+{_number(start)}",
+                "kind": "malus" if start < 0 else "bonus",
+                "growth": f"+{_number(end)} a livello {GROWTH_PREVIEW_LEVEL}" if end != start else "",
             }
         )
     return entries
@@ -284,6 +327,7 @@ def _race_option(race: str, definition: Mapping[str, Any]) -> dict[str, Any]:
                 "label": subrace,
                 "note": str(subrace_data.get("note") or ""),
                 "bonuses": _bonus_entries(subrace_data.get("effects") or {}),
+                "manual": str(subrace_data.get("manual") or ""),
             }
         )
     return {
@@ -294,6 +338,7 @@ def _race_option(race: str, definition: Mapping[str, Any]) -> dict[str, Any]:
         "trait": {
             "note": str(trait_data.get("note") or ""),
             "bonuses": _bonus_entries(trait_data.get("effects") or {}),
+            "manual": str(trait_data.get("manual") or ""),
         },
     }
 

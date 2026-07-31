@@ -1250,10 +1250,16 @@ export function CombatPage() {
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
+  /* All'ingresso la mappa deve puntare al personaggio di chi guarda: inspector,
+     token evidenziato e pannello d'attacco leggono tutti `activeCharacterId`, che
+     la mappa ricorda fra una sessione e l'altra. Si tenta una volta sola per mappa
+     e personaggio, così dopo il Master resta libero di selezionare un altro token. */
   useEffect(() => {
     if (!map || !workspace?.viewerCharacterId) return;
     const key = `${map.id}:${workspace.viewerCharacterId}`;
-    if (map.activeCharacterIds.includes(workspace.viewerCharacterId) || autoPresenceAttempt.current.has(key)) return;
+    const alreadyFocused = map.activeCharacterId === workspace.viewerCharacterId
+      && map.activeCharacterIds.includes(workspace.viewerCharacterId);
+    if (alreadyFocused || autoPresenceAttempt.current.has(key)) return;
     autoPresenceAttempt.current.add(key);
     combatAction("combat.ensureViewerCharacter", { mapId: map.id }).then((response) => {
       if (response.data.map?.id) queryClient.setQueryData(["combat", response.data.map.id], response.data);

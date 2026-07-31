@@ -668,6 +668,10 @@ def ensure_viewer_character(giocatore, payload):
     if existing:
         # An inactive row is intentional: it records that a Master removed this
         # character and prevents a later page visit from silently restoring it.
+        if existing.active and map_obj.active_character_id != character.id:
+            map_obj.active_character = character
+            map_obj.save(update_fields=["active_character", "updated_at"])
+            _bump(map_obj)
         return map_obj, False
     participant = MapParticipant.objects.create(
         map=map_obj,
@@ -679,9 +683,14 @@ def ensure_viewer_character(giocatore, payload):
     participant.anchor_q, participant.anchor_r = _first_available_anchor(map_obj, participant)
     participant.active = True
     participant.save(update_fields=["anchor_q", "anchor_r", "active", "updated_at"])
-    if not map_obj.active_character_id:
-        map_obj.active_character = character
-        map_obj.save(update_fields=["active_character", "updated_at"])
+    # Il personaggio appena entrato diventa quello attivo della mappa, anche se
+    # la mappa ne ricordava già un altro. Senza questo, chi apre Combattimento
+    # con un personaggio nuovo vede ancora nell'inspector, nel token evidenziato
+    # e nel pannello d'attacco il PG che occupava la mappa dalla sessione prima.
+    # Vale solo alla prima entrata: dopo, la scelta resta al Master tramite
+    # combat.activateCharacter.
+    map_obj.active_character = character
+    map_obj.save(update_fields=["active_character", "updated_at"])
     _bump(map_obj)
     _event(map_obj, "participant.joined", f"{character.nome} è entrato nella mappa.", actor=character)
     return map_obj, True
