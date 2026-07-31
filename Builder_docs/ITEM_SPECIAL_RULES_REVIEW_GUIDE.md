@@ -85,12 +85,31 @@ meaning was confirmed with the table master:
   free in mana, provided its original cost was ≤ N, paying 1 PA and 3 Energia instead. Max 2 per
   combat, max 1 per hour outside combat.
 
-Active flagged templates after that batch: **340**. Residue: `teletrasporto` (`blink` items, 60 —
-same `A (B)` shape as `mod_gen` but still undefined anywhere in the data, needs the same kind of
-ruling before it can be curated) and ~280 one-off texts, including two more families worth their
-own rule keys: level-scaled ranged damage (`danno raggio: <base> + lvpg<*mult>`, ~90 occurrences)
-and duration-tiered booleans (`Invisibile/Voli/50% di evitare danno fisico per X turni -N`, a
-handful each).
+Active flagged templates after that batch: **340**.
+
+A third pass, same day, curated `teletrasporto` (60 items — `Anello blink` items, same `A (B)`
+shape as `mod_gen`; confirmed meaning: teleport A metres at a cost of B PA, B mana and a flat
+1 Energia, no stated per-use limit). Active flagged templates: **280**.
+
+A fourth pass curated `danno_raggio` and three duration-tiered potion families (87 items total),
+each confirmed against the item's own `descrizione` field, not guessed from the effect text alone:
+
+- **`danno raggio: <base> + lvpg<*/mult>`** ("raggio arcano" items) — the item's `descrizione`
+  spells out the full ability (*"casti un raggio arcano fino a 20 metri. infligge danno puro.
+  + 1pa/lv oggetto + 1 en/lv oggetto. Una volta a combat."*), so the curated text states the full
+  cast, not just the damage formula.
+- **`Invisibile per X turni -M`** / **`Voli per X turni -M`** — `X` is a literal placeholder, `M`
+  (which equals the `(M)` in the item name) is the actual duration in turns.
+- **`Curati da Effetti nocivi -M`** — the item's own `descrizione` ("Ne curi X random") confirms
+  `M` random harmful effects/illnesses are cured, not a flat list.
+
+Active flagged templates after that batch: **193**. Residue includes two more families surfaced by
+this pass that need the same descrizione-first check before curating: `50% di evitare danno
+fisico -M` (Pozione intangibilità — its `descrizione` says only "Segna su Note", unhelpful) and
+`crei fumo per 2 turni -M` (Pozione fumogeno — its `descrizione` says "Il numero indica il
+raggio", so `M` is a radius, but the unit is still unconfirmed), plus a newly visible
+`Attacco 5 Turni -N` family and the older `Dopo 10 turni, -50% energia(sul massimale)` (15
+occurrences) and light/darkvision utility texts.
 
 ## 3. Decision tree for one descriptive text
 

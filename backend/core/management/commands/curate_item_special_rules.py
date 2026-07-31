@@ -147,6 +147,39 @@ RULES: tuple[Rule, ...] = (
     Rule("shapeshift", re.compile(r"^tempo\s+shapeshift\s*:\s*(\d+)\s*(sec|min|ore?|h)$", re.I),
          lambda m: f"La trasformazione dura {_duration(m.group(1), m.group(2))}."),
 
+    # "danno raggio: <base>[+ ]lvpg[*/mult]": arcane-ray damage scaled by the
+    # wielder's character level ("lvpg"). Confirmed against the item's own
+    # `descrizione` field ("casti un raggio arcano fino a 20 metri. infligge
+    # danno puro. + 1pa/lv oggetto + 1 en/lv oggetto. Una volta a combat.").
+    Rule("danno_raggio", re.compile(
+            r"^danno\s+raggio\s*:\s*(\d+)\s*\+\s*lvpg\s*(?:([*/])\s*([\d.,]+))?$", re.I),
+         lambda m: (
+             "Casti un raggio arcano fino a 20 metri, che infligge "
+             f"{_number(m.group(1))} {_plural(m.group(1), 'danno puro', 'danni puri')}, "
+             "più il livello del personaggio"
+             + (f" diviso {_number(m.group(3))}" if m.group(2) == "/"
+                else f" moltiplicato per {_number(m.group(3))}" if m.group(2) == "*"
+                else "")
+             + ". Costa 1 PA e 1 Energia per livello dell'oggetto. "
+             "Utilizzabile una volta per combattimento."
+         )),
+
+    # Duration-tiered potions: the trailing "-M" on the effect text equals the
+    # M in the item name and scales with potion level. Meaning confirmed per
+    # family against the item's own `descrizione` and the table master.
+    Rule("pozione_invisibilita", re.compile(r"^invisibile\s+per\s+x\s+turni\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             f"Diventi invisibile per {_number(m.group(1))} "
+             f"{_plural(m.group(1), 'turno', 'turni')}. Puoi comunque fare rumore."
+         )),
+    Rule("pozione_volo", re.compile(r"^voli\s+per\s+x\s+turni\s*-\s*(\d+)$", re.I),
+         lambda m: f"Puoi volare per {_number(m.group(1))} {_plural(m.group(1), 'turno', 'turni')}."),
+    Rule("pozione_cura_effetti", re.compile(r"^curati\s+da\s+effetti\s+nocivi\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             f"Curati casualmente da {_number(m.group(1))} "
+             f"{_plural(m.group(1), 'effetto nocivo o malattia', 'effetti nocivi o malattie')}."
+         )),
+
     # --- Consumables that restore a resource ---------------------------------
     # Elder wrote these as a negative on the "spent" counter; at the table they
     # are simply "restores N".
@@ -174,12 +207,15 @@ RULES: tuple[Rule, ...] = (
              "1 PA e 3 Energia. Utilizzabile al massimo 2 volte per combattimento; fuori dal "
              "combattimento, al massimo 1 volta all'ora."
          )),
-    # --- Deliberately left in the queue --------------------------------------
-    # "teletrasporto A (B)" has the same A(B) shape as mod_gen, always on
-    # "Anello blink" items, but no definition anywhere in the data (it is only
-    # ever a generation-weighting tag in accessory_profiles.py). Needs a ruling
-    # before it can be curated, same as mod_gen was before this pass.
-    Rule("teletrasporto", re.compile(r"^teletrasporto\s+\d+\s*\(\s*\d+\s*\)$", re.I), lambda m: None),
+    # "teletrasporto A (B)": teleport A metres, costing B PA, B mana and a flat
+    # 1 Energia. Confirmed with the table master 2026-08-01; not derivable from
+    # the data alone (no per-use frequency limit was given, unlike mod_gen).
+    Rule("teletrasporto", re.compile(r"^teletrasporto\s+(\d+)\s*\(\s*(\d+)\s*\)$", re.I),
+         lambda m: (
+             f"Permette di teletrasportarsi di {_number(m.group(1))} "
+             f"{_plural(m.group(1), 'metro', 'metri')}, al costo di "
+             f"{_number(m.group(2))} PA, {_number(m.group(2))} mana e 1 Energia."
+         )),
 )
 
 
