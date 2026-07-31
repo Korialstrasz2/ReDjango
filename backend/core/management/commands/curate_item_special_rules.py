@@ -63,6 +63,20 @@ def _every(count: str, unit: str) -> str:
     return f"ogni {singular}" if _number(count) == "1" else f"ogni {_number(count)} {plural}"
 
 
+def _render_esplosione(raw_rings) -> str:
+    """"Un Classico A['B]['C]": blunt damage at ground zero, then successive hex rings."""
+    rings = list(raw_rings)
+    if len(rings) == 1:
+        return f"Esplode nella cella bersaglio infliggendo {_number(rings[0])} danni contundenti."
+    parts = [f"{_number(rings[0])} danni contundenti nella cella bersaglio"]
+    for distance, value in enumerate(rings[1:], start=1):
+        parts.append(
+            f"{_number(value)} danni contundenti nelle celle a {distance} "
+            f"{_plural(str(distance), 'esagono', 'esagoni')} di distanza"
+        )
+    return "Esplode infliggendo " + ", ".join(parts) + "."
+
+
 @dataclass(frozen=True)
 class Rule:
     key: str
@@ -201,11 +215,74 @@ RULES: tuple[Rule, ...] = (
          )),
     Rule("pozione_attacco", re.compile(r"^attacco\s+5\s+turni\s*-\s*(\d+)$", re.I),
          lambda m: f"Per 5 turni, aggiunge +{_number(m.group(1))} ad Attacco."),
+    # Exact sibling of pozione_attacco (same "Aggiungi a Effetti" descrizione,
+    # same "5 Turni -N" shape, paired item naming: Pozione attacco - 5t /
+    # Pozione difesa - 5t). Applying the same reading by analogy.
+    Rule("pozione_difesa", re.compile(r"^difesa\s+5\s+turni\s*-\s*(\d+)$", re.I),
+         lambda m: f"Per 5 turni, aggiunge +{_number(m.group(1))} a Difesa."),
 
     # Alcoholic drinks: no formula to derive, just "you get drunk". 15 items,
     # all beverages (Cognac Bretone, Vino Pregiato, ...).
     Rule("sbornia", re.compile(r"^dopo\s+10\s+turni,\s*-50%\s*energia\s*\(sul\s+massimale\)$", re.I),
          lambda m: "Dopo 10 turni dall'attivazione, l'Energia massima viene dimezzata (-50%)."),
+
+    # Ring/accessory light and darkvision utility (distinct from the timed
+    # "tempo luce: N sec" / "raggio darkvision: N mt" families above).
+    Rule("anello_luce", re.compile(r"^tempo\s+luce\s*:\s*a\s+volonta(?:,\s*intensita\s*\*\s*([\d.,]+))?$", re.I),
+         lambda m: (
+             "Crei luce attorno a te a volontà, con intensità regolabile dal caster da luce di "
+             "candela a luce di falò"
+             + (f", moltiplicata per {_number(m.group(1))}" if m.group(1) else "")
+             + ", al costo di 2 Energia."
+         )),
+    Rule("anello_darkvision", re.compile(r"^raggio\s+darkvision\s*:\s*(1\s*km|infinito)$", re.I),
+         lambda m: (
+             "Vedi al buio senza limiti di distanza (in assenza di altra luce)."
+             if m.group(1).strip().lower() == "infinito"
+             else "Vedi al buio fino a 1 km di distanza (in assenza di altra luce)."
+         )),
+
+    # "Calcola sul danno da infliggere": the % is a magic-damage reduction
+    # applied for the duration.
+    Rule("pozione_res_magica", re.compile(r"^resistenza\s+magica\s+1\s+turno\s+(\d+)%$", re.I),
+         lambda m: f"Per 1 turno, riduci del {_number(m.group(1))}% il danno magico subito."),
+
+    # "Pozione vita temp. -24h": temporary HP is an established mechanic
+    # elsewhere in this data ("+25% pf temporanei per 10 turni").
+    Rule("pozione_vita_temp", re.compile(r"^vita\s+temporanea\s*-\s*(\d+)$", re.I),
+         lambda m: f"Concede {_number(m.group(1))} punti ferita temporanei, validi per 24 ore."),
+
+    # "Su nemici vivi": bonus damage specifically against living enemies.
+    Rule("pozione_danneggia_vita", re.compile(r"^\+\s*danno\s+a\s+nemico\s*-\s*(\d+)$", re.I),
+         lambda m: f"Infligge {_number(m.group(1))} danni aggiuntivi contro nemici viventi."),
+
+    # Poisons: the debuff applies to the *target* only once the poisoned
+    # attack actually connects, per the table master.
+    Rule("veleno_pa", re.compile(r"^-\s*pa\s+nemico\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             "Veleno: applicalo a un'arma o a un attacco. Se l'attacco colpisce il bersaglio, il "
+             f"nemico colpito perde {_number(m.group(1))} PA."
+         )),
+    Rule("veleno_mana", re.compile(r"^\+\s*mana\s+speso\s+nemico\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             "Veleno: applicalo a un'arma o a un attacco. Se l'attacco colpisce il bersaglio, il "
+             f"nemico colpito perde {_number(m.group(1))} mana."
+         )),
+
+    # "Oltre a PA per bere -N": refunds whatever PA the drinker actually spent
+    # to drink (not a flat 3), plus N — so a reduced drinking cost from another
+    # power doesn't inflate the net PA gain, per the table master.
+    Rule("pozione_piu_pa", re.compile(r"^oltre\s+a\s+pa\s+per\s+bere\s*-\s*(\d+)$", re.I),
+         lambda m: (
+             "Recupera tutti i PA spesi per bere questa pozione, più "
+             f"{_number(m.group(1))} PA aggiuntivi: il guadagno netto è quindi di "
+             f"{_number(m.group(1))} PA, anche se il costo per bere è ridotto da altri poteri."
+         )),
+
+    # "Un Classico A['B]['C]": blunt damage at the target hex, then successive
+    # rings of adjacent hexes, per the table master.
+    Rule("pozione_esplosione", re.compile(r"^un\s+classico\s+(\d+)(?:'(\d+))?(?:'(\d+))?$", re.I),
+         lambda m: _render_esplosione(g for g in m.groups() if g is not None)),
 
     # --- Consumables that restore a resource ---------------------------------
     # Elder wrote these as a negative on the "spent" counter; at the table they

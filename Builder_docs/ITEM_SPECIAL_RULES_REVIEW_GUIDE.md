@@ -120,9 +120,46 @@ A fifth pass, same day, curated the remaining potion families once the table mas
 - **`Dopo 10 turni, -50% energia(sul massimale)`** (15 items, all alcoholic drinks) — no formula
   to derive, just "you get drunk": max Energia halves 10 turns after drinking.
 
-Active flagged templates after that batch: **165**. Residue: `mod_gen`'s sibling families are
-gone; what's left is smaller and more heterogeneous — light/darkvision utility texts, a
-`-PA nemico` / `+ danno a nemico` counter-attack family, and a long tail of near-unique texts.
+Active flagged templates after that batch: **165**.
+
+A sixth pass, same day, curated ten more families (109 items) after a full field-by-field review
+(every `effetto_N`, `descrizione`, `tipo_1/2/3`) against the table master:
+
+- **`pozione_difesa`** (`Difesa 5 Turni -N`) — exact sibling of `pozione_attacco`: same "Aggiungi a
+  Effetti" descrizione, same shape, paired naming (`Pozione attacco – 5t` / `Pozione difesa – 5t`).
+  Applied by analogy: +N to Difesa for 5 turns.
+- **`anello_luce`** / **`anello_darkvision`** — ring/accessory light and darkvision, confirmed
+  against descrizione (light: "crea luce ... a scelta del caster, costo 2 en"; darkvision: "il
+  range è il valore massimo oltre al quale è buio pesto").
+- **`pozione_res_magica`** (`Resistenza Magica 1 Turno N%`) — descrizione "Calcola sul danno da
+  infliggere"; the `%` is already in the text, so this is a straight magic-damage reduction.
+- **`pozione_vita_temp`** (`Vita Temporanea -N`, "Pozione vita temp. -24h") — temporary HP, a
+  mechanic already named elsewhere in the data (`+25% pf temporanei per 10 turni`); duration comes
+  from the item name.
+- **`pozione_danneggia_vita`** (`+ danno a nemico -N`) — descrizione "Su nemici vivi": bonus
+  damage against living enemies only.
+- **`veleno_pa`** / **`veleno_mana`** (`-PA nemico -N`, `+ mana speso nemico -N`) — these are
+  poisons, not potions the wielder drinks: the debuff only applies to a target the poisoned attack
+  actually hits.
+- **`pozione_piu_pa`** (`Oltre a PA per bere -N`) — refunds whatever PA the drinker actually spent
+  to drink (not a flat 3), plus N. Written this way deliberately: some powers reduce the PA cost of
+  drinking a potion, and a flat "+3 then +N" would over-reward those characters.
+- **`pozione_esplosione`** (`Un Classico A['B]['C]`) — blunt damage at the target hex, then
+  successive rings of adjacent hexes (e.g. `21'12'3` → 21 at ground zero, 12 at ring 1, 3 at ring 2).
+
+Active flagged templates after that batch: **56**. Two families were deliberately left alone:
+
+- **`Pozione visione` (`Visione min/med/mag/sup`)** — a scrying potion whose actual content is
+  narrated by the master per use; the tier only sets how strong/detailed the vision is, not a
+  fixed number. Correctly outcome 3 (leave flagged), not a curation candidate.
+- **The "Vestiti" family** (`Aggiungi a effetti ...`, 15 clothing items) — unlike every other
+  family here, `descrizione` already states the full mechanical rule in prose (e.g. *"Abbigliamento
+  povero. -1 Personalità e Fortuna +1 Saggezza"*), and most of those stat names are structured
+  `effects` targets that already exist (`personalita`, `fortuna`, `saggezza`, `competenza.diplomazia`,
+  etc. — see `effect_target_values()` in `backend/characters/services/custom_effects.py`). These
+  were converted to real structured effects rather than curated prose; see the dedicated note
+  below since two of the fifteen have a genuinely non-computable remainder (no "resistenza magica
+  generica" stat exists, and "skill fisiche (rosse)" is a UI colour-group label, not one target).
 
 ## 3. Decision tree for one descriptive text
 
