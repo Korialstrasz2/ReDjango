@@ -31,10 +31,13 @@ PLAN: dict[int, tuple[list[tuple[str, str, int]], str]] = {
              ("personalita", "add", 1)], ""),
     5273: ([("competenza.furtivita", "subtract", 2), ("attacco", "subtract", 4), ("difesa", "subtract", 4),
              ("competenza.diplomazia", "add", 1)], ""),
-    5274: ([("pa", "subtract", 1), ("attacco", "subtract", 3), ("difesa", "subtract", 3)],
-            "Concede inoltre +1 a tutte le resistenze fisiche e magiche: nessuno stat generico "
-            "corrispondente esiste nel sistema (solo res_fuoco/gelo/elettro e "
-            "res_contundente/taglio/perforante), quindi applicalo manualmente."),
+    # "fisiche e magiche" decomposed into the six damage-type resistances: no
+    # generic aggregate stat exists, but several armors already combine these
+    # same six targets to mean "resists everything" (e.g. Armatura Manto della
+    # Tempesta, Armatura Indoril), so this is the faithful reading, not a guess.
+    5274: ([("pa", "subtract", 1), ("attacco", "subtract", 3), ("difesa", "subtract", 3),
+             ("res_contundente", "add", 1), ("res_taglio", "add", 1), ("res_perforante", "add", 1),
+             ("res_fuoco", "add", 1), ("res_gelo", "add", 1), ("res_elettro", "add", 1)], ""),
     5275: ([("competenza.furtivita", "subtract", 4), ("attacco", "subtract", 8), ("difesa", "subtract", 8),
              ("competenza.diplomazia", "add", 1), ("personalita", "add", 2)], ""),
     5276: ([("pa", "subtract", 1), ("competenza.scalare", "add", 1), ("competenza.sopravvivenza", "add", 1),
@@ -44,10 +47,11 @@ PLAN: dict[int, tuple[list[tuple[str, str, int]], str]] = {
              ("personalita", "subtract", 1), ("competenza.diplomazia", "subtract", 1)], ""),
     5279: ([("slot_magici", "add", 1), ("slot_non_magici", "add", 1), ("competenza.furtivita", "add", 2),
              ("competenza.intimidire", "add", 2), ("competenza.diplomazia", "subtract", 4)], ""),
-    5280: ([("competenza.camuffare", "add", 1), ("competenza.intimidire", "add", 1)],
-            "Applica inoltre -1 a tutte le skill fisiche del gruppo “rosso”: è un "
-            "raggruppamento usato solo nell'interfaccia Elder, non un target singolo in questo "
-            "sistema, quindi applicalo manualmente scegliendo le competenze fisiche pertinenti."),
+    # "skill fisiche (rosse)" resolved to the table master's own list: scalare,
+    # manovrare veicoli, nuotare.
+    5280: ([("competenza.camuffare", "add", 1), ("competenza.intimidire", "add", 1),
+             ("competenza.scalare", "subtract", 1), ("competenza.manovrare_veicoli", "subtract", 1),
+             ("competenza.nuotare", "subtract", 1)], ""),
     5281: ([("slot_non_magici", "add", 1), ("difesa", "add", 2), ("velocita", "subtract", 1),
              ("pa", "subtract", 1)], ""),
     5282: ([("res_gelo", "add", 1), ("res_fuoco", "subtract", 1), ("res_elettro", "subtract", 1)], ""),
