@@ -80,9 +80,8 @@ RULES: tuple[Rule, ...] = (
          lambda m: "Respiro sott'acqua: chi lo indossa può respirare sott'acqua senza limiti di tempo."),
     Rule("sostentamento", re.compile(r"^sostentamento\s*:?\s*si$", re.I),
          lambda m: "Sostentamento: chi lo indossa non ha bisogno di mangiare né di bere."),
-    # "Ponte di Mana" has no definition anywhere in the data: only the master can
-    # say what the bridge actually does, so these items stay in the queue.
-    Rule("ponte_di_mana", re.compile(r"^ponte\s+di\s+mana\s*:?\s*si$", re.I), lambda m: None),
+    Rule("ponte_di_mana", re.compile(r"^ponte\s+di\s+mana\s*:?\s*si$", re.I),
+         lambda m: "Permette di scambiare mana tra persone che vogliono. Tocco."),
 
     # --- Regeneration over real time -----------------------------------------
     Rule("rigenerazione", re.compile(r"^rigenera\s+(\d+)\s*(pf|mana)\s+ogni\s+(\d+)\s*(sec|min|ora|ore|h)\.?$", re.I),
@@ -160,12 +159,27 @@ RULES: tuple[Rule, ...] = (
     Rule("pozione_potere", re.compile(r"^personaggio\.potere_speso\s*-\s*(\d+)$", re.I),
          lambda m: f"Ripristina {_number(m.group(1))} Potere."),
 
+    # `mod gen A (B)`: A tracks ceil(livello/2); B is the stanchezza cost. Both
+    # are read directly off the item, no formula needed at the table.
+    Rule("mod_gen", re.compile(r"^\+?\s*mod\s+gen\s*(\d+)\s*\(\s*(\d+)\s*\)$", re.I),
+         lambda m: (
+             f"Per 2 turni concede +{_number(m.group(1))} al modificatore generale, poi si paga "
+             f"{_number(m.group(2))} {_plural(m.group(2), 'punto stanchezza', 'punti stanchezza')}. "
+             "Attivabile (non un effetto passivo): utilizzabile al massimo una volta per combattimento."
+         )),
+    Rule("recast", re.compile(r"^fino\s+a\s+x\s+mana\s*:\s*(\d+)\s*mana$", re.I),
+         lambda m: (
+             "Permette di ricastare gratuitamente (0 mana) un incantesimo identico già lanciato, "
+             f"purché il suo costo originale non superi {_number(m.group(1))} mana, pagando invece "
+             "1 PA e 3 Energia. Utilizzabile al massimo 2 volte per combattimento; fuori dal "
+             "combattimento, al massimo 1 volta all'ora."
+         )),
     # --- Deliberately left in the queue --------------------------------------
-    # `mod gen A (B)`: A tracks ceil(livello/2) but B matches neither rarity nor
-    # level nor value, so converting would be a guess repeated 60 times.
-    Rule("mod_gen", re.compile(r"^\+?\s*mod\s+gen\s*\d+\s*\(\s*\d+\s*\)$", re.I), lambda m: None),
+    # "teletrasporto A (B)" has the same A(B) shape as mod_gen, always on
+    # "Anello blink" items, but no definition anywhere in the data (it is only
+    # ever a generation-weighting tag in accessory_profiles.py). Needs a ruling
+    # before it can be curated, same as mod_gen was before this pass.
     Rule("teletrasporto", re.compile(r"^teletrasporto\s+\d+\s*\(\s*\d+\s*\)$", re.I), lambda m: None),
-    Rule("recast", re.compile(r"^fino\s+a\s+x\s+mana\s*:\s*\d+\s*mana$", re.I), lambda m: None),
 )
 
 

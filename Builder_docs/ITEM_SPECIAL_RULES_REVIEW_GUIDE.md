@@ -70,8 +70,27 @@ Active flagged templates after those three actions: **1 670**. Market pool: 3 49
 
 The first full curation pass then ran on the same day and wrote **1 168** items, all of which left
 the queue. Active flagged templates: **502**. Market pool: **4 659**, up from 3 443 at the start.
-The residue is `mod.gen.` (60), `blink` (60), `recast` (60), `raggioarcano` (60), `pontedimana` (42)
+The residue was `mod.gen.` (60), `blink` (60), `recast` (60), `raggioarcano` (60), `pontedimana` (42)
 and a tail of families with fewer than 30 items each.
+
+A second pass on 2026-07-31 curated `mod_gen`, `ponte_di_mana` and `recast` (162 items) once their
+meaning was confirmed with the table master:
+
+- **`mod gen A (B)`**: for 2 turns, +A to the modificatore generale, then pay B stanchezza.
+  Activatable, usable once per combat. `A` and `B` are read straight off the item text — no
+  formula needed at the table.
+- **`Ponte di Mana SI`**: fixed sentence regardless of level — *"Permette di scambiare mana tra
+  persone che vogliono. Tocco."*
+- **`fino a X mana: N mana`** (recast): recast an identical spell already cast this session for
+  free in mana, provided its original cost was ≤ N, paying 1 PA and 3 Energia instead. Max 2 per
+  combat, max 1 per hour outside combat.
+
+Active flagged templates after that batch: **340**. Residue: `teletrasporto` (`blink` items, 60 —
+same `A (B)` shape as `mod_gen` but still undefined anywhere in the data, needs the same kind of
+ruling before it can be curated) and ~280 one-off texts, including two more families worth their
+own rule keys: level-scaled ranged damage (`danno raggio: <base> + lvpg<*mult>`, ~90 occurrences)
+and duration-tiered booleans (`Invisibile/Voli/50% di evitare danno fisico per X turni -N`, a
+handful each).
 
 ## 3. Decision tree for one descriptive text
 
