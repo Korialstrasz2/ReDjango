@@ -13,7 +13,6 @@ from backend.core.models import Oggetto, SettingDefinition
 LOCATION_KEY = "mercato.locations"
 SHOP_TYPES_KEY = "mercato.shop_types"
 GENERATOR_RULES_KEY = "mercato.generator_rules"
-GENERATION_PROFILES_KEY = "mercato.generation_profiles"
 _KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
@@ -155,15 +154,20 @@ def validate_shop_types(value: object) -> dict:
 def validate_generator_rules(value: object) -> dict:
     if not isinstance(value, dict):
         raise ValidationError("mercato.generator_rules deve essere un oggetto.")
-    defaults = {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25}
+    # quantityScale is the global size dial Elder applied as a hard-coded 1.55
+    # on top of the per-shop multiplier. It lives here so shop size is tunable
+    # without editing every shop type.
+    defaults = {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "quantityScale": 1, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25}
     result = {**defaults, **value}
-    for key in ("minLevel", "maxLevel", "baseCount", "countPerLevel", "countVariance", "maximumCopies", "priceBasePercent", "priceLevelPercent", "maximumNegotiationPercent"):
+    for key in ("minLevel", "maxLevel", "baseCount", "countPerLevel", "countVariance", "quantityScale", "maximumCopies", "priceBasePercent", "priceLevelPercent", "maximumNegotiationPercent"):
         try:
-            result[key] = float(result[key]) if key in {"baseCount", "countPerLevel", "countVariance"} else int(result[key])
+            result[key] = float(result[key]) if key in {"baseCount", "countPerLevel", "countVariance", "quantityScale"} else int(result[key])
         except (ValueError, TypeError) as exc:
             raise ValidationError({key: "Deve essere un numero."}) from exc
     if result["minLevel"] < 1 or result["maxLevel"] < result["minLevel"] or result["maximumCopies"] < 1:
         raise ValidationError("Limiti del generatore non validi.")
+    if not 0 < result["quantityScale"] <= 10:
+        raise ValidationError({"quantityScale": "Deve essere maggiore di 0 e al massimo 10."})
     result["rarityProbabilities"] = _normalized_rarity_probabilities(
         result["rarityProbabilities"], "rarityProbabilities",
     )
@@ -172,64 +176,9 @@ def validate_generator_rules(value: object) -> dict:
     return result
 
 
-def validate_generation_profiles(value: object) -> dict:
-    if not isinstance(value, dict) or not isinstance(value.get("profiles"), list):
-        raise ValidationError("mercato.generation_profiles deve contenere una lista profiles.")
-    keys: set[str] = set()
-    profiles = []
-    for index, raw in enumerate(value["profiles"]):
-        if not isinstance(raw, dict):
-            raise ValidationError({"profiles": f"Profilo #{index + 1} non valido."})
-        key = _key(raw.get("key"), f"profiles[{index}].key")
-        if key in keys:
-            raise ValidationError({"profiles": f"Chiave profilo duplicata: {key}."})
-        keys.add(key)
-        try:
-            quantity_multiplier = float(raw.get("quantityMultiplier", 1))
-            price_multiplier = float(raw.get("priceMultiplier", 1))
-        except (TypeError, ValueError) as exc:
-            raise ValidationError({"profiles": f"{key}: i moltiplicatori devono essere numeri."}) from exc
-        if not .1 <= quantity_multiplier <= 5:
-            raise ValidationError({"profiles": f"{key}: la quantità deve essere compresa tra 0,1 e 5."})
-        if not .1 <= price_multiplier <= 5:
-            raise ValidationError({"profiles": f"{key}: il prezzo deve essere compreso tra 0,1 e 5."})
-        normalized_probabilities = _normalized_rarity_probabilities(
-            raw.get("rarityProbabilities"), "profiles", key,
-        )
-        profiles.append({
-            "key": key,
-            "label": _label(raw.get("label"), "profile.label"),
-            "enabled": bool(raw.get("enabled", True)),
-            "quantityMultiplier": quantity_multiplier,
-            "priceMultiplier": price_multiplier,
-            "rarityProbabilities": normalized_probabilities,
-        })
-    if not profiles:
-        raise ValidationError({"profiles": "Configura almeno un profilo di generazione."})
-    default_key = _key(value.get("defaultProfileKey"), "defaultProfileKey")
-    default_profile = next((profile for profile in profiles if profile["key"] == default_key), None)
-    if default_profile is None:
-        raise ValidationError({"defaultProfileKey": "Il profilo predefinito non esiste."})
-    if not default_profile["enabled"]:
-        raise ValidationError({"defaultProfileKey": "Il profilo predefinito deve essere attivo."})
-    return {"version": int(value.get("version", 1)), "defaultProfileKey": default_key, "profiles": profiles}
-
-
 def get_market_locations() -> dict: return validate_market_locations(_value(LOCATION_KEY))
 def get_shop_type_definitions() -> dict: return validate_shop_types(_value(SHOP_TYPES_KEY))
 def get_generator_rules() -> dict: return validate_generator_rules(_value(GENERATOR_RULES_KEY))
-def get_generation_profiles() -> dict: return validate_generation_profiles(_value(GENERATION_PROFILES_KEY))
-
-
-def resolve_generation_profile(profile_key: str = "", *, selectable: bool = False) -> dict:
-    configuration = get_generation_profiles()
-    effective_key = str(profile_key or configuration["defaultProfileKey"]).strip()
-    profile = next((item for item in configuration["profiles"] if item["key"] == effective_key), None)
-    if profile is None:
-        raise ValidationError("Profilo di generazione non configurato.")
-    if selectable and not profile["enabled"]:
-        raise ValidationError("Il profilo di generazione è disabilitato.")
-    return profile
 
 
 def resolve_location(location_key: str, *, selectable: bool = False) -> dict:
@@ -243,10 +192,10 @@ def resolve_location(location_key: str, *, selectable: bool = False) -> dict:
 
 
 def configuration_payload() -> dict:
-    locations, types, rules, profiles = get_market_locations(), get_shop_type_definitions(), get_generator_rules(), get_generation_profiles()
-    canonical = json.dumps({"locations": locations, "shopTypes": types, "rules": rules, "generationProfiles": profiles}, sort_keys=True, separators=(",", ":"))
-    return {"locationsVersion": locations["version"], "shopTypesVersion": types["version"], "hash": hashlib.sha256(canonical.encode()).hexdigest()[:16], "locations": locations, "shopTypes": types, "generatorRules": rules, "generationProfiles": profiles, "rarityChoices": rarity_choices(), "limits": {"minLevel": rules["minLevel"], "maxLevel": rules["maxLevel"], "maximumNegotiationPercent": rules["maximumNegotiationPercent"], "batchMaximum": 20}}
+    locations, types, rules = get_market_locations(), get_shop_type_definitions(), get_generator_rules()
+    canonical = json.dumps({"locations": locations, "shopTypes": types, "rules": rules}, sort_keys=True, separators=(",", ":"))
+    return {"locationsVersion": locations["version"], "shopTypesVersion": types["version"], "hash": hashlib.sha256(canonical.encode()).hexdigest()[:16], "locations": locations, "shopTypes": types, "generatorRules": rules, "rarityChoices": rarity_choices(), "limits": {"minLevel": rules["minLevel"], "maxLevel": rules["maxLevel"], "maximumNegotiationPercent": rules["maximumNegotiationPercent"], "batchMaximum": 20}}
 
 
 def market_settings_payload() -> dict:
-    return {"locations": get_market_locations(), "shopTypes": get_shop_type_definitions(), "generatorRules": get_generator_rules(), "generationProfiles": get_generation_profiles()}
+    return {"locations": get_market_locations(), "shopTypes": get_shop_type_definitions(), "generatorRules": get_generator_rules()}

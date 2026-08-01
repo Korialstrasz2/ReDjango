@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { CriticalHitOverlay } from "./CriticalHitOverlay";
 import type { AttackResult, CombatAttackButton, CombatMap } from "./types";
 
 const DAMAGE_TYPES = ["Contundente", "Perforante", "Taglio", "Gelo", "Fuoco", "Elettro", "Puro"] as const;
@@ -111,6 +112,7 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   const [values, setValues] = useState<ManualValues>(EMPTY_MANUAL_VALUES);
   const [activeButtonIdsByCharacter, setActiveButtonIdsByCharacter] = useState<Record<number, number[]>>({});
   const [attackRoll, setAttackRoll] = useState(0);
+  const [rollSequence, setRollSequence] = useState(0);
   const [damageBase, setDamageBase] = useState(0);
   const [damageRolled, setDamageRolled] = useState(false);
   const [damageAdjustment, setDamageAdjustment] = useState(0);
@@ -122,6 +124,11 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
 
   const attacker = map.participants.find((entry) => entry.character.id === attackerId)?.character;
   const weapon = activeWeapon(attacker);
+  /** Il tipo dell'arma equipaggiata: è lui a restare evidenziato, non quello cliccato. */
+  const weaponDamageType = useMemo(() => {
+    const configured = String(weapon?.weaponProfile.damageType || "");
+    return DAMAGE_TYPES.find((entry) => entry.toLocaleLowerCase("it") === configured.toLocaleLowerCase("it")) || null;
+  }, [weapon?.weaponProfile.damageType]);
   const combatButtons = attacker?.combatButtons || [];
   const activeCombatButtonIds = (activeButtonIdsByCharacter[attackerId] || []).filter((id) => combatButtons.some((button) => button.id === id));
   const selectedButtons = combatButtons.filter((button) => activeCombatButtonIds.includes(button.id));
@@ -133,6 +140,7 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   const canAttack = Boolean(attackRoll) && !sameCombatant && !busy && !automaticRunning;
   const canRollDamage = Boolean(preview) && !missed && canAttack;
   const canApply = damageRolled && adjustedDamage > 0 && !missed && canAttack;
+  const criticalTrigger = preview && preview.critical !== "none" ? { level: preview.critical, token: rollSequence } : null;
 
   useEffect(() => {
     if (!selection) return;
@@ -141,10 +149,8 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   }, [selection]);
 
   useEffect(() => {
-    const configured = String(weapon?.weaponProfile.damageType || "");
-    const matching = DAMAGE_TYPES.find((entry) => entry.toLocaleLowerCase("it") === configured.toLocaleLowerCase("it"));
-    if (matching) setDamageType(matching);
-  }, [weapon?.id, weapon?.weaponProfile.damageType]);
+    if (weaponDamageType) setDamageType(weaponDamageType);
+  }, [weapon?.id, weaponDamageType]);
 
   useEffect(() => {
     if (!result || result.attackerId !== attackerId || result.defenderId !== defenderId) return;
@@ -201,6 +207,7 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
       const rolled = await onRollD20(attackerId);
       if (!rolled) return rolled;
       setAttackRoll(rolled);
+      setRollSequence((current) => current + 1);
       setDamageBase(0);
       setDamageRolled(false);
       setDamageAdjustment(0);
@@ -295,6 +302,8 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     setValues((current) => ({ ...current, [key]: Number.isFinite(value) ? value : 0 }));
   };
 
+  const manualValuesSet = MANUAL_FIELDS.some((field) => values[field.key] !== 0);
+
   const toggleCombatButton = (buttonId: number) => {
     const selected = activeCombatButtonIds.includes(buttonId);
     setActiveButtonIdsByCharacter((current) => ({
@@ -318,6 +327,8 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     : "";
 
   return <div className="combat-attack" data-component-type="panel" data-theme="combat">
+
+    <CriticalHitOverlay trigger={criticalTrigger} />
 
     <section className="ca-combatants">
       <div className="ca-versus">
@@ -355,6 +366,7 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
             <b title={generated ? `manuale ${signed(values[field.key])} + bottoni ${signed(generated)}` : "Totale"}>{signed(total)}</b>
           </div>;
         })}</div>
+        <button type="button" className="ca-reset" title="Azzera tutti i modificatori manuali" disabled={!manualValuesSet} onClick={() => setValues(EMPTY_MANUAL_VALUES)}>Azzera manuali</button>
       </section>
 
       <section className="ca-sequence">
@@ -363,7 +375,7 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
         <div className="ca-step">
           <span>1 · d20</span>
           <div className="ca-field">
-            <input type="number" min="1" max="20" aria-label="Tiro d20" value={attackRoll || ""} onChange={(event) => { setAttackRoll(Number(event.target.value)); setPreview(null); setDamageRolled(false); }} />
+            <input type="number" min="1" max="20" aria-label="Tiro d20" value={attackRoll || ""} onChange={(event) => { setAttackRoll(Number(event.target.value)); setRollSequence((current) => current + 1); setPreview(null); setDamageRolled(false); }} />
             <button type="button" title="Tira d20" disabled={busy || rollingD20 || automaticRunning || sameCombatant} onClick={() => rollD20()}>↻</button>
           </div>
         </div>
@@ -405,8 +417,12 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
         <div className="ca-type-grid">{DAMAGE_TYPES.map((entry) => <button
           type="button"
           key={entry}
-          className={`${entry.toLocaleLowerCase("it")}${damageType === entry ? " active" : ""}`}
-          title={entry}
+          className={[
+            entry.toLocaleLowerCase("it"),
+            entry === weaponDamageType ? "active" : "",
+            entry === damageType && entry !== weaponDamageType ? "used" : "",
+          ].filter(Boolean).join(" ")}
+          title={entry === weaponDamageType ? `${entry} — tipo dell'arma equipaggiata` : entry}
           aria-pressed={damageType === entry}
           disabled={!canApply}
           onClick={() => selectAndApplyDamageType(entry)}

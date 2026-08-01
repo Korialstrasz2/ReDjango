@@ -112,6 +112,57 @@ class ItemSpecialReasonsTests(TestCase):
         self.assertNotIn("specialReasons", serialize_item(item, detailed=False))
 
 
+class ItemEffectSummaryTests(TestCase):
+    """Le schede leggono `effectSummaries`; `effects` resta il dato per l'editor."""
+
+    def test_every_operation_becomes_readable_text(self):
+        item = Oggetto.objects.create(
+            nome="Cotta di prova",
+            tipo_1="chainmail",
+            effects=[
+                {"target": "difesa", "operation": "add", "value": 3},
+                {"target": "pa", "operation": "subtract", "value": 2},
+                {"target": "res_taglio", "operation": "multiply", "value": 1.5},
+                {"target": "pf", "operation": "percent", "value": -25},
+                {"target": "mana", "operation": "set", "value": 50},
+                {"target": "energia", "operation": "max", "value": 10},
+            ],
+        )
+        self.assertEqual(
+            [entry["text"] for entry in serialize_item(item)["effectSummaries"]],
+            [
+                "Difesa +3",
+                "Punti azione -2",
+                "Resistenza al taglio ×1.5",
+                "Punti ferita -25%",
+                "Mana = 50",
+                "Energia massimo 10",
+            ],
+        )
+
+    def test_a_condition_is_spelled_out(self):
+        item = Oggetto.objects.create(
+            nome="Condizionato",
+            tipo_1="anello",
+            effects=[{"target": "attacco", "operation": "add", "value": 1, "condition": "personaggio.livello >= 5"}],
+        )
+        summary = serialize_item(item)["effectSummaries"][0]
+        self.assertEqual(summary["condition"], "personaggio.livello >= 5")
+        self.assertEqual(summary["text"], "Attacco +1 se personaggio.livello >= 5")
+
+    def test_an_unknown_target_still_reads_as_words(self):
+        item = Oggetto.objects.create(
+            nome="Bersaglio ignoto",
+            tipo_1="pozione",
+            effects=[{"target": "campo_sconosciuto", "operation": "add", "value": 2}],
+        )
+        self.assertEqual(serialize_item(item)["effectSummaries"][0]["text"], "Campo sconosciuto +2")
+
+    def test_items_without_effects_report_an_empty_list(self):
+        item = Oggetto.objects.create(nome="Senza effetti", tipo_1="pozione")
+        self.assertEqual(serialize_item(item)["effectSummaries"], [])
+
+
 class ItemSpecialRulesTests(TestCase):
     """`regole_speciali` is the curated rewrite that closes a descriptive-effect review."""
 

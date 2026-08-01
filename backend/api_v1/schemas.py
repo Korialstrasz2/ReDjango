@@ -22,6 +22,13 @@ class ItemSpecialReasonSchema(Schema):
     hint: str = ""
 
 
+class ItemEffectSummarySchema(Schema):
+    label: str
+    value: str = ""
+    condition: str = ""
+    text: str
+
+
 class ItemSchema(Schema):
     id: int
     name: str
@@ -36,6 +43,7 @@ class ItemSchema(Schema):
     lootLevel: str = ""
     region: str = ""
     effects: list[dict[str, Any]] = []
+    effectSummaries: list[ItemEffectSummarySchema] = []
     elderEffects: list[str] = []
     specialRules: str = ""
     imageUrl: str = ""
@@ -1493,11 +1501,6 @@ class MarketStatePayloadSchema(Schema):
     archived: bool
 
 
-class MarketProfileAssignmentPayloadSchema(Schema):
-    shopId: int
-    profileKey: str = ""
-
-
 class MarketSettingsPayloadSchema(Schema):
     values: dict[str, Any]
 
@@ -1967,11 +1970,6 @@ class MarketShopStateActionSchema(ActionBaseSchema):
     payload: MarketStatePayloadSchema
 
 
-class MarketProfileAssignmentActionSchema(ActionBaseSchema):
-    action: Literal["market.shop.profileAssign"]
-    payload: MarketProfileAssignmentPayloadSchema
-
-
 class MarketSettingsSaveActionSchema(ActionBaseSchema):
     action: Literal["market.settings.save"]
     payload: MarketSettingsPayloadSchema
@@ -2164,7 +2162,6 @@ ActionEnvelopeSchema = Annotated[
     | MarketShopRegenerateActionSchema
     | MarketShopBatchActionSchema
     | MarketShopStateActionSchema
-    | MarketProfileAssignmentActionSchema
     | MarketSettingsSaveActionSchema
     | MarketQuoteActionSchema
     | MarketPurchaseActionSchema

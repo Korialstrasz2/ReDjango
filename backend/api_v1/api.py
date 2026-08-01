@@ -177,11 +177,9 @@ from backend.combat.damage_rule_management import (
 )
 from backend.market.selectors import management_overview as market_management_overview, market_overview
 from backend.market.services import (
-    assign_generation_profile as assign_market_generation_profile,
     create_batch as create_market_batch,
     preview_batch as preview_market_batch,
     preview_generation as preview_market_generation,
-    preview_generation_profile as preview_market_generation_profile,
     purchase as purchase_from_market,
     quote_purchase as quote_market_purchase,
     regenerate_shop as regenerate_market_shop,
@@ -1443,10 +1441,6 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             require_game_manager(user, giocatore)
             data = {"market": {"preview": preview_market_generation(payload.get("values", {}))}}
             message = "Anteprima dello stock pronta."
-        elif action == "market.profile.preview":
-            require_game_manager(user, giocatore)
-            data = {"market": {"profilePreview": preview_market_generation_profile(payload.get("values", {}))}}
-            message = "Anteprima del profilo pronta."
         elif action == "market.shop.save":
             shop, created = save_market_shop(user, giocatore, payload.get("values", {}))
             data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id, "created": created}}
@@ -1471,10 +1465,6 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             shop = set_market_shop_state(user, giocatore, payload["shopId"], payload["archived"])
             data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id}}
             message = f"Negozio {shop.nome} {'archiviato' if payload['archived'] else 'ripristinato'}."
-        elif action == "market.shop.profileAssign":
-            shop = assign_market_generation_profile(user, giocatore, payload["shopId"], payload.get("profileKey", ""))
-            data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id}}
-            message = f"Profilo di generazione aggiornato per {shop.nome}."
         elif action == "market.settings.save":
             save_market_settings(user, giocatore, payload.get("values", {}))
             data = {"market": market_management_overview(giocatore)}

@@ -41,21 +41,6 @@ export type ShopTypeConfiguration = {
   types: ShopType[];
 };
 
-export type GenerationProfile = {
-  key: string;
-  label: string;
-  enabled: boolean;
-  quantityMultiplier: number;
-  priceMultiplier: number;
-  rarityProbabilities: Record<string, number>;
-};
-
-export type GenerationProfilesConfiguration = {
-  version: number;
-  defaultProfileKey: string;
-  profiles: GenerationProfile[];
-};
-
 export type ShopSummary = {
   id: number;
   name: string;
@@ -74,7 +59,6 @@ export type ShopSummary = {
   distinctStockCount: number;
   priceModifierPercent: number;
   lastRestockedAt: string | null;
-  generationProfileKey: string;
 };
 
 export type StockLine = {
@@ -110,20 +94,6 @@ export type StockEligibility = {
 
 export type RarityChoice = { value: string; label: string };
 
-export type ProfilePreview = {
-  profileKey: string;
-  profileLabel: string;
-  categoryKey: string;
-  categoryLabel: string;
-  level: number;
-  samples: number;
-  requestedRolls: number;
-  fulfilledRolls: number;
-  distinctItems: number;
-  candidatePoolSize: number;
-  rarities: Array<{ rarity: string; configured: number; produced: number; unfulfilled: number; share: number }>;
-};
-
 export type MarketData = {
   stockEligibility?: StockEligibility;
   locations: MarketRegion[];
@@ -137,7 +107,6 @@ export type MarketData = {
     canEditShopTypes: boolean;
     canRegenerate: boolean;
     canTuneGenerator: boolean;
-    canEditGenerationProfiles: boolean;
     canBatchCreate: boolean;
     canArchive: boolean;
     canPurchase: boolean;
@@ -147,7 +116,6 @@ export type MarketData = {
     locations?: MarketLocationConfiguration | null;
     shopTypes?: ShopTypeConfiguration | null;
     generatorRules?: Record<string, unknown> | null;
-    generationProfiles?: GenerationProfilesConfiguration | null;
     rarityChoices?: RarityChoice[];
     itemTypes?: string[];
     limits: Record<string, number>;
@@ -155,7 +123,7 @@ export type MarketData = {
 };
 
 export type MarketActionData = {
-  market?: MarketData & { profilePreview?: ProfilePreview | null };
+  market?: MarketData;
   marketQuote?: { total: number };
 };
 
@@ -169,6 +137,5 @@ export type ShopDraft = {
   priceModifierPercent: number;
   featured: boolean;
   seed: string;
-  generationProfileKey: string;
   generateStock: boolean;
 };

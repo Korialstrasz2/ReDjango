@@ -37,6 +37,7 @@ from .services.inventory_rules import (
     quiver_capacity,
 )
 from .services.coins import COIN_SYSTEM_KEY, coin_storage_payload
+from .services.custom_effects import effect_summary_entries
 from .services.refresh_personaggio import collect_calculation_effects
 from .services.extended_inventory import (
     PERSONAL_CONTAINER_CAPACITY,
@@ -332,6 +333,7 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
         "lootLevel": item.lv_loot,
         "region": item.regione_loot,
         "effects": item.effects or [],
+        "effectSummaries": effect_summary_entries(item.effects or []),
         "specialRules": item.regole_speciali,
         "weaponTypeId": item.tipo_arma_id,
         "weaponType": item.tipo_arma.nome if item.tipo_arma_id and item.tipo_arma else "",

@@ -53,6 +53,34 @@
         ]
       }
     },
+    "/api/v1/characters/creation-options": {
+      "get": {
+        "operationId": "backend_api_v1_api_character_creation_options",
+        "summary": "Character Creation Options",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagementEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "description": "Cataloghi della procedura \"Nuovo PG\": razze, sottorazze, caratteristiche, quota.",
+        "tags": [
+          "characters"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/items": {
       "get": {
         "operationId": "backend_api_v1_api_items",
@@ -2101,6 +2129,7 @@
                     "character.updateCoins": "#/components/schemas/CoinsActionSchema",
                     "character.updateOverview": "#/components/schemas/OverviewActionSchema",
                     "character.updateResource": "#/components/schemas/ResourceActionSchema",
+                    "characters.create": "#/components/schemas/CharacterCreateActionSchema",
                     "combatButtons.create": "#/components/schemas/CombatButtonCreateActionSchema",
                     "combatButtons.delete": "#/components/schemas/CombatButtonDeleteActionSchema",
                     "combatButtons.update": "#/components/schemas/CombatButtonUpdateActionSchema",
@@ -2172,7 +2201,6 @@
                     "market.settings.save": "#/components/schemas/MarketSettingsSaveActionSchema",
                     "market.shop.batchCreate": "#/components/schemas/MarketShopBatchActionSchema",
                     "market.shop.preview": "#/components/schemas/MarketShopPreviewActionSchema",
-                    "market.shop.profileAssign": "#/components/schemas/MarketProfileAssignmentActionSchema",
                     "market.shop.regenerate": "#/components/schemas/MarketShopRegenerateActionSchema",
                     "market.shop.save": "#/components/schemas/MarketShopSaveActionSchema",
                     "market.shop.state": "#/components/schemas/MarketShopStateActionSchema",
@@ -2215,6 +2243,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/OverviewActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CharacterCreateActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/CoinsActionSchema"
@@ -2443,9 +2474,6 @@
                   },
                   {
                     "$ref": "#/components/schemas/MarketShopStateActionSchema"
-                  },
-                  {
-                    "$ref": "#/components/schemas/MarketProfileAssignmentActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/MarketSettingsSaveActionSchema"
@@ -3602,6 +3630,34 @@
         "title": "EventSchema",
         "type": "object"
       },
+      "ItemEffectSummarySchema": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          },
+          "condition": {
+            "default": "",
+            "title": "Condition",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "text"
+        ],
+        "title": "ItemEffectSummarySchema",
+        "type": "object"
+      },
       "ItemSchema": {
         "properties": {
           "id": {
@@ -3693,6 +3749,14 @@
               "type": "object"
             },
             "title": "Effects",
+            "type": "array"
+          },
+          "effectSummaries": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemEffectSummarySchema"
+            },
+            "title": "Effectsummaries",
             "type": "array"
           },
           "elderEffects": {
@@ -4268,6 +4332,55 @@
           "errors"
         ],
         "title": "ErrorEnvelopeSchema",
+        "type": "object"
+      },
+      "ManagementEnvelopeSchema": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "events": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EventSchema"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ErrorSchema"
+            },
+            "title": "Errors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ok",
+          "requestId",
+          "data"
+        ],
+        "title": "ManagementEnvelopeSchema",
         "type": "object"
       },
       "ItemCatalogDataSchema": {
@@ -5478,55 +5591,6 @@
           "data"
         ],
         "title": "NameCatalogEnvelopeSchema",
-        "type": "object"
-      },
-      "ManagementEnvelopeSchema": {
-        "properties": {
-          "ok": {
-            "title": "Ok",
-            "type": "boolean"
-          },
-          "requestId": {
-            "title": "Requestid",
-            "type": "string"
-          },
-          "data": {
-            "additionalProperties": true,
-            "title": "Data",
-            "type": "object"
-          },
-          "events": {
-            "default": [],
-            "items": {
-              "$ref": "#/components/schemas/EventSchema"
-            },
-            "title": "Events",
-            "type": "array"
-          },
-          "warnings": {
-            "default": [],
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "title": "Warnings",
-            "type": "array"
-          },
-          "errors": {
-            "default": [],
-            "items": {
-              "$ref": "#/components/schemas/ErrorSchema"
-            },
-            "title": "Errors",
-            "type": "array"
-          }
-        },
-        "required": [
-          "ok",
-          "requestId",
-          "data"
-        ],
-        "title": "ManagementEnvelopeSchema",
         "type": "object"
       },
       "DiceSetSchema": {
@@ -9280,6 +9344,107 @@
         "title": "CampaignWeatherRerollPayloadSchema",
         "type": "object"
       },
+      "CharacterCreateActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "characters.create",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CharacterCreatePayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "CharacterCreateActionSchema",
+        "type": "object"
+      },
+      "CharacterCreatePayloadSchema": {
+        "properties": {
+          "nome": {
+            "maxLength": 180,
+            "minLength": 1,
+            "title": "Nome",
+            "type": "string"
+          },
+          "razza": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Razza",
+            "type": "string"
+          },
+          "sottorazza": {
+            "default": "",
+            "maxLength": 120,
+            "title": "Sottorazza",
+            "type": "string"
+          },
+          "caratteristicaPreferita": {
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Caratteristicapreferita",
+            "type": "string"
+          },
+          "eta": {
+            "anyOf": [
+              {
+                "maximum": 999,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eta"
+          },
+          "sesso": {
+            "default": "",
+            "maxLength": 80,
+            "title": "Sesso",
+            "type": "string"
+          },
+          "dettagliPersonaggio": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Dettaglipersonaggio",
+            "type": "string"
+          },
+          "background": {
+            "default": "",
+            "maxLength": 8000,
+            "title": "Background",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nome",
+          "razza",
+          "caratteristicaPreferita"
+        ],
+        "title": "CharacterCreatePayloadSchema",
+        "type": "object"
+      },
       "CoinsActionSchema": {
         "properties": {
           "requestId": {
@@ -12281,59 +12446,6 @@
         "title": "MarketGenerationPayloadSchema",
         "type": "object"
       },
-      "MarketProfileAssignmentActionSchema": {
-        "properties": {
-          "requestId": {
-            "title": "Requestid",
-            "type": "string"
-          },
-          "context": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Context",
-            "type": "object"
-          },
-          "meta": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Meta",
-            "type": "object"
-          },
-          "action": {
-            "const": "market.shop.profileAssign",
-            "title": "Action",
-            "type": "string"
-          },
-          "payload": {
-            "$ref": "#/components/schemas/MarketProfileAssignmentPayloadSchema"
-          }
-        },
-        "required": [
-          "requestId",
-          "action",
-          "payload"
-        ],
-        "title": "MarketProfileAssignmentActionSchema",
-        "type": "object"
-      },
-      "MarketProfileAssignmentPayloadSchema": {
-        "properties": {
-          "shopId": {
-            "title": "Shopid",
-            "type": "integer"
-          },
-          "profileKey": {
-            "default": "",
-            "title": "Profilekey",
-            "type": "string"
-          }
-        },
-        "required": [
-          "shopId"
-        ],
-        "title": "MarketProfileAssignmentPayloadSchema",
-        "type": "object"
-      },
       "MarketPurchaseActionSchema": {
         "properties": {
           "requestId": {
@@ -12822,7 +12934,7 @@
         "type": "object"
       },
       "NameGeneratePayloadSchema": {
-        "description": "`race` basta alla modalità rapida; `cultureId` serve solo quando il Master\nsceglie una cultura diversa da quella omonima della razza.",
+        "description": "`race` basta alla modalità rapida; `cultureId` serve solo quando il Master\nsceglie una cultura precisa. `randomCulture` è il clic sulla sola razza:\ntira anche la cultura invece di ricadere sempre sulla stessa.",
         "properties": {
           "race": {
             "default": "",
@@ -12844,6 +12956,11 @@
             "default": "casuale",
             "title": "Gender",
             "type": "string"
+          },
+          "randomCulture": {
+            "default": false,
+            "title": "Randomculture",
+            "type": "boolean"
           }
         },
         "title": "NameGeneratePayloadSchema",

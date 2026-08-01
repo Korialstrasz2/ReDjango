@@ -404,7 +404,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Sbornia",
         "description": "Dopo 10 turni, dimezza l'Energia massima (-50%).",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 36,
         "operations": [
@@ -415,7 +415,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Idromele Nordico",
         "description": "+2 Forza per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 37,
         "operations": [
@@ -426,7 +426,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Vino Surilie",
         "description": "+2 Intelligenza per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 38,
         "operations": [
@@ -437,7 +437,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Shein",
         "description": "+25% punti ferita temporanei per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 39,
         "operations": [
@@ -448,7 +448,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Birra Rovo Nero",
         "description": "+2 Forza e Resistenza, -1 Velocità e Agilità per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 40,
         "operations": [
@@ -462,7 +462,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Brandy Coloviano",
         "description": "+2 Personalità per 1 ora.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 41,
         "operations": [
@@ -473,7 +473,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Vino delle Summerset",
         "description": "+25% mana temporaneo per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 42,
         "operations": [
@@ -484,7 +484,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Sweet Roll",
         "description": "+1 al modificatore generale per 5 turni, nessun effetto collaterale.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 43,
         "operations": [
@@ -495,7 +495,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Vino Economico",
         "description": "+10% punti ferita temporanei per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 44,
         "operations": [
@@ -506,7 +506,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Vino Pregiato",
         "description": "+10% punti ferita e mana temporanei per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 45,
         "operations": [
@@ -518,7 +518,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Distillato di Marshmarrow",
         "description": "+10% punti ferita, mana, PA e potere temporanei per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 46,
         "operations": [
@@ -532,7 +532,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Distillato Nord",
         "description": "+2 Attacco, +2 Riduzione danno fisica, +2 Resistenza al gelo per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 47,
         "operations": [
@@ -545,7 +545,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Skooma",
         "description": "+1 ai tiri di Velocità, +4 PA, +1 al modificatore generale per 5 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 48,
         "operations": [
@@ -558,7 +558,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Skooma (contraccolpo)",
         "description": "Dopo 5 turni, +2 stanchezza.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 49,
         "operations": [
@@ -569,7 +569,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Zucchero Lunare",
         "description": "+1 al modificatore generale per 5 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 50,
         "operations": [
@@ -580,7 +580,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Zucchero Lunare (contraccolpo)",
         "description": "Dopo 5 turni, +1 stanchezza.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 51,
         "operations": [
@@ -591,7 +591,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Zucchero Lunare (khajiit)",
         "description": "Solo per khajiit: +1 PA, +5 punti ferita e mana.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 52,
         "operations": [
@@ -604,7 +604,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Vino Sangue di Sanguine",
         "description": "+1 al modificatore generale per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 53,
         "operations": [
@@ -618,7 +618,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
             "esprime il trigger, arbitrato al tavolo."
         ),
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 54,
         # Nessun bersaglio converte "PA spesi" in perdita di Energia: resta
@@ -629,7 +629,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Flin",
         "description": "+3 al modificatore generale per 3 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 55,
         "operations": [
@@ -640,7 +640,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Flin (contraccolpo)",
         "description": "Dopo 3 turni, -4 al modificatore generale per altri 3 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 56,
         "operations": [
@@ -651,7 +651,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
         "name": "Liquore Lacrime di Sanguine",
         "description": "+40% punti ferita temporanei per 10 turni.",
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 57,
         "operations": [
@@ -665,7 +665,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
             "massimale, arbitrato al tavolo."
         ),
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 58,
         # "Potere" è un contatore di spesa, non un valore che si azzera ogni
@@ -679,7 +679,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
             "aumento di massimale, arbitrato al tavolo."
         ),
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 59,
         "operations": [],
@@ -691,7 +691,7 @@ DEFAULT_EFFECT_PRESETS: tuple[dict[str, Any], ...] = (
             "combattimento); nessun bersaglio copre \"tutti i tiri\", arbitrato al tavolo."
         ),
         "origin": "Preset",
-        "icon": "pozione",
+        "icon": "cibo",
         "category": "Bevande",
         "order": 60,
         "operations": [],

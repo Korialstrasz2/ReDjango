@@ -491,7 +491,7 @@ class NegozioAdmin(V2Admin):
     readonly_fields = ("stock_revision", "last_restocked_at", "created_at", "updated_at")
     actions = (regenerate_stock_action,)
     save_as = True
-    fieldsets = (("Negozio", {"fields": ("nome", "proprietario", "location", "categoria", "livello", "descrizione", "immagine_sfondo", "generation_seed", "generation_profile_key")}), ("Stock", {"fields": ("stock_revision", "last_restocked_at", "lista_oggetti"), "classes": ("collapse",)}), ("Archivio legacy", {"fields": ("regione_nome", "citta_nome", "regione_descrizione", "citta_descrizione", "regione_immagine", "citta_immagine", "metadata", "archived_at"), "classes": ("collapse",)}), ("Sistema", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}))
+    fieldsets = (("Negozio", {"fields": ("nome", "proprietario", "location", "categoria", "livello", "descrizione", "immagine_sfondo", "generation_seed")}), ("Stock", {"fields": ("stock_revision", "last_restocked_at", "lista_oggetti"), "classes": ("collapse",)}), ("Archivio legacy", {"fields": ("regione_nome", "citta_nome", "regione_descrizione", "citta_descrizione", "regione_immagine", "citta_immagine", "metadata", "archived_at"), "classes": ("collapse",)}), ("Sistema", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}))
 
     @admin.display(description="Località")
     def location_display(self, obj): return obj.location_key or f"{obj.regione_nome} — {obj.citta_nome}"

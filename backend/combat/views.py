@@ -169,7 +169,7 @@ def actions(request: HttpRequest):
         elif action == "combat.resolveAttack":
             map_obj, result = resolve_attack(user, giocatore, payload)
             selected_map_id, extra["attackResult"] = map_obj.id, result
-            message = "Attacco applicato." if result["applied"] else "Anteprima dell'attacco calcolata."
+            message = "Attacco applicato." if result["applied"] else ""
         elif action == "combat.applyDirectDamage":
             map_obj, result = apply_direct_damage(user, giocatore, payload)
             selected_map_id, extra["directDamageResult"] = map_obj.id, result

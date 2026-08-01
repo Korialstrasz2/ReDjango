@@ -48,13 +48,9 @@ def generate_stock(
     rules: dict,
     candidates: list[Oggetto] | None = None,
     price_modifier_percent: int = 0,
-    generation_profile: dict | None = None,
 ) -> GenerationResult:
     rng = random.Random(seed)
     ranks = category["itemTypeRanks"]
-    profile = generation_profile or {}
-    quantity_multiplier = float(profile.get("quantityMultiplier", 1))
-    price_multiplier = float(profile.get("priceMultiplier", 1))
     if candidates is None:
         candidates = list(Oggetto.objects.filter(modello=True, archiviato=False, archived_at__isnull=True, speciale=False).exclude(rarita=Oggetto.Rarita.UNICO))
     usable = []
@@ -69,13 +65,15 @@ def generate_stock(
         if not item_levels or item_type not in ranks or ranks[item_type] >= 5:
             continue
         usable.append((item, item_levels, ranks[item_type]))
-    target = max(0, round((rules["baseCount"] + level * rules["countPerLevel"]) * category["inventoryMultiplier"] * quantity_multiplier * (1 - rules["countVariance"] + rng.random() * rules["countVariance"] * 2)))
+    # quantityScale is the global size dial; 1 is the neutral value, so a rules
+    # dict written before the key existed keeps its current shop sizes.
+    target = max(0, round((rules["baseCount"] + level * rules["countPerLevel"]) * category["inventoryMultiplier"] * rules.get("quantityScale", 1) * (1 - rules["countVariance"] + rng.random() * rules["countVariance"] * 2)))
     counts: Counter[int] = Counter()
     missing: Counter[str] = Counter()
     deltas = rules["fallbackLevelDeltas"]
     rarity_rolls = [
         (rarity, probability)
-        for rarity, probability in (profile.get("rarityProbabilities") or rules["rarityProbabilities"]).items()
+        for rarity, probability in rules["rarityProbabilities"].items()
         if probability > 0
     ]
     rarity_counts: Counter[str] = Counter()
@@ -112,6 +110,6 @@ def generate_stock(
     entries = []
     for item_id, quantity in sorted(counts.items()):
         item = next(item for item, _levels, _rank in usable if item.id == item_id)
-        price = max(0, round((item.valore or 0) * (rules["priceBasePercent"] + rules["priceLevelPercent"] * level) / 100 * (1 + price_modifier_percent / 100) * price_multiplier))
+        price = max(0, round((item.valore or 0) * (rules["priceBasePercent"] + rules["priceLevelPercent"] * level) / 100 * (1 + price_modifier_percent / 100)))
         entries.append({"itemId": item_id, "quantity": quantity, "unitPrice": price, "source": "generated"})
-    return GenerationResult(seed=seed, entries=entries, diagnostics={"requestedRolls": target, "fulfilledRolls": sum(counts.values()), "missingByItemType": dict(missing), "generationProfileKey": profile.get("key", ""), "rarityMix": dict(rarity_counts), "candidatePoolSize": len(usable)})
+    return GenerationResult(seed=seed, entries=entries, diagnostics={"requestedRolls": target, "fulfilledRolls": sum(counts.values()), "missingByItemType": dict(missing), "rarityMix": dict(rarity_counts), "candidatePoolSize": len(usable)})

@@ -1975,18 +1975,8 @@ V2_SETTING_DEFAULTS.extend([
     {
         "key": "mercato.generator_rules", "label": "Regole generatore Mercato", "category": "mercato",
         "description": "Regole avanzate per quantità, rarità e prezzi del Mercato.", "minimum_role": "admin", "value_type": "json",
-        "default_value": {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25},
+        "default_value": {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "quantityScale": 1, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25},
         "choices": [], "user_customizable": False, "master_customizable": False, "order": 30,
-    },
-    {
-        "key": "mercato.generation_profiles", "label": "Profili di generazione Mercato", "category": "mercato",
-        "description": "Preset riutilizzabili per quantità, rarità e prezzi delle scorte.", "minimum_role": "admin", "value_type": "json",
-        "default_value": {"version": 1, "defaultProfileKey": "standard", "profiles": [
-            {"key": "povero", "label": "Povero", "enabled": True, "quantityMultiplier": .6, "priceMultiplier": .9, "rarityProbabilities": {"1": .845, "2": .1, "3": .04, "4": .01, "5": .005}},
-            {"key": "standard", "label": "Standard", "enabled": True, "quantityMultiplier": 1, "priceMultiplier": 1, "rarityProbabilities": {"1": .675, "2": .15, "3": .1, "4": .05, "5": .025}},
-            {"key": "ricco", "label": "Ricco", "enabled": True, "quantityMultiplier": 1.35, "priceMultiplier": 1.1, "rarityProbabilities": {"1": .46, "2": .25, "3": .17, "4": .08, "5": .04}},
-            {"key": "mercato-speciale", "label": "Mercato speciale", "enabled": True, "quantityMultiplier": 1, "priceMultiplier": 1.25, "rarityProbabilities": {"1": .275, "2": .25, "3": .25, "4": .15, "5": .075}},
-        ]}, "choices": [], "user_customizable": False, "master_customizable": False, "order": 40,
     },
 ])
 

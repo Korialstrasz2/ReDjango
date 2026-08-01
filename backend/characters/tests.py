@@ -1,4 +1,5 @@
 import json
+import re
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -1115,13 +1116,22 @@ class EffectPresetTests(TestCase):
         self.assertTrue(all(operation["operation"] == "subtract" and operation["value"] == "1" for operation in preset.operazioni))
 
     def test_the_general_modifier_is_reserved_for_presets_that_name_it(self):
-        """Solo le Articolazioni dichiarano "modifica generale" nella descrizione."""
-        touching = {
+        """Il modificatore generale non è un malus "a tutto".
+
+        Un preset può toccarlo solo se lo dichiara nella propria descrizione,
+        così una svista non lo trasforma di nuovo nella scorciatoia per
+        "penalizza ogni tiro" (vedi la migrazione 0028 e il preset Spasmi).
+        L'invariante è sulla descrizione, non su un elenco fisso di nomi:
+        altrimenti ogni preset legittimo aggiunto dopo la fa fallire.
+        """
+        named = re.compile(r"modific(?:atore|a)\s+generale", re.IGNORECASE)
+        undeclared = {
             preset.nome
             for preset in EffettoPreset.objects.all()
             if any(operation["target"] == "modificatore_generale" for operation in preset.operazioni)
+            and not named.search(preset.descrizione or "")
         }
-        self.assertEqual(touching, {"Articolazioni di Roccia", "Articolazioni Infernali"})
+        self.assertEqual(undeclared, set())
 
     def test_spasmi_stays_descriptive(self):
         self.assertEqual(EffettoPreset.objects.get(nome="Spasmi").operazioni, [])

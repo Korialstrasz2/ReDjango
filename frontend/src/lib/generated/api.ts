@@ -21,6 +21,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/characters/creation-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Character Creation Options
+         * @description Cataloghi della procedura "Nuovo PG": razze, sottorazze, caratteristiche, quota.
+         */
+        get: operations["backend_api_v1_api_character_creation_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/items": {
         parameters: {
             query?: never;
@@ -1019,6 +1039,23 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** ItemEffectSummarySchema */
+        ItemEffectSummarySchema: {
+            /** Label */
+            label: string;
+            /**
+             * Value
+             * @default
+             */
+            value: string;
+            /**
+             * Condition
+             * @default
+             */
+            condition: string;
+            /** Text */
+            text: string;
+        };
         /** ItemSchema */
         ItemSchema: {
             /** Id */
@@ -1073,6 +1110,11 @@ export interface components {
             effects: {
                 [key: string]: unknown;
             }[];
+            /**
+             * Effectsummaries
+             * @default []
+             */
+            effectSummaries: components["schemas"]["ItemEffectSummarySchema"][];
             /**
              * Eldereffects
              * @default []
@@ -1385,6 +1427,34 @@ export interface components {
                 [key: string]: unknown;
             }[];
             /** Errors */
+            errors: components["schemas"]["ErrorSchema"][];
+        };
+        /** ManagementEnvelopeSchema */
+        ManagementEnvelopeSchema: {
+            /** Ok */
+            ok: boolean;
+            /** Requestid */
+            requestId: string;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+            /**
+             * Events
+             * @default []
+             */
+            events: components["schemas"]["EventSchema"][];
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Errors
+             * @default []
+             */
             errors: components["schemas"]["ErrorSchema"][];
         };
         /** ItemCatalogDataSchema */
@@ -2053,34 +2123,6 @@ export interface components {
         };
         /** NameCatalogEnvelopeSchema */
         NameCatalogEnvelopeSchema: {
-            /** Ok */
-            ok: boolean;
-            /** Requestid */
-            requestId: string;
-            /** Data */
-            data: {
-                [key: string]: unknown;
-            };
-            /**
-             * Events
-             * @default []
-             */
-            events: components["schemas"]["EventSchema"][];
-            /**
-             * Warnings
-             * @default []
-             */
-            warnings: {
-                [key: string]: unknown;
-            }[];
-            /**
-             * Errors
-             * @default []
-             */
-            errors: components["schemas"]["ErrorSchema"][];
-        };
-        /** ManagementEnvelopeSchema */
-        ManagementEnvelopeSchema: {
             /** Ok */
             ok: boolean;
             /** Requestid */
@@ -3967,6 +4009,62 @@ export interface components {
             /** Campaignid */
             campaignId: number;
         };
+        /** CharacterCreateActionSchema */
+        CharacterCreateActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "characters.create";
+            payload: components["schemas"]["CharacterCreatePayloadSchema"];
+        };
+        /** CharacterCreatePayloadSchema */
+        CharacterCreatePayloadSchema: {
+            /** Nome */
+            nome: string;
+            /** Razza */
+            razza: string;
+            /**
+             * Sottorazza
+             * @default
+             */
+            sottorazza: string;
+            /** Caratteristicapreferita */
+            caratteristicaPreferita: string;
+            /** Eta */
+            eta?: number | null;
+            /**
+             * Sesso
+             * @default
+             */
+            sesso: string;
+            /**
+             * Dettaglipersonaggio
+             * @default
+             */
+            dettagliPersonaggio: string;
+            /**
+             * Background
+             * @default
+             */
+            background: string;
+        };
         /** CoinsActionSchema */
         CoinsActionSchema: {
             /** Requestid */
@@ -5836,41 +5934,6 @@ export interface components {
              */
             seed: string;
         };
-        /** MarketProfileAssignmentActionSchema */
-        MarketProfileAssignmentActionSchema: {
-            /** Requestid */
-            requestId: string;
-            /**
-             * Context
-             * @default {}
-             */
-            context: {
-                [key: string]: unknown;
-            };
-            /**
-             * Meta
-             * @default {}
-             */
-            meta: {
-                [key: string]: unknown;
-            };
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            action: "market.shop.profileAssign";
-            payload: components["schemas"]["MarketProfileAssignmentPayloadSchema"];
-        };
-        /** MarketProfileAssignmentPayloadSchema */
-        MarketProfileAssignmentPayloadSchema: {
-            /** Shopid */
-            shopId: number;
-            /**
-             * Profilekey
-             * @default
-             */
-            profileKey: string;
-        };
         /** MarketPurchaseActionSchema */
         MarketPurchaseActionSchema: {
             /** Requestid */
@@ -6189,7 +6252,8 @@ export interface components {
         /**
          * NameGeneratePayloadSchema
          * @description `race` basta alla modalità rapida; `cultureId` serve solo quando il Master
-         *     sceglie una cultura diversa da quella omonima della razza.
+         *     sceglie una cultura precisa. `randomCulture` è il clic sulla sola razza:
+         *     tira anche la cultura invece di ricadere sempre sulla stessa.
          */
         NameGeneratePayloadSchema: {
             /**
@@ -6204,6 +6268,11 @@ export interface components {
              * @default casuale
              */
             gender: string;
+            /**
+             * Randomculture
+             * @default false
+             */
+            randomCulture: boolean;
         };
         /** NoteUpdateActionSchema */
         NoteUpdateActionSchema: {
@@ -6992,6 +7061,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorEnvelopeSchema"];
+                };
+            };
+        };
+    };
+    backend_api_v1_api_character_creation_options: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagementEnvelopeSchema"];
                 };
             };
         };
@@ -7858,7 +7947,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketProfileAssignmentActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"] | components["schemas"]["NameGenerateActionSchema"];
+                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CharacterCreateActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"] | components["schemas"]["NameGenerateActionSchema"];
             };
         };
         responses: {

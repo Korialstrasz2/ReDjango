@@ -906,7 +906,6 @@ class Negozio(V2Model):
     )
     lista_oggetti = models.JSONField(default=list, blank=True)
     generation_seed = models.CharField(max_length=120, blank=True)
-    generation_profile_key = models.CharField(max_length=80, blank=True)
     descrizione = models.TextField(blank=True)
     location_key = models.CharField(max_length=200, blank=True, db_index=True)
     stock_revision = models.PositiveIntegerField(default=0)

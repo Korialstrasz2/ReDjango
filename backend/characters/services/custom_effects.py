@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 from typing import Any, Mapping
 
 from django.contrib.staticfiles import finders
@@ -134,6 +135,79 @@ def effect_target_options() -> list[dict[str, str]]:
 
 def effect_target_values() -> set[str]:
     return {option["value"] for option in effect_target_options()}
+
+
+@lru_cache(maxsize=1)
+def _effect_target_label_map() -> dict[str, str]:
+    return {option["value"]: option["label"] for option in effect_target_options()}
+
+
+def effect_target_label(target: Any) -> str:
+    key = str(target or "").strip()
+    if not key:
+        return "Effetto"
+    label = _effect_target_label_map().get(key, "")
+    # "(extra)" distingue i campi nell'editor: fuori di lì è solo rumore.
+    return label.replace(" (extra)", "") or key.replace("_", " ").capitalize()
+
+
+def _effect_number(value: Any) -> str:
+    raw = str(value if value is not None else "").strip()
+    try:
+        number = float(raw)
+    except ValueError:
+        return raw
+    return str(int(number)) if number.is_integer() else f"{number:g}"
+
+
+def _signed(raw: str) -> str:
+    return raw if raw.startswith(("-", "+")) else f"+{raw}"
+
+
+def effect_summary_entries(effects: Any) -> list[dict[str, str]]:
+    """Traduce gli effetti strutturati in righe leggibili al tavolo.
+
+    Le schede mostrano gli effetti a chi gioca, non a chi li ha scritti:
+    ``{"target": "res_taglio", "operation": "add", "value": 2}`` va letto come
+    "Resistenza al taglio +2". L'editor continua a lavorare sui campi grezzi.
+    """
+    entries: list[dict[str, str]] = []
+    for effect in effects if isinstance(effects, list) else []:
+        if not isinstance(effect, Mapping):
+            continue
+        label = effect_target_label(effect.get("target"))
+        operation = str(effect.get("operation") or "add").strip()
+        raw = _effect_number(effect.get("value"))
+        if operation == "subtract":
+            value = raw if raw.startswith("-") else f"-{raw}"
+        elif operation == "multiply":
+            value = f"×{raw}"
+        elif operation == "percent":
+            value = f"{_signed(raw)}%"
+        elif operation == "min":
+            value = f"minimo {raw}"
+        elif operation in {"max", "cap"}:
+            value = f"massimo {raw}"
+        elif operation == "set":
+            value = f"= {raw}"
+        elif operation == "strong_set":
+            value = f"= {raw} (fisso)"
+        elif operation == "formula_override":
+            value = f"= {raw}" if raw else ""
+        else:
+            value = _signed(raw)
+        condition = str(effect.get("condition") or "").strip()
+        entries.append(
+            {
+                "label": label,
+                "value": value,
+                "condition": condition,
+                "text": " ".join(part for part in (label, value) if part)
+                + (f" se {condition}" if condition else ""),
+            }
+        )
+    return entries
+
 
 LEGACY_EFFECT_OPERATIONS = {
     "add": ("Aggiungi", "Somma il valore al totale calcolato."),
