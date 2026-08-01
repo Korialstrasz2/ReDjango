@@ -2243,6 +2243,7 @@
                     "market.shop.batchCreate": "#/components/schemas/MarketShopBatchActionSchema",
                     "market.shop.preview": "#/components/schemas/MarketShopPreviewActionSchema",
                     "market.shop.regenerate": "#/components/schemas/MarketShopRegenerateActionSchema",
+                    "market.shop.regenerateAll": "#/components/schemas/MarketShopRegenerateAllActionSchema",
                     "market.shop.save": "#/components/schemas/MarketShopSaveActionSchema",
                     "market.shop.state": "#/components/schemas/MarketShopStateActionSchema",
                     "names.generate": "#/components/schemas/NameGenerateActionSchema",
@@ -2518,6 +2519,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/MarketShopRegenerateActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/MarketShopRegenerateAllActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/MarketShopBatchActionSchema"
@@ -12839,6 +12843,17 @@
         "title": "MarketQuotePayloadSchema",
         "type": "object"
       },
+      "MarketRegenerateAllPayloadSchema": {
+        "properties": {
+          "confirm": {
+            "default": false,
+            "title": "Confirm",
+            "type": "boolean"
+          }
+        },
+        "title": "MarketRegenerateAllPayloadSchema",
+        "type": "object"
+      },
       "MarketSettingsPayloadSchema": {
         "properties": {
           "values": {
@@ -12991,6 +13006,41 @@
           "payload"
         ],
         "title": "MarketShopRegenerateActionSchema",
+        "type": "object"
+      },
+      "MarketShopRegenerateAllActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "market.shop.regenerateAll",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/MarketRegenerateAllPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "MarketShopRegenerateAllActionSchema",
         "type": "object"
       },
       "MarketShopSaveActionSchema": {

@@ -275,11 +275,12 @@ function StockEligibilityPanel({ report }: { report: StockEligibility }) {
   </section>;
 }
 
-function ShopManagementWorkspace({ market, saving, onSave, onBatch }: {
+function ShopManagementWorkspace({ market, saving, onSave, onBatch, onRegenerateAll }: {
   market: MarketData;
   saving: boolean;
   onSave: (values: Record<string, unknown>) => void;
   onBatch: (values: Record<string, unknown>) => void;
+  onRegenerateAll: () => void;
 }) {
   const [tab, setTab] = useState<WorkspaceTab>("territory");
   const [locations, setLocations] = useState(() => structuredClone(market.configuration.locations!));
@@ -308,7 +309,17 @@ function ShopManagementWorkspace({ market, saving, onSave, onBatch }: {
     {tab === "types" && <ShopTypesEditor configuration={shopTypes} itemTypes={market.configuration.itemTypes || []} shops={market.shops} onChange={setShopTypes} />}
     {tab === "eligibility" && market.stockEligibility && <StockEligibilityPanel report={market.stockEligibility} />}
     {tab === "generator" && rules && <section className="panel shop-generator-workspace" data-component-type="form" data-theme="parchment"><GeneratorRulesEditor rules={rules} onChange={setRules} /></section>}
-    {tab === "batch" && <BatchCreator market={market} saving={saving} onCreate={onBatch} />}
+    {tab === "batch" && (
+      <>
+        <BatchCreator market={market} saving={saving} onCreate={onBatch} />
+        {market.permissions.canRegenerateAll && (
+          <section className="panel danger-panel" data-component-type="toolbar" data-theme="danger">
+            <div><h2>Ricrea tutti i negozi</h2><p>Sostituisce le scorte dei {market.shops.filter((shop) => !shop.archived).length} negozi attivi con il generatore e le rarità correnti. I negozi archiviati non vengono modificati.</p></div>
+            <button type="button" className="button danger" disabled={saving} onClick={onRegenerateAll}>{saving ? "Ricreazione…" : "Ricrea tutti i negozi"}</button>
+          </section>
+        )}
+      </>
+    )}
     {tab !== "batch" && <footer className="sticky-actions shop-management-savebar" data-component-type="toolbar" data-theme="dark"><span>{isDirty ? "Modifiche non ancora salvate" : "Configurazione aggiornata"}</span><button type="button" className="button primary" disabled={saving || !isDirty} onClick={save}>{saving ? "Salvataggio…" : "Salva configurazione"}</button></footer>}
   </>;
 }
@@ -344,6 +355,12 @@ export function ShopManagementPage() {
       saving={mutation.isPending}
       onSave={(values) => mutation.mutate({ action: "market.settings.save", payload: { values } })}
       onBatch={(values) => mutation.mutate({ action: "market.shop.batchCreate", payload: { values, confirm: true } })}
+      onRegenerateAll={() => {
+        const activeCount = market.shops.filter((shop) => !shop.archived).length;
+        if (window.confirm(`Ricreare le scorte di tutti i ${activeCount} negozi attivi? Le scorte attuali saranno sostituite e i carrelli aperti diventeranno obsoleti.`)) {
+          mutation.mutate({ action: "market.shop.regenerateAll", payload: { confirm: true } });
+        }
+      }}
     />}
   </div>;
 }

@@ -59,14 +59,61 @@ function ShopEditor({ market, shop, saving, onClose, onSave }: {
   </Modal>;
 }
 
-function ItemDetail({ line, quantity, onClose, onSetQuantity }: {
-  line: StockLine; quantity: number; onClose: () => void; onSetQuantity: (quantity: number) => void;
+const UNKNOWN_FACT = "—";
+
+/** Everything the catalogue knows about a piece, in the order a buyer asks for it. */
+function stockFacts(line: StockLine): Array<{ label: string; value: string }> {
+  const { item } = line;
+  // Gli spazi extra accettano quasi tutto: elencarli riempirebbe la riga senza
+  // dire nulla che distingua questo oggetto da quello accanto.
+  const slots = item.compatibleEquipmentSlots.filter((slot) => !slot.startsWith("extra_slot_"));
+  const facts = [
+    { label: "Prezzo", value: `${line.unitPrice} monete` },
+    { label: "Disponibili", value: String(line.quantity) },
+    { label: "Rarità", value: item.rarityLabel || UNKNOWN_FACT },
+    { label: "Peso", value: item.weight == null ? UNKNOWN_FACT : String(item.weight) },
+    { label: "Valore di catalogo", value: item.value == null ? UNKNOWN_FACT : `${item.value} monete` },
+    { label: "Livello di bottino", value: item.lootLevel || UNKNOWN_FACT },
+    { label: "Provenienza", value: item.region || "Nessuna regione" },
+    { label: "Slot", value: slots.length ? slots.map((slot) => slot.replace(/_/g, " ")).join(", ") : item.compatibleEquipmentSlots.length ? "Solo spazi extra" : "Non equipaggiabile" },
+  ];
+  if (item.actionPointCost != null) facts.push({ label: "PA per attacco", value: String(item.actionPointCost) });
+  return facts;
+}
+
+function ItemDetail({ line, quantity, position, total, onClose, onSetQuantity, onStep }: {
+  line: StockLine; quantity: number; position: number; total: number;
+  onClose: () => void; onSetQuantity: (quantity: number) => void; onStep: (delta: number) => void;
 }) {
-  return <aside className="market-item-detail" data-component-type="panel" data-theme="gold">
-    <header>{line.item.imageUrl ? <img src={line.item.imageUrl} alt="" /> : <span>◇</span>}<button type="button" onClick={onClose} aria-label="Chiudi dettaglio">×</button></header>
-    <div><p className="eyebrow">{line.item.rarityLabel || line.item.types[0] || "Oggetto"}</p><h3>{line.item.name}</h3><p>{line.item.description || "Nessuna descrizione disponibile."}</p><dl><div><dt>Prezzo</dt><dd>{line.unitPrice} monete</dd></div><div><dt>Disponibili</dt><dd>{line.quantity}</dd></div>{line.item.weight != null && <div><dt>Peso</dt><dd>{line.item.weight}</dd></div>}{line.item.region && <div><dt>Provenienza</dt><dd>{line.item.region}</dd></div>}</dl>{line.item.effectSummaries.length > 0 && <section className="market-item-effects"><strong>Effetti</strong><ul>{line.item.effectSummaries.map((effect, index) => <li key={index}><span>{effect.label}</span><b>{effect.value}</b>{effect.condition && <small>se {effect.condition}</small>}</li>)}</ul></section>}{line.item.specialRules?.trim() && <section className="item-special-rules"><strong>Regole speciali</strong><p>{line.item.specialRules}</p></section>}</div>
-    <footer><div className="market-quantity"><button type="button" disabled={quantity <= 0} onClick={() => onSetQuantity(Math.max(0, quantity - 1))}>−</button><output>{quantity}</output><button type="button" disabled={quantity >= line.quantity} onClick={() => onSetQuantity(Math.min(line.quantity, quantity + 1))}>＋</button></div><button type="button" className="button primary" disabled={quantity >= line.quantity} onClick={() => onSetQuantity(Math.min(line.quantity, quantity + 1))}>{quantity ? "Aggiungi ancora" : "Aggiungi al carrello"}</button></footer>
-  </aside>;
+  const { item } = line;
+  const weapon = [
+    { label: "Categoria", value: item.weaponType },
+    { label: "Lunghezza", value: item.weaponLength },
+    { label: "Potenza", value: item.weaponPower },
+  ].filter((entry) => entry.value);
+  const add = () => onSetQuantity(Math.min(line.quantity, quantity + 1));
+  // La scheda vive in una finestra invece che in una terza colonna: il banco
+  // resta largo quanto la pagina e la merce ha lo spazio per raccontarsi.
+  return <Modal surface="market-item" title={item.name} onClose={onClose} wide className="market-item-modal" footer={<>
+    <div className="market-item-paging"><button type="button" disabled={total < 2} onClick={() => onStep(-1)} aria-label="Oggetto precedente">‹</button><small>{position} di {total}</small><button type="button" disabled={total < 2} onClick={() => onStep(1)} aria-label="Oggetto successivo">›</button></div>
+    <div className="market-quantity"><button type="button" disabled={quantity <= 0} onClick={() => onSetQuantity(Math.max(0, quantity - 1))} aria-label="Togli una unità">−</button><output>{quantity}</output><button type="button" disabled={quantity >= line.quantity} onClick={add} aria-label="Aggiungi una unità">＋</button></div>
+    <button type="button" className="button primary" disabled={quantity >= line.quantity} onClick={add}>{quantity ? "Aggiungi ancora" : "Aggiungi al carrello"}</button>
+  </>}>
+    <div className="market-item-sheet">
+      <aside className="market-item-portrait">
+        {item.imageUrl ? <img src={item.imageUrl} alt="" /> : <span className="market-item-placeholder">◇</span>}
+        <p className="eyebrow">{item.rarityLabel || "Oggetto"}</p>
+        {item.types.filter(Boolean).length > 0 && <ul>{item.types.filter(Boolean).map((type) => <li key={type}>{type}</li>)}</ul>}
+      </aside>
+      <div className="market-item-body">
+        <p className="market-item-description">{item.description || "Nessuna descrizione disponibile."}</p>
+        <dl className="market-item-data">{stockFacts(line).map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
+        {item.effectSummaries.length > 0 && <section className="market-item-effects"><strong>Effetti</strong><ul>{item.effectSummaries.map((effect, index) => <li key={index}><span>{effect.label}</span><b>{effect.value}</b>{effect.condition && <small>se {effect.condition}</small>}</li>)}</ul></section>}
+        {weapon.length > 0 && <section className="market-item-effects"><strong>Profilo d'arma</strong><ul>{weapon.map((entry) => <li key={entry.label}><span>{entry.label}</span><b>{entry.value}</b></li>)}</ul></section>}
+        {item.specialRules?.trim() && <section className="item-special-rules"><strong>Regole speciali</strong><p>{item.specialRules}</p></section>}
+      </div>
+    </div>
+  </Modal>;
 }
 
 function PurchaseSidebar({ shop, character, cart, negotiationPercent, maximumNegotiationPercent, pending, onSetQuantity, onSetNegotiation, onClear, onPurchase }: {
@@ -172,7 +219,9 @@ export function MarketPage() {
     const normalized = query.trim().toLocaleLowerCase("it");
     return (selectedShop?.stock || []).filter((line) => (!normalized || `${line.item.name} ${line.item.description} ${line.item.rarityLabel}`.toLocaleLowerCase("it").includes(normalized)) && (!typeFilter || line.item.types.includes(typeFilter)) && (!maxPrice || line.unitPrice <= Number(maxPrice))).sort((a, b) => sort === "price" ? a.unitPrice - b.unitPrice : sort === "rarity" ? Number(b.item.rarity || 0) - Number(a.item.rarity || 0) : a.item.name.localeCompare(b.item.name));
   }, [selectedShop, query, typeFilter, maxPrice, sort]);
-  const selectedLine = selectedShop?.stock.find((line) => line.item.id === selectedItemId) || null;
+  const detailIndex = visibleStock.findIndex((line) => line.item.id === selectedItemId);
+  const selectedLine = detailIndex < 0 ? null : visibleStock[detailIndex];
+  const stepDetail = (delta: number) => setSelectedItemId(visibleStock[(detailIndex + delta + visibleStock.length) % visibleStock.length].item.id);
   const cartLines = selectedShop?.stock.filter((line) => cart[line.item.id] > 0).map((line) => ({ itemId: line.item.id, quantity: cart[line.item.id] })) || [];
   const maximumNegotiationPercent = Number(market?.configuration.limits.maximumNegotiationPercent || 0);
   const actionMutation = useMutation({
@@ -215,12 +264,13 @@ export function MarketPage() {
         {selectedShop ? <div className="market-shop-workspace">
           <header className="market-shop-heading" style={{ "--shop-art": selectedShop.backgroundUrl ? `url(${selectedShop.backgroundUrl})` : "none" } as CSSProperties}><div><p className="eyebrow">{selectedShop.regionName} · {selectedShop.placeName}</p><h2><span>{shopIcon(selectedType)}</span>{selectedShop.name}</h2><p>{selectedShop.owner ? `Gestito da ${selectedShop.owner}. ` : ""}{selectedShop.description || "Le merci disponibili cambiano con il livello e la regione."}</p><div className="market-shop-facts"><span>Livello {selectedShop.level}</span><span>{selectedShop.stockCount} oggetti</span><span>Scorte #{selectedShop.stockRevision}</span>{selectedShop.priceModifierPercent !== 0 && <span>Prezzi {selectedShop.priceModifierPercent > 0 ? "+" : ""}{selectedShop.priceModifierPercent}%</span>}</div></div>{market.permissions.canManage && <div className="market-shop-management"><button type="button" onClick={() => setEditing("edit")}>Modifica</button>{market.permissions.canRegenerate && <button type="button" disabled={actionMutation.isPending} onClick={() => actionMutation.mutate({ action: "market.shop.regenerate", payload: { shopId: selectedShop.id } })}>Rigenera</button>}{market.permissions.canArchive && <button type="button" className="danger" disabled={actionMutation.isPending} onClick={() => actionMutation.mutate({ action: "market.shop.state", payload: { shopId: selectedShop.id, archived: !selectedShop.archived } })}>{selectedShop.archived ? "Ripristina" : "Archivia"}</button>}</div>}</header>
           <details className="market-filters"><summary><span>⌕</span><strong>Cerca e filtra</strong><small>{visibleStock.length} di {selectedShop.stock.length}</small></summary><div><label className="market-search">Cerca<input type="search" value={query} placeholder="Nome, descrizione, rarità…" onChange={(event) => setQuery(event.target.value)} /></label><label>Prezzo massimo<input type="number" min="0" value={maxPrice} placeholder="Qualsiasi" onChange={(event) => setMaxPrice(event.target.value)} /></label><div className="market-filter-buttons"><button type="button" className={!typeFilter ? "active" : ""} onClick={() => setTypeFilter("")}>Tutti</button>{availableTypes.map((type) => <button type="button" key={type} className={typeFilter === type ? "active" : ""} onClick={() => setTypeFilter(type)}>{type}</button>)}</div><div className="market-sort-buttons"><span>Ordina</span><button type="button" className={sort === "name" ? "active" : ""} onClick={() => setSort("name")}>Nome</button><button type="button" className={sort === "price" ? "active" : ""} onClick={() => setSort("price")}>Prezzo</button><button type="button" className={sort === "rarity" ? "active" : ""} onClick={() => setSort("rarity")}>Rarità</button></div>{market.permissions.canManage && <label className="market-switch"><input type="checkbox" checked={includeArchived} onChange={(event) => setIncludeArchived(event.target.checked)} /><span><strong>Mostra archiviati</strong></span></label>}</div></details>
-          <div className={selectedLine ? "market-stock-layout has-detail" : "market-stock-layout"}><section className="market-stock-grid">{visibleStock.map((line) => <button type="button" key={line.item.id} className={`market-item-card ${selectedItemId === line.item.id ? "active" : ""}`} onClick={() => setSelectedItemId(line.item.id)}>{line.item.imageUrl ? <img src={line.item.imageUrl} alt="" /> : <span className="market-item-placeholder">◇</span>}<span className="market-item-copy"><small>{line.item.rarityLabel || line.item.types[0] || "Oggetto"}</small><strong>{line.item.name}</strong><span>{line.unitPrice} monete</span></span><span className="market-item-stock">{line.quantity}</span>{cart[line.item.id] > 0 && <b>{cart[line.item.id]} nel carrello</b>}</button>)}</section>{selectedLine && <ItemDetail line={selectedLine} quantity={cart[selectedLine.item.id] || 0} onClose={() => setSelectedItemId(null)} onSetQuantity={(quantity) => setCart((current) => ({ ...current, [selectedLine.item.id]: quantity }))} />}</div>
+          <section className="market-stock-grid">{visibleStock.map((line) => <button type="button" key={line.item.id} title={line.item.name} className={`market-item-card ${selectedItemId === line.item.id ? "active" : ""}`} onClick={() => setSelectedItemId(line.item.id)}>{line.item.imageUrl ? <img src={line.item.imageUrl} alt="" /> : <span className="market-item-placeholder">◇</span>}<span className="market-item-copy"><small>{line.item.rarityLabel || line.item.types[0] || "Oggetto"}</small><strong>{line.item.name}</strong><span>{line.unitPrice} monete</span></span><span className="market-item-stock">{line.quantity}</span>{cart[line.item.id] > 0 && <b>{cart[line.item.id]} nel carrello</b>}</button>)}</section>
           {!visibleStock.length && <div className="market-empty"><span>◇</span><h3>Nessun oggetto trovato</h3><p>Prova a cambiare i filtri o chiedi al Master di rigenerare le scorte.</p></div>}
         </div> : <div className="market-empty"><span>⌂</span><h3>{activeLocation ? "Nessun negozio selezionato" : activeRegion ? "Scegli una località" : "Scegli una regione"}</h3><p>{activeLocation ? (market.permissions.canManage ? "Crea il primo negozio oppure modifica i filtri." : "Modifica i filtri o scegli un'altra località.") : "Usa i due elenchi a sinistra per entrare nel mercato."}</p>{activeLocation && market.permissions.canManage && !locationShops.length && <button className="button primary" onClick={() => setEditing("new")}>Crea negozio</button>}</div>}
       </main>
       <PurchaseSidebar shop={selectedShop} character={market.character} cart={cart} negotiationPercent={negotiationPercent} maximumNegotiationPercent={maximumNegotiationPercent} pending={actionMutation.isPending} onSetQuantity={(itemId, quantity) => setCart((current) => ({ ...current, [itemId]: quantity }))} onSetNegotiation={setNegotiationPercent} onClear={() => { setCart({}); setNegotiationPercent(0); }} onPurchase={() => actionMutation.mutate({ action: "market.purchase", payload: { characterId: market.character?.id, shopId: selectedShop?.id, stockRevision: selectedShop?.stockRevision, lines: cartLines, negotiationPercent } })} />
     </div>
+    {selectedLine && <ItemDetail line={selectedLine} quantity={cart[selectedLine.item.id] || 0} position={detailIndex + 1} total={visibleStock.length} onStep={stepDetail} onClose={() => setSelectedItemId(null)} onSetQuantity={(quantity) => setCart((current) => ({ ...current, [selectedLine.item.id]: quantity }))} />}
     {editing && <ShopEditor key={`${editing}-${selectedShop?.id || "new"}`} market={market} shop={editing === "edit" ? selectedShop : null} saving={actionMutation.isPending} onClose={() => setEditing(null)} onSave={saveShop} />}
   </div>;
 }

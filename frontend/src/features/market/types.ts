@@ -106,6 +106,7 @@ export type MarketData = {
     canEditLocations: boolean;
     canEditShopTypes: boolean;
     canRegenerate: boolean;
+    canRegenerateAll: boolean;
     canTuneGenerator: boolean;
     canBatchCreate: boolean;
     canArchive: boolean;

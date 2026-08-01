@@ -1519,6 +1519,10 @@ class MarketGenerationPayloadSchema(Schema):
     seed: str = ""
 
 
+class MarketRegenerateAllPayloadSchema(Schema):
+    confirm: bool = False
+
+
 class MarketBatchPayloadSchema(Schema):
     values: dict[str, Any] = {}
     confirm: bool = False
@@ -2003,6 +2007,11 @@ class MarketShopRegenerateActionSchema(ActionBaseSchema):
     payload: MarketGenerationPayloadSchema
 
 
+class MarketShopRegenerateAllActionSchema(ActionBaseSchema):
+    action: Literal["market.shop.regenerateAll"]
+    payload: MarketRegenerateAllPayloadSchema
+
+
 class MarketShopBatchActionSchema(ActionBaseSchema):
     action: Literal["market.shop.batchCreate"]
     payload: MarketBatchPayloadSchema
@@ -2206,6 +2215,7 @@ ActionEnvelopeSchema = Annotated[
     | MarketShopSaveActionSchema
     | MarketShopPreviewActionSchema
     | MarketShopRegenerateActionSchema
+    | MarketShopRegenerateAllActionSchema
     | MarketShopBatchActionSchema
     | MarketShopStateActionSchema
     | MarketSettingsSaveActionSchema

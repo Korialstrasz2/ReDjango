@@ -6,6 +6,11 @@ from dataclasses import dataclass
 
 from backend.core.models import Oggetto
 
+# Rank 0 is the shop's signature merchandise and rank 4 its afterthought; the
+# ratio between them is what makes a fabbro look like a fabbro.
+RANK_WEIGHT_BASE = 2.5
+FOREIGN_REGION_WEIGHT = .35
+
 
 def parse_loot_levels(raw: object) -> set[int]:
     """Return every level supported by Elder's compact ``1-4`` notation.
@@ -39,6 +44,84 @@ class GenerationResult:
     diagnostics: dict
 
 
+class _Shelf:
+    """One rarity's draw pile, held as parallel arrays.
+
+    The previous generator rebuilt the eligible subset inside every roll, which
+    made a roll cost a full pass over the catalogue and, worse, made the copy
+    cap the only thing keeping a heavy template from taking half the shop. Here
+    a pick simply discounts the weight it just used, so spreading the stock over
+    more templates costs nothing.
+    """
+
+    __slots__ = ("items", "weights", "remaining")
+
+    def __init__(self) -> None:
+        self.items: list[Oggetto] = []
+        self.weights: list[float] = []
+        self.remaining = 0
+
+    def add(self, item: Oggetto, weight: float) -> None:
+        self.items.append(item)
+        self.weights.append(weight)
+        self.remaining += 1
+
+    def draw(self, rng: random.Random) -> int:
+        return rng.choices(range(len(self.items)), weights=self.weights, k=1)[0]
+
+    def take(self, index: int, factor: float, *, exhausted: bool) -> None:
+        # A varietyBias of 0 zeroes the weight on the first copy, which retires
+        # the template just as surely as the copy cap does; counting it as still
+        # available would leave the shelf claiming stock it cannot draw.
+        weight = 0.0 if exhausted else self.weights[index] * factor
+        if weight <= 0:
+            self.remaining -= 1
+        self.weights[index] = weight
+
+
+def _level_distance(item_levels: set[int], level: int, deltas: list[int]) -> int | None:
+    """How many levels off the shop's grade the nearest usable band sits."""
+    return min((abs(delta) for delta in deltas if max(0, level + delta) in item_levels), default=None)
+
+
+def _shelves(
+    candidates: list[Oggetto],
+    ranks: dict[str, int],
+    level: int,
+    region_key: str,
+    deltas: list[int],
+    spread: int,
+    spread_weight: float,
+) -> tuple[dict[int, _Shelf], dict[int, _Shelf], int]:
+    """Split the catalogue into a preferred and a fallback pile per rarity."""
+    near: dict[int, _Shelf] = {}
+    far: dict[int, _Shelf] = {}
+    size = 0
+    region = region_key.lower()
+    for item in candidates:
+        # An item without a rarity has no bucket to be drawn from. It used to be
+        # folded into rarity 1, which made a missing value look like a choice;
+        # skipping it here keeps the eligibility report the single explanation.
+        if item.rarita is None:
+            continue
+        rank = ranks.get(item.tipo_1.strip())
+        if rank is None or rank >= 5:
+            continue
+        distance = _level_distance(parse_loot_levels(item.lv_loot), level, deltas)
+        if distance is None:
+            continue
+        weight = RANK_WEIGHT_BASE ** (4 - rank)
+        item_region = item.regione_loot.strip().lower()
+        if item_region == region:
+            weight *= max(1, item.peso_regione or 1)
+        elif item_region:
+            weight *= FOREIGN_REGION_WEIGHT
+        shelves = near if distance <= spread else far
+        shelves.setdefault(int(item.rarita), _Shelf()).add(item, max(.01, weight * spread_weight ** distance))
+        size += 1
+    return near, far, size
+
+
 def generate_stock(
     *,
     seed: str,
@@ -50,66 +133,60 @@ def generate_stock(
     price_modifier_percent: int = 0,
 ) -> GenerationResult:
     rng = random.Random(seed)
-    ranks = category["itemTypeRanks"]
     if candidates is None:
         candidates = list(Oggetto.objects.filter(modello=True, archiviato=False, archived_at__isnull=True, speciale=False).exclude(rarita=Oggetto.Rarita.UNICO))
-    usable = []
-    for item in candidates:
-        item_levels = parse_loot_levels(item.lv_loot)
-        item_type = item.tipo_1.strip()
-        # An item without a rarity has no bucket to be drawn from. It used to be
-        # folded into rarity 1, which made a missing value look like a choice;
-        # skipping it here keeps the eligibility report the single explanation.
-        if item.rarita is None:
-            continue
-        if not item_levels or item_type not in ranks or ranks[item_type] >= 5:
-            continue
-        usable.append((item, item_levels, ranks[item_type]))
-    # quantityScale is the global size dial; 1 is the neutral value, so a rules
-    # dict written before the key existed keeps its current shop sizes.
+    # Every dial below has a neutral default, so a rules dict written before the
+    # key existed keeps producing the stock it produced yesterday.
+    maximum_copies = int(rules["maximumCopies"])
+    spread = int(rules.get("levelSpread", 0))
+    spread_weight = float(rules.get("levelSpreadWeight", 1))
+    variety_bias = float(rules.get("varietyBias", 1))
+    near, far, pool_size = _shelves(candidates, category["itemTypeRanks"], level, region_key, rules["fallbackLevelDeltas"], spread, spread_weight)
     target = max(0, round((rules["baseCount"] + level * rules["countPerLevel"]) * category["inventoryMultiplier"] * rules.get("quantityScale", 1) * (1 - rules["countVariance"] + rng.random() * rules["countVariance"] * 2)))
-    counts: Counter[int] = Counter()
-    missing: Counter[str] = Counter()
-    deltas = rules["fallbackLevelDeltas"]
     rarity_rolls = [
-        (rarity, probability)
+        (int(rarity), probability)
         for rarity, probability in rules["rarityProbabilities"].items()
         if probability > 0
     ]
+    counts: Counter[int] = Counter()
+    stocked: dict[int, Oggetto] = {}
+    missing: Counter[str] = Counter()
     rarity_counts: Counter[str] = Counter()
+    substitutions = 0
     for _ in range(target):
         if not rarity_rolls:
             missing["rarity"] += 1
             continue
-        rarity_pick, roll = rarity_rolls[0][0], rng.random()
-        acc = 0.0
+        rolled, roll, acc = rarity_rolls[0][0], rng.random(), 0.0
         for rarity, probability in rarity_rolls:
             acc += probability
             if roll <= acc:
-                rarity_pick = rarity
+                rolled = rarity
                 break
-        subset = []
-        for delta in deltas:
-            subset = [(item, rank) for item, item_levels, rank in usable if max(0, level + delta) in item_levels and item.rarita == int(rarity_pick) and counts[item.id] < rules["maximumCopies"]]
-            if subset:
+        # A rarity the catalogue cannot serve for this shop used to burn the roll
+        # outright, which is most of why narrow shops came out short. Sliding to
+        # the closest rarity that can be served keeps the roll and the intent.
+        shelf = None
+        served = rolled
+        for rarity in sorted((rarity for rarity, _probability in rarity_rolls), key=lambda value: (abs(value - rolled), -value)):
+            shelf = next((pile[rarity] for pile in (near, far) if rarity in pile and pile[rarity].remaining), None)
+            if shelf:
+                served = rarity
                 break
-        if not subset:
+        if shelf is None:
             missing["eligible"] += 1
-            missing[f"rarity:{rarity_pick}"] += 1
+            missing[f"rarity:{rolled}"] += 1
             continue
-        rarity_counts[rarity_pick] += 1
-        weighted = []
-        for item, rank in subset:
-            weight = 2.5 ** (4 - rank)
-            if item.regione_loot.strip().lower() == region_key.lower(): weight *= max(1, item.peso_regione or 1)
-            elif not item.regione_loot.strip(): weight *= 1
-            else: weight *= .35
-            weighted.append((item, max(.01, weight)))
-        chosen = rng.choices([item for item, _weight in weighted], weights=[weight for _item, weight in weighted], k=1)[0]
-        counts[chosen.id] += 1
+        substitutions += served != rolled
+        rarity_counts[str(served)] += 1
+        index = shelf.draw(rng)
+        item = shelf.items[index]
+        stocked[item.id] = item
+        counts[item.id] += 1
+        shelf.take(index, variety_bias, exhausted=counts[item.id] >= maximum_copies)
     entries = []
     for item_id, quantity in sorted(counts.items()):
-        item = next(item for item, _levels, _rank in usable if item.id == item_id)
+        item = stocked[item_id]
         price = max(0, round((item.valore or 0) * (rules["priceBasePercent"] + rules["priceLevelPercent"] * level) / 100 * (1 + price_modifier_percent / 100)))
         entries.append({"itemId": item_id, "quantity": quantity, "unitPrice": price, "source": "generated"})
-    return GenerationResult(seed=seed, entries=entries, diagnostics={"requestedRolls": target, "fulfilledRolls": sum(counts.values()), "missingByItemType": dict(missing), "rarityMix": dict(rarity_counts), "candidatePoolSize": len(usable)})
+    return GenerationResult(seed=seed, entries=entries, diagnostics={"requestedRolls": target, "fulfilledRolls": sum(counts.values()), "distinctItems": len(entries), "raritySubstitutions": substitutions, "missingByItemType": dict(missing), "rarityMix": dict(rarity_counts), "candidatePoolSize": pool_size})

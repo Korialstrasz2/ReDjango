@@ -156,18 +156,29 @@ def validate_generator_rules(value: object) -> dict:
         raise ValidationError("mercato.generator_rules deve essere un oggetto.")
     # quantityScale is the global size dial Elder applied as a hard-coded 1.55
     # on top of the per-shop multiplier. It lives here so shop size is tunable
-    # without editing every shop type.
-    defaults = {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "quantityScale": 1, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25}
+    # without editing every shop type. varietyBias, levelSpread and
+    # levelSpreadWeight are the assortment dials: how much a template is
+    # discounted once it is already on the shelf, and how far off the shop's
+    # grade the generator may shop for merchandise.
+    defaults = {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "quantityScale": 1.4, "varietyBias": .35, "levelSpread": 1, "levelSpreadWeight": .5, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25}
     result = {**defaults, **value}
-    for key in ("minLevel", "maxLevel", "baseCount", "countPerLevel", "countVariance", "quantityScale", "maximumCopies", "priceBasePercent", "priceLevelPercent", "maximumNegotiationPercent"):
+    for key in ("minLevel", "maxLevel", "baseCount", "countPerLevel", "countVariance", "quantityScale", "varietyBias", "levelSpread", "levelSpreadWeight", "maximumCopies", "priceBasePercent", "priceLevelPercent", "maximumNegotiationPercent"):
         try:
-            result[key] = float(result[key]) if key in {"baseCount", "countPerLevel", "countVariance", "quantityScale"} else int(result[key])
+            result[key] = float(result[key]) if key in {"baseCount", "countPerLevel", "countVariance", "quantityScale", "varietyBias", "levelSpreadWeight"} else int(result[key])
         except (ValueError, TypeError) as exc:
             raise ValidationError({key: "Deve essere un numero."}) from exc
     if result["minLevel"] < 1 or result["maxLevel"] < result["minLevel"] or result["maximumCopies"] < 1:
         raise ValidationError("Limiti del generatore non validi.")
     if not 0 < result["quantityScale"] <= 10:
         raise ValidationError({"quantityScale": "Deve essere maggiore di 0 e al massimo 10."})
+    # 1 keeps a template as likely on its second copy as on its first, which is
+    # the behaviour that made shops repeat themselves; 0 forbids a second copy.
+    if not 0 <= result["varietyBias"] <= 1:
+        raise ValidationError({"varietyBias": "Deve essere compreso tra 0 e 1."})
+    if not 0 <= result["levelSpread"] <= 10:
+        raise ValidationError({"levelSpread": "Deve essere compreso tra 0 e 10."})
+    if not 0 < result["levelSpreadWeight"] <= 1:
+        raise ValidationError({"levelSpreadWeight": "Deve essere maggiore di 0 e al massimo 1."})
     result["rarityProbabilities"] = _normalized_rarity_probabilities(
         result["rarityProbabilities"], "rarityProbabilities",
     )

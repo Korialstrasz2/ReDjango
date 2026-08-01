@@ -118,7 +118,7 @@ def market_overview(giocatore: Giocatore, *, selected_shop_id: int | None = None
             "rarityChoices": full_configuration["rarityChoices"],
             "itemTypes": sorted(configured_types | catalog_types, key=str.casefold),
         })
-    return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canTuneGenerator": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
+    return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canRegenerateAll": is_admin, "canTuneGenerator": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
 
 
 def _exclusion_reasons(item: Oggetto, configured_types: set[str], rollable_rarities: set[int]) -> list[str]:

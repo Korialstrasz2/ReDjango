@@ -39,6 +39,113 @@ const SCOPE_LABELS: Record<string, string> = {
 const REASONING_EFFORTS = ["none", "low", "medium", "high", "xhigh", "max"];
 const VERBOSITY_OPTIONS = ["low", "medium", "high"];
 
+type ModelOption = { value: string; label: string };
+
+function ModelCombobox({ value, options, onChange }: { value: string; options: ModelOption[]; onChange: (value: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const query = value.trim().toLocaleLowerCase("it");
+  const visibleOptions = showAll || !query
+    ? options
+    : options.filter((option) => `${option.label} ${option.value}`.toLocaleLowerCase("it").includes(query));
+  const listId = "ai-provider-model-options";
+
+  const choose = (option: ModelOption) => {
+    onChange(option.value);
+    setOpen(false);
+    setShowAll(false);
+    setActiveIndex(0);
+  };
+
+  return <div className="ai-model-field">
+    <label htmlFor="ai-provider-model">Modello</label>
+    <div className="ai-model-combobox" onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        setOpen(false);
+        setShowAll(false);
+      }
+    }}>
+      <input
+        id="ai-provider-model"
+        type="text"
+        role="combobox"
+        autoComplete="off"
+        data-form-type="other"
+        data-lpignore="true"
+        data-1p-ignore="true"
+        aria-autocomplete="list"
+        aria-expanded={open}
+        aria-controls={listId}
+        aria-activedescendant={open && visibleOptions[activeIndex] ? `ai-provider-model-option-${activeIndex}` : undefined}
+        value={value}
+        onFocus={() => {
+          setShowAll(false);
+          setOpen(options.length > 0);
+          setActiveIndex(0);
+        }}
+        onChange={(event) => {
+          onChange(event.target.value);
+          setShowAll(false);
+          setOpen(true);
+          setActiveIndex(0);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setOpen(false);
+            setShowAll(false);
+            return;
+          }
+          if (event.key === "ArrowDown") {
+            event.preventDefault();
+            if (!open) {
+              setOpen(true);
+              setActiveIndex(0);
+            } else if (visibleOptions.length) {
+              setActiveIndex((current) => (current + 1) % visibleOptions.length);
+            }
+          } else if (event.key === "ArrowUp" && open && visibleOptions.length) {
+            event.preventDefault();
+            setActiveIndex((current) => (current - 1 + visibleOptions.length) % visibleOptions.length);
+          } else if (event.key === "Enter" && open && visibleOptions[activeIndex]) {
+            event.preventDefault();
+            choose(visibleOptions[activeIndex]);
+          }
+        }}
+      />
+      <button
+        type="button"
+        className="ai-model-toggle"
+        aria-label="Mostra tutti i modelli"
+        aria-expanded={open && showAll}
+        aria-controls={listId}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => {
+          const nextOpen = !(open && showAll);
+          setOpen(nextOpen);
+          setShowAll(nextOpen);
+          setActiveIndex(0);
+        }}
+      >⌄</button>
+      {open && <div id={listId} className="ai-model-options" role="listbox" aria-label="Modelli disponibili">
+        {visibleOptions.length
+          ? visibleOptions.map((option, index) => <button
+            id={`ai-provider-model-option-${index}`}
+            key={option.value}
+            type="button"
+            role="option"
+            aria-selected={option.value === value}
+            className={index === activeIndex ? "active" : ""}
+            onMouseEnter={() => setActiveIndex(index)}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => choose(option)}
+          ><strong>{option.label}</strong>{option.label !== option.value && <small>{option.value}</small>}</button>)
+          : <p className="autocomplete-empty">Nessun modello corrispondente. Puoi comunque usare il valore inserito.</p>}
+      </div>}
+    </div>
+  </div>;
+}
+
 export function AIManagementPage() {
   const { notify } = useApp();
   const queryClient = useQueryClient();
@@ -116,6 +223,21 @@ export function AIManagementPage() {
   const selectedModel = selectedProvider?.modelCatalog.find((entry) => entry.id === provider?.model);
   const draftCapabilities = selectedModel?.capabilities || selectedProvider?.capabilities;
   const maximumTokens = selectedModel?.contextWindow ? Math.min(128000, selectedModel.contextWindow) : 128000;
+  const modelOptions: ModelOption[] = selectedProvider
+    ? (selectedProvider.modelCatalog.length
+      ? selectedProvider.modelCatalog.map((entry) => ({ value: entry.id, label: entry.label || entry.id }))
+      : selectedProvider.suggestedModels.map((model) => ({ value: model, label: model })))
+    : [];
+  const changeProviderModel = (model: string) => {
+    if (!provider || !selectedProvider) return;
+    const metadata = selectedProvider.modelCatalog.find((entry) => entry.id === model);
+    setProvider({
+      ...provider,
+      model,
+      effort: metadata && !metadata.capabilities.reasoning ? "" : provider.effort,
+      verbosity: metadata && !metadata.capabilities.verbosity ? "" : provider.verbosity,
+    });
+  };
 
   return <div className="page ai-management">
     <header className="page-header">
@@ -241,26 +363,18 @@ export function AIManagementPage() {
       <section className="ai-provider-form panel" data-component-type="panel" data-theme="parchment">
         <header><div><p className="eyebrow">{selectedProvider.kind}</p><h2>{selectedProvider.name}</h2></div></header>
         <p className="muted-copy">{selectedProvider.description}</p>
-        <label>Nome<input value={provider.name} onChange={(event) => setProvider({ ...provider, name: event.target.value })} /></label>
-        <label>Indirizzo API<input value={provider.baseUrl} disabled={!data.canManageCredentials} onChange={(event) => setProvider({ ...provider, baseUrl: event.target.value })} /></label>
-        <label>Modello<input list={`ai-models-${selectedProvider.id}`} value={provider.model} onChange={(event) => {
-          const model = event.target.value;
-          const metadata = selectedProvider.modelCatalog.find((entry) => entry.id === model);
-          setProvider({
-            ...provider,
-            model,
-            effort: metadata && !metadata.capabilities.reasoning ? "" : provider.effort,
-            verbosity: metadata && !metadata.capabilities.verbosity ? "" : provider.verbosity,
-          });
-        }} />
-          <datalist id={`ai-models-${selectedProvider.id}`}>{(selectedProvider.modelCatalog.length ? selectedProvider.modelCatalog.map((entry) => entry.id) : selectedProvider.suggestedModels).map((model) => <option key={model} value={model} />)}</datalist>
+        <label>Nome<input autoComplete="off" data-form-type="other" value={provider.name} onChange={(event) => setProvider({ ...provider, name: event.target.value })} /></label>
+        <label>Indirizzo API<input autoComplete="off" data-form-type="other" value={provider.baseUrl} disabled={!data.canManageCredentials} onChange={(event) => setProvider({ ...provider, baseUrl: event.target.value })} /></label>
+        <ModelCombobox value={provider.model} options={modelOptions} onChange={changeProviderModel} />
+        <div className="ai-model-help">
           <small className="muted-copy">
             {selectedProvider.modelCatalogRefreshedAt
               ? `${selectedProvider.modelCatalog.length} modelli verificati · aggiornati ${new Date(selectedProvider.modelCatalogRefreshedAt).toLocaleString("it")}`
               : "Elenco iniziale locale: aggiorna per leggere i modelli realmente disponibili."}
           </small>
-        </label>
-        {selectedProvider.authStrategy !== "none" && <label>Chiave API<input type="password" autoComplete="off" disabled={!data.canManageCredentials}
+        </div>
+        {selectedProvider.authStrategy !== "none" && <label>Chiave API<input type="password" autoComplete="new-password" disabled={!data.canManageCredentials}
+          name="provider-api-key" data-form-type="other" data-lpignore="true" data-1p-ignore="true"
           value={provider.secret} placeholder={selectedProvider.hasSecret ? "Configurata — scrivi per sostituirla" : "Incolla la chiave"}
           onChange={(event) => setProvider({ ...provider, secret: event.target.value })} />
           {!data.canManageCredentials && <small className="muted-copy">Chiavi e indirizzi sono modificabili solo dagli Amministratori.</small>}

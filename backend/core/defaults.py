@@ -1963,7 +1963,7 @@ V2_SETTING_DEFAULTS.extend([
     {
         "key": "mercato.generator_rules", "label": "Regole generatore Mercato", "category": "mercato",
         "description": "Regole avanzate per quantità, rarità e prezzi del Mercato.", "minimum_role": "admin", "value_type": "json",
-        "default_value": {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "quantityScale": 1, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25},
+        "default_value": {"minLevel": 1, "maxLevel": 10, "baseCount": 25, "countPerLevel": 5.5, "countVariance": .25, "quantityScale": 1.4, "varietyBias": .35, "levelSpread": 1, "levelSpreadWeight": .5, "rarityProbabilities": {"1": .68, "2": .15, "3": .1, "4": .05, "5": .02}, "fallbackLevelDeltas": [0, -1, 1, -2, 2, -3, 3], "maximumCopies": 5, "priceBasePercent": 75, "priceLevelPercent": 5, "maximumNegotiationPercent": 25},
         "choices": [], "user_customizable": False, "master_customizable": False, "order": 30,
     },
 ])

@@ -88,6 +88,7 @@ THEME_SURFACES = [
     {"key": "lore-faction-history", "label": "Storico della fazione", "section": "modali", "hint": "Lore · cronologia dei rapporti."},
     {"key": "lore-timeline-event", "label": "Evento della Timeline", "section": "modali", "hint": "Lore · cronologia della campagna."},
     {"key": "market-shop-editor", "label": "Editor bottega", "section": "modali", "hint": "Mercato · modifica di un negozio."},
+    {"key": "market-item", "label": "Scheda merce", "section": "modali", "hint": "Mercato · dettaglio di un oggetto in vendita."},
 
     # --- Modali: abilità -----------------------------------------------------
     {"key": "skills-reminder", "label": "Promemoria abilità", "section": "modali", "hint": "Abilità · nota di un'azione."},

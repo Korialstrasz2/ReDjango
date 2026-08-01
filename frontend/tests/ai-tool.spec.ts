@@ -54,3 +54,25 @@ test("la scorciatoia configurata apre l'assistente AI", async ({ page }) => {
   await page.getByRole("button", { name: "Chiudi AI" }).press("Escape");
   await expect(page.getByRole("dialog", { name: "AI" })).toHaveCount(0);
 });
+
+test("il modello si può scrivere, filtrare e scegliere dal catalogo completo", async ({ page }) => {
+  await page.goto("/tools/ai");
+  await page.getByRole("button", { name: "Provider", exact: true }).click();
+  await page.getByRole("complementary", { name: "Provider configurati" }).getByRole("button", { name: /^OpenAI/ }).first().click();
+
+  const model = page.getByRole("combobox", { name: "Modello" });
+  await expect(model).toHaveAttribute("autocomplete", "off");
+  await model.fill("gpt-4.1-");
+  await expect(page.getByRole("listbox", { name: "Modelli disponibili" })).toBeVisible();
+  await expect(page.getByRole("option", { name: "gpt-4.1-mini" })).toBeVisible();
+  await expect(page.getByRole("option", { name: "gpt-5.1" })).toHaveCount(0);
+
+  await model.fill("modello-personalizzato");
+  await expect(page.getByText("Nessun modello corrispondente.")).toBeVisible();
+  await page.getByRole("button", { name: "Mostra tutti i modelli" }).click();
+  await expect(page.getByRole("option", { name: "gpt-5.1" })).toBeVisible();
+  await page.getByRole("option", { name: "gpt-4.1-mini" }).click();
+  await expect(model).toHaveValue("gpt-4.1-mini");
+
+  await expect(page.getByLabel("Chiave API")).toHaveAttribute("autocomplete", "new-password");
+});

@@ -183,6 +183,7 @@ from backend.market.services import (
     preview_generation as preview_market_generation,
     purchase as purchase_from_market,
     quote_purchase as quote_market_purchase,
+    regenerate_all_shops as regenerate_all_market_shops,
     regenerate_shop as regenerate_market_shop,
     save_market_settings,
     save_shop as save_market_shop,
@@ -1498,6 +1499,12 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             shop, diagnostics = regenerate_market_shop(user, giocatore, int(shop_id), payload.get("seed", ""))
             data = {"market": {**market_management_overview(giocatore), "savedShopId": shop.id, "diagnostics": diagnostics}}
             message = f"Stock di {shop.nome} rigenerato."
+        elif action == "market.shop.regenerateAll":
+            if not payload.get("confirm"):
+                raise ApiError("market.regenerate_all_confirmation", "Conferma la ricreazione di tutti i negozi.", "confirm")
+            diagnostics = regenerate_all_market_shops(user, giocatore)
+            data = {"market": {**market_management_overview(giocatore), "diagnostics": diagnostics}}
+            message = f"Ricreate le scorte di {diagnostics['shopCount']} negozi attivi."
         elif action == "market.shop.batchCreate":
             values = payload.get("values", {})
             if payload.get("confirm"):

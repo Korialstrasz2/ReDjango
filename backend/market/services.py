@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import uuid4
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -40,18 +41,39 @@ def _category(key: str, *, selectable: bool = True) -> dict:
     return category
 
 
-def _location(key: str) -> dict:
+def _location(key: str, *, selectable: bool = True) -> dict:
     try:
-        return resolve_location(key, selectable=True)
+        return resolve_location(key, selectable=selectable)
     except ValidationError as exc:
         raise ApiError("market.location_invalid", str(exc.messages[0]), "locationKey") from exc
 
 
-def _stock(seed: str, category: dict, level: int, location: dict, price_modifier_percent: int = 0) -> tuple[dict, dict]:
-    rules = get_generator_rules()
+def _fresh_seed(shop: Negozio) -> str:
+    """A seed no restock has used before.
+
+    Generation is deterministic on purpose, so restocking a shop under its
+    stored seed handed back the inventory it already had: the Rigenera button
+    changed the revision number and nothing else. A restock is a new delivery,
+    not a replay, so it gets a new seed; typing one into the editor still
+    reproduces an exact shop.
+    """
+    return f"shop-{shop.pk or 'nuovo'}-{uuid4().hex[:12]}"
+
+
+def _stock(
+    seed: str,
+    category: dict,
+    level: int,
+    location: dict,
+    price_modifier_percent: int = 0,
+    *,
+    rules: dict | None = None,
+    candidates: list[Oggetto] | None = None,
+) -> tuple[dict, dict]:
+    rules = rules or get_generator_rules()
     if not rules["minLevel"] <= level <= rules["maxLevel"]:
         raise ApiError("market.level_invalid", f"Il livello deve essere tra {rules['minLevel']} e {rules['maxLevel']}.", "level")
-    generated = generate_stock(seed=seed, category=category, level=level, region_key=location["regionKey"], rules=rules, price_modifier_percent=price_modifier_percent)
+    generated = generate_stock(seed=seed, category=category, level=level, region_key=location["regionKey"], rules=rules, candidates=candidates, price_modifier_percent=price_modifier_percent)
     return {"version": 2, "seed": generated.seed, "generatedAt": timezone.now().isoformat(), "entries": generated.entries}, generated.diagnostics
 
 
@@ -112,14 +134,57 @@ def regenerate_shop(user, giocatore: Giocatore, shop_id: int, seed: str = "") ->
     require_game_manager(user, giocatore)
     try: shop = Negozio.objects.select_for_update().get(pk=shop_id)
     except Negozio.DoesNotExist as exc: raise ApiError("market.shop_not_found", "Negozio non trovato.", "shopId", 404) from exc
-    location = _location(shop.location_key)
+    location = _location(shop.location_key, selectable=False)
     category = _category(shop.categoria, selectable=False)
-    actual_seed = str(seed or shop.generation_seed or f"shop-{shop.id}")[:120]
+    actual_seed = str(seed or _fresh_seed(shop))[:120]
     shop.lista_oggetti, diagnostics = _stock(actual_seed, category, shop.livello, location, shop.price_modifier_percent)
     shop.generation_seed, shop.stock_revision, shop.last_restocked_at = actual_seed, F("stock_revision") + 1, timezone.now()
     shop.save(update_fields=["lista_oggetti", "generation_seed", "stock_revision", "last_restocked_at", "updated_at"])
     shop.refresh_from_db()
     return shop, diagnostics
+
+
+@transaction.atomic
+def regenerate_all_shops(user, giocatore: Giocatore) -> dict:
+    """Replace every active shop stock as one all-or-nothing administrator action."""
+    require_game_manager(user, giocatore)
+    if effective_role(user, giocatore) != Giocatore.ROLE_ADMIN:
+        raise ApiError("market.regenerate_all_admin_only", "La rigenerazione completa è riservata agli amministratori.", status=403)
+
+    shops = list(Negozio.objects.select_for_update().filter(archived_at__isnull=True).order_by("id"))
+    if not shops:
+        return {"shopCount": 0, "requestedRolls": 0, "fulfilledRolls": 0}
+
+    # One catalogue read is essential for a world-wide restock: the generator
+    # accepts candidates precisely so it does not query the same catalogue once
+    # per shop.
+    candidates = list(
+        Oggetto.objects.filter(modello=True, archiviato=False, archived_at__isnull=True, speciale=False)
+        .exclude(rarita=Oggetto.Rarita.UNICO)
+    )
+    rules = get_generator_rules()
+    now = timezone.now()
+    requested_rolls = fulfilled_rolls = 0
+    for shop in shops:
+        location = _location(shop.location_key, selectable=False)
+        category = _category(shop.categoria, selectable=False)
+        seed = _fresh_seed(shop)[:120]
+        shop.lista_oggetti, diagnostics = _stock(
+            seed,
+            category,
+            shop.livello,
+            location,
+            shop.price_modifier_percent,
+            rules=rules,
+            candidates=candidates,
+        )
+        requested_rolls += int(diagnostics["requestedRolls"])
+        fulfilled_rolls += int(diagnostics["fulfilledRolls"])
+        shop.generation_seed = seed
+        shop.stock_revision = (shop.stock_revision or 0) + 1
+        shop.last_restocked_at = now
+        shop.save(update_fields=["lista_oggetti", "generation_seed", "stock_revision", "last_restocked_at", "updated_at"])
+    return {"shopCount": len(shops), "requestedRolls": requested_rolls, "fulfilledRolls": fulfilled_rolls}
 
 
 @transaction.atomic
