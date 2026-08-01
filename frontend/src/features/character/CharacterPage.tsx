@@ -122,6 +122,13 @@ function ResourceControl({ characterId, resource, onUpdate }: { characterId: num
     onSuccess: (result, savedValue) => { if (result.data.character) onUpdate(result.data.character); notify(`Fatto! ${resource.label} salvati a ${savedValue}.`); },
     onError: (error: Error) => notify(error.message, "error")
   });
+  // Il sifone è una riserva separata: esiste soltanto sulla barra del Mana.
+  const siphon = resource.key === "mana" ? resource.siphon : 0;
+  const siphonMutation = useMutation({
+    mutationFn: () => command<ActionData>("character.recoverManaSiphon", { characterId }),
+    onSuccess: (result) => { if (result.data.character) onUpdate(result.data.character); notify(`Fatto! ${siphon} Mana recuperati dal sifone.`); },
+    onError: (error: Error) => notify(error.message, "error")
+  });
   const dirty = value !== resource.current;
   const progress = resource.maximum > 0 ? Math.max(0, Math.min(100, (value / resource.maximum) * 100)) : 0;
   const tooltipId = `resource-calculation-${resource.key}`;
@@ -133,6 +140,13 @@ function ResourceControl({ characterId, resource, onUpdate }: { characterId: num
         {[-10, -5, -1, 1, 5, 10].map((delta) => <button key={delta} type="button" disabled={mutation.isPending} onClick={() => setValue((current) => current + delta)} aria-label={`${delta > 0 ? "Aumenta" : "Riduci"} ${resource.label} di ${Math.abs(delta)}`}>{delta > 0 ? `+${delta}` : delta}</button>)}
         <button type="button" disabled={mutation.isPending} onClick={() => setValue(resource.maximum)} aria-label={`Porta ${resource.label} al massimo`}>Pieno</button>
         <button type="button" className="resource-save" disabled={mutation.isPending || !dirty} onClick={() => mutation.mutate(value)} aria-label={`Salva ${resource.label}`}>Salva</button>
+        {resource.key === "mana" && <button
+          type="button"
+          className="resource-siphon"
+          disabled={siphonMutation.isPending || siphon <= 0}
+          onClick={() => siphonMutation.mutate()}
+          aria-label={siphon > 0 ? `Recupera ${siphon} Mana dal sifone` : "Nessun Mana nel sifone da recuperare"}
+        >Sifone: {siphon}</button>}
       </div>
     </div>
     <CalculationTooltip id={tooltipId} calculation={resource.calculation} total={resource.maximum} totalLabel="Massimo" resourceCurrent={resource.current} resourceSpent={resource.spent} />

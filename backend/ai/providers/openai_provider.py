@@ -33,6 +33,9 @@ class _OpenAIBase:
             raise ApiError("ai.secret_missing", "Configura la chiave API di questo provider.", status=409)
         return {"Authorization": f"Bearer {secret}"}
 
+    def _timeout(self) -> int:
+        return max(1, int(getattr(self, "request_timeout", 180) or 180))
+
 
 class OpenAIResponsesChatProvider(_OpenAIBase):
     """Responses API: percorso OpenAI moderno per ragionamento e strumenti."""
@@ -95,7 +98,7 @@ class OpenAIResponsesChatProvider(_OpenAIBase):
                 for tool in tools
             ]
 
-        body = post_json(self._endpoint("responses"), payload, self._headers())
+        body = post_json(self._endpoint("responses"), payload, self._headers(), timeout=self._timeout())
         output = body.get("output") or []
         text_parts: list[str] = []
         tool_calls: list[ToolCall] = []
@@ -178,7 +181,7 @@ class OpenAICompatibleChatProvider(_OpenAIBase):
                 }
                 for tool in tools
             ]
-        body = post_json(self._endpoint("chat/completions"), payload, self._headers())
+        body = post_json(self._endpoint("chat/completions"), payload, self._headers(), timeout=self._timeout())
         choices = body.get("choices") or []
         if not choices:
             raise ApiError("ai.provider_error", "Il provider non ha restituito alcuna risposta.", status=502)

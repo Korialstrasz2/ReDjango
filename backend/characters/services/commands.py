@@ -24,7 +24,7 @@ from .inventory_rules import (
     validate_reference_is_active,
 )
 from .refresh_personaggio import refresh_personaggio
-from .resources import spend_energy
+from .resources import accrue_mana_siphon, recover_mana_siphon, spend_energy
 
 
 RESOURCE_FIELDS = {
@@ -306,8 +306,21 @@ def update_resource(personaggio_id: int, resource: str, current: int) -> Persona
         if additional_spend > 0:
             spend_energy(personaggio, additional_spend)
             return personaggio
+    spent_before = int(getattr(personaggio, field_name) or 0)
     setattr(personaggio, field_name, maximum - current)
     personaggio.save(update_fields=[field_name, "updated_at"])
+    # Solo una spesa vera alimenta il sifone: rialzare la barra non lo riempie.
+    if resource == "mana":
+        additional_spend = int(getattr(personaggio, field_name) or 0) - spent_before
+        if additional_spend > 0:
+            accrue_mana_siphon(personaggio, additional_spend)
+    return personaggio
+
+
+@transaction.atomic
+def recover_mana_from_siphon(personaggio_id: int) -> Personaggio:
+    personaggio = _locked_personaggio(personaggio_id)
+    recover_mana_siphon(personaggio)
     return personaggio
 
 

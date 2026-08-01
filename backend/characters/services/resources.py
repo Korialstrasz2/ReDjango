@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from django.db import transaction
@@ -65,3 +66,51 @@ def spend_energy(personaggio: Personaggio, cost: int) -> EnergySpendResult:
         refresh_personaggio(personaggio)
         personaggio.refresh_from_db()
     return result
+
+
+def calculate_mana_siphon(mana_spent: int, siphon_percent: float) -> int:
+    """Elder's siphon share: the percentage is floored, then the product truncated.
+
+    Ported verbatim from Elder Django's `gestisci_sifone`, so a character keeps
+    banking exactly what the legacy sheet banked.
+    """
+    normalized_spent = int(mana_spent)
+    if normalized_spent <= 0:
+        return 0
+    percent = math.floor(float(siphon_percent or 0))
+    if percent <= 0:
+        return 0
+    return int(normalized_spent / 100 * percent)
+
+
+@transaction.atomic
+def accrue_mana_siphon(personaggio: Personaggio, mana_spent: int) -> int:
+    """Bank a share of freshly spent Mana. Returns how much was siphoned."""
+    siphoned = calculate_mana_siphon(mana_spent, (personaggio.tot or {}).get("sifone_di_mana", 0))
+    if not siphoned:
+        return 0
+    personaggio.mana_in_sifone = int(personaggio.mana_in_sifone or 0) + siphoned
+    personaggio.save(update_fields=["mana_in_sifone", "updated_at"])
+    return siphoned
+
+
+@transaction.atomic
+def recover_mana_siphon(personaggio: Personaggio) -> int:
+    """Empty the reserve back into spent Mana. Returns how much was actually recovered.
+
+    All-or-nothing like Elder: the whole reserve is spent at once and any surplus
+    beyond the Mana beforehand is lost.
+    """
+    reserve = int(personaggio.mana_in_sifone or 0)
+    if reserve <= 0:
+        raise ApiError(
+            "character.mana_siphon_empty",
+            "Non c'è Mana nel sifone da recuperare.",
+            "mana",
+            409,
+        )
+    spent_before = int(personaggio.mana_speso or 0)
+    personaggio.mana_speso = max(0, spent_before - reserve)
+    personaggio.mana_in_sifone = 0
+    personaggio.save(update_fields=["mana_speso", "mana_in_sifone", "updated_at"])
+    return spent_before - personaggio.mana_speso

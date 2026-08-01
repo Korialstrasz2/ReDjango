@@ -28,7 +28,6 @@ from backend.core.defaults import (
     V2_DICE_SET_DEFAULTS,
     V2_EMPTY_OBJECT_NAMES,
     V2_GLOBAL_MODIFIERS_DEFAULTS,
-    V2_PLACEHOLDER_ITEMS,
     V2_POC_ABILITA_DEFAULTS,
     V2_POC_EFFECT_DEFAULTS,
     V2_POC_ITEM_DEFAULTS,
@@ -540,25 +539,6 @@ class Command(BaseCommand):
                     "stacking_rule": "category",
                     "icon": category["icon"],
                     "metadata": {"seed_kind": "effect_category"},
-                },
-            )
-            touched += int(created)
-        return touched
-
-    def _seed_placeholder_items(self) -> int:
-        touched = 0
-        for item in V2_PLACEHOLDER_ITEMS:
-            _, created = Oggetto.objects.get_or_create(
-                nome=item["nome"],
-                defaults={
-                    "modello": True,
-                    "temporaneo": False,
-                    "archiviato": True,
-                    "icona": item.get("icona", ""),
-                    "tipo_1": item.get("tipo_1", ""),
-                    "tipo_2": item.get("tipo_2", ""),
-                    "descrizione": "Oggetto segnaposto per gli spazi vuoti dell'equipaggiamento.",
-                    "metadata": {"seed_kind": "placeholder_item"},
                 },
             )
             touched += int(created)
@@ -1102,7 +1082,6 @@ class Command(BaseCommand):
         touched += self._seed_alchemy_reagents()
         touched += self._seed_skill_families()
         touched += self._seed_effect_categories()
-        touched += self._seed_placeholder_items()
         touched += self._seed_guides()
         touched += self._seed_sample_weapon_types()
         item_count, items_by_name = self._seed_poc_items()

@@ -41,9 +41,6 @@ ITEM_FIELDS = (
     "regole_speciali",
     "effects",
     "weapon_profile",
-    "alchemy_profile",
-    "crafting_profile",
-    "notes",
 )
 
 
@@ -64,7 +61,7 @@ def clean_item_values(payload: dict[str, Any], *, partial: bool) -> dict[str, An
         if field not in payload:
             continue
         value = payload[field]
-        if field in {"nome", "icona", *ITEM_TYPE_FIELDS, *ELDER_EFFECT_FIELDS, "descrizione", "lv_loot", "regione_loot", "notes", "regole_speciali"}:
+        if field in {"nome", "icona", *ITEM_TYPE_FIELDS, *ELDER_EFFECT_FIELDS, "descrizione", "lv_loot", "regione_loot", "regole_speciali"}:
             value = str(value or "").strip()
             if value.casefold() == "vuoto":
                 value = ""
@@ -114,11 +111,10 @@ def clean_item_values(payload: dict[str, Any], *, partial: bool) -> dict[str, An
             if not isinstance(value, list):
                 raise ApiError("items.effects_invalid", "Gli effetti devono essere una lista strutturata.", field)
             value = [entry for entry in value if isinstance(entry, dict)]
-        elif field in {"weapon_profile", "alchemy_profile", "crafting_profile"}:
+        elif field == "weapon_profile":
             if not isinstance(value, dict):
                 raise ApiError("items.profile_invalid", f"{field} deve essere un oggetto strutturato.", field)
-            if field == "weapon_profile":
-                value = normalize_weapon_profile(value)
+            value = normalize_weapon_profile(value)
         values[field] = value
 
     if not partial or "nome" in payload:

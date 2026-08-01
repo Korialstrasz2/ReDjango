@@ -38,7 +38,10 @@ class AnthropicChatProvider:
         secret = self.provider.read_secret()
         if not secret:
             raise ApiError("ai.secret_missing", "Configura la chiave API di questo provider.", status=409)
-        options: dict[str, Any] = {"api_key": secret}
+        options: dict[str, Any] = {
+            "api_key": secret,
+            "timeout": max(1, int(getattr(self, "request_timeout", 180) or 180)),
+        }
         if self.provider.base_url:
             options["base_url"] = self.provider.base_url
         return anthropic.Anthropic(**options)

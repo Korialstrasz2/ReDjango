@@ -63,10 +63,7 @@ class ItemSchema(Schema):
     weaponRules: dict[str, Any] = {}
     actionPointCost: int | None = None
     weaponProfile: dict[str, Any] = {}
-    alchemyProfile: dict[str, Any] = {}
-    craftingProfile: dict[str, Any] = {}
     mediaId: int | None = None
-    notes: str = ""
     metadata: dict[str, Any] = {}
     specialReasons: list[ItemSpecialReasonSchema] = []
 
@@ -138,6 +135,7 @@ class ResourceSchema(Schema):
     percent: float
     colorToken: str
     calculation: list[CalculationContributionSchema]
+    siphon: int = 0
 
 
 class StatSchema(Schema):
@@ -513,8 +511,6 @@ class CompendiumItemSchema(Schema):
     weaponCategory: str = ""
     weaponProfile: dict[str, Any] = {}
     actionPointCost: int | None = None
-    alchemyProfile: dict[str, Any] = {}
-    craftingProfile: dict[str, Any] = {}
     equipmentSlots: list[str] = []
 
 
@@ -559,6 +555,10 @@ class ResourcePayloadSchema(Schema):
     characterId: int
     resource: Literal["pf", "mana", "energia", "potere"]
     current: int
+
+
+class ManaSiphonPayloadSchema(Schema):
+    characterId: int
 
 
 class QuickStatPayloadSchema(Schema):
@@ -1583,6 +1583,11 @@ class ResourceActionSchema(ActionBaseSchema):
     payload: ResourcePayloadSchema
 
 
+class ManaSiphonActionSchema(ActionBaseSchema):
+    action: Literal["character.recoverManaSiphon"]
+    payload: ManaSiphonPayloadSchema
+
+
 class QuickStatActionSchema(ActionBaseSchema):
     action: Literal["character.adjustQuickStat"]
     payload: QuickStatPayloadSchema
@@ -2120,6 +2125,7 @@ ActionEnvelopeSchema = Annotated[
     | SetQuantityActionSchema
     | SwitchPrimaryWeaponActionSchema
     | ResourceActionSchema
+    | ManaSiphonActionSchema
     | QuickStatActionSchema
     | RestActionSchema
     | OverviewActionSchema

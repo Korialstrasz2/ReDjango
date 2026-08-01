@@ -5,6 +5,7 @@ from typing import Any
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import transaction
+from django.utils import timezone
 from django.utils.text import slugify
 
 from backend.core.api import ApiError
@@ -17,8 +18,17 @@ from .defaults import image_generation_options
 from .models import AIAgentProfile, AIProvider
 from .npc_config import NPC_GENERATION_KEY, validate_npc_generation
 from .providers import image_provider_for
+from .providers.catalog import fetch_provider_models
 from .providers.images import decode_image
-from .selectors import can_manage_ai, can_manage_ai_credentials, default_provider
+from .selectors import (
+    can_manage_ai,
+    can_manage_ai_credentials,
+    default_provider,
+    provider_capabilities,
+    provider_configuration_schema,
+    provider_configuration_issues,
+    resolved_agent_provider,
+)
 from .tools import AI_TOOLS_BY_NAME
 
 
@@ -27,7 +37,7 @@ MAXIMUM_PROMPT_CHARACTERS = 2000
 VALID_ROLES = {"user", "assistant", "tool"}
 
 
-def _require_manager(user, giocatore: Giocatore) -> None:
+def require_ai_manager(user, giocatore: Giocatore) -> None:
     if not can_manage_ai(user, giocatore):
         raise ApiError(
             "ai.master_required",
@@ -56,7 +66,7 @@ def _resolve_provider(purpose: str, provider_id: object) -> AIProvider:
             )
         return provider
     try:
-        return AIProvider.objects.get(
+        provider = AIProvider.objects.get(
             pk=int(provider_id),
             purpose=purpose,
             is_enabled=True,
@@ -64,6 +74,10 @@ def _resolve_provider(purpose: str, provider_id: object) -> AIProvider:
         )
     except (TypeError, ValueError, AIProvider.DoesNotExist) as exc:
         raise ApiError("ai.provider_not_found", "Provider AI non disponibile.", "providerId", 404) from exc
+    issues = provider_configuration_issues(provider)
+    if issues:
+        raise ApiError("ai.provider_not_ready", " ".join(issues), "providerId", 409)
+    return provider
 
 
 def sanitize_history(raw: object) -> list[dict[str, Any]]:
@@ -92,11 +106,7 @@ def sanitize_history(raw: object) -> list[dict[str, Any]]:
     return history
 
 
-def ask_assistant(user, giocatore: Giocatore, payload: dict) -> dict[str, Any]:
-    message = str(payload.get("message") or "").strip()
-    if not message:
-        raise ApiError("ai.message_required", "Scrivi una domanda per l'assistente.", "message")
-    agent_id = payload.get("agentId")
+def resolve_assistant_agent(user, giocatore: Giocatore, agent_id: object) -> tuple[AIAgentProfile, AIProvider]:
     agents = AIAgentProfile.objects.filter(is_enabled=True, archived_at__isnull=True)
     try:
         agent = agents.get(pk=int(agent_id)) if agent_id not in (None, "") else agents.order_by("-is_default", "order", "name").first()
@@ -107,22 +117,30 @@ def ask_assistant(user, giocatore: Giocatore, payload: dict) -> dict[str, Any]:
     from backend.core.security import effective_role, has_minimum_role
     if not has_minimum_role(effective_role(user, giocatore), agent.minimum_role):
         raise ApiError("ai.agent_forbidden", "Non hai il ruolo richiesto da questo agente.", "agentId", 403)
-    provider = agent.provider if agent.provider and agent.provider.is_enabled else default_provider(AIProvider.PURPOSE_CHAT)
-    if provider is None or not provider.is_enabled:
-        raise ApiError("ai.provider_missing", "Il provider dell'agente non è disponibile.", status=409)
+    provider, provider_issues = resolved_agent_provider(agent)
+    if provider is None:
+        message = " ".join(provider_issues) or "Il provider dell'agente non è disponibile."
+        raise ApiError("ai.provider_missing", message, status=409)
+    return agent, provider
+
+
+def ask_assistant(user, giocatore: Giocatore, payload: dict, *, budget=None, progress=None) -> dict[str, Any]:
+    message = str(payload.get("message") or "").strip()
+    if not message:
+        raise ApiError("ai.message_required", "Scrivi una domanda per l'assistente.", "message")
+    agent, provider = resolve_assistant_agent(user, giocatore, payload.get("agentId"))
     history = sanitize_history(payload.get("history"))
     history.append({"role": "user", "content": message[:MAXIMUM_MESSAGE_CHARACTERS]})
-    result = run_agent(provider, history, user, giocatore, agent)
+    result = run_agent(provider, history, user, giocatore, agent, budget=budget, progress=progress)
     result["provider"] = {"id": provider.id, "name": provider.name, "model": provider.model}
     result["agent"] = {"id": agent.id, "name": agent.name}
     return result
 
 
-@transaction.atomic
-def generate_image(user, giocatore: Giocatore, payload: dict) -> UploadedImage:
+def generate_image(user, giocatore: Giocatore, payload: dict, *, budget=None, progress=None) -> UploadedImage:
     """Genera o rielabora un'immagine e la archivia nell'Archivio immagini."""
 
-    _require_manager(user, giocatore)
+    require_ai_manager(user, giocatore)
     prompt = str(payload.get("prompt") or "").strip()
     if not prompt:
         raise ApiError("ai.prompt_required", "Descrivi l'immagine da generare.", "prompt")
@@ -149,34 +167,42 @@ def generate_image(user, giocatore: Giocatore, payload: dict) -> UploadedImage:
         )
 
     client = image_provider_for(provider)
+    if budget:
+        budget.check()
+        client.request_timeout = budget.remaining_seconds()
+    if progress:
+        progress("Generazione dell'immagine…")
     encoded = client.generate(prompt=prompt[:MAXIMUM_PROMPT_CHARACTERS], size=size, quality=quality, source_image_base64=source)
+    if budget:
+        budget.check()
     content = decode_image(encoded)
 
     title = str(payload.get("title") or prompt)[:180].strip() or "Immagine generata"
     filename = f"{slugify(title) or 'immagine-ai'}.png"
     uploaded = SimpleUploadedFile(filename, content, content_type="image/png")
-    asset = create_uploaded_image(
-        user,
-        uploaded,
-        {
-            "title": title,
-            "usageType": str(payload.get("usageType") or "generic"),
-            "categoryId": payload.get("categoryId"),
-            "group": str(payload.get("group") or "Immagini AI"),
-            "notes": f"Generata da {provider.name} ({provider.model or 'modello predefinito'}).",
-        },
-    )
-    # `prompt` e `source` esistono già su UploadedImage: l'immagine porta con sé
-    # come è nata, senza inventare un nuovo modello.
-    asset.prompt = prompt[:MAXIMUM_PROMPT_CHARACTERS]
-    asset.source = "ai_generated"
-    asset.save(update_fields=["prompt", "source", "updated_at"])
+    # La transazione comincia soltanto dopo la risposta esterna: una generazione
+    # lenta non deve tenere SQLite bloccato.
+    with transaction.atomic():
+        asset = create_uploaded_image(
+            user,
+            uploaded,
+            {
+                "title": title,
+                "usageType": str(payload.get("usageType") or "generic"),
+                "categoryId": payload.get("categoryId"),
+                "group": str(payload.get("group") or "Immagini AI"),
+                "notes": f"Generata da {provider.name} ({provider.model or 'modello predefinito'}).",
+            },
+        )
+        asset.prompt = prompt[:MAXIMUM_PROMPT_CHARACTERS]
+        asset.source = "ai_generated"
+        asset.save(update_fields=["prompt", "source", "updated_at"])
     return asset
 
 
 @transaction.atomic
 def save_provider(user, giocatore: Giocatore, values: dict) -> AIProvider:
-    _require_manager(user, giocatore)
+    require_ai_manager(user, giocatore)
     if not isinstance(values, dict):
         raise ApiError("ai.values_invalid", "I dati del provider non sono validi.", "values")
 
@@ -208,20 +234,47 @@ def save_provider(user, giocatore: Giocatore, values: dict) -> AIProvider:
     if "isEnabled" in values:
         provider.is_enabled = bool(values.get("isEnabled"))
         fields.append("is_enabled")
-    if "isDefault" in values and values.get("isDefault"):
-        AIProvider.objects.filter(purpose=provider.purpose).exclude(pk=provider.pk).update(is_default=False)
-        provider.is_default = True
+        if not provider.is_enabled:
+            provider.is_default = False
+            fields.append("is_default")
+    if "isDefault" in values:
+        provider.is_default = bool(values.get("isDefault")) and provider.is_enabled
+        if provider.is_default:
+            AIProvider.objects.filter(purpose=provider.purpose).exclude(pk=provider.pk).update(is_default=False)
         fields.append("is_default")
 
     options = dict(provider.options) if isinstance(provider.options, dict) else {}
-    for key, option in (
-        ("maxTokens", "maxTokens"),
-        ("effort", "effort"),
-        ("verbosity", "verbosity"),
-        ("disableTools", "disableTools"),
-    ):
-        if key in values:
-            options[option] = values.get(key)
+    if "maxTokens" in values:
+        raw_max_tokens = values.get("maxTokens")
+        if raw_max_tokens in (None, ""):
+            options.pop("maxTokens", None)
+        else:
+            try:
+                maximum_tokens = int(raw_max_tokens)
+            except (TypeError, ValueError) as exc:
+                raise ApiError("ai.max_tokens_invalid", "Il limite token deve essere un numero.", "maxTokens") from exc
+            token_schema = provider_configuration_schema(provider)["maxTokens"]
+            if not token_schema["minimum"] <= maximum_tokens <= token_schema["maximum"]:
+                raise ApiError(
+                    "ai.max_tokens_invalid",
+                    f"Il limite token deve essere compreso tra {token_schema['minimum']} e {token_schema['maximum']} per il modello selezionato.",
+                    "maxTokens",
+                )
+            options["maxTokens"] = maximum_tokens
+    if "disableTools" in values:
+        if not isinstance(values.get("disableTools"), bool):
+            raise ApiError("ai.tools_mode_invalid", "La modalità strumenti non è valida.", "disableTools")
+        options["disableTools"] = values["disableTools"]
+    if "effort" in values:
+        effort = str(values.get("effort") or "")
+        if effort not in {"", "none", "low", "medium", "high", "xhigh", "max"}:
+            raise ApiError("ai.effort_invalid", "Livello di ragionamento non valido.", "effort")
+        options["effort"] = effort
+    if "verbosity" in values:
+        verbosity = str(values.get("verbosity") or "")
+        if verbosity not in {"", "low", "medium", "high"}:
+            raise ApiError("ai.verbosity_invalid", "Livello di dettaglio non valido.", "verbosity")
+        options["verbosity"] = verbosity
     if options != provider.options:
         provider.options = options
         fields.append("options")
@@ -238,13 +291,21 @@ def save_provider(user, giocatore: Giocatore, values: dict) -> AIProvider:
             provider.set_secret(secret)
             fields.append("secret_ciphertext")
 
-    provider.save(update_fields=fields)
+    if provider.is_enabled and provider.kind != AIProvider.KIND_STABLE_DIFFUSION and not provider.model:
+        raise ApiError("ai.model_required", "Scegli un modello prima di attivare il provider.", "model")
+    capabilities = provider_capabilities(provider)
+    if str(options.get("effort") or "") and not capabilities["reasoning"]:
+        raise ApiError("ai.effort_unsupported", "Il modello selezionato non dichiara supporto al ragionamento configurabile.", "effort")
+    if str(options.get("verbosity") or "") and not capabilities["verbosity"]:
+        raise ApiError("ai.verbosity_unsupported", "Il modello selezionato non dichiara supporto al livello di dettaglio.", "verbosity")
+
+    provider.save(update_fields=list(dict.fromkeys(fields)))
     return provider
 
 
 @transaction.atomic
 def save_agent(user, giocatore: Giocatore, values: dict) -> AIAgentProfile:
-    _require_manager(user, giocatore)
+    require_ai_manager(user, giocatore)
     if not isinstance(values, dict):
         raise ApiError("ai.values_invalid", "I dati dell'agente non sono validi.", "values")
     agent_id = values.get("id")
@@ -297,9 +358,12 @@ def save_agent(user, giocatore: Giocatore, values: dict) -> AIAgentProfile:
     agent.max_iterations = max_iterations
     agent.routing_mode = routing_mode
     agent.is_enabled = bool(values.get("isEnabled", agent.is_enabled))
-    if values.get("isDefault"):
-        AIAgentProfile.objects.exclude(pk=agent.pk).update(is_default=False)
-        agent.is_default = True
+    if "isDefault" in values:
+        agent.is_default = bool(values.get("isDefault")) and agent.is_enabled
+        if agent.is_default:
+            AIAgentProfile.objects.exclude(pk=agent.pk).update(is_default=False)
+    elif not agent.is_enabled:
+        agent.is_default = False
     agent.save()
     return agent
 
@@ -346,7 +410,7 @@ def generate_npc_portrait(user, giocatore: Giocatore, payload: dict) -> Uploaded
 def save_npc_generation(user, giocatore: Giocatore, values: dict) -> dict[str, Any]:
     """Salva la configurazione dei ritratti PNG, rifiutando i formati illegali."""
 
-    _require_manager(user, giocatore)
+    require_ai_manager(user, giocatore)
     try:
         config = validate_npc_generation(values)
     except DjangoValidationError as error:
@@ -371,7 +435,7 @@ def save_npc_generation(user, giocatore: Giocatore, values: dict) -> dict[str, A
 def test_provider(user, giocatore: Giocatore, provider_id: object) -> dict[str, Any]:
     """Prova di connessione: una domanda banale, senza strumenti."""
 
-    _require_manager(user, giocatore)
+    require_ai_manager(user, giocatore)
     try:
         provider = AIProvider.objects.get(pk=int(provider_id), archived_at__isnull=True)
     except (TypeError, ValueError, AIProvider.DoesNotExist) as exc:
@@ -392,3 +456,17 @@ def test_provider(user, giocatore: Giocatore, provider_id: object) -> dict[str, 
         tools=[],
     )
     return {"ok": True, "message": f"{provider.name} ha risposto: {turn.text[:120] or '(risposta vuota)'}"}
+
+
+def refresh_provider_models(user, giocatore: Giocatore, provider_id: object) -> AIProvider:
+    require_ai_manager(user, giocatore)
+    try:
+        provider = AIProvider.objects.get(pk=int(provider_id), archived_at__isnull=True)
+    except (TypeError, ValueError, AIProvider.DoesNotExist) as exc:
+        raise ApiError("ai.provider_not_found", "Provider AI non trovato.", "providerId", 404) from exc
+    catalog = fetch_provider_models(provider)
+    with transaction.atomic():
+        provider.model_catalog = catalog
+        provider.model_catalog_refreshed_at = timezone.now()
+        provider.save(update_fields=["model_catalog", "model_catalog_refreshed_at", "updated_at"])
+    return provider

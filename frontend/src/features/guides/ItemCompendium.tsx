@@ -249,16 +249,6 @@ function ItemSheet({ item, reference, onClose }: {
       <ul className="compendium-rule-list">{item.elderEffects.map((text, index) => <li key={index}>{text}</li>)}</ul>
     </section>}
 
-    {Object.keys(item.alchemyProfile).length > 0 && <section className="compendium-sheet-section">
-      <h4>Profilo alchemico</h4>
-      <ProfileRows profile={item.alchemyProfile as Record<string, unknown>} />
-    </section>}
-
-    {Object.keys(item.craftingProfile).length > 0 && <section className="compendium-sheet-section">
-      <h4>Profilo di forgiatura</h4>
-      <ProfileRows profile={item.craftingProfile as Record<string, unknown>} />
-    </section>}
-
     {Object.keys(item.weaponProfile).length > 0 && <section className="compendium-sheet-section">
       <h4>Profilo d'arma dell'oggetto</h4>
       <p className="muted-copy">Questo pezzo salva un profilo proprio, che sostituisce quello della sua categoria.</p>

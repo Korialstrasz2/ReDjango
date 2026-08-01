@@ -85,7 +85,7 @@ export type StockExclusionSample = {
 export type StockEligibility = {
   eligibleCount: number;
   excludedCount: number;
-  rankedTypes: string[];
+  configuredTypes: string[];
   rollableRarities: number[];
   reasons: Array<{ key: string; label: string; count: number }>;
   samples: StockExclusionSample[];

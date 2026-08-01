@@ -236,7 +236,7 @@ const EXCLUSION_HINTS: Record<string, string> = {
   missingRarity: "Senza rarità l'oggetto non appartiene a nessuna estrazione. Assegnagli una rarità da 1 a 5.",
   unreachableRarity: "La rarità esiste ma nessun profilo attivo le assegna una probabilità. Aggiungila nella scheda Profili.",
   noLootLevel: "Basta compilare lv_loot con un livello (3) o una fascia (4-6).",
-  unrankedType: "Il tipo_1 non compare in nessuna categoria di negozio, oppure ha rango 5. Aggiungilo in Tipi e assortimento.",
+  unconfiguredType: "Il tipo_1 non compare in nessuna categoria di negozio. Aggiungilo in Tipi e assortimento, con rango 5 se non deve mai essere venduto.",
 };
 
 function StockEligibilityPanel({ report }: { report: StockEligibility }) {

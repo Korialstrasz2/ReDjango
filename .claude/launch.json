@@ -11,6 +11,7 @@
       "name": "redjango-verify",
       "runtimeExecutable": "venv/Scripts/python.exe",
       "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8013", "--noreload"],
+      "env": { "REDJANGO_DATABASE_NAME": "verify.sqlite3" },
       "port": 8013
     },
     {

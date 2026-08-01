@@ -18,7 +18,7 @@ from .defaults import (
 )
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-08-01-glossario-meccaniche"
+V2_GUIDE_DEFAULT_VERSION = "2026-08-01-glossario-meccaniche-v3"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
@@ -881,8 +881,25 @@ def race_guide_html(source: str) -> str:
     return f'<nav class="race-guide-index" aria-label="Indice delle razze"><strong>Razze</strong><ul>{index}</ul></nav>{content}'
 
 
+# La Lista Competenze di Elder contiene tutte e 21 le competenze, ma tre le
+# chiama in modo diverso da come si chiamano nella scheda: chi cercava
+# "Conoscenze Religioni" nella guida non trovava nulla. Qui i nomi vengono
+# riportati a quelli canonici di COMPETENCE_DEFINITIONS.
+RULES_GUIDE_COMPETENCE_RENAMES = (
+    ("<strong>Conoscenze natura/geografia</strong>", "<strong>Conoscenze Natura e Geografia</strong>"),
+    ("<strong>Religioni</strong>", "<strong>Conoscenze Religioni</strong>"),
+    ("<strong>Storia/Nobilt&agrave;</strong>", "<strong>Conoscenze Storia e Nobilt&agrave;</strong>"),
+)
+
+
+def apply_rules_guide_corrections(html: str) -> str:
+    for original, replacement in RULES_GUIDE_COMPETENCE_RENAMES:
+        html = html.replace(original, replacement)
+    return html
+
+
 def _annotated_elder_rules_html() -> str:
-    source = _ELDER_RULES_PATH.read_text(encoding="utf-8")
+    source = apply_rules_guide_corrections(_ELDER_RULES_PATH.read_text(encoding="utf-8"))
     current_h2 = ""
 
     def add_note(match: re.Match[str]) -> str:
@@ -951,15 +968,6 @@ def mechanics_glossary_blocks() -> list[dict[str, Any]]:
                         "Assorbe per intero un numero prefissato di attacchi: l'attacco assorbito non "
                         "infligge nulla, indipendentemente da quanto avrebbe fatto. L'oggetto indica "
                         "quanti attacchi copre."
-                    ),
-                },
-                {
-                    "title": "Barriera magica e Barriera fisica",
-                    "meta": "Difesa attivabile",
-                    "note": (
-                        "Permettono di spendere Potere per ridurre il danno in arrivo: la barriera "
-                        "magica sul danno magico, la barriera fisica sul danno fisico. L'oggetto indica "
-                        "quanto danno viene ridotto per ogni punto di Potere speso."
                     ),
                 },
                 {
@@ -1106,10 +1114,14 @@ def mechanics_glossary_blocks() -> list[dict[str, Any]]:
         },
         {
             "type": "callout",
-            "title": "Il sifone si tiene a mano",
+            "title": "Come si riempie e si svuota il sifone",
             "text": (
-                "La variabile Sifone di Mana è calcolata dalla scheda, ma il motore non riempie da solo la "
-                "riserva: «Mana nel sifone» è un contatore che si aggiorna a mano dalla gestione personaggio."
+                "Il motore accredita da solo la quota nella riserva ogni volta che il personaggio spende Mana, "
+                "sia abbassando la barra sulla scheda o in combattimento, sia pagando i costi di un'azione dal "
+                "piano del turno. Per riprenderlo apri la barra del Mana sulla scheda e usa il bottone «Sifone»: "
+                "svuota tutta la riserva in un colpo solo, quindi l'eccedenza oltre il Mana speso va persa. "
+                "Il Mana sifonato da chi lancia nel raggio d'azione non è automatico: lo aggiunge il Master "
+                "modificando «Mana nel sifone» dalla gestione personaggio."
             ),
         },
         {"type": "heading", "text": "Portata, distanze e spostamento"},
@@ -1357,8 +1369,6 @@ V2_GUIDE_DEFAULTS = [
                 "type": "list",
                 "items": [
                     "weapon_profile — override per singolo oggetto di assi, modalità di combattimento, munizioni e ricarica. Oggi nessun oggetto ne salva uno: il profilo effettivo arriva dalle regole del Tipo arma. Compilalo solo per un'arma che deve discostarsi dal suo tipo.",
-                    "alchemy_profile — dati del banco alchemico.",
-                    "crafting_profile — dati di forgiatura, ancora in ricostruzione.",
                     "tipo_arma collega l'oggetto a un Tipo arma del catalogo; pa_per_attacco salva il costo in PA.",
                     "speciale=True marca gli oggetti anomali o da rivedere; archiviato=True li toglie dall'autoring normale.",
                 ],

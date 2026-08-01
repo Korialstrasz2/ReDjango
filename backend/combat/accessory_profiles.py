@@ -69,7 +69,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
             ["pf_item", "pf_item", "attacco_item", "difesa_item", "forza_extra"],
             [
                 ["res_fuoco", "res_gelo", "res_elettro", "rd_fis", "velocita_extra", "agilita_extra", "stanchezzabase", "rigenerazionepf", "resistenza_extra"],
-                ["energia_item", "barr_fis_item", "mod.gen.", "rigenerazionepf", "blink", "luce", "personalita_extra", "potere_item", "saggezza_extra"],
+                ["energia_item", "mod.gen.", "rigenerazionepf", "blink", "luce", "personalita_extra", "potere_item", "saggezza_extra"],
                 ["raggioarcano", "estrazione", "contingenza", "materializzazione", "shapeshifting", "scudoarcano", "reroll", "immaginispeculari", "fortuna_extra"],
             ],
         ),
@@ -80,7 +80,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
         "rules": _rules(
             ["pf_item", "pf_item", "difesa_item", "rd_fis", "resistenza_extra"],
             [
-                ["res_fuoco", "res_elettro", "res_gelo", "barr_fis_item", "rigenerazionepf", "stanchezzabase", "energia_item", "velocita_extra", "agilita_extra"],
+                ["res_fuoco", "res_elettro", "res_gelo", "rigenerazionepf", "stanchezzabase", "energia_item", "velocita_extra", "agilita_extra"],
                 ["contingenza", "blink", "mod.gen.", "scudoarcano", "saggezza_extra", "potere_item", "personalita_extra", "luce", "waterbreathing"],
                 ["rigenerazionepf", "fortuna_extra", "reroll", "materializzazione", "darkvision", "sostentamento", "shapeshifting", "immaginispeculari", "estrazione"],
             ],
@@ -92,7 +92,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
         "rules": _rules(
             ["pf_item", "mana_item", "intelligenza_extra", "concentrazione_extra", "potere_item"],
             [
-                ["castsilenzioso", "castimmobile", "rangespell(tutte)", "barr_mag_item", "sifone_di_mana", "rigenerazionemana", "blink", "counterspell", "scudoarcano"],
+                ["castsilenzioso", "castimmobile", "rangespell(tutte)", "sifone_di_mana", "rigenerazionemana", "blink", "counterspell", "scudoarcano"],
                 ["pontedimana", "recast", "raggioarcano", "immaginispeculari", "mod.gen.", "reroll", "luce", "darkvision", "saggezza_extra"],
                 ["telecinesi", "shapeshifting", "illusioneminore", "materializzazione", "personalita_extra", "fortuna_extra", "agilita_extra", "rigenerazionemana", "res_elettro"],
             ],
@@ -104,7 +104,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
         "rules": _rules(
             ["pf_item", "pf_item", "mana_item", "attacco_item", "potere_item", "concentrazione_extra"],
             [
-                ["pf_item", "difesa_item", "barr_mag_item", "barr_fis_item", "rigenerazionepf", "rigenerazionemana", "blink", "raggioarcano", "resistenza_extra"],
+                ["pf_item", "difesa_item", "rigenerazionepf", "rigenerazionemana", "blink", "raggioarcano", "resistenza_extra"],
                 ["castsilenzioso", "castimmobile", "sifone_di_mana", "mod.gen.", "rangespell(singola)", "velocita_extra", "agilita_extra", "scudoarcano", "recast"],
                 ["res_fuoco", "res_gelo", "res_elettro", "rd_fis", "fortuna_extra", "materializzazione", "shapeshifting", "immaginispeculari", "personalita_extra"],
             ],
@@ -117,7 +117,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
             ["pf_item", "attacco_item", "velocita_extra", "agilita_extra", "concentrazione_extra"],
             [
                 ["pf_item", "difesa_item", "energia_item", "resistenza_extra", "stanchezzabase", "rigenerazionepf", "res_gelo", "res_elettro", "res_fuoco"],
-                ["mod.gen.", "reroll", "blink", "luce", "fortuna_extra", "saggezza_extra", "personalita_extra", "rd_fis", "barr_fis_item"],
+                ["mod.gen.", "reroll", "blink", "luce", "fortuna_extra", "saggezza_extra", "personalita_extra", "rd_fis"],
                 ["raggioarcano", "shapeshifting", "materializzazione", "estrazione", "immaginispeculari", "darkvision", "sostentamento", "waterbreathing", "resistenza_extra"],
             ],
         ),
@@ -130,7 +130,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
             [
                 ["pf_item", "energia_item", "stanchezzabase", "rigenerazionepf", "blink", "darkvision", "illusioneminore", "res_elettro", "res_fuoco"],
                 ["mod.gen.", "reroll", "shapeshifting", "materializzazione", "resistenza_extra", "saggezza_extra", "personalita_extra", "luce", "estrazione"],
-                ["raggioarcano", "contingenza", "immaginispeculari", "fortuna_extra", "scudoarcano", "rigenerazionepf", "barr_fis_item", "barr_mag_item", "res_gelo"],
+                ["raggioarcano", "contingenza", "immaginispeculari", "fortuna_extra", "scudoarcano", "rigenerazionepf", "res_gelo"],
             ],
         ),
     },
@@ -140,7 +140,7 @@ ACCESSORY_PROFILE_DEFAULTS: dict[str, dict[str, Any]] = {
         "rules": _rules(
             ["pf_item", "mana_item", "potere_item", "saggezza_extra", "concentrazione_extra"],
             [
-                ["rigenerazionepf", "rigenerazionemana", "barr_mag_item", "barr_fis_item", "difesa_item", "resistenza_extra", "sostentamento", "luce", "waterbreathing"],
+                ["rigenerazionepf", "rigenerazionemana", "difesa_item", "resistenza_extra", "sostentamento", "luce", "waterbreathing"],
                 ["energia_item", "reroll", "fortuna_extra", "personalita_extra", "contingenza", "blink", "scudoarcano", "immaginispeculari", "darkvision"],
                 ["res_fuoco", "res_gelo", "res_elettro", "mod.gen.", "estrazione", "materializzazione", "shapeshifting", "raggioarcano", "telecinesi"],
             ],

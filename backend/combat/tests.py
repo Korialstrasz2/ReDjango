@@ -1067,6 +1067,45 @@ class CharacterCloneAndPlannerTests(CombatTestCase):
         self.assertEqual(character.stanchezza_accumulata, 1)
         self.assertIsNotNone(action.committed_at)
 
+    def test_planned_action_and_combat_bar_feed_the_mana_siphon(self):
+        character = self.character("Sifonatore", mana=60, sifone_di_mana=25)
+        action_map = create_plan_action({
+            "mapId": self.map.id,
+            "characterId": character.id,
+            "actionType": "cast",
+            "name": "Dardo",
+            "costs": {"mana": 20},
+        })
+        commit_plan_action({"actionId": action_map.planned_actions.get().id})
+        character.refresh_from_db()
+        # 20 Mana al 25% => 5 nel sifone.
+        self.assertEqual((character.mana_speso, character.mana_in_sifone), (20, 5))
+
+        activate_character(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": character.id,
+            "footprint": [{"q": 3, "r": 3}],
+        })
+        # Barra da 40 a 24: altri 16 Mana spesi => +4.
+        update_combat_resource(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": character.id,
+            "resource": "mana",
+            "current": 24,
+        })
+        character.refresh_from_db()
+        self.assertEqual((character.mana_speso, character.mana_in_sifone), (36, 9))
+
+        # Risalire la barra non accredita nulla.
+        update_combat_resource(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": character.id,
+            "resource": "mana",
+            "current": 60,
+        })
+        character.refresh_from_db()
+        self.assertEqual((character.mana_speso, character.mana_in_sifone), (0, 9))
+
 
 class UnitGenerationTests(CombatTestCase):
     def setUp(self):

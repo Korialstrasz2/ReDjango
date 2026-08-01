@@ -40,7 +40,7 @@ const TABS = [
   { id: "arma", label: "Creator arma", hint: "Assi, materiali, costi" },
   { id: "economia", label: "Economia e loot", hint: "Valore, peso, rarità" },
   { id: "effetti", label: "Effetti", hint: "Strutturati ed Elder" },
-  { id: "avanzate", label: "Avanzate", hint: "Profili, note, origine" },
+  { id: "avanzate", label: "Origine", hint: "Provenienza dell'import" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
@@ -105,10 +105,7 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
     peso_regione: item?.regionWeight ?? "",
     tipoArmaId: item?.weaponTypeId ?? "",
     mediaId: item?.mediaId ?? "",
-    alchemy_profile: JSON.stringify(item?.alchemyProfile || {}, null, 2),
-    crafting_profile: JSON.stringify(item?.craftingProfile || {}, null, 2),
-    regole_speciali: item?.specialRules || "",
-    notes: item?.notes || ""
+    regole_speciali: item?.specialRules || ""
   }), [item]);
 
   /** Un errore su un pannello nascosto sarebbe invisibile: lo si mostra sempre portando in vista la sua sezione. */
@@ -120,18 +117,6 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
     const name = String(form.get("nome") || "").trim();
     // La validazione nativa non può segnalare un campo dentro un pannello nascosto, quindi si controlla a mano.
     if (!name) return fail("identita", "Il nome dell'oggetto è obbligatorio.");
-    let alchemy: unknown;
-    let crafting: unknown;
-    try {
-      alchemy = JSON.parse(String(form.get("alchemy_profile") || "{}"));
-    } catch {
-      return fail("avanzate", "Il profilo alchimia non è JSON valido.");
-    }
-    try {
-      crafting = JSON.parse(String(form.get("crafting_profile") || "{}"));
-    } catch {
-      return fail("avanzate", "Il profilo crafting non è JSON valido.");
-    }
     const normalizedEffects = effects.filter((effect) => effect.target.trim()).map((effect) => ({
       target: effect.target.trim(), operation: effect.operation, value: Number(effect.value),
       ...(effect.source ? { source: effect.source } : {}),
@@ -164,10 +149,7 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
       regole_speciali: form.get("regole_speciali"),
       effects: normalizedEffects,
       weapon_profile: weaponProfile,
-      alchemy_profile: alchemy,
-      crafting_profile: crafting,
-      mediaId: selectedMediaId,
-      notes: form.get("notes")
+      mediaId: selectedMediaId
     });
   };
 
@@ -284,10 +266,10 @@ export function ItemEditorModal({ item, catalog, media, saving, onClose, onSave,
       </details>
     </>,
 
-    avanzate: <>
-      <fieldset><legend>Profili strutturati</legend><p className="field-hint">JSON grezzo: deve restare valido, altrimenti il salvataggio si ferma.</p><div className="form-grid"><label>Profilo alchimia<textarea name="alchemy_profile" rows={8} defaultValue={defaults.alchemy_profile} spellCheck={false} /></label><label>Profilo crafting<textarea name="crafting_profile" rows={8} defaultValue={defaults.crafting_profile} spellCheck={false} /></label></div></fieldset>
-      <fieldset><legend>Note di progettazione</legend><label className="sr-only" htmlFor="item-editor-note">Note di progettazione</label><textarea id="item-editor-note" name="notes" rows={5} defaultValue={defaults.notes} /><p className="field-hint">Appunti interni: non compaiono mai in gioco.</p>{item?.metadata && <details><summary>Provenienza tecnica</summary><pre>{JSON.stringify(item.metadata, null, 2)}</pre></details>}</fieldset>
-    </>,
+    avanzate: <fieldset><legend>Provenienza tecnica</legend>
+      <p className="field-hint">Solo lettura: com'è entrato l'oggetto nel catalogo. Non partecipa a nessun calcolo.</p>
+      {item?.metadata ? <pre>{JSON.stringify(item.metadata, null, 2)}</pre> : <p className="field-hint">Nessuna provenienza registrata.</p>}
+    </fieldset>,
   };
 
   return <><Modal

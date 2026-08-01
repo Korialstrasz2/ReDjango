@@ -296,7 +296,7 @@ class ItemBulkEditingTests(TestCase):
 
     def test_the_field_catalogue_never_exposes_a_structured_column(self):
         names = {field["name"] for field in bulk_field_catalog()["fields"]}
-        self.assertFalse(names & {"effects", "weapon_profile", "alchemy_profile", "crafting_profile", "media", "metadata"})
+        self.assertFalse(names & {"effects", "weapon_profile", "media", "metadata"})
 
     def test_the_field_catalogue_offers_the_configured_item_types(self):
         fields = {field["name"]: field for field in bulk_field_catalog()["fields"]}

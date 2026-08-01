@@ -1,4 +1,8 @@
+import uuid
+
+from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 from backend.core.models import Giocatore, V2Model
 
@@ -50,6 +54,8 @@ class AIProvider(V2Model):
     auth_strategy = models.CharField(max_length=32, choices=AUTH_CHOICES, default=AUTH_API_KEY)
     base_url = models.CharField(max_length=300, blank=True)
     model = models.CharField(max_length=160, blank=True)
+    model_catalog = models.JSONField(default=list, blank=True)
+    model_catalog_refreshed_at = models.DateTimeField(null=True, blank=True)
     secret_ciphertext = models.TextField(blank=True, editable=False)
     options = models.JSONField(default=dict, blank=True)
     is_enabled = models.BooleanField(default=True)
@@ -61,6 +67,13 @@ class AIProvider(V2Model):
         verbose_name = "provider AI"
         verbose_name_plural = "provider AI"
         indexes = [models.Index(fields=["purpose", "is_enabled", "order"])]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["purpose", "is_default"],
+                condition=Q(is_default=True, archived_at__isnull=True),
+                name="ai_one_default_provider_per_purpose",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} ({self.get_purpose_display()})"
@@ -120,6 +133,122 @@ class AIAgentProfile(V2Model):
         verbose_name = "profilo agente AI"
         verbose_name_plural = "profili agente AI"
         indexes = [models.Index(fields=["is_enabled", "minimum_role", "order"])]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["is_default"],
+                condition=Q(is_default=True, archived_at__isnull=True),
+                name="ai_one_default_agent",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name
+
+
+class AIConversation(V2Model):
+    """Una delle tre conversazioni recenti conservate per account."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="ai_conversations",
+    )
+    agent = models.ForeignKey(
+        AIAgentProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="conversations",
+    )
+    title = models.CharField(max_length=120)
+    history = models.JSONField(default=list, blank=True)
+    transcript = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        ordering = ["-updated_at", "-id"]
+        indexes = [models.Index(fields=["user", "-updated_at"])]
+        verbose_name = "conversazione AI"
+        verbose_name_plural = "conversazioni AI"
+
+    def __str__(self) -> str:
+        return f"{self.user}: {self.title}"
+
+
+class AIExecutionRun(V2Model):
+    """Stato transitorio di una richiesta AI eseguita fuori dal ciclo HTTP."""
+
+    KIND_CHAT = "chat"
+    KIND_IMAGE = "image"
+    KIND_CHOICES = [(KIND_CHAT, "Chat"), (KIND_IMAGE, "Immagine")]
+
+    STATUS_QUEUED = "queued"
+    STATUS_RUNNING = "running"
+    STATUS_COMPLETED = "completed"
+    STATUS_FAILED = "failed"
+    STATUS_CANCELLED = "cancelled"
+    STATUS_CHOICES = [
+        (STATUS_QUEUED, "In coda"),
+        (STATUS_RUNNING, "In esecuzione"),
+        (STATUS_COMPLETED, "Completata"),
+        (STATUS_FAILED, "Non riuscita"),
+        (STATUS_CANCELLED, "Annullata"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="ai_execution_runs",
+    )
+    conversation = models.ForeignKey(
+        AIConversation,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="runs",
+    )
+    agent = models.ForeignKey(
+        AIAgentProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="runs",
+    )
+    provider = models.ForeignKey(
+        AIProvider,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="runs",
+    )
+    kind = models.CharField(max_length=12, choices=KIND_CHOICES)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_QUEUED)
+    progress = models.CharField(max_length=180, blank=True)
+    request_payload = models.JSONField(default=dict, blank=True)
+    result = models.JSONField(default=dict, blank=True)
+    error = models.JSONField(default=dict, blank=True)
+    cancel_requested = models.BooleanField(default=False)
+    input_tokens = models.PositiveIntegerField(default=0)
+    output_tokens = models.PositiveIntegerField(default=0)
+    tool_calls = models.PositiveSmallIntegerField(default=0)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "status", "-created_at"]),
+            models.Index(fields=["status", "created_at"]),
+        ]
+        verbose_name = "esecuzione AI"
+        verbose_name_plural = "esecuzioni AI"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user"],
+                condition=Q(status__in=["queued", "running"], archived_at__isnull=True),
+                name="ai_one_active_run_per_user",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind} {self.id} · {self.status}"

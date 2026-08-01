@@ -220,10 +220,10 @@ export async function deleteMedia(assetId: number) {
   });
 }
 
-/** Un turno dell'agente con cronologia provider-neutral, senza stato persistente sul server. */
+/** Avvia un turno asincrono dell'agente. */
 export async function askAssistant(payload: Record<string, unknown>) {
   const id = requestId();
-  return apiRequest<import("./types").AIChatResult>("/api/ai/", {
+  return apiRequest<{ run: import("./types").AIExecutionRun }>("/api/ai/", {
     method: "POST",
     headers: { "X-ReDjango-Action": "ai.ask", "X-ReDjango-Request-Id": id },
     body: JSON.stringify({ action: "ai.ask", requestId: id, context: { screen: "ai" }, payload, meta: { clientVersion: "react-v1" } })
@@ -232,10 +232,22 @@ export async function askAssistant(payload: Record<string, unknown>) {
 
 export async function generateAIImage(payload: Record<string, unknown>) {
   const id = requestId();
-  return apiRequest<{ asset: import("./types").MediaAsset }>("/api/ai/images/", {
+  return apiRequest<{ run: import("./types").AIExecutionRun }>("/api/ai/images/", {
     method: "POST",
     headers: { "X-ReDjango-Action": "ai.generateImage", "X-ReDjango-Request-Id": id },
     body: JSON.stringify({ action: "ai.generateImage", requestId: id, context: { screen: "ai" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+export async function getAIExecutionRun(runId: string) {
+  return apiRequest<{ run: import("./types").AIExecutionRun }>(`/api/ai/runs/${runId}/`);
+}
+
+export async function cancelAIExecutionRun(runId: string) {
+  const id = requestId();
+  return apiRequest<{ run: import("./types").AIExecutionRun }>(`/api/ai/runs/${runId}/`, {
+    method: "DELETE",
+    headers: { "X-ReDjango-Action": "ai.cancel", "X-ReDjango-Request-Id": id },
   });
 }
 
@@ -274,6 +286,15 @@ export async function saveAIProvider(payload: Record<string, unknown>) {
     method: "POST",
     headers: { "X-ReDjango-Action": "ai.saveProvider", "X-ReDjango-Request-Id": id },
     body: JSON.stringify({ action: "ai.saveProvider", requestId: id, context: { screen: "ai" }, payload, meta: { clientVersion: "react-v1" } })
+  });
+}
+
+export async function refreshAIProviderModels(providerId: number) {
+  const id = requestId();
+  return apiRequest<import("./types").AIManagementData>(`/api/ai/providers/${providerId}/models/`, {
+    method: "POST",
+    headers: { "X-ReDjango-Action": "ai.refreshModels", "X-ReDjango-Request-Id": id },
+    body: JSON.stringify({ action: "ai.refreshModels", requestId: id, context: { screen: "ai" }, payload: {}, meta: { clientVersion: "react-v1" } })
   });
 }
 

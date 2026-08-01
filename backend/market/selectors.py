@@ -17,7 +17,7 @@ STOCK_EXCLUSION_REASONS = (
     ("missingRarity", "Rarità non impostata"),
     ("unreachableRarity", "Nessun profilo attivo estrae questa rarità"),
     ("noLootLevel", "lv_loot mancante o illeggibile"),
-    ("unrankedType", "tipo_1 assente o non previsto da nessuna categoria di negozio"),
+    ("unconfiguredType", "tipo_1 assente o non previsto da nessuna categoria di negozio"),
 )
 
 
@@ -121,7 +121,7 @@ def market_overview(giocatore: Giocatore, *, selected_shop_id: int | None = None
     return {"locations": _locations(shops), "shopTypes": [{key: item[key] for key in ("key", "label", "icon", "enabled", "defaultBackground", "inventoryMultiplier")} for item in get_shop_type_definitions()["types"]], "shops": [_shop_summary(shop) for shop in shops], "selectedShop": shop_detail(selected) if selected else None, "character": character, "permissions": {"canManage": can_manage, "canConfigure": can_manage, "canEditLocations": can_manage, "canEditShopTypes": can_manage, "canRegenerate": can_manage, "canTuneGenerator": is_admin, "canBatchCreate": is_admin, "canArchive": is_admin, "canPurchase": character is not None}, "configuration": configuration}
 
 
-def _exclusion_reasons(item: Oggetto, ranked_types: set[str], rollable_rarities: set[int]) -> list[str]:
+def _exclusion_reasons(item: Oggetto, configured_types: set[str], rollable_rarities: set[int]) -> list[str]:
     reasons = []
     if not item.modello:
         reasons.append("notTemplate")
@@ -137,8 +137,8 @@ def _exclusion_reasons(item: Oggetto, ranked_types: set[str], rollable_rarities:
         reasons.append("unreachableRarity")
     if not parse_loot_levels(item.lv_loot):
         reasons.append("noLootLevel")
-    if item.tipo_1.strip() not in ranked_types:
-        reasons.append("unrankedType")
+    if item.tipo_1.strip() not in configured_types:
+        reasons.append("unconfiguredType")
     return reasons
 
 
@@ -149,11 +149,12 @@ def stock_eligibility_report(*, limit: int = 200) -> dict:
     lv_loot or an unranked tipo_1 simply never appears in any shop. Surfacing
     the count and the reasons is the only way to notice.
     """
-    ranked_types = {
+    # Rank 5 counts as configured: excluding a type is a decision, not the
+    # oversight this report exists to surface.
+    configured_types = {
         item_type
         for definition in get_shop_type_definitions()["types"]
-        for item_type, rank in definition["itemTypeRanks"].items()
-        if rank < 5
+        for item_type in definition["itemTypeRanks"]
     }
     rollable_rarities = rollable_rarity_values()
     items = Oggetto.objects.only(
@@ -165,7 +166,7 @@ def stock_eligibility_report(*, limit: int = 200) -> dict:
     counts = {key: 0 for key, _label in STOCK_EXCLUSION_REASONS}
     samples: list[dict] = []
     for item in items.iterator(chunk_size=2000):
-        reasons = _exclusion_reasons(item, ranked_types, rollable_rarities)
+        reasons = _exclusion_reasons(item, configured_types, rollable_rarities)
         if not reasons:
             eligible += 1
             continue
@@ -177,7 +178,7 @@ def stock_eligibility_report(*, limit: int = 200) -> dict:
     return {
         "eligibleCount": eligible,
         "excludedCount": excluded,
-        "rankedTypes": sorted(ranked_types),
+        "configuredTypes": sorted(configured_types),
         "rollableRarities": sorted(rollable_rarities),
         "reasons": [
             {"key": key, "label": label, "count": counts[key]}

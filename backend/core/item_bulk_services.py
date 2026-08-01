@@ -95,7 +95,6 @@ BULK_FIELDS: tuple[BulkField, ...] = (
         for index in range(1, 9)
     ),
     BulkField("regole_speciali", "Regole speciali", "longText", "Effetti Elder e regole", "Scriverle dichiara riviste le voci Elder descrittive presenti in quel momento."),
-    BulkField("notes", "Note", "longText", "Effetti Elder e regole"),
 )
 
 FIELDS_BY_NAME = {field.name: field for field in BULK_FIELDS}
@@ -551,7 +550,7 @@ def _operation_token(filters: list[dict[str, str]], actions: list[dict[str, Any]
 # --------------------------------------------------------------------- preview --
 
 # Every column a plan reads. Preview never saves, so loading only these keeps
-# the JSON blobs (`effects`, the three profiles) out of a several-thousand-row
+# the JSON blobs (`effects`, `weapon_profile`) out of a several-thousand-row
 # scan. Apply must not use it: `save()` skips deferred columns, and `updated_at`
 # would stop moving.
 _PLAN_COLUMNS = (
@@ -559,7 +558,7 @@ _PLAN_COLUMNS = (
     "descrizione", "tipo_1", "tipo_2", "tipo_3", "tipo_4", "tipo_arma_id", "valore", "peso", "rarita",
     "lv_loot", "regione_loot", "peso_regione", "pa_per_attacco",
     *(f"effetto_{index}" for index in range(1, 9)),
-    "regole_speciali", "notes",
+    "regole_speciali",
 )
 
 

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getData, saveAIProvider, saveNpcGeneration } from "../../lib/api";
+import { getData, refreshAIProviderModels, saveAIProvider, saveNpcGeneration } from "../../lib/api";
 import type { AIManagedAgent, AIManagedProvider, AIManagementData, NpcGenerationConfig } from "../../lib/types";
 import { useApp } from "../../App";
 
 type ProviderDraft = {
   name: string; baseUrl: string; model: string; secret: string; maxTokens: string;
-  effort: string; verbosity: string; disableTools: boolean; isEnabled: boolean;
+  effort: string; verbosity: string; disableTools: boolean; isEnabled: boolean; isDefault: boolean;
 };
 type AgentDraft = {
   name: string; description: string; instructions: string; minimumRole: "user" | "master" | "admin";
@@ -19,6 +19,7 @@ const providerDraft = (item: AIManagedProvider): ProviderDraft => ({
   name: item.name, baseUrl: item.baseUrl, model: item.model, secret: "",
   maxTokens: item.maxTokens ? String(item.maxTokens) : "", effort: item.effort || "",
   verbosity: item.verbosity || "", disableTools: item.disableTools, isEnabled: item.isEnabled,
+  isDefault: item.isDefault,
 });
 const agentDraft = (item: AIManagedAgent): AgentDraft => ({
   name: item.name, description: item.description, instructions: item.instructions,
@@ -35,6 +36,8 @@ const SCOPE_LABELS: Record<string, string> = {
   personaggi: "Personaggi", cataloghi: "Cataloghi", mercato: "Mercato", campagna: "Campagna",
   dadi: "Dadi", combattimento: "Combattimento", regole: "Regole", gestione: "Gestione",
 };
+const REASONING_EFFORTS = ["none", "low", "medium", "high", "xhigh", "max"];
+const VERBOSITY_OPTIONS = ["low", "medium", "high"];
 
 export function AIManagementPage() {
   const { notify } = useApp();
@@ -92,6 +95,11 @@ export function AIManagementPage() {
     onSuccess: (result) => apply(result.data, result.data.test?.message || "Prova completata."),
     onError: (error: Error) => notify(error.message, "error"),
   });
+  const refreshModels = useMutation({
+    mutationFn: (id: number) => refreshAIProviderModels(id),
+    onSuccess: (result) => apply(result.data, result.events[0]?.message || "Catalogo modelli aggiornato."),
+    onError: (error: Error) => notify(error.message, "error"),
+  });
   const saveNpc = useMutation({
     mutationFn: (values: NpcGenerationConfig) => saveNpcGeneration(values),
     onSuccess: (result) => {
@@ -105,6 +113,9 @@ export function AIManagementPage() {
   if (management.isError) return <div className="page"><p className="form-error">{(management.error as Error).message}</p></div>;
   const data = management.data!;
   if (!data.canManage) return <div className="page"><p className="form-error">Questa pagina è riservata a Master e Amministratori.</p></div>;
+  const selectedModel = selectedProvider?.modelCatalog.find((entry) => entry.id === provider?.model);
+  const draftCapabilities = selectedModel?.capabilities || selectedProvider?.capabilities;
+  const maximumTokens = selectedModel?.contextWindow ? Math.min(128000, selectedModel.contextWindow) : 128000;
 
   return <div className="page ai-management">
     <header className="page-header">
@@ -166,8 +177,8 @@ export function AIManagementPage() {
           key={item.id} type="button" className={item.id === selectedAgent?.id ? "active" : ""}
           onClick={() => { setSelectedAgentId(item.id); setAgent(agentDraft(item)); }}
         >
-          <strong>{item.name}</strong><span>{item.providerName || "provider predefinito"}</span>
-          <small data-state={item.isEnabled ? "on" : "off"}>{item.minimumRole} · {item.toolNames.length} strumenti</small>
+          <strong>{item.name}</strong><span>{item.effectiveProviderName || item.providerName || "provider non disponibile"}</span>
+          <small data-state={item.isEnabled && item.isReady ? "on" : "off"}>{item.isReady ? `${item.minimumRole} · ${item.toolNames.length} strumenti` : item.availabilityIssues.join(" ")}</small>
         </button>)}</section>
       </aside>
       <section className="ai-provider-form panel" data-component-type="panel" data-theme="parchment">
@@ -184,7 +195,7 @@ export function AIManagementPage() {
           </select></label>
           <label>Provider<select value={agent.providerId || ""} onChange={(event) => setAgent({ ...agent, providerId: event.target.value ? Number(event.target.value) : null })}>
             <option value="">Provider chat predefinito</option>
-            {providers.filter((item) => item.purpose === "chat").map((item) => <option key={item.id} value={item.id}>{item.name} · {item.model}</option>)}
+            {providers.filter((item) => item.purpose === "chat").map((item) => <option key={item.id} value={item.id}>{item.name} · {item.model}{item.isReady ? "" : " · non pronto"}</option>)}
           </select></label>
           <label>Passi massimi<input type="number" min={1} max={12} value={agent.maxIterations} onChange={(event) => setAgent({ ...agent, maxIterations: Number(event.target.value) })} /></label>
           <label>Instradamento<select value={agent.routingMode} onChange={(event) => setAgent({ ...agent, routingMode: event.target.value as AgentDraft["routingMode"] })}>
@@ -224,7 +235,7 @@ export function AIManagementPage() {
         {providers.map((item) => <button key={item.id} type="button" className={item.id === selectedProvider.id ? "active" : ""}
           onClick={() => { setSelectedProviderId(item.id); setProvider(providerDraft(item)); }}>
           <strong>{item.name}</strong><span>{item.model || "modello non impostato"}</span>
-          <small data-state={item.isEnabled ? "on" : "off"}>{item.isEnabled ? "attivo" : "disattivato"} · {item.kind}</small>
+          <small data-state={item.isReady ? "on" : "off"}>{item.isReady ? "pronto" : item.configurationIssues.join(" ")} · {item.kind}</small>
         </button>)}
       </aside>
       <section className="ai-provider-form panel" data-component-type="panel" data-theme="parchment">
@@ -232,8 +243,22 @@ export function AIManagementPage() {
         <p className="muted-copy">{selectedProvider.description}</p>
         <label>Nome<input value={provider.name} onChange={(event) => setProvider({ ...provider, name: event.target.value })} /></label>
         <label>Indirizzo API<input value={provider.baseUrl} disabled={!data.canManageCredentials} onChange={(event) => setProvider({ ...provider, baseUrl: event.target.value })} /></label>
-        <label>Modello<input list={`ai-models-${selectedProvider.id}`} value={provider.model} onChange={(event) => setProvider({ ...provider, model: event.target.value })} />
-          <datalist id={`ai-models-${selectedProvider.id}`}>{selectedProvider.suggestedModels.map((model) => <option key={model} value={model} />)}</datalist>
+        <label>Modello<input list={`ai-models-${selectedProvider.id}`} value={provider.model} onChange={(event) => {
+          const model = event.target.value;
+          const metadata = selectedProvider.modelCatalog.find((entry) => entry.id === model);
+          setProvider({
+            ...provider,
+            model,
+            effort: metadata && !metadata.capabilities.reasoning ? "" : provider.effort,
+            verbosity: metadata && !metadata.capabilities.verbosity ? "" : provider.verbosity,
+          });
+        }} />
+          <datalist id={`ai-models-${selectedProvider.id}`}>{(selectedProvider.modelCatalog.length ? selectedProvider.modelCatalog.map((entry) => entry.id) : selectedProvider.suggestedModels).map((model) => <option key={model} value={model} />)}</datalist>
+          <small className="muted-copy">
+            {selectedProvider.modelCatalogRefreshedAt
+              ? `${selectedProvider.modelCatalog.length} modelli verificati · aggiornati ${new Date(selectedProvider.modelCatalogRefreshedAt).toLocaleString("it")}`
+              : "Elenco iniziale locale: aggiorna per leggere i modelli realmente disponibili."}
+          </small>
         </label>
         {selectedProvider.authStrategy !== "none" && <label>Chiave API<input type="password" autoComplete="off" disabled={!data.canManageCredentials}
           value={provider.secret} placeholder={selectedProvider.hasSecret ? "Configurata — scrivi per sostituirla" : "Incolla la chiave"}
@@ -241,23 +266,26 @@ export function AIManagementPage() {
           {!data.canManageCredentials && <small className="muted-copy">Chiavi e indirizzi sono modificabili solo dagli Amministratori.</small>}
         </label>}
         <div className="ai-provider-options">
-          <label>Token massimi<input type="number" min={256} max={128000} value={provider.maxTokens} onChange={(event) => setProvider({ ...provider, maxTokens: event.target.value })} /></label>
-          {selectedProvider.capabilities.reasoning && <label>Ragionamento<select value={provider.effort} onChange={(event) => setProvider({ ...provider, effort: event.target.value })}>
-            <option value="">Predefinito</option>{["none", "low", "medium", "high", "xhigh", "max"].map((value) => <option key={value}>{value}</option>)}
+          <label>Token massimi<input type="number" min={256} max={maximumTokens} value={provider.maxTokens} onChange={(event) => setProvider({ ...provider, maxTokens: event.target.value })} /><small className="muted-copy">Massimo per il modello: {maximumTokens.toLocaleString("it")}</small></label>
+          {draftCapabilities?.reasoning && <label>Ragionamento<select value={provider.effort} onChange={(event) => setProvider({ ...provider, effort: event.target.value })}>
+            <option value="">Predefinito</option>{REASONING_EFFORTS.map((value) => <option key={value}>{value}</option>)}
           </select></label>}
-          {selectedProvider.capabilities.verbosity && <label>Dettaglio<select value={provider.verbosity} onChange={(event) => setProvider({ ...provider, verbosity: event.target.value })}>
-            <option value="">Predefinito</option>{["low", "medium", "high"].map((value) => <option key={value}>{value}</option>)}
+          {draftCapabilities?.verbosity && <label>Dettaglio<select value={provider.verbosity} onChange={(event) => setProvider({ ...provider, verbosity: event.target.value })}>
+            <option value="">Predefinito</option>{VERBOSITY_OPTIONS.map((value) => <option key={value}>{value}</option>)}
           </select></label>}
         </div>
+        {selectedProvider.configurationIssues.length > 0 && <aside className="ai-provider-health" data-state="warning"><strong>Configurazione incompleta</strong><ul>{selectedProvider.configurationIssues.map((issue) => <li key={issue}>{issue}</li>)}</ul></aside>}
         <label className="ai-toggle"><input type="checkbox" checked={provider.isEnabled} onChange={(event) => setProvider({ ...provider, isEnabled: event.target.checked })} /><span>Attivo</span></label>
-        {selectedProvider.capabilities.chat && <label className="ai-toggle"><input type="checkbox" checked={provider.disableTools} onChange={(event) => setProvider({ ...provider, disableTools: event.target.checked })} /><span>Forza modalità senza strumenti</span></label>}
+        <label className="ai-toggle"><input type="checkbox" checked={provider.isDefault} disabled={!provider.isEnabled} onChange={(event) => setProvider({ ...provider, isDefault: event.target.checked })} /><span>Provider predefinito per {selectedProvider.purpose === "chat" ? "la chat" : "le immagini"}</span></label>
+        {draftCapabilities?.chat && <label className="ai-toggle"><input type="checkbox" checked={provider.disableTools} onChange={(event) => setProvider({ ...provider, disableTools: event.target.checked })} /><span>Forza modalità senza strumenti</span></label>}
         <div className="button-row">
           <button type="button" className="button primary" disabled={saveProvider.isPending} onClick={() => saveProvider.mutate({
-            id: selectedProvider.id, name: provider.name, model: provider.model, isEnabled: provider.isEnabled,
+            id: selectedProvider.id, name: provider.name, model: provider.model, isEnabled: provider.isEnabled, isDefault: provider.isDefault,
             maxTokens: provider.maxTokens ? Number(provider.maxTokens) : null, effort: provider.effort,
             verbosity: provider.verbosity, disableTools: provider.disableTools,
             ...(data.canManageCredentials ? { baseUrl: provider.baseUrl, ...(provider.secret ? { secret: provider.secret } : {}) } : {}),
           })}>Salva provider</button>
+          <button type="button" className="button secondary" disabled={refreshModels.isPending || !selectedProvider.canFetchModels} onClick={() => refreshModels.mutate(selectedProvider.id)}>{refreshModels.isPending ? "Aggiornamento…" : "Aggiorna modelli"}</button>
           <button type="button" className="button secondary" disabled={probe.isPending || !selectedProvider.isEnabled} onClick={() => probe.mutate(selectedProvider.id)}>Prova connessione</button>
         </div>
       </section>

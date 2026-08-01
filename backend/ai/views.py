@@ -6,11 +6,19 @@ from backend.core.views import get_authenticated_user
 from backend.media_library.selectors import serialize_uploaded_image
 
 from .npc_dossier import generate_dossier
+from .execution import (
+    active_execution_run_for,
+    cancel_execution_run,
+    execution_run_for,
+    serialize_execution_run,
+    start_chat_run,
+    start_image_run,
+)
 from .selectors import ai_management_payload, ai_workspace_payload
 from .services import (
-    ask_assistant,
-    generate_image,
     generate_npc_portrait,
+    refresh_provider_models,
+    require_ai_manager,
     save_agent,
     save_npc_generation,
     save_provider,
@@ -23,12 +31,20 @@ def ai_collection(request):
     user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     if request.method == "GET":
-        return api_response(request, ai_workspace_payload(user, giocatore))
+        workspace = ai_workspace_payload(user, giocatore)
+        active_run = active_execution_run_for(user)
+        workspace["activeRun"] = serialize_execution_run(active_run, user) if active_run else None
+        return api_response(request, workspace)
     try:
-        result = ask_assistant(user, giocatore, request_payload(request))
+        run = start_chat_run(user, giocatore, request_payload(request))
     except ApiError as error:
         return api_error_response(request, error)
-    return api_response(request, result, events=[{"type": "ai.replied", "message": "Risposta pronta."}])
+    return api_response(
+        request,
+        {"run": serialize_execution_run(run, user)},
+        status=202,
+        events=[{"type": "ai.queued", "message": "Richiesta AI avviata."}],
+    )
 
 
 @require_http_methods(["POST"])
@@ -36,15 +52,25 @@ def ai_image(request):
     user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     try:
-        asset = generate_image(user, giocatore, request_payload(request))
+        run = start_image_run(user, giocatore, request_payload(request))
     except ApiError as error:
         return api_error_response(request, error)
     return api_response(
         request,
-        {"asset": serialize_uploaded_image(asset, user)},
-        status=201,
-        events=[{"type": "ai.image_created", "message": f"{asset.title} è stata aggiunta all'archivio."}],
+        {"run": serialize_execution_run(run, user)},
+        status=202,
+        events=[{"type": "ai.image_queued", "message": "Generazione immagine avviata."}],
     )
+
+
+@require_http_methods(["GET", "DELETE"])
+def ai_run(request, run_id):
+    user = get_authenticated_user(request)
+    try:
+        run = cancel_execution_run(user, run_id) if request.method == "DELETE" else execution_run_for(user, run_id)
+    except ApiError as error:
+        return api_error_response(request, error)
+    return api_response(request, {"run": serialize_execution_run(run, user)})
 
 
 @require_http_methods(["POST"])
@@ -80,6 +106,10 @@ def ai_dossier_portrait(request):
 def ai_management(request):
     user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
+    try:
+        require_ai_manager(user, giocatore)
+    except ApiError as error:
+        return api_error_response(request, error)
     if request.method == "GET":
         return api_response(request, ai_management_payload(user, giocatore))
 
@@ -114,3 +144,18 @@ def ai_management(request):
         )
     except ApiError as error:
         return api_error_response(request, error)
+
+
+@require_http_methods(["POST"])
+def ai_provider_models(request, provider_id):
+    user = get_authenticated_user(request)
+    giocatore = get_or_create_giocatore_for_user(user)
+    try:
+        provider = refresh_provider_models(user, giocatore, provider_id)
+    except ApiError as error:
+        return api_error_response(request, error)
+    return api_response(
+        request,
+        ai_management_payload(user, giocatore),
+        events=[{"type": "ai.models_refreshed", "message": f"{len(provider.model_catalog)} modelli aggiornati."}],
+    )

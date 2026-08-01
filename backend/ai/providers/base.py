@@ -66,6 +66,37 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], *, tim
         ) from error
 
 
+def get_json(url: str, headers: dict[str, str], *, timeout: int = 30) -> Any:
+    """GET JSON condiviso da discovery modelli e controlli leggeri."""
+
+    request = urllib.request.Request(
+        url,
+        headers={"Accept": "application/json", **headers},
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        detail = ""
+        try:
+            body = json.loads(error.read().decode("utf-8"))
+            detail = str(body.get("error", {}).get("message") or body.get("message") or "")
+        except (ValueError, OSError):
+            pass
+        raise ApiError(
+            "ai.models_unavailable",
+            f"Il provider ha rifiutato il catalogo modelli ({error.code})." + (f" {detail}" if detail else ""),
+            status=502,
+        ) from error
+    except (urllib.error.URLError, TimeoutError, OSError) as error:
+        raise ApiError(
+            "ai.models_unreachable",
+            "Il catalogo modelli non è raggiungibile. Controlla indirizzo, rete e chiave.",
+            status=502,
+        ) from error
+
+
 def chat_provider_for(provider):
     from ..models import AIProvider
     from .anthropic_provider import AnthropicChatProvider

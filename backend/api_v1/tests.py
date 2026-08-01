@@ -548,6 +548,77 @@ class CharacterWorkspaceApiTests(TestCase):
         self.character.equip.refresh_from_db()
         self.assertEqual(self.character.equip.faretra_1_id, quiver_id)
 
+    def _set_mana_siphon(self, percent, maximum=50):
+        totals = dict(self.character.tot or {})
+        totals["mana"], totals["sifone_di_mana"] = maximum, percent
+        self.character.tot = totals
+        self.character.mana_speso, self.character.mana_in_sifone = 0, 0
+        self.character.save(update_fields=["tot", "mana_speso", "mana_in_sifone", "updated_at"])
+        return maximum
+
+    def test_mana_siphon_fills_on_spend_and_ignores_refills(self):
+        maximum = self._set_mana_siphon(30)
+        # 20 Mana spesi al 30% => 6 nel sifone.
+        spent = self.command("character.updateResource", {
+            "characterId": self.character.id, "resource": "mana", "current": maximum - 20,
+        })
+        self.assertEqual(spent.status_code, 200)
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.mana_in_sifone, 6)
+        self.assertEqual(
+            next(r["siphon"] for r in spent.json()["data"]["character"]["resources"] if r["key"] == "mana"), 6
+        )
+
+        # Rialzare la barra non accredita nulla.
+        self.command("character.updateResource", {
+            "characterId": self.character.id, "resource": "mana", "current": maximum,
+        })
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.mana_in_sifone, 6)
+
+    def test_mana_siphon_floors_percentage_and_skips_when_zero(self):
+        maximum = self._set_mana_siphon(0)
+        self.command("character.updateResource", {
+            "characterId": self.character.id, "resource": "mana", "current": maximum - 20,
+        })
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.mana_in_sifone, 0)
+
+        # 12.9% viene arrotondato per difetto a 12: 10 Mana => 1.
+        self._set_mana_siphon(12.9)
+        self.command("character.updateResource", {
+            "characterId": self.character.id, "resource": "mana", "current": maximum - 10,
+        })
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.mana_in_sifone, 1)
+
+    def test_mana_siphon_recovery_empties_reserve_and_loses_surplus(self):
+        maximum = self._set_mana_siphon(50)
+        self.character.mana_speso, self.character.mana_in_sifone = 30, 12
+        self.character.save(update_fields=["mana_speso", "mana_in_sifone", "updated_at"])
+
+        recovered = self.command("character.recoverManaSiphon", {"characterId": self.character.id})
+        self.assertEqual(recovered.status_code, 200)
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.mana_speso, 18)
+        self.assertEqual(self.character.mana_in_sifone, 0)
+        self.assertEqual(
+            next(r["current"] for r in recovered.json()["data"]["character"]["resources"] if r["key"] == "mana"),
+            maximum - 18,
+        )
+
+        # Riserva piu' grande del Mana speso: l'eccedenza va persa, mai sopra il massimo.
+        self.character.mana_speso, self.character.mana_in_sifone = 5, 40
+        self.character.save(update_fields=["mana_speso", "mana_in_sifone", "updated_at"])
+        self.command("character.recoverManaSiphon", {"characterId": self.character.id})
+        self.character.refresh_from_db()
+        self.assertEqual(self.character.mana_speso, 0)
+        self.assertEqual(self.character.mana_in_sifone, 0)
+
+        empty = self.command("character.recoverManaSiphon", {"characterId": self.character.id})
+        self.assertEqual(empty.status_code, 409)
+        self.assertEqual(empty.json()["errors"][0]["code"], "character.mana_siphon_empty")
+
     def test_resource_effect_and_rest_changes_are_immediate(self):
         sheet = self.client.get(f"/api/v1/characters/{self.character.id}/sheet").json()["data"]["character"]
         maximum = next(resource["maximum"] for resource in sheet["resources"] if resource["key"] == "pf")
@@ -925,14 +996,12 @@ class CharacterWorkspaceApiTests(TestCase):
             "peso_regione": 1.0, "pa_per_attacco": 1,
             "effetto_1": "Personaggio.attacco_extra +1", "effetto_8": "Promemoria Elder",
             "effects": [{"target": "attacco", "operation": "add", "value": 1}],
-            "alchemy_profile": {}, "crafting_profile": {"material": "ferro"}, "notes": "Test completo",
         }
         created = self.command("items.create", {"values": payload})
         self.assertEqual(created.status_code, 200)
         item = created.json()["data"]["item"]
         self.assertEqual(item["name"], payload["nome"])
         self.assertTrue(item["isProjectile"])
-        self.assertEqual(item["craftingProfile"]["material"], "ferro")
         self.assertEqual(item["typeValues"], ["dardo", "ferro", "", ""])
         self.assertEqual(item["elderEffects"][0], payload["effetto_1"])
         self.assertEqual(item["elderEffects"][7], payload["effetto_8"])
@@ -1269,6 +1338,7 @@ class CharacterWorkspaceApiTests(TestCase):
         schema_text = json.dumps(response.json())
         for action in (
             "inventory.swapItems", "inventory.assignItem", "character.updateResource",
+            "character.recoverManaSiphon",
             "character.adjustQuickStat", "character.rest", "character.updateOverview",
             "character.updateCoins", "campaign.updateSharedCoins", "effects.apply", "effects.remove",
             "items.create", "items.update", "items.archive", "items.compareSave",

@@ -381,10 +381,7 @@ def serialize_item(item: Oggetto | None, *, detailed: bool = False) -> dict | No
                 "temporary": item.temporaneo,
                 "order": item.numero_ordine,
                 "regionWeight": item.peso_regione,
-                "alchemyProfile": item.alchemy_profile or {},
-                "craftingProfile": item.crafting_profile or {},
                 "mediaId": item.media_id,
-                "notes": item.notes,
                 "elderEffects": item.effetti_elder,
                 "metadata": item.metadata if isinstance(item.metadata, dict) else {},
                 "specialReasons": special_reason_entries(item),
@@ -1061,6 +1058,8 @@ def _resources(personaggio: Personaggio) -> list[dict]:
                 "percent": round((current / maximum) * 100, 1) if maximum else 0,
                 "colorToken": f"--resource-{key}",
                 "calculation": _calculation_parts(personaggio, key),
+                # Solo il Mana ha una riserva separata; le altre barre restano a 0.
+                "siphon": int(personaggio.mana_in_sifone or 0) if key == "mana" else 0,
             }
         )
     return resources

@@ -440,6 +440,8 @@ export type AIProviderSummary = {
   isDefault: boolean;
   description: string;
   isConfigured: boolean;
+  isReady: boolean;
+  configurationIssues: string[];
   capabilities: {
     chat: boolean;
     tools: boolean;
@@ -461,6 +463,19 @@ export type AIManagedProvider = AIProviderSummary & {
   baseUrl: string;
   hasSecret: boolean;
   suggestedModels: string[];
+  modelCatalog: Array<{
+    id: string;
+    label: string;
+    contextWindow: number | null;
+    capabilities: AIProviderSummary["capabilities"];
+  }>;
+  modelCatalogRefreshedAt: string;
+  canFetchModels: boolean;
+  configurationSchema: {
+    maxTokens: { minimum: number; maximum: number };
+    reasoningEfforts: string[];
+    verbosityOptions: string[];
+  };
   maxTokens: number | null;
   effort: string;
   verbosity: string;
@@ -485,6 +500,10 @@ export type AIAgentSummary = {
   providerId: number | null;
   providerName: string;
   model: string;
+  effectiveProviderName: string;
+  effectiveModel: string;
+  isReady: boolean;
+  availabilityIssues: string[];
   toolNames: string[];
   maxIterations: number;
   routingMode: "off" | "auto";
@@ -503,8 +522,12 @@ export type AIWorkspaceData = {
   chatProviders: AIProviderSummary[];
   imageProviders: AIProviderSummary[];
   tools: AIToolSummary[];
+  conversations: AIConversationSummary[];
   canManage: boolean;
   ready: boolean;
+  readiness: { chat: boolean; images: boolean };
+  runPolicy: { maximumSeconds: number; maximumTokens: number; maximumToolCalls: number };
+  activeRun: AIExecutionRun | null;
   npcGeneration: NpcGenerationConfig;
 };
 
@@ -624,6 +647,35 @@ export type AIChatResult = {
   runId: string;
   provider: { id: number; name: string; model: string };
   agent: { id: number; name: string };
+};
+
+export type AIConversationBubble = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  tools: AIToolTraceEntry[];
+};
+
+export type AIConversationSummary = {
+  id: number;
+  title: string;
+  agentId: number | null;
+  history: AIHistoryEntry[];
+  bubbles: AIConversationBubble[];
+  updatedAt: string;
+};
+
+export type AIExecutionRun = {
+  id: string;
+  kind: "chat" | "image";
+  status: "queued" | "running" | "completed" | "failed" | "cancelled";
+  progress: string;
+  cancelRequested: boolean;
+  request: { message: string; prompt: string };
+  result: AIChatResult | { asset: MediaAsset } | Record<string, never>;
+  error: { code?: string; message?: string; field?: string };
+  conversation: AIConversationSummary | null;
+  budgets: { maximumSeconds: number; maximumTokens: number; maximumToolCalls: number };
 };
 
 export type AudioTag = { value: string; label: string };

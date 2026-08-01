@@ -179,11 +179,10 @@ class OggettoAdmin(V2Admin):
             "Regole strutturate",
             {
                 "fields": (
-                    "pa_per_attacco", "speciale", "effects", "weapon_profile", "alchemy_profile", "crafting_profile",
+                    "pa_per_attacco", "speciale", "effects", "weapon_profile",
                 )
             },
         ),
-        ("Note", {"fields": ("notes",)}),
         (
             "Informazioni di sistema",
             {"fields": ("created_at", "updated_at", "archived_at", "metadata"), "classes": ("collapse",)},

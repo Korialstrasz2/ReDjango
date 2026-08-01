@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import time
 import uuid
+from dataclasses import dataclass
+from collections.abc import Callable
 from typing import Any
 
 from backend.characters.selectors import ordered_personaggi_for
@@ -29,6 +32,66 @@ ROUTER_SKIP_TOOL_THRESHOLD = 8
 # (viaggio → mappe_viaggio) e non raggiungeva mai le guide.
 ROUTER_ALWAYS_INCLUDED_SCOPES = frozenset({"regole"})
 logger = logging.getLogger("redjango.ai.runs")
+
+
+@dataclass
+class RunBudget:
+    """Limiti duri di una singola esecuzione, indipendenti dal provider."""
+
+    maximum_seconds: int = 120
+    maximum_tokens: int = 64000
+    maximum_tool_calls: int = 24
+    cancel_check: Callable[[], bool] | None = None
+    started: float = 0.0
+    used_tokens: int = 0
+    used_tool_calls: int = 0
+
+    def __post_init__(self) -> None:
+        if not self.started:
+            self.started = time.monotonic()
+
+    def remaining_seconds(self) -> int:
+        return max(1, int(self.maximum_seconds - (time.monotonic() - self.started)))
+
+    def check(self) -> None:
+        if self.cancel_check and self.cancel_check():
+            raise ApiError("ai.run_cancelled", "Esecuzione annullata.", status=409)
+        if time.monotonic() - self.started >= self.maximum_seconds:
+            raise ApiError("ai.run_timeout", "L'esecuzione ha superato il tempo massimo consentito.", status=408)
+        if self.used_tokens > self.maximum_tokens:
+            raise ApiError("ai.token_budget", "L'esecuzione ha raggiunto il limite di token.", status=409)
+        if self.used_tool_calls > self.maximum_tool_calls:
+            raise ApiError("ai.tool_budget", "L'esecuzione ha raggiunto il limite di strumenti.", status=409)
+
+    @staticmethod
+    def estimate_tokens(value: Any) -> int:
+        serialized = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, default=str)
+        return max(1, math.ceil(len(serialized) / 4))
+
+    def ensure_request_fits(self, *parts: Any) -> int:
+        self.check()
+        estimated = sum(self.estimate_tokens(part) for part in parts)
+        if self.used_tokens + estimated > self.maximum_tokens:
+            raise ApiError("ai.token_budget", "La richiesta supera il limite di token dell'esecuzione.", status=409)
+        return estimated
+
+    def add_usage(
+        self,
+        input_tokens: int,
+        output_tokens: int,
+        *,
+        fallback_input: int = 0,
+        fallback_output: int = 0,
+    ) -> tuple[int, int]:
+        counted_input = max(0, input_tokens) or max(0, fallback_input)
+        counted_output = max(0, output_tokens) or max(0, fallback_output)
+        self.used_tokens += counted_input + counted_output
+        self.check()
+        return counted_input, counted_output
+
+    def add_tool_call(self) -> None:
+        self.used_tool_calls += 1
+        self.check()
 
 FINAL_ANSWER_INSTRUCTION = """Hai esaurito le consultazioni disponibili per questo turno.
 
@@ -87,12 +150,30 @@ Non puoi modificare il database in nessun caso. Se ti viene chiesto di cambiare 
 
 
 def _trim(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    if len(history) <= MAXIMUM_HISTORY_MESSAGES:
-        return history
-    trimmed = history[-MAXIMUM_HISTORY_MESSAGES:]
-    while trimmed and trimmed[0].get("role") == "tool":
+    trimmed = history if len(history) <= MAXIMUM_HISTORY_MESSAGES else history[-MAXIMUM_HISTORY_MESSAGES:]
+    while trimmed and trimmed[0].get("role") != "user":
         trimmed = trimmed[1:]
     return trimmed
+
+
+def _fit_history_to_budget(
+    budget: RunBudget,
+    system: str,
+    history: list[dict[str, Any]],
+    tools: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], int]:
+    """Scarta turni vecchi interi prima di rifiutare una conversazione lunga."""
+
+    fitted = list(history)
+    while len(fitted) > 1:
+        estimated = sum(budget.estimate_tokens(part) for part in (system, fitted, tools))
+        if budget.used_tokens + estimated <= budget.maximum_tokens:
+            break
+        next_user = next((index for index, entry in enumerate(fitted[1:], 1) if entry.get("role") == "user"), None)
+        if next_user is None:
+            break
+        fitted = fitted[next_user:]
+    return fitted, budget.ensure_request_fits(system, fitted, tools)
 
 
 def _context_block(user, giocatore: Giocatore) -> str:
@@ -141,7 +222,7 @@ def _system_prompt(profile, user, giocatore: Giocatore) -> str:
     return "\n\n".join(parts)
 
 
-def _route_scopes(client, question: str, available_scopes: set[str]) -> tuple[set[str] | None, int]:
+def _route_scopes(client, question: str, available_scopes: set[str], budget: RunBudget | None = None) -> tuple[set[str] | None, int]:
     """Sceglie il sottoinsieme di scope pertinente alla domanda, con una sola chiamata breve.
 
     Qualunque errore, timeout o risposta non interpretabile fa ripiegare su tutti gli
@@ -159,10 +240,25 @@ def _route_scopes(client, question: str, available_scopes: set[str]) -> tuple[se
     )
     scopes: set[str] = set()
     try:
+        estimated_input = 0
+        if budget:
+            budget.check()
+            estimated_input = budget.ensure_request_fits(prompt, question)
         turn = client.complete(system=prompt, history=[{"role": "user", "content": question}], tools=[])
+        if budget:
+            budget.add_usage(
+                int(turn.usage.get("inputTokens") or 0),
+                int(turn.usage.get("outputTokens") or 0),
+                fallback_input=estimated_input,
+                fallback_output=budget.estimate_tokens(turn.text),
+            )
         chosen = json.loads(turn.text.strip())
         if isinstance(chosen, list):
             scopes = {str(scope) for scope in chosen if str(scope) in available_scopes}
+    except ApiError as error:
+        if error.code in {"ai.run_cancelled", "ai.run_timeout", "ai.token_budget", "ai.tool_budget"}:
+            raise
+        scopes = set()
     except Exception:
         scopes = set()
     if scopes:
@@ -171,10 +267,22 @@ def _route_scopes(client, question: str, available_scopes: set[str]) -> tuple[se
     return (scopes if scopes else None), router_ms
 
 
-def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocatore, profile=None) -> dict[str, Any]:
+def run_agent(
+    provider,
+    history: list[dict[str, Any]],
+    user,
+    giocatore: Giocatore,
+    profile=None,
+    *,
+    budget: RunBudget | None = None,
+    progress: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
     """Esegue un turno completo secondo provider, strumenti e limiti del profilo."""
 
     client = chat_provider_for(provider)
+    if budget:
+        budget.check()
+        client.request_timeout = budget.remaining_seconds()
     allowed_tools = list(getattr(profile, "allowed_tools", []) or []) if profile is not None else None
     # Senza profilo non c'è una `routing_mode` configurata da onorare: il percorso
     # "legacy" (già così nei log) resta esattamente il comportamento di prima.
@@ -186,19 +294,29 @@ def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocator
     usage = {"inputTokens": 0, "outputTokens": 0}
     run_id = uuid.uuid4().hex[:12]
     started = time.monotonic()
+    system_prompt = _system_prompt(profile, user, giocatore)
 
     candidates = reachable_tools(user, giocatore, allowed_tools)
     scopes: set[str] | None = None
     router_ms = 0
     if routing_mode == "auto" and len(candidates) > ROUTER_SKIP_TOOL_THRESHOLD:
+        if progress:
+            progress("Scelta degli strumenti pertinenti…")
         available_scopes = {tool.scope for tool in candidates}
         last_question = str(conversation[-1].get("content") or "") if conversation else ""
-        scopes, router_ms = _route_scopes(client, last_question, available_scopes)
+        scopes, router_ms = _route_scopes(client, last_question, available_scopes, budget)
     tools = tool_definitions(user, giocatore, allowed_tools, scopes=scopes)
 
     for iteration in range(maximum_iterations):
+        estimated_input = 0
+        if budget:
+            budget.check()
+            client.request_timeout = budget.remaining_seconds()
+            conversation, estimated_input = _fit_history_to_budget(budget, system_prompt, conversation, tools)
+        if progress:
+            progress(f"Elaborazione AI · passaggio {iteration + 1} di {maximum_iterations}…")
         try:
-            turn = client.complete(system=_system_prompt(profile, user, giocatore), history=conversation, tools=tools)
+            turn = client.complete(system=system_prompt, history=conversation, tools=tools)
         except Exception as error:
             logger.warning(
                 "agent_run id=%s profile=%s provider=%s model=%s role=%s iterations=%s scopes=%s router_ms=%s duration_ms=%s status=provider_error error=%s",
@@ -214,8 +332,17 @@ def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocator
                 type(error).__name__,
             )
             raise
-        usage["inputTokens"] += int(turn.usage.get("inputTokens") or 0)
-        usage["outputTokens"] += int(turn.usage.get("outputTokens") or 0)
+        counted_input = int(turn.usage.get("inputTokens") or 0)
+        counted_output = int(turn.usage.get("outputTokens") or 0)
+        if budget:
+            counted_input, counted_output = budget.add_usage(
+                counted_input,
+                counted_output,
+                fallback_input=estimated_input,
+                fallback_output=budget.estimate_tokens({"text": turn.text, "toolCalls": turn.tool_calls}),
+            )
+        usage["inputTokens"] += counted_input
+        usage["outputTokens"] += counted_output
         conversation.append(
             {
                 "role": "assistant",
@@ -252,6 +379,10 @@ def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocator
             return result
 
         for call in turn.tool_calls:
+            if budget:
+                budget.add_tool_call()
+            if progress:
+                progress(f"Consultazione: {call.name}…")
             # Una chiamata identica non può dare un risultato diverso. Rieseguirla
             # in silenzio è il modo in cui un modello piccolo consuma tutte le
             # iterazioni: meglio dirglielo e spingerlo a cambiare mossa.
@@ -296,17 +427,39 @@ def run_agent(provider, history: list[dict[str, Any]], user, giocatore: Giocator
     # il peggiore degli esiti possibili. Una risposta parziale e dichiarata tale
     # vale più di «riformula la domanda».
     try:
+        estimated_input = 0
+        if budget:
+            budget.check()
+            client.request_timeout = budget.remaining_seconds()
+            estimated_input = budget.ensure_request_fits(
+                f"{system_prompt}\n\n{FINAL_ANSWER_INSTRUCTION}", conversation,
+            )
+        if progress:
+            progress("Preparazione della risposta finale…")
         final = client.complete(
-            system=f"{_system_prompt(profile, user, giocatore)}\n\n{FINAL_ANSWER_INSTRUCTION}",
+            system=f"{system_prompt}\n\n{FINAL_ANSWER_INSTRUCTION}",
             history=conversation,
             tools=[],
         )
+    except ApiError as error:
+        if error.code in {"ai.run_cancelled", "ai.run_timeout", "ai.token_budget", "ai.tool_budget"}:
+            raise
+        final = None
     except Exception:
         final = None
 
     if final is not None and final.text.strip():
-        usage["inputTokens"] += int(final.usage.get("inputTokens") or 0)
-        usage["outputTokens"] += int(final.usage.get("outputTokens") or 0)
+        counted_input = int(final.usage.get("inputTokens") or 0)
+        counted_output = int(final.usage.get("outputTokens") or 0)
+        if budget:
+            counted_input, counted_output = budget.add_usage(
+                counted_input,
+                counted_output,
+                fallback_input=estimated_input,
+                fallback_output=budget.estimate_tokens(final.text),
+            )
+        usage["inputTokens"] += counted_input
+        usage["outputTokens"] += counted_output
         conversation.append({"role": "assistant", "content": final.text, "toolCalls": [], "raw": final.raw})
         logger.info(
             "agent_run id=%s profile=%s provider=%s model=%s role=%s tools=%s iterations=%s scopes=%s router_ms=%s input_tokens=%s output_tokens=%s duration_ms=%s status=iteration_limit_answered",

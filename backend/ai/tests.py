@@ -4,16 +4,19 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from backend.core.api import ApiError
 from backend.core.models import DatiCampagna, Giocatore, Oggetto
 from backend.lore.models import Fazione
 
-from .agent import run_agent
+from .agent import RunBudget, run_agent
 from .crypto import decrypt_secret, encrypt_secret
 from .defaults import seed_ai_providers
-from .models import AIAgentProfile, AIProvider
+from .execution import start_chat_run
+from .models import AIAgentProfile, AIConversation, AIExecutionRun, AIProvider
 from .providers.openai_provider import OpenAIResponsesChatProvider
 from .providers.images import OpenAIImageProvider
 from .providers.base import ChatTurn, ToolCall
+from .providers.catalog import fetch_provider_models
 from .selectors import ai_management_payload, ai_workspace_payload
 from .services import ask_assistant, sanitize_history, save_agent, save_provider
 from .tools import AI_TOOLS, execute_tool
@@ -102,6 +105,10 @@ class AIWorkspaceApiTests(TestCase):
         self.assertEqual(denied.status_code, 403)
         self.assertEqual(denied.json()["errors"][0]["code"], "ai.master_required")
 
+        denied_read = self.client.get("/api/ai/providers/")
+        self.assertEqual(denied_read.status_code, 403)
+        self.assertEqual(denied_read.json()["errors"][0]["code"], "ai.master_required")
+
     def test_a_configured_provider_makes_the_workspace_usable_without_leaking_the_key(self):
         provider = AIProvider.objects.get(slug="anthropic")
         provider.set_secret("sk-configurata")
@@ -115,6 +122,15 @@ class AIWorkspaceApiTests(TestCase):
         self.assertTrue(data["chatProviders"][0]["isConfigured"])
         self.assertNotIn("sk-configurata", json.dumps(data))
         self.assertTrue(all("hasSecret" not in entry for entry in data["chatProviders"]))
+
+    def test_master_management_redacts_admin_only_endpoints(self):
+        self.login("ai_master_redacted", Giocatore.ROLE_MASTER)
+
+        response = self.client.get("/api/ai/providers/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["data"]["canManageCredentials"])
+        self.assertTrue(all(entry["baseUrl"] == "" for entry in response.json()["data"]["providers"]))
 
     def test_admin_saves_a_provider_and_the_key_is_write_only(self):
         self.login("ai_admin_save", Giocatore.ROLE_ADMIN)
@@ -223,6 +239,161 @@ class AIWorkspaceApiTests(TestCase):
 
         provider.refresh_from_db()
         self.assertEqual(provider.model, "my-deepseek-deployment")
+
+    def test_live_model_refresh_is_saved_without_exposing_the_key(self):
+        self.login("ai_admin_models", Giocatore.ROLE_ADMIN)
+        provider = AIProvider.objects.get(slug="openai")
+        provider.set_secret("sk-catalogo")
+        provider.save()
+        catalog = [{
+            "id": "gpt-live",
+            "label": "GPT Live",
+            "contextWindow": 32000,
+            "capabilities": {
+                "chat": True, "tools": True, "reasoning": True,
+                "verbosity": True, "images": False, "imageEditing": False,
+            },
+        }]
+
+        with patch("backend.ai.services.fetch_provider_models", return_value=catalog):
+            response = self.client.post(
+                f"/api/ai/providers/{provider.id}/models/",
+                data=envelope("ai.refreshModels", {}),
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        provider.refresh_from_db()
+        self.assertEqual(provider.model_catalog, catalog)
+        self.assertIsNotNone(provider.model_catalog_refreshed_at)
+        self.assertNotIn("sk-catalogo", json.dumps(response.json()))
+
+    def test_model_catalog_capabilities_reject_unsupported_controls(self):
+        user = self.login("ai_admin_validation", Giocatore.ROLE_ADMIN)
+        giocatore = Giocatore.objects.get(user=user)
+        provider = AIProvider.objects.get(slug="openai")
+        provider.model_catalog = [{
+            "id": "plain-model",
+            "label": "Plain model",
+            "contextWindow": 16000,
+            "capabilities": {
+                "chat": True, "tools": True, "reasoning": False,
+                "verbosity": False, "images": False, "imageEditing": False,
+            },
+        }]
+        provider.save(update_fields=["model_catalog"])
+
+        with self.assertRaises(ApiError) as raised:
+            save_provider(user, giocatore, {"id": provider.id, "model": "plain-model", "effort": "high"})
+
+        self.assertEqual(raised.exception.code, "ai.effort_unsupported")
+        with self.assertRaises(ApiError) as token_error:
+            save_provider(user, giocatore, {"id": provider.id, "model": "plain-model", "maxTokens": 16001})
+        self.assertEqual(token_error.exception.code, "ai.max_tokens_invalid")
+
+    def test_setting_a_default_provider_clears_the_previous_default(self):
+        user = self.login("ai_admin_default", Giocatore.ROLE_ADMIN)
+        giocatore = Giocatore.objects.get(user=user)
+        original = AIProvider.objects.get(slug="anthropic")
+        replacement = AIProvider.objects.get(slug="deepseek")
+
+        save_provider(user, giocatore, {"id": replacement.id, "isEnabled": True, "isDefault": True})
+
+        original.refresh_from_db()
+        replacement.refresh_from_db()
+        self.assertFalse(original.is_default)
+        self.assertTrue(replacement.is_default)
+
+    def test_an_agent_pinned_to_a_broken_provider_does_not_silently_fall_back(self):
+        ready = AIProvider.objects.get(slug="anthropic")
+        ready.set_secret("sk-ready")
+        ready.save()
+        broken = AIProvider.objects.get(slug="deepseek")
+        broken.is_enabled = True
+        broken.save(update_fields=["is_enabled"])
+        agent = AIAgentProfile.objects.get(slug="assistente-campagna")
+        agent.provider = broken
+        agent.save(update_fields=["provider"])
+        user = self.login("ai_broken_agent", Giocatore.ROLE_USER)
+
+        workspace = ai_workspace_payload(user, Giocatore.objects.get(user=user))
+
+        self.assertEqual(workspace["agents"], [])
+        self.assertFalse(workspace["readiness"]["chat"])
+
+
+class AIExecutionTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        seed_ai_providers()
+        DatiCampagna.objects.create(nome="Campagna esecuzioni")
+        cls.user = get_user_model().objects.create_user(username="ai_runs")
+        cls.giocatore = Giocatore.objects.create(
+            user=cls.user,
+            nome="ai_runs",
+            display_name="AI Runs",
+            role=Giocatore.ROLE_USER,
+        )
+        provider = AIProvider.objects.get(slug="anthropic")
+        provider.set_secret("sk-runs")
+        provider.save()
+
+    def test_chat_requests_are_queued_and_owned_by_the_requesting_user(self):
+        self.client.force_login(self.user)
+        with patch("backend.ai.execution._submit"):
+            response = self.client.post(
+                "/api/ai/",
+                data=envelope("ai.ask", {"message": "Cosa sappiamo?"}),
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 202)
+        run_id = response.json()["data"]["run"]["id"]
+        self.assertEqual(response.json()["data"]["run"]["status"], "queued")
+        restored = self.client.get("/api/ai/").json()["data"]["activeRun"]
+        self.assertEqual(restored["id"], run_id)
+
+        stranger = get_user_model().objects.create_user(username="ai_runs_stranger")
+        Giocatore.objects.create(user=stranger, nome="stranger", role=Giocatore.ROLE_USER)
+        self.client.force_login(stranger)
+        self.assertEqual(self.client.get(f"/api/ai/runs/{run_id}/").status_code, 404)
+
+    def test_cancelling_a_queued_run_discards_its_empty_conversation(self):
+        self.client.force_login(self.user)
+        with patch("backend.ai.execution._submit"):
+            started = self.client.post(
+                "/api/ai/",
+                data=envelope("ai.ask", {"message": "Domanda annullata"}),
+                content_type="application/json",
+            )
+        run_id = started.json()["data"]["run"]["id"]
+
+        cancelled = self.client.delete(f"/api/ai/runs/{run_id}/")
+
+        self.assertEqual(cancelled.status_code, 200)
+        self.assertEqual(cancelled.json()["data"]["run"]["status"], "cancelled")
+        self.assertEqual(AIConversation.objects.filter(user=self.user).count(), 0)
+
+    def test_only_the_three_most_recent_conversations_are_kept(self):
+        for number in range(4):
+            with patch("backend.ai.execution._submit"):
+                run = start_chat_run(self.user, self.giocatore, {"message": f"Domanda {number}"})
+            AIExecutionRun.objects.filter(pk=run.pk).update(status=AIExecutionRun.STATUS_COMPLETED)
+
+        conversations = list(AIConversation.objects.filter(user=self.user).order_by("created_at"))
+        self.assertEqual(len(conversations), 3)
+        self.assertEqual([entry.title for entry in conversations], ["Domanda 1", "Domanda 2", "Domanda 3"])
+
+    def test_runtime_budget_stops_token_overruns_and_cancellation(self):
+        budget = RunBudget(maximum_tokens=10, cancel_check=lambda: False)
+        with self.assertRaises(ApiError) as token_error:
+            budget.add_usage(8, 3)
+        self.assertEqual(token_error.exception.code, "ai.token_budget")
+
+        cancelled = RunBudget(cancel_check=lambda: True)
+        with self.assertRaises(ApiError) as cancel_error:
+            cancelled.check()
+        self.assertEqual(cancel_error.exception.code, "ai.run_cancelled")
 
 
 class AIAgentLoopTests(TestCase):
@@ -965,6 +1136,34 @@ class OpenAIResponsesProviderTests(TestCase):
         self.assertEqual(payload["tools"][0]["type"], "function")
         self.assertNotIn("max_tokens", payload)
         self.assertEqual(turn.text, "Pronto")
+
+
+class AIModelCatalogTests(TestCase):
+    def test_live_catalog_normalizes_models_and_filters_non_chat_products(self):
+        provider = AIProvider.objects.create(
+            slug="catalog-test",
+            name="Catalog",
+            purpose=AIProvider.PURPOSE_CHAT,
+            kind=AIProvider.KIND_OPENAI_COMPATIBLE,
+            auth_strategy=AIProvider.AUTH_NONE,
+            base_url="http://127.0.0.1:11434/v1",
+            model="chat-pro",
+        )
+        response = {
+            "data": [
+                {"id": "chat-pro", "context_length": 32768, "supported_parameters": ["tools", "reasoning"]},
+                {"id": "text-embedding-3-large"},
+                {"id": "image-alpha"},
+            ],
+        }
+
+        with patch("backend.ai.providers.catalog.get_json", return_value=response):
+            catalog = fetch_provider_models(provider)
+
+        self.assertEqual([entry["id"] for entry in catalog], ["chat-pro"])
+        self.assertEqual(catalog[0]["contextWindow"], 32768)
+        self.assertTrue(catalog[0]["capabilities"]["tools"])
+        self.assertTrue(catalog[0]["capabilities"]["reasoning"])
 
 
 class OpenAIImageProviderTests(TestCase):

@@ -41,17 +41,14 @@ type ItemDraft = {
   elderEffects: string[];
   regole_speciali: string;
   effects: string;
-  alchemy_profile: string;
-  crafting_profile: string;
   mediaId: string;
-  notes: string;
 };
 
 const EMPTY_DRAFT: ItemDraft = {
   identityId: null, identityName: "", nome: "", modello: true, temporaneo: false, archiviato: false, speciale: false,
   numero_ordine: "", icona: "", tipo_1: "", tipo_2: "", tipo_3: "", tipo_4: "",
   descrizione: "", valore: "", peso: "", rarita: "", lv_loot: "", regione_loot: "", peso_regione: "",
-  tipoArmaId: "", pa_per_attacco: "", elderEffects: Array(8).fill(""), regole_speciali: "", effects: "[]", alchemy_profile: "{}", crafting_profile: "{}", mediaId: "", notes: "",
+  tipoArmaId: "", pa_per_attacco: "", elderEffects: Array(8).fill(""), regole_speciali: "", effects: "[]", mediaId: "",
 };
 
 function draftFromItem(item: Item): ItemDraft {
@@ -81,10 +78,7 @@ function draftFromItem(item: Item): ItemDraft {
     elderEffects: [...(item.elderEffects || []), "", "", "", "", "", "", "", ""].slice(0, 8),
     regole_speciali: item.specialRules || "",
     effects: JSON.stringify(item.effects || [], null, 2),
-    alchemy_profile: JSON.stringify(item.alchemyProfile || {}, null, 2),
-    crafting_profile: JSON.stringify(item.craftingProfile || {}, null, 2),
     mediaId: item.mediaId == null ? "" : String(item.mediaId),
-    notes: item.notes || "",
   };
 }
 
@@ -99,9 +93,7 @@ function valuesFromDraft(draft: ItemDraft): Record<string, unknown> {
     ...Object.fromEntries(draft.elderEffects.map((value, index) => [`effetto_${index + 1}`, value.trim()])),
     regole_speciali: draft.regole_speciali,
     effects: JSON.parse(draft.effects || "[]"),
-    alchemy_profile: JSON.parse(draft.alchemy_profile || "{}"),
-    crafting_profile: JSON.parse(draft.crafting_profile || "{}"),
-    mediaId: draft.mediaId || null, notes: draft.notes,
+    mediaId: draft.mediaId || null,
   };
 }
 
@@ -227,12 +219,9 @@ function ItemComparer({ catalog, onSaved }: { catalog: ItemCatalog; onSaved: (it
       <CompareRow label="Regole speciali" left={left?.specialRules} wide><textarea rows={4} value={right.regole_speciali} onChange={(event) => update("regole_speciali", event.target.value)} /></CompareRow>
       <h3>Dati strutturati</h3>
       <CompareRow label="Effetti" left={left?.effects} wide><textarea className="code-input" rows={8} value={right.effects} onChange={(event) => update("effects", event.target.value)} spellCheck={false} /></CompareRow>
-      <CompareRow label="Profilo alchimia" left={left?.alchemyProfile} wide><textarea className="code-input" rows={8} value={right.alchemy_profile} onChange={(event) => update("alchemy_profile", event.target.value)} spellCheck={false} /></CompareRow>
-      <CompareRow label="Profilo crafting" left={left?.craftingProfile} wide><textarea className="code-input" rows={8} value={right.crafting_profile} onChange={(event) => update("crafting_profile", event.target.value)} spellCheck={false} /></CompareRow>
-      <h3>Media e note</h3>
+      <h3>Media</h3>
       <CompareRow label="Immagine" left={leftMedia}><button className="media-picker-trigger compact" type="button" onClick={() => setImagePickerOpen(true)}>{rightMedia ? <><img src={rightMedia.thumbnailUrl || rightMedia.url} alt="" /><span>{rightMedia.title}</span></> : "Scegli dall'archivio"}</button></CompareRow>
       <CompareRow label="Icona dedicata" left={left?.imageUrl} wide><ItemSpecialIconField itemId={right.identityId} itemName={right.nome} imageUrl={catalog.items.find((item) => item.id === right.identityId)?.imageUrl || ""} /></CompareRow>
-      <CompareRow label="Note" left={left?.notes} wide><textarea rows={5} value={right.notes} onChange={(event) => update("notes", event.target.value)} /></CompareRow>
     </div>
     <div className="sticky-actions"><button className="button primary" type="button" disabled={mutation.isPending || !right.nome.trim()} onClick={save}>{right.identityId && right.nome.toLocaleLowerCase("it") === right.identityName.toLocaleLowerCase("it") ? "Aggiorna destinazione" : "Crea nuovo oggetto"}</button></div>
   </section>{imagePickerOpen && <ImagePickerModal selectedId={rightMedia?.id || null} usageType="item_icon" defaultGroup="Oggetti" defaultTitle={right.nome || "Nuovo oggetto"} onSelect={(asset) => update("mediaId", asset ? String(asset.id) : "")} onClose={() => setImagePickerOpen(false)} />}</>;
@@ -442,7 +431,7 @@ export function ItemManagementPage() {
           <button type="button" className="button primary" disabled={!triageSelection.length || triageMutation.isPending} onClick={() => { if (window.confirm(`Forzare la rimozione del flag Speciale da ${triageSelection.length} oggetti, anche se il motivo non risulta risolto?`)) triageMutation.mutate(triageSelection); }}>{triageMutation.isPending ? "Aggiornamento…" : `Forza rimozione (${triageSelection.length})`}</button>
         </div>
       </section>}
-      <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{total} oggetti</strong><small>{total ? `${offset + 1}–${offset + items.length}` : "nessun risultato"}{catalogQuery.isFetching ? " · aggiornamento…" : ""}</small></header>{items.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}>{specialFilter === "special" && <input type="checkbox" aria-label={`Seleziona ${item.name}`} checked={triageSelection.includes(item.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleTriage(item.id)} />}<span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small>{specialFilter === "special" && <SpecialReasonChips item={item} />}</span><b>{item.weight ?? "—"}</b></button>)}{!items.length && !catalogQuery.isFetching && <div className="management-empty-state"><strong>Nessun oggetto</strong><p>Cambia ricerca o filtri.</p></div>}<footer className="managed-item-pager"><button type="button" className="button secondary small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>← Precedenti</button><span>{Math.floor(offset / PAGE_SIZE) + 1} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><button type="button" className="button secondary small" disabled={!catalog.hasMore} onClick={() => setOffset(offset + PAGE_SIZE)}>Successivi →</button></footer></section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}{selected.special ? " · speciale" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p>{selected.special && <aside className="item-special-evidence"><strong>Perché è marcato Speciale</strong>{selected.specialReasons.length ? <ul>{selected.specialReasons.map((reason) => <li key={reason.code}><strong>{reason.label}</strong><span>{reason.hint}</span></li>)}</ul> : <p>Nessun motivo automatico rilevato: probabilmente il flag è stato impostato a mano, oppure la causa originale è già stata risolta. Prova <em>Ricontrolla</em> nell'elenco, oppure togli il flag da qui sotto.</p>}</aside>}<dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.specialRules && <aside><strong>Regole speciali</strong><p>{selected.specialRules}</p></aside>}{selected.notes && <aside><strong>Note</strong><p>{selected.notes}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
+      <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{total} oggetti</strong><small>{total ? `${offset + 1}–${offset + items.length}` : "nessun risultato"}{catalogQuery.isFetching ? " · aggiornamento…" : ""}</small></header>{items.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}>{specialFilter === "special" && <input type="checkbox" aria-label={`Seleziona ${item.name}`} checked={triageSelection.includes(item.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleTriage(item.id)} />}<span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small>{specialFilter === "special" && <SpecialReasonChips item={item} />}</span><b>{item.weight ?? "—"}</b></button>)}{!items.length && !catalogQuery.isFetching && <div className="management-empty-state"><strong>Nessun oggetto</strong><p>Cambia ricerca o filtri.</p></div>}<footer className="managed-item-pager"><button type="button" className="button secondary small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>← Precedenti</button><span>{Math.floor(offset / PAGE_SIZE) + 1} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><button type="button" className="button secondary small" disabled={!catalog.hasMore} onClick={() => setOffset(offset + PAGE_SIZE)}>Successivi →</button></footer></section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}{selected.special ? " · speciale" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p>{selected.special && <aside className="item-special-evidence"><strong>Perché è marcato Speciale</strong>{selected.specialReasons.length ? <ul>{selected.specialReasons.map((reason) => <li key={reason.code}><strong>{reason.label}</strong><span>{reason.hint}</span></li>)}</ul> : <p>Nessun motivo automatico rilevato: probabilmente il flag è stato impostato a mano, oppure la causa originale è già stata risolta. Prova <em>Ricontrolla</em> nell'elenco, oppure togli il flag da qui sotto.</p>}</aside>}<dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.specialRules && <aside><strong>Regole speciali</strong><p>{selected.specialRules}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
     </>}
     {mode === "bulk" && <ItemBulkEditor onApplied={() => setTriageSelection([])} />}
     {mode === "compare" && <LegacyComparerTab onSaved={(item) => { setSelectedId(item.id); void invalidate(); }} />}

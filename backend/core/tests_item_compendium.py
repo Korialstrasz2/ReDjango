@@ -100,7 +100,7 @@ class ItemCompendiumSelectorTests(TestCase):
         )
         self.assertIn("Arma", item["equipmentSlots"])
         self.assertTrue(item["imageUrl"])
-        for authoring_field in ("special", "specialReasons", "model", "temporary", "notes", "metadata", "archived"):
+        for authoring_field in ("special", "specialReasons", "model", "temporary", "metadata", "archived"):
             self.assertNotIn(authoring_field, item)
 
     def test_weapon_category_is_resolved_from_the_type_when_the_relation_is_missing(self):

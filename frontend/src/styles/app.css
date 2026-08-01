@@ -991,6 +991,10 @@ label > input, label > select, label > textarea { display: block; margin-top: 6p
 .resource-actions button:hover:not(:disabled) { background: color-mix(in srgb, var(--resource-color), transparent 48%); color: white; }
 .resource-actions .resource-save:not(:disabled) { border-color: color-mix(in srgb, var(--resource-color), white 30%); background: color-mix(in srgb, var(--resource-color), transparent 56%); }
 .resource-actions button:disabled { opacity: .45; cursor: wait; }
+/* La sola barra del Mana porta il bottone Sifone, quindi ha una colonna in piu'. */
+.resource-card[data-resource="mana"] .resource-actions { grid-template-columns: repeat(6, minmax(22px, 1fr)) minmax(32px, 1.1fr) minmax(32px, 1.1fr) minmax(42px, 1.4fr); }
+.resource-actions .resource-siphon:not(:disabled) { border-color: color-mix(in srgb, var(--resource-color), white 30%); background: color-mix(in srgb, var(--resource-color), transparent 56%); }
+.resource-actions .resource-siphon:disabled { cursor: not-allowed; }
 .resource-card.saving { opacity: .7; }
 .resource-card > .calculation-tooltip { top: calc(100% + 8px); right: 7px; width: min(250px, 80vw); }
 .resource-card > .calculation-tooltip::before { right: 30px; left: auto; }
@@ -1795,6 +1799,18 @@ html[data-reduced-motion="true"] .dice-altar::after { transform: rotate(45deg); 
 .ai-tabs-link:hover { text-decoration: underline; }
 
 .ai-chat { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 9px; min-height: 0; }
+.ai-chat-layout { display: grid; grid-template-columns: minmax(132px, 24%) minmax(0, 1fr); gap: 9px; min-height: 0; }
+.ai-conversation-list { display: grid; align-content: start; gap: 5px; min-width: 0; padding: 8px; overflow-y: auto; border: 1px solid color-mix(in srgb, var(--line), transparent 35%); border-radius: 8px; background: var(--theme-panel-surface); }
+.ai-conversation-list header { display: grid; gap: 1px; padding: 2px 3px 7px; border-bottom: 1px solid color-mix(in srgb, var(--line), transparent 45%); }
+.ai-conversation-list header strong { color: var(--gold); font: 700 .62rem var(--font-display); }
+.ai-conversation-list header small { color: var(--muted); font-size: .5rem; }
+.ai-conversation-list button { display: grid; gap: 3px; min-width: 0; padding: 7px 8px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.ai-conversation-list button:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold), transparent 58%); }
+.ai-conversation-list button.active { border-color: color-mix(in srgb, var(--gold), transparent 42%); background: color-mix(in srgb, var(--gold), transparent 88%); }
+.ai-conversation-list button:disabled { opacity: .55; cursor: default; }
+.ai-conversation-list button strong { overflow: hidden; font-size: .61rem; text-overflow: ellipsis; white-space: nowrap; }
+.ai-conversation-list button small { color: var(--muted); font-size: .48rem; }
+.ai-chat-main { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 9px; min-width: 0; min-height: 0; }
 /* La superficie è obbligatoria: senza, il testo starebbe direttamente
    sull'illustrazione scura del drawer e resterebbe illeggibile. */
 .ai-transcript { display: grid; align-content: start; gap: 9px; min-height: 0; padding: 10px; overflow-y: auto; border: 1px solid color-mix(in srgb, var(--line), transparent 40%); border-radius: 8px; background: var(--theme-panel-surface); }
@@ -1803,9 +1819,23 @@ html[data-reduced-motion="true"] .dice-altar::after { transform: rotate(45deg); 
 .ai-bubble.user { justify-self: end; border-color: color-mix(in srgb, var(--gold), transparent 55%); background: linear-gradient(color-mix(in srgb, var(--gold), transparent 86%), color-mix(in srgb, var(--gold), transparent 86%)), var(--theme-overlay-strong-surface); }
 .ai-bubble.assistant { justify-self: start; }
 .ai-bubble.pending p { color: var(--muted); font-style: italic; }
-.ai-tool-trace { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 7px; padding: 0; list-style: none; }
-.ai-tool-trace li { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--gold), transparent 62%); border-radius: 999px; color: var(--muted); font: 600 .55rem var(--font-display); }
-.ai-tool-trace li > span { color: var(--gold); }
+.ai-bubble footer { display: flex; justify-content: flex-end; margin-top: 6px; }
+.ai-bubble footer button { padding: 2px 4px; border: 0; background: transparent; color: var(--muted); font: 600 .52rem var(--font-display); cursor: pointer; }
+.ai-bubble footer button:hover { color: var(--gold); }
+.ai-answer-text { display: grid; gap: 5px; }
+.ai-answer-text p, .ai-answer-text h4 { margin: 0; white-space: normal; }
+.ai-answer-text h4 { margin-top: 4px; color: var(--gold); font-size: .76rem; }
+.ai-answer-text pre { max-width: 100%; margin: 2px 0; padding: 8px; overflow-x: auto; border: 1px solid color-mix(in srgb, var(--line), transparent 38%); border-radius: 5px; background: #0005; font-size: .64rem; }
+.ai-answer-text code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.ai-markdown-gap { height: 2px; }
+.ai-markdown-list-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px; }
+.ai-markdown-list-item > span:first-child { color: var(--gold); }
+.ai-tool-trace { margin: 0 0 7px; }
+.ai-tool-trace summary { color: var(--muted); font: 600 .55rem var(--font-display); cursor: pointer; }
+.ai-tool-trace ul { display: grid; gap: 4px; margin: 6px 0 0; padding: 0; list-style: none; }
+.ai-tool-trace li { display: grid; gap: 3px; padding: 5px 7px; border: 1px solid color-mix(in srgb, var(--gold), transparent 62%); border-radius: 5px; color: var(--muted); font-size: .55rem; }
+.ai-tool-trace li > strong { color: var(--gold); }
+.ai-tool-trace li code { max-width: 100%; overflow-x: auto; font-size: .5rem; }
 .ai-tool-trace li[data-state="error"] { border-color: var(--slot-invalid); }
 .ai-suggestions { display: grid; gap: 9px; padding: 10px 2px; }
 .ai-suggestions .button.small { text-align: left; }
@@ -1835,6 +1865,9 @@ html[data-reduced-motion="true"] .dice-altar::after { transform: rotate(45deg); 
 .ai-provider-list small[data-state="off"] { color: var(--slot-invalid); }
 .ai-provider-form { display: grid; gap: 10px; }
 .ai-provider-form input, .ai-provider-form select { width: 100%; }
+.ai-provider-health { padding: 9px 11px; border: 1px solid color-mix(in srgb, var(--slot-invalid), transparent 42%); border-radius: 6px; background: color-mix(in srgb, var(--slot-invalid), transparent 92%); }
+.ai-provider-health strong { color: color-mix(in srgb, var(--slot-invalid), white 28%); font-size: .68rem; }
+.ai-provider-health ul { display: grid; gap: 3px; margin: 5px 0 0; padding-left: 17px; color: var(--muted); font-size: .6rem; }
 .ai-provider-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 9px; }
 .ai-toggle { display: flex; align-items: start; gap: 8px; }
 .ai-toggle input { width: auto; margin-top: 3px; }
@@ -1845,6 +1878,10 @@ html[data-reduced-motion="true"] .dice-altar::after { transform: rotate(45deg); 
 .ai-tool-list span { color: var(--muted); font-size: .62rem; }
 @media (max-width: 900px) {
   .ai-management-layout { grid-template-columns: 1fr; }
+  .ai-chat-layout { grid-template-columns: 1fr; }
+  .ai-conversation-list { display: flex; max-height: 96px; overflow-x: auto; overflow-y: hidden; }
+  .ai-conversation-list header { min-width: 105px; border-right: 1px solid color-mix(in srgb, var(--line), transparent 45%); border-bottom: 0; }
+  .ai-conversation-list button { min-width: 110px; }
 }
 
 /* Campaign soundtrack: library drawer, shared transport and top-bar miniature */

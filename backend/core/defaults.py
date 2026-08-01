@@ -1150,15 +1150,6 @@ V2_EFFECT_CATEGORY_DEFAULTS = [
 ]
 
 
-V2_PLACEHOLDER_ITEMS = [
-    {"nome": "Slot vuoto", "icona": "circle", "tipo_1": "placeholder"},
-    {"nome": "Nessuna arma", "icona": "sword", "tipo_1": "placeholder", "tipo_2": "arma"},
-    {"nome": "Nessuna armatura", "icona": "shield", "tipo_1": "placeholder", "tipo_2": "armatura"},
-    {"nome": "Nessuno scudo", "icona": "shield-off", "tipo_1": "placeholder", "tipo_2": "scudo"},
-    {"nome": "Nessun accessorio", "icona": "gem", "tipo_1": "placeholder", "tipo_2": "accessorio"},
-]
-
-
 V2_EMPTY_OBJECT_NAMES = {
     "zaino": "Template - Zaino vuoto",
     "faretra": "Template - Faretra vuota",
@@ -1484,7 +1475,6 @@ V2_POC_ITEM_DEFAULTS = [
         "lv_loot": "1-4",
         "regione_loot": "Cyrodiil",
         "peso_regione": 1.2,
-        "alchemy_profile": {"result": "cura_minore", "healing": 6},
     },
     {
         "nome": "POC - Sali di luna",
@@ -1500,7 +1490,6 @@ V2_POC_ITEM_DEFAULTS = [
         "lv_loot": "1-5",
         "regione_loot": "High Rock",
         "peso_regione": 0.9,
-        "alchemy_profile": {"traits": ["mana", "concentrazione"]},
     },
     {
         "nome": "POC - Kit da scasso",
@@ -1546,7 +1535,6 @@ V2_POC_ITEM_DEFAULTS = [
         "lv_loot": "1-4",
         "regione_loot": "Skyrim",
         "peso_regione": 1.0,
-        "alchemy_profile": {"result": "energia_minore", "energy": 4},
         "effects": [{"target": "energia", "operation": "add", "value": 2}],
     },
     {

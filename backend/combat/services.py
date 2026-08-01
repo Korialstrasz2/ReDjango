@@ -25,7 +25,7 @@ from backend.characters.models import (
 from backend.characters.services.commands import apply_effect, switch_primary_weapon
 from backend.characters.services.inventory_rules import active_equipped_weapon, equipment_dual_wield, item_weapon_profile, normalize_item_types, sort_container_items_by_weight
 from backend.characters.services.refresh_personaggio import refresh_personaggio
-from backend.characters.services.resources import calculate_energy_spend
+from backend.characters.services.resources import accrue_mana_siphon, calculate_energy_spend
 from backend.core.api import ApiError
 from backend.core.models import Effetto, Giocatore, Oggetto, Skill, Unit
 from backend.core.security import effective_role, has_minimum_role
@@ -781,8 +781,12 @@ def update_combat_resource(user, giocatore, payload):
     maximum = max(10, int(float(totals.get(resource) or 0))) if resource == "stanchezza" else max(0, int(float(totals.get(resource) or 0)))
     current = max(0, min(maximum, int(payload["current"])))
     stored_value = current if resource == "stanchezza" else maximum - current
+    spent_before = int(getattr(character, field_name) or 0)
     setattr(character, field_name, stored_value)
     character.save(update_fields=[field_name, "updated_at"])
+    # Solo una spesa vera alimenta il sifone: rialzare la barra non lo riempie.
+    if resource == "mana" and stored_value - spent_before > 0:
+        accrue_mana_siphon(character, stored_value - spent_before)
     if resource == "stanchezza":
         refresh_personaggio(character)
         character.refresh_from_db()
@@ -1402,6 +1406,8 @@ def commit_plan_action(payload):
     character.potere_speso += action.cost_power
     character.stanchezza_accumulata += action.cost_fatigue + (energy_spend.fatigue_added if energy_spend else 0)
     character.save(update_fields=["danno", "mana_speso", "energia_spesa", "potere_speso", "stanchezza_accumulata", "updated_at"])
+    if action.cost_mana:
+        accrue_mana_siphon(character, action.cost_mana)
     if action.cost_fatigue or (energy_spend and energy_spend.fatigue_added):
         refresh_personaggio(character)
         character.refresh_from_db()

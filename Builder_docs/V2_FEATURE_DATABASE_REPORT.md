@@ -22,7 +22,7 @@ The highest-risk current models that should not simply disappear are handled by 
 - `Formule` -> `GlobalModifiers.formulae`.
 - `ArchetipoNPC` + `NPCArchetypeSkillUnlock` + `SkillNpc` + `UnitLore` -> `Unit`.
 - `Regione` + `Citta` -> `Negozio`.
-- `IngredientiAlchimia` -> `Oggetto.alchemy_profile`.
+- `IngredientiAlchimia` -> `Oggetto.alchemy_profile`, then dropped entirely in migration `0049` (no rule ever read the column).
 - `GlobalImage` + `CampaignMap` -> `UploadedImage` + `DatiMappa`.
 - `LoreCampagna` -> `CampaignLoreEntry` + `CampaignLoreRelation`.
 
@@ -71,9 +71,9 @@ Conclusion: for v2, standalone `Regione` and `Citta` can be removed if `Negozio`
 | Items catalog | `Oggetto`, `Tipo_Arma` | `Oggetto`, `TipoArma` | Supported | V2 keeps items and weapon categories. |
 | Item effects | `Oggetto.effetto_1...effetto_15` | `Oggetto.effects` | Redesigned | Item effects become a structured list instead of fifteen text columns. |
 | Regional loot weighting | `Oggetto.regione`, `Oggetto.peso_regione` | `Oggetto.regione_loot`, `Oggetto.peso_regione` | Supported | This does not need `Regione` as a table. |
-| Alchemy ingredient catalog | `IngredientiAlchimia` | `Oggetto.alchemy_profile` | Redesigned | Ingredients/reagents become item metadata. |
+| Alchemy ingredient catalog | `IngredientiAlchimia` | — | Dropped | Became `Oggetto.alchemy_profile`, a schemaless JSON column no rule ever read; removed in migration `0049`. Ingredients are ordinary items classified by `tipo_*` until crafting ships with real tables. |
 | Reagent bag / alchemy state | `Alchimia` | `BorsaReagenti` | Redesigned | Same feature, clearer name and flexible JSON counts. |
-| Crafting notes and crafting UI | `Note`, `Alchimia`, `IngredientiAlchimia`, `Oggetto` | `Note.sezioni`, `BorsaReagenti`, `Oggetto.crafting_profile`, `Oggetto.alchemy_profile` | Redesigned | V2 supports alchemy/forging/enchanting but with item metadata and structured notes. |
+| Crafting notes and crafting UI | `Note`, `Alchimia`, `IngredientiAlchimia`, `Oggetto` | `Note.sezioni`, `BorsaReagenti` | Postponed | The item-side JSON profiles were dropped in migration `0049`; only the reagent bag and the character notes survive. Alchemy/forging/enchanting need a dedicated schema, not free-form columns on `Oggetto`. |
 | Inventory backpack | `Zaino` with `slot_1...slot_50` | `ContenitoreInventario`, `SlotInventario` | Redesigned | V2 keeps zaino as a container type, avoiding fixed slot columns. |
 | Quiver | `Faretra` with `slot_1...slot_50` | `ContenitoreInventario`, `SlotInventario` | Redesigned | V2 keeps faretra as a container type, with rules for arrows/projectiles. |
 | Equipment loadout | `Equip` with named FK fields | `Equipaggiamento`, `SlotEquipaggiamento` | Redesigned | V2 keeps named equipment slots but makes slots data-driven. |
@@ -97,7 +97,7 @@ Conclusion: for v2, standalone `Regione` and `Citta` can be removed if `Negozio`
 | Guides | `Guida` | `Guida` | Supported | Kept, with category/order added. |
 | Loading/world curiosities | `Curiosita` | `Curiosita` | Supported | Kept. |
 | Master ideas scratchpad | `Master Ideas.txt` file | `Guida`, `CampaignLoreEntry`, or `DatiCampagna.state` | Redesigned | Current feature is file-backed, not DB-backed; v2 should store durable ideas in campaign/lore or guide data. |
-| Altars/enchanting helper | `Oggetto` filtered by item type | `Oggetto`, `Oggetto.crafting_profile` | Supported | Altars remain ordinary items with crafting/enchanting metadata. |
+| Altars/enchanting helper | `Oggetto` filtered by item type | `Oggetto` | Postponed | Altars remain ordinary items, but the enchanting metadata column was dropped in migration `0049` and no replacement exists yet. |
 | Unit designer / unit tool | `Unit`, `SkillNpc`, `Oggetto`, `Formule`, `UnitLore` | `Unit`, `Oggetto`, `GlobalModifiers`, `UploadedImage` | Redesigned | Unit holds actions, lore, archetype data, unlocks, equipment profiles, and stat profiles. |
 | Import unit as character | `Unit`, `NPC`, `Equip`, `Zaino`, `Note`, `Alchimia`, `Faretra`, `Formule`, `SkillNpc` | `Unit`, `Personaggio`, inventory/equipment tables, `Note`, `BorsaReagenti`, `GlobalModifiers` | Supported | V2 supports the workflow with clearer target structures. |
 | Unit lore/bestiary page | `UnitLore`, `Unit`, image fields | `Unit.lore_description`, `Unit.lore_image_id`, `UploadedImage` | Redesigned | Lore and image data are merged into `Unit`. |

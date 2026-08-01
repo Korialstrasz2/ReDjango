@@ -294,7 +294,7 @@ Weapon category metadata.
 
 ### Oggetto
 
-Item catalog. `IngredientiAlchimia` is merged here.
+Item catalog. `IngredientiAlchimia` was originally merged here as `alchemy_profile`; migration `0049` dropped that column together with `crafting_profile` and `notes`. All three were schemaless JSON/text bags that no rule ever read, so they only invited authors to write rules the engine would silently ignore. Crafting will bring its own explicit tables when it is actually built.
 
 | Field | Type | Why it exists |
 |---|---|---|
@@ -319,10 +319,7 @@ Item catalog. `IngredientiAlchimia` is merged here.
 | `pa_per_attacco` | integer nullable | Stores item-specific attack action cost. |
 | `effetto_1...effetto_8` | string | Preserves Elder effect text losslessly for migration review; it does not run calculations. |
 | `effects` | JSON | Stores validated structured item effects used by calculations. |
-| `alchemy_profile` | JSON | Merged `IngredientiAlchimia`; stores reagent type, color, tier, category, and crafting metadata. |
-| `crafting_profile` | JSON | Stores forge/enchant/alchemy requirements, outputs, and tool interactions. |
 | `media_id` | FK to `UploadedImage`, nullable | Allows item images without hardcoding paths. |
-| `notes` | text nullable | Designer-facing item notes. |
 
 ### OpzioneTipoOggetto
 
@@ -845,7 +842,7 @@ AI run observability is deliberately operational rather than relational: one str
 | `SkillProfileTags` | Merged into `Skill.profile_tags`. |
 | `Formule` | Merged into `GlobalModifiers.formulae`; create `Formule_base`. |
 | `Alchimia` | Renamed to `BorsaReagenti`. |
-| `IngredientiAlchimia` | Merged into `Oggetto.alchemy_profile`. |
+| `IngredientiAlchimia` | Dropped. It was merged into `Oggetto.alchemy_profile`, and migration `0049` removed that column: nothing ever read it. |
 | `Regione` | Merged into `Negozio.regione_*` fields. |
 | `Citta` | Merged into `Negozio.citta_*` fields. |
 | `ArchetipoNPC` | Merged into `Unit` archetype fields. |

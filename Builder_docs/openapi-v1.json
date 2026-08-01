@@ -2163,6 +2163,7 @@
                     "campaign.updateSharedCoins": "#/components/schemas/SharedCoinsActionSchema",
                     "campaign.weather.reroll": "#/components/schemas/CampaignWeatherRerollActionSchema",
                     "character.adjustQuickStat": "#/components/schemas/QuickStatActionSchema",
+                    "character.recoverManaSiphon": "#/components/schemas/ManaSiphonActionSchema",
                     "character.rest": "#/components/schemas/RestActionSchema",
                     "character.updateCoins": "#/components/schemas/CoinsActionSchema",
                     "character.updateOverview": "#/components/schemas/OverviewActionSchema",
@@ -2274,6 +2275,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/ResourceActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ManaSiphonActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/QuickStatActionSchema"
@@ -3944,18 +3948,6 @@
             "title": "Weaponprofile",
             "type": "object"
           },
-          "alchemyProfile": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Alchemyprofile",
-            "type": "object"
-          },
-          "craftingProfile": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Craftingprofile",
-            "type": "object"
-          },
           "mediaId": {
             "anyOf": [
               {
@@ -3966,11 +3958,6 @@
               }
             ],
             "title": "Mediaid"
-          },
-          "notes": {
-            "default": "",
-            "title": "Notes",
-            "type": "string"
           },
           "metadata": {
             "additionalProperties": true,
@@ -4184,6 +4171,11 @@
             },
             "title": "Calculation",
             "type": "array"
+          },
+          "siphon": {
+            "default": 0,
+            "title": "Siphon",
+            "type": "integer"
           }
         },
         "required": [
@@ -5352,18 +5344,6 @@
               }
             ],
             "title": "Actionpointcost"
-          },
-          "alchemyProfile": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Alchemyprofile",
-            "type": "object"
-          },
-          "craftingProfile": {
-            "additionalProperties": true,
-            "default": {},
-            "title": "Craftingprofile",
-            "type": "object"
           },
           "equipmentSlots": {
             "default": [],
@@ -11220,6 +11200,54 @@
           "values"
         ],
         "title": "LoreValuesPayloadSchema",
+        "type": "object"
+      },
+      "ManaSiphonActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "character.recoverManaSiphon",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ManaSiphonPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ManaSiphonActionSchema",
+        "type": "object"
+      },
+      "ManaSiphonPayloadSchema": {
+        "properties": {
+          "characterId": {
+            "title": "Characterid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "characterId"
+        ],
+        "title": "ManaSiphonPayloadSchema",
         "type": "object"
       },
       "ManagedBackupCreateActionSchema": {

@@ -789,8 +789,6 @@ class Oggetto(V2Model):
     )
     effects = models.JSONField(default=list, blank=True)
     weapon_profile = models.JSONField(default=dict, blank=True)
-    alchemy_profile = models.JSONField(default=dict, blank=True)
-    crafting_profile = models.JSONField(default=dict, blank=True)
     media = models.ForeignKey(
         "media_library.UploadedImage",
         on_delete=models.SET_NULL,
@@ -798,7 +796,6 @@ class Oggetto(V2Model):
         blank=True,
         related_name="oggetti",
     )
-    notes = models.TextField(blank=True)
 
     class Meta:
         ordering = ["numero_ordine", "nome"]

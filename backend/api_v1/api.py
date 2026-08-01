@@ -14,7 +14,7 @@ from backend.characters.competence_selectors import competence_catalog_payload
 from backend.characters.alchemy_selectors import alchemy_creation_payload
 from backend.characters.note_selectors import character_notes_payload
 from backend.characters.selectors import effect_catalog_payload, ordered_personaggi_for, personaggio_detail, serialize_item
-from backend.characters.services.commands import adjust_quick_stat, apply_effect, assign_item, rest_character, swap_items, switch_primary_weapon, update_overview, update_resource
+from backend.characters.services.commands import adjust_quick_stat, apply_effect, assign_item, recover_mana_from_siphon, rest_character, swap_items, switch_primary_weapon, update_overview, update_resource
 from backend.characters.services.inventory_rules import INVENTORY_GROUPS
 from backend.characters.services.coins import update_carried_coins, update_shared_coins
 from backend.characters.services.extended_inventory import (
@@ -881,6 +881,10 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             character = update_resource(payload["characterId"], payload["resource"], payload["current"])
             data = {"character": _character_sheet_payload(character, user, giocatore)}
             message = "Risorsa aggiornata."
+        elif action == "character.recoverManaSiphon":
+            character = recover_mana_from_siphon(payload["characterId"])
+            data = {"character": _character_sheet_payload(character, user, giocatore)}
+            message = "Mana recuperato dal sifone."
         elif action == "character.adjustQuickStat":
             character = adjust_quick_stat(payload["characterId"], payload["stat"], payload["delta"])
             data = {"character": _character_sheet_payload(character, user, giocatore)}

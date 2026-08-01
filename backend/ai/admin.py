@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AIAgentProfile, AIProvider
+from .models import AIAgentProfile, AIConversation, AIExecutionRun, AIProvider
 
 
 @admin.register(AIProvider)
@@ -36,3 +36,23 @@ class AIAgentProfileAdmin(admin.ModelAdmin):
     list_filter = ("minimum_role", "is_enabled", "is_default")
     search_fields = ("name", "slug", "description", "instructions")
     ordering = ("order", "name")
+
+
+@admin.register(AIConversation)
+class AIConversationAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "agent", "updated_at")
+    search_fields = ("title", "user__username")
+    readonly_fields = ("created_at", "updated_at", "history", "transcript")
+    ordering = ("-updated_at",)
+
+
+@admin.register(AIExecutionRun)
+class AIExecutionRunAdmin(admin.ModelAdmin):
+    list_display = ("id", "kind", "status", "user", "provider", "created_at", "completed_at")
+    list_filter = ("kind", "status", "provider")
+    search_fields = ("id", "user__username")
+    readonly_fields = (
+        "id", "created_at", "updated_at", "request_payload", "result", "error",
+        "started_at", "completed_at",
+    )
+    ordering = ("-created_at",)

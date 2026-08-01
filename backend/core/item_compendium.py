@@ -611,8 +611,6 @@ def _compendium_item(item: Oggetto, *, weapon_keys: dict[str, str], slots: dict[
         "weaponCategory": weapon_category,
         "weaponProfile": profile if isinstance(profile, dict) else {},
         "actionPointCost": item.pa_per_attacco,
-        "alchemyProfile": item.alchemy_profile if isinstance(item.alchemy_profile, dict) else {},
-        "craftingProfile": item.crafting_profile if isinstance(item.crafting_profile, dict) else {},
         "equipmentSlots": sorted(
             {
                 slots[family]

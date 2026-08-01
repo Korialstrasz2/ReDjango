@@ -49,7 +49,8 @@ class OpenAIImageProvider:
         else:
             endpoint = f"{base}/images/generations"
 
-        body = post_json(endpoint, payload, self._headers())
+        timeout = max(1, int(getattr(self, "request_timeout", 180) or 180))
+        body = post_json(endpoint, payload, self._headers(), timeout=timeout)
         entries = body.get("data") or []
         image = (entries[0] if entries else {}).get("b64_json") or ""
         if not image:
@@ -89,7 +90,8 @@ class StableDiffusionImageProvider:
         else:
             endpoint = f"{base}/sdapi/v1/txt2img"
 
-        body = post_json(endpoint, payload, {})
+        timeout = max(1, int(getattr(self, "request_timeout", 180) or 180))
+        body = post_json(endpoint, payload, {}, timeout=timeout)
         images = body.get("images") or []
         if not images:
             raise ApiError("ai.image_missing", "Il server non ha restituito un'immagine.", status=502)
