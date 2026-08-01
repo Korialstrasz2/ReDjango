@@ -462,3 +462,65 @@ export type BackupManagementData = {
   };
   inspection?: BackupInspection;
 };
+
+/* Modifica di massa del catalogo oggetti. Le liste di campi, operatori e scelte
+   arrivano da /api/v1/management/items/bulk-fields: il client non conosce lo
+   schema, lo riceve, così un tipo oggetto aggiunto in Amministrazione compare
+   qui senza toccare il frontend. */
+
+export type BulkFieldKind = "text" | "longText" | "integer" | "number" | "boolean" | "rarity" | "itemType" | "weaponType";
+
+export type BulkOperatorOption = { value: string; label: string };
+
+export type BulkField = {
+  name: string;
+  label: string;
+  kind: BulkFieldKind;
+  group: string;
+  hint: string;
+  nullable: boolean;
+  choices: Array<{ value: string; label: string }>;
+  filterOperators: BulkOperatorOption[];
+  actionOperators: BulkOperatorOption[];
+};
+
+export type BulkFieldCatalog = {
+  fields: BulkField[];
+  valuelessFilterOperators: string[];
+  valuelessActionOperators: string[];
+  replacementActionOperators: string[];
+  roundingModes: BulkOperatorOption[];
+  previewScanCap: number;
+};
+
+export type BulkFilterRow = { field: string; operator: string; value: string };
+
+export type BulkActionRow = {
+  field: string;
+  operator: string;
+  value: string;
+  replacement: string;
+  rounding: string;
+  decimals: number;
+};
+
+export type BulkChange = { field: string; label: string; before: string; after: string };
+
+export type BulkPreview = {
+  total: number;
+  scanned: number;
+  truncated: boolean;
+  changed: number;
+  sample: Array<{ id: number; name: string; changes: BulkChange[] }>;
+  issues: Array<{ id: number | null; name: string; field: string; message: string }>;
+  filters: BulkFilterRow[];
+  actions: BulkActionRow[];
+  token: string;
+};
+
+export type BulkApplyResult = {
+  matched: number;
+  updated: number;
+  unchanged: number;
+  refreshedCharacters: number;
+};

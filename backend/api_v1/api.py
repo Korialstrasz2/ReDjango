@@ -55,6 +55,7 @@ from backend.core.item_compendium import (
     item_compendium_page,
     item_compendium_reference,
 )
+from backend.core.item_bulk_services import apply_bulk_items, bulk_field_catalog, preview_bulk_items
 from backend.core.item_selectors import item_catalog_payload
 from backend.core.item_services import (
     archive_item,
@@ -503,6 +504,23 @@ def managed_items(
             sort=sort.strip(),
         ),
     )
+
+
+@api.get(
+    "/management/items/bulk-fields",
+    response={200: ManagementEnvelopeSchema, 403: ErrorEnvelopeSchema},
+    tags=["management"],
+)
+def managed_item_bulk_fields(request: HttpRequest):
+    """Field, operator and choice metadata for the batch editor.
+
+    Served instead of hard-coded in the client so the item types, weapon types
+    and rarities offered by the batch editor are always the ones the catalogue
+    actually accepts.
+    """
+    user, giocatore = _identity(request)
+    require_game_manager(user, giocatore)
+    return _envelope(request, bulk_field_catalog())
 
 
 @api.get(
@@ -959,6 +977,30 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
             result = recheck_items_special(user, giocatore, payload.get("itemIds", []))
             data = {"management": result}
             message = f"{result['cleared']} oggetti non sono più Speciali, {result['stillSpecial']} hanno ancora un motivo aperto."
+        elif action == "items.bulkPreview":
+            preview = preview_bulk_items(
+                user,
+                giocatore,
+                payload.get("filters", []),
+                payload.get("actions", []),
+                limit=payload.get("limit", 25),
+            )
+            data = {"management": {"bulkPreview": preview}}
+            message = (
+                f"{preview['changed']} oggetti su {preview['total']} cambierebbero."
+                if preview["changed"]
+                else "Nessun oggetto cambierebbe con questi filtri."
+            )
+        elif action == "items.bulkApply":
+            result = apply_bulk_items(
+                user,
+                giocatore,
+                payload.get("filters", []),
+                payload.get("actions", []),
+                payload.get("token", ""),
+            )
+            data = {"management": {"bulkApply": result}, "catalog": item_catalog_payload(include_archived=True)}
+            message = f"{result['updated']} oggetti aggiornati su {result['matched']} selezionati."
         elif action == "items.compareSave":
             item, created = save_compared_item(
                 user,

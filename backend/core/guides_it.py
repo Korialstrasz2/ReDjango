@@ -18,7 +18,7 @@ from .defaults import (
 )
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-07-31-nuovo-pg-v2"
+V2_GUIDE_DEFAULT_VERSION = "2026-08-01-glossario-meccaniche"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
@@ -178,7 +178,7 @@ CHARACTER_VARIABLE_GROUPS = (
     (
         "Mana e conversioni magiche",
         (
-            ("sifone_di_mana", "Sifone di Mana", "Percentuale del Mana speso che il regolamento originario accumula nel sifone, arrotondata per difetto, per un successivo recupero."),
+            ("sifone_di_mana", "Sifone di Mana", "Percentuale del Mana lanciato che finisce nel sifone del personaggio, arrotondata per difetto. Il sifone raccoglie una quota del Mana speso dal personaggio stesso e da chi lancia nel suo raggio d'azione, e la conserva in una riserva separata (campo «Mana nel sifone») da cui il Mana torna disponibile. Il raggio dipende dalla fonte del sifone. Vedi il glossario delle meccaniche nella guida «Regole Varie»."),
             ("ogni_en_x_mana", "Mana ogni N energia", "Quantità di Mana richiesto che costa 1 Energia quando lanci una magia; il costo viene arrotondato per eccesso."),
             ("ogni_pa_x_mana", "Mana ogni N PA", "Quantità di Mana richiesto che costa 1 PA quando lanci una magia; il costo viene arrotondato per eccesso."),
             ("sconto_mana_per_potere", "Sconto Mana per Potere", "Nell'anteprima costi di una magia, Mana sottratto al requisito per ogni punto di Potere investito nel lancio (speso o messo a disposizione liberamente, la somma dei due conta)."),
@@ -911,8 +911,328 @@ def _annotated_elder_rules_html() -> str:
     return re.sub(r"<h([1-3])\b[^>]*>(.*?)</h\1>", add_note, source, flags=re.IGNORECASE | re.DOTALL)
 
 
+def mechanics_glossary_blocks() -> list[dict[str, Any]]:
+    """Glossario dei termini che oggetti e abilità danno per scontati.
+
+    Le voci descrivono la meccanica, non i valori: numeri, costi e durate
+    restano scritti sul singolo oggetto o sulla singola abilità, perché
+    cambiano a ogni livello del pezzo.
+    """
+    return [
+        {"type": "heading", "text": "Glossario delle meccaniche"},
+        {
+            "type": "paragraph",
+            "text": (
+                "Anelli, mantelli, pergamene e abilità usano un vocabolario comune che il resto "
+                "del regolamento dava per noto. Qui c'è il significato di ogni termine: i valori "
+                "concreti (metri, durate, costi, numero di usi) restano scritti sul singolo pezzo, "
+                "perché cambiano a ogni livello."
+            ),
+        },
+        {"type": "heading", "text": "Danno e difese magiche"},
+        {
+            "type": "entries",
+            "items": [
+                {
+                    "title": "Danno puro",
+                    "meta": "Tipo di danno",
+                    "note": (
+                        "Danno che annulla qualsiasi resistenza e qualsiasi riduzione danni: arriva "
+                        "sempre per intero. Non è una proprietà che si possa aggiungere a un colpo "
+                        "qualunque: armi normali e incantesimi normali non sono in grado di infliggere "
+                        "danno puro. Lo infliggono soltanto le fonti che lo dichiarano esplicitamente, "
+                        "come il Raggio arcano."
+                    ),
+                },
+                {
+                    "title": "Scudo arcano",
+                    "meta": "Difesa attivabile",
+                    "note": (
+                        "Assorbe per intero un numero prefissato di attacchi: l'attacco assorbito non "
+                        "infligge nulla, indipendentemente da quanto avrebbe fatto. L'oggetto indica "
+                        "quanti attacchi copre."
+                    ),
+                },
+                {
+                    "title": "Barriera magica e Barriera fisica",
+                    "meta": "Difesa attivabile",
+                    "note": (
+                        "Permettono di spendere Potere per ridurre il danno in arrivo: la barriera "
+                        "magica sul danno magico, la barriera fisica sul danno fisico. L'oggetto indica "
+                        "quanto danno viene ridotto per ogni punto di Potere speso."
+                    ),
+                },
+                {
+                    "title": "Immagini speculari",
+                    "meta": "Difesa attivabile",
+                    "note": (
+                        "Crea copie illusorie del personaggio che possono assorbire al posto suo gli "
+                        "attacchi indirizzati contro di lui. L'oggetto indica quante immagini crea e "
+                        "quanta Energia e quanti PA costano."
+                    ),
+                },
+                {
+                    "title": "Raggio arcano",
+                    "meta": "Attacco a distanza",
+                    "note": (
+                        "Un raggio che colpisce a distanza e infligge danno puro. L'oggetto indica "
+                        "gittata, danno, costo e quante volte è utilizzabile."
+                    ),
+                },
+            ],
+        },
+        {"type": "heading", "text": "Scuole di magia"},
+        {
+            "type": "paragraph",
+            "text": (
+                "Ogni incantesimo appartiene a una scuola. La scuola è volutamente un'etichetta ampia: "
+                "serve a raggruppare abilità, vesti, pergamene e anelli, non a imporre limiti rigidi su "
+                "che cosa un incantesimo possa fare."
+            ),
+        },
+        {
+            "type": "entries",
+            "items": [
+                {"title": "Alterazione", "meta": "", "note": "Modifica le proprietà fisiche di ciò che esiste: peso, forma, solidità, serrature, oggetti nascosti."},
+                {"title": "Distruzione", "meta": "", "note": "Magia offensiva diretta: elementi, raggi, esplosioni, danno inflitto sul posto."},
+                {"title": "Evocazione", "meta": "", "note": "Chiama qui armi, armature, risorse e creature. Ha regole proprie nella sezione Evocazione di questa guida."},
+                {"title": "Illusione", "meta": "", "note": "Agisce sui sensi e sulla mente: apparenze, suoni, paura, frenesia, controllo del comportamento."},
+                {"title": "Maledizioni", "meta": "", "note": "Indebolisce e affligge il bersaglio nel tempo: malus, aure sfavorevoli, sottrazione di risorse vitali."},
+                {"title": "Misticismo", "meta": "", "note": "Magia che agisce sulla magia stessa e sui piani: riflettere, copiare, nascondere, percepire, cambiare stato."},
+                {"title": "Negromanzia", "meta": "", "note": "Opera su morte e cadaveri: rianimare, parlare con i morti, oscurità, decomposizione."},
+                {"title": "Recupero", "meta": "", "note": "Ripristina e sostiene: cura, stabilizza, rimuove stati negativi, restituisce risorse."},
+            ],
+        },
+        {
+            "type": "callout",
+            "title": "Progressione degli incantesimi",
+            "text": (
+                "Per gli incantesimi la scala è base → apprendista → maestro, e indica quanto è avanzato "
+                "l'incantesimo, non il personaggio. Pergamene e vesti che riportano ranghi diversi seguono "
+                "la propria scala e non vanno confusi con questa."
+            ),
+        },
+        {"type": "heading", "text": "Lanciare gli incantesimi"},
+        {
+            "type": "entries",
+            "items": [
+                {
+                    "title": "Cast silenzioso",
+                    "meta": "Modo di lancio",
+                    "note": "Permette di lanciare incantesimi senza pronunciare la formula: funziona anche da Muto o quando parlare tradirebbe la posizione.",
+                },
+                {
+                    "title": "Cast immobile",
+                    "meta": "Modo di lancio",
+                    "note": "Permette di lanciare incantesimi senza compiere gesti: funziona anche legati, immobilizzati o con le mani occupate.",
+                },
+                {
+                    "title": "Concast",
+                    "meta": "Lancio condiviso",
+                    "note": (
+                        "Toccando un alleato, uno dei due lancia usando le risorse dell'altro: l'alleato "
+                        "può usare nel proprio turno Mana, Energia, Potere e PA del caster, oppure il "
+                        "caster lancia subito usando quelli dell'alleato."
+                    ),
+                },
+                {
+                    "title": "Recast",
+                    "meta": "Ripetizione",
+                    "note": (
+                        "Permette di rilanciare gratuitamente un incantesimo identico a uno già lanciato, "
+                        "pagando un costo ridotto e diverso da quello originale. L'oggetto indica il tetto "
+                        "di Mana dell'incantesimo ripetibile e la cadenza d'uso."
+                    ),
+                },
+                {
+                    "title": "Counterspell",
+                    "meta": "Reazione",
+                    "note": "Annulla un incantesimo mentre viene lanciato, al costo indicato dalla fonte. L'incantesimo annullato non ha alcun effetto.",
+                },
+                {
+                    "title": "Contingenza",
+                    "meta": "Lancio differito",
+                    "note": (
+                        "Si lancia adesso un incantesimo che resta pronto e scatta da solo quando si "
+                        "verifica una condizione stabilita al momento del lancio, entro 24 ore. Il Mana "
+                        "si paga al momento della preparazione. La fonte indica quanti incantesimi si "
+                        "possono tenere pronti."
+                    ),
+                },
+                {
+                    "title": "Range spell",
+                    "meta": "Gittata",
+                    "note": (
+                        "Moltiplica la gittata degli incantesimi. Esiste in due varianti: «singola», che "
+                        "vale per il solo incantesimo collegato all'oggetto, e per scuola, che vale per "
+                        "tutti gli incantesimi di quella scuola."
+                    ),
+                },
+                {
+                    "title": "Sigilli e Rune",
+                    "meta": "Magia preparata",
+                    "note": (
+                        "Un sigillo si prepara in 24 ore pagando un sovrapprezzo di Mana e si lancia a "
+                        "parte, senza sommarsi al Mana del momento. Una runa si lascia sul pavimento ed "
+                        "esplode quando viene calpestata: è visibile e non si può applicare su un nemico."
+                    ),
+                },
+            ],
+        },
+        {"type": "heading", "text": "Mana condiviso e recuperato"},
+        {
+            "type": "entries",
+            "items": [
+                {
+                    "title": "Ponte di mana",
+                    "meta": "Trasferimento",
+                    "note": (
+                        "Due personaggi consenzienti si scambiano Mana liberamente, in entrambe le "
+                        "direzioni. Costa di norma 3 PA ogni 10 Mana trasferiti e richiede il contatto "
+                        "(portata: tocco)."
+                    ),
+                },
+                {
+                    "title": "Sifone di mana",
+                    "meta": "Riserva",
+                    "note": (
+                        "Raccoglie in una riserva separata una piccola percentuale del Mana lanciato dal "
+                        "personaggio e da chi lancia nel suo raggio d'azione; il raggio dipende dalla fonte "
+                        "del sifone. Il Mana accumulato torna poi disponibile. La percentuale è la variabile "
+                        "«Sifone di Mana» e la riserva è il campo «Mana nel sifone» della scheda."
+                    ),
+                },
+            ],
+        },
+        {
+            "type": "callout",
+            "title": "Il sifone si tiene a mano",
+            "text": (
+                "La variabile Sifone di Mana è calcolata dalla scheda, ma il motore non riempie da solo la "
+                "riserva: «Mana nel sifone» è un contatore che si aggiorna a mano dalla gestione personaggio."
+            ),
+        },
+        {"type": "heading", "text": "Portata, distanze e spostamento"},
+        {
+            "type": "entries",
+            "items": [
+                {
+                    "title": "Touch",
+                    "meta": "Portata",
+                    "note": (
+                        "La portata dell'abilità o dell'incantesimo è il contatto: il bersaglio dev'essere "
+                        "adiacente e va toccato. Alcune abilità estendono esplicitamente la portata di un "
+                        "effetto che nasce a tocco."
+                    ),
+                },
+                {
+                    "title": "Casella, esagono, metro",
+                    "meta": "Distanze",
+                    "note": (
+                        "Casella ed esagono sono la stessa cosa: la cella della mappa di combattimento. Dal "
+                        "centro di un esagono al centro di quello adiacente c'è 1 metro, quindi una casella "
+                        "vale un metro e le tre parole sono intercambiabili."
+                    ),
+                },
+                {
+                    "title": "Blink",
+                    "meta": "Spostamento",
+                    "note": "Teletrasporto istantaneo a corto raggio. L'oggetto indica la distanza coperta e il costo in PA, Mana ed Energia.",
+                },
+                {
+                    "title": "Mark e Recall",
+                    "meta": "Spostamento",
+                    "note": (
+                        "Mark fissa un punto di richiamo nel luogo in cui ci si trova; Recall riporta il "
+                        "personaggio al punto marcato. Sono due usi distinti e vanno pagati entrambi."
+                    ),
+                },
+                {
+                    "title": "Slowfall",
+                    "meta": "Movimento",
+                    "note": "Rallenta la caduta del bersaglio fino a circa 10 km/h, evitando i normali danni da caduta.",
+                },
+                {
+                    "title": "Telecinesi",
+                    "meta": "Manipolazione a distanza",
+                    "note": (
+                        "Muove oggetti a distanza senza toccarli. Il costo base è 1 Mana per metro percorso, "
+                        "moltiplicato per la categoria di peso dell'oggetto: leggero ×1, medio ×2, pesante ×3. "
+                        "Gli oggetti che superano il limite di peso della fonte non si muovono."
+                    ),
+                },
+                {
+                    "title": "Materializzazione",
+                    "meta": "Richiamo di oggetti",
+                    "note": (
+                        "Fa comparire in mano un oggetto collegato alla fonte, ovunque si trovi. Il collegamento "
+                        "si può cambiare gratuitamente. La fonte indica la dimensione massima dell'oggetto "
+                        "richiamabile."
+                    ),
+                },
+                {
+                    "title": "Estrazione",
+                    "meta": "Richiamo di oggetti",
+                    "note": (
+                        "Materializza in mano un oggetto già presente nello zaino, senza doverlo cercare. "
+                        "Da non confondere con l'estrazione dei reagenti alchemici, che è tutt'altra regola. "
+                        "L'oggetto indica il costo in Energia."
+                    ),
+                },
+            ],
+        },
+        {"type": "heading", "text": "Effetti continuativi e di utilità"},
+        {
+            "type": "entries",
+            "items": [
+                {"title": "Darkvision", "meta": "Senso", "note": "Permette di vedere al buio, in assenza di altra luce, fino alla distanza indicata dalla fonte."},
+                {"title": "Waterbreathing", "meta": "Sopravvivenza", "note": "Permette di respirare sott'acqua per la durata indicata dalla fonte."},
+                {"title": "Sostentamento", "meta": "Sopravvivenza", "note": "Chi ne beneficia non ha bisogno di mangiare né di bere."},
+                {"title": "Shapeshifting (Mutaforma)", "meta": "Trasformazione", "note": "Cambia la forma del personaggio per la durata indicata dalla fonte; mantenere o rinnovare la trasformazione costa di nuovo."},
+                {"title": "Illusione minore", "meta": "Illusione", "note": "Crea l'illusione di un suono o di un piccolo oggetto, per la durata indicata dalla fonte. Non può ferire né sostenere peso."},
+                {"title": "Rigenerazione PF e Mana", "meta": "Recupero passivo", "note": "Restituisce 1 PF o 1 Mana ogni intervallo di tempo di gioco indicato dalla fonte, senza bisogno di attivarla."},
+            ],
+        },
+        {"type": "heading", "text": "Come si usano gli oggetti"},
+        {
+            "type": "entries",
+            "items": [
+                {
+                    "title": "Effetto passivo",
+                    "meta": "Sempre attivo",
+                    "note": (
+                        "Vale per il solo fatto di indossare o portare l'oggetto: non costa un'azione, non si "
+                        "attiva e non si esaurisce. I bonus numerici della scheda sono quasi sempre passivi."
+                    ),
+                },
+                {
+                    "title": "Effetto attivabile",
+                    "meta": "Va acceso",
+                    "note": (
+                        "Va dichiarato e pagato quando lo si usa, ha una durata e spesso un contraccolpo. Un "
+                        "oggetto attivabile non fornisce nulla finché non lo si attiva, anche se lo si indossa."
+                    ),
+                },
+                {
+                    "title": "Cadenza d'uso",
+                    "meta": "Quante volte",
+                    "note": (
+                        "«Una volta per combattimento» significa una volta per scontro: il contatore si azzera "
+                        "quando il combattimento finisce. Fuori dal combattimento vale invece la cadenza a tempo "
+                        "indicata dall'oggetto (una volta all'ora, al giorno). Le due cadenze sono separate e non "
+                        "si sommano."
+                    ),
+                },
+            ],
+        },
+    ]
+
+
 def _redjango_rules_guide_content() -> str:
-    return _guide_content({"type": "legacy_html", "html": _annotated_elder_rules_html()})
+    return _guide_content(
+        {"type": "legacy_html", "html": _annotated_elder_rules_html()},
+        *mechanics_glossary_blocks(),
+    )
 
 
 CODE_ITEM_EFFECTS = """[

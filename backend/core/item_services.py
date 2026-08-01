@@ -52,7 +52,13 @@ def require_item_author(user, giocatore: Giocatore) -> None:
         raise ApiError("items.forbidden", "Solo master e amministratori possono modificare il catalogo oggetti.", status=403)
 
 
-def _clean_item_payload(payload: dict[str, Any], *, partial: bool) -> dict[str, Any]:
+def clean_item_values(payload: dict[str, Any], *, partial: bool) -> dict[str, Any]:
+    """Validate and normalise the writable columns present in `payload`.
+
+    Every write path goes through here — the editor, the comparer and the bulk
+    editor — so a value the single-item form would refuse can never slip in
+    through a batch instead.
+    """
     values: dict[str, Any] = {}
     for field in ITEM_FIELDS:
         if field not in payload:
@@ -157,23 +163,37 @@ def sync_special_rules_review(item: Oggetto) -> None:
     item.metadata = metadata
 
 
-def _refresh_characters_using(item: Oggetto) -> None:
+def refresh_characters_using_items(item_ids: list[int]) -> int:
+    """Recompute every character that has any of these items equipped.
+
+    A batch edit can touch thousands of rows, so the affected characters are
+    resolved once for the whole set: refreshing per item would recompute the
+    same sheet as many times as it wears matching equipment.
+    """
     from backend.characters.models import Equip, Personaggio
     from backend.characters.services.inventory_rules import EQUIPMENT_SLOT_ORDER
     from backend.characters.services.refresh_personaggio import refresh_personaggio
 
+    if not item_ids:
+        return 0
     query = Q()
     for slot in EQUIPMENT_SLOT_ORDER:
-        query |= Q(**{f"{slot}_id": item.id})
+        query |= Q(**{f"{slot}_id__in": item_ids})
     equip_ids = Equip.objects.filter(query).values_list("id", flat=True)
-    for character_id in Personaggio.objects.filter(equip_id__in=equip_ids).values_list("id", flat=True):
+    character_ids = list(Personaggio.objects.filter(equip_id__in=equip_ids).values_list("id", flat=True))
+    for character_id in character_ids:
         refresh_personaggio(character_id)
+    return len(character_ids)
+
+
+def _refresh_characters_using(item: Oggetto) -> None:
+    refresh_characters_using_items([item.id])
 
 
 @transaction.atomic
 def create_item(user, giocatore: Giocatore, payload: dict[str, Any]) -> Oggetto:
     require_item_author(user, giocatore)
-    values = _clean_item_payload(payload, partial=False)
+    values = clean_item_values(payload, partial=False)
     _relations(payload, values)
     if Oggetto.objects.filter(nome__iexact=values["nome"]).exists():
         raise ApiError("items.duplicate_name", "Esiste già un oggetto con questo nome.", "nome", 409)
@@ -189,7 +209,7 @@ def create_item(user, giocatore: Giocatore, payload: dict[str, Any]) -> Oggetto:
 def update_item(user, giocatore: Giocatore, item_id: int, payload: dict[str, Any]) -> Oggetto:
     require_item_author(user, giocatore)
     item = Oggetto.objects.select_for_update().get(pk=item_id)
-    values = _clean_item_payload(payload, partial=True)
+    values = clean_item_values(payload, partial=True)
     _relations(payload, values)
     if "nome" in values and Oggetto.objects.exclude(pk=item.pk).filter(nome__iexact=values["nome"]).exists():
         raise ApiError("items.duplicate_name", "Esiste già un oggetto con questo nome.", "nome", 409)

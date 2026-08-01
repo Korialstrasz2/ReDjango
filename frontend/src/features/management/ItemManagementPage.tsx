@@ -8,6 +8,7 @@ import { ItemSpecialIconField } from "../../components/ItemSpecialIconField";
 import { ItemEditorModal } from "../character/ItemEditorModal";
 import { command, getData } from "../../lib/api";
 import type { Item, ItemCatalog } from "../../lib/types";
+import { ItemBulkEditor } from "./ItemBulkEditor";
 
 type ItemActionData = {
   item?: Item | null;
@@ -283,7 +284,7 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
 export function ItemManagementPage() {
   const { media, notify } = useApp();
   const queryClient = useQueryClient();
-  const [mode, setMode] = useState<"catalog" | "compare">("catalog");
+  const [mode, setMode] = useState<"catalog" | "bulk" | "compare">("catalog");
   const [queryInput, setQueryInput] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -411,9 +412,9 @@ export function ItemManagementPage() {
 
   return <div className="page management-page">
     <header className="page-header"><div><p className="eyebrow">Gestione del gioco</p><h1>Catalogo oggetti</h1></div><div className="button-row"><Link className="button secondary" to="/tools">Tutti gli strumenti</Link><button className="button secondary" disabled={!selected} onClick={() => { if (selected) { setCloning(true); setEditorItem(selected); } }}>Clona selezionato</button><button className="button primary" onClick={() => { setCloning(false); setEditorItem(null); }}>Crea oggetto</button></div></header>
-    <div className="management-mode-tabs" role="tablist"><button role="tab" aria-selected={mode === "catalog"} className={mode === "catalog" ? "active" : ""} onClick={() => setMode("catalog")}>Catalogo</button><button role="tab" aria-selected={mode === "compare"} className={mode === "compare" ? "active" : ""} onClick={() => setMode("compare")}>Confronta e copia</button></div>
-    {catalogQuery.isLoading && <section className="panel"><p>Caricamento catalogo…</p></section>}
-    {catalogQuery.error && <section className="panel danger-panel"><p>{(catalogQuery.error as Error).message}</p></section>}
+    <div className="management-mode-tabs" role="tablist"><button role="tab" aria-selected={mode === "catalog"} className={mode === "catalog" ? "active" : ""} onClick={() => setMode("catalog")}>Catalogo</button><button role="tab" aria-selected={mode === "bulk"} className={mode === "bulk" ? "active" : ""} onClick={() => setMode("bulk")}>Modifica di massa</button><button role="tab" aria-selected={mode === "compare"} className={mode === "compare" ? "active" : ""} onClick={() => setMode("compare")}>Confronta e copia</button></div>
+    {mode === "catalog" && catalogQuery.isLoading && <section className="panel"><p>Caricamento catalogo…</p></section>}
+    {mode === "catalog" && catalogQuery.error && <section className="panel danger-panel"><p>{(catalogQuery.error as Error).message}</p></section>}
     {mode === "catalog" && catalog && <>
       <section className="panel management-filterbar item-filters" data-component-type="toolbar" data-theme="default">
         <label>Cerca<input type="search" value={queryInput} onChange={(event) => setQueryInput(event.target.value)} placeholder="Nome, descrizione, tipo…" /></label>
@@ -443,6 +444,7 @@ export function ItemManagementPage() {
       </section>}
       <div className="item-management-layout"><section className="panel managed-item-list"><header><strong>{total} oggetti</strong><small>{total ? `${offset + 1}–${offset + items.length}` : "nessun risultato"}{catalogQuery.isFetching ? " · aggiornamento…" : ""}</small></header>{items.map((item) => <button key={item.id} className={item.id === selectedId ? "active" : ""} data-state={item.archived ? "archived" : "active"} onClick={() => setSelectedId(item.id)}>{specialFilter === "special" && <input type="checkbox" aria-label={`Seleziona ${item.name}`} checked={triageSelection.includes(item.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleTriage(item.id)} />}<span><strong>{item.name}</strong><small>#{item.id} · {item.types.join(" / ") || "Senza tipo"}</small>{specialFilter === "special" && <SpecialReasonChips item={item} />}</span><b>{item.weight ?? "—"}</b></button>)}{!items.length && !catalogQuery.isFetching && <div className="management-empty-state"><strong>Nessun oggetto</strong><p>Cambia ricerca o filtri.</p></div>}<footer className="managed-item-pager"><button type="button" className="button secondary small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>← Precedenti</button><span>{Math.floor(offset / PAGE_SIZE) + 1} / {Math.max(1, Math.ceil(total / PAGE_SIZE))}</span><button type="button" className="button secondary small" disabled={!catalog.hasMore} onClick={() => setOffset(offset + PAGE_SIZE)}>Successivi →</button></footer></section><section className="panel item-management-inspector">{selected ? <><header><div><p className="eyebrow">Oggetto #{selected.id}{selected.archived ? " · archiviato" : ""}{selected.special ? " · speciale" : ""}</p><h2>{selected.name}</h2></div><button className="button primary" onClick={() => setEditorItem(selected)}>Modifica</button></header>{selected.imageUrl && <img src={selected.imageUrl} alt="" />}<p>{selected.description || "Nessuna descrizione."}</p>{selected.special && <aside className="item-special-evidence"><strong>Perché è marcato Speciale</strong>{selected.specialReasons.length ? <ul>{selected.specialReasons.map((reason) => <li key={reason.code}><strong>{reason.label}</strong><span>{reason.hint}</span></li>)}</ul> : <p>Nessun motivo automatico rilevato: probabilmente il flag è stato impostato a mano, oppure la causa originale è già stata risolta. Prova <em>Ricontrolla</em> nell'elenco, oppure togli il flag da qui sotto.</p>}</aside>}<dl><div><dt>Tipi</dt><dd>{selected.types.join(" / ") || "—"}</dd></div><div><dt>Peso</dt><dd>{selected.weight ?? "—"}</dd></div><div><dt>Valore</dt><dd>{selected.value ?? "—"}</dd></div><div><dt>Rarità</dt><dd>{selected.rarityLabel || "—"}</dd></div><div><dt>Regione</dt><dd>{selected.region || "—"}</dd></div><div><dt>Effetti strutturati</dt><dd>{selected.effects.length}</dd></div><div><dt>Effetti Elder</dt><dd>{selected.elderEffects.filter(Boolean).length}</dd></div></dl>{selected.specialRules && <aside><strong>Regole speciali</strong><p>{selected.specialRules}</p></aside>}{selected.notes && <aside><strong>Note</strong><p>{selected.notes}</p></aside>}</> : <div className="management-empty-state"><strong>Nessun oggetto selezionato</strong></div>}</section></div>
     </>}
+    {mode === "bulk" && <ItemBulkEditor onApplied={() => setTriageSelection([])} />}
     {mode === "compare" && <LegacyComparerTab onSaved={(item) => { setSelectedId(item.id); void invalidate(); }} />}
     {editorItem !== undefined && catalog && <ItemEditorModal item={editorItem} clone={cloning} catalog={catalog} media={media} saving={mutation.isPending} onClose={() => { setEditorItem(undefined); setCloning(false); }} onSave={saveEditor} onArchive={editorItem && !cloning ? archiveEditor : undefined} />}
   </div>;

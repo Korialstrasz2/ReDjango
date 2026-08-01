@@ -725,6 +725,34 @@ class ItemRecheckSpecialPayloadSchema(Schema):
     itemIds: list[int]
 
 
+class ItemBulkFilterSchema(Schema):
+    field: str
+    operator: str
+    value: str = ""
+
+
+class ItemBulkActionSchema(Schema):
+    field: str
+    operator: str
+    value: str = ""
+    replacement: str = ""
+    rounding: str = "keep"
+    decimals: int = 0
+
+
+class ItemBulkPreviewPayloadSchema(Schema):
+    filters: list[ItemBulkFilterSchema] = []
+    actions: list[ItemBulkActionSchema] = []
+    limit: int = 25
+
+
+class ItemBulkApplyPayloadSchema(Schema):
+    filters: list[ItemBulkFilterSchema] = []
+    actions: list[ItemBulkActionSchema] = []
+    # Returned by the matching preview; without it the batch is refused.
+    token: str = ""
+
+
 class ManagedSkillStructureReorderPayloadSchema(Schema):
     groups: list[int] = []
     families: list[int] = []
@@ -1720,6 +1748,16 @@ class ItemRecheckSpecialActionSchema(ActionBaseSchema):
     payload: ItemRecheckSpecialPayloadSchema
 
 
+class ItemBulkPreviewActionSchema(ActionBaseSchema):
+    action: Literal["items.bulkPreview"]
+    payload: ItemBulkPreviewPayloadSchema
+
+
+class ItemBulkApplyActionSchema(ActionBaseSchema):
+    action: Literal["items.bulkApply"]
+    payload: ItemBulkApplyPayloadSchema
+
+
 class ManagedSkillStructureReorderActionSchema(ActionBaseSchema):
     action: Literal["management.skills.structure.reorder"]
     payload: ManagedSkillStructureReorderPayloadSchema
@@ -2110,6 +2148,8 @@ ActionEnvelopeSchema = Annotated[
     | ManagedSkillFamilyStateActionSchema
     | ItemSetSpecialActionSchema
     | ItemRecheckSpecialActionSchema
+    | ItemBulkPreviewActionSchema
+    | ItemBulkApplyActionSchema
     | DiceSetDuplicateActionSchema
     | DiceHistoryPurgeActionSchema
     | ManagedSkillStructureReorderActionSchema

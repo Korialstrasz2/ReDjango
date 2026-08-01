@@ -203,6 +203,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/management/items/bulk-fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Managed Item Bulk Fields
+         * @description Field, operator and choice metadata for the batch editor.
+         *
+         *     Served instead of hard-coded in the client so the item types, weapon types
+         *     and rarities offered by the batch editor are always the ones the catalogue
+         *     actually accepts.
+         */
+        get: operations["backend_api_v1_api_managed_item_bulk_fields"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/management/characters": {
         parameters: {
             query?: never;
@@ -4640,6 +4664,131 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** ItemBulkActionSchema */
+        ItemBulkActionSchema: {
+            /** Field */
+            field: string;
+            /** Operator */
+            operator: string;
+            /**
+             * Value
+             * @default
+             */
+            value: string;
+            /**
+             * Replacement
+             * @default
+             */
+            replacement: string;
+            /**
+             * Rounding
+             * @default keep
+             */
+            rounding: string;
+            /**
+             * Decimals
+             * @default 0
+             */
+            decimals: number;
+        };
+        /** ItemBulkApplyActionSchema */
+        ItemBulkApplyActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "items.bulkApply";
+            payload: components["schemas"]["ItemBulkApplyPayloadSchema"];
+        };
+        /** ItemBulkApplyPayloadSchema */
+        ItemBulkApplyPayloadSchema: {
+            /**
+             * Filters
+             * @default []
+             */
+            filters: components["schemas"]["ItemBulkFilterSchema"][];
+            /**
+             * Actions
+             * @default []
+             */
+            actions: components["schemas"]["ItemBulkActionSchema"][];
+            /**
+             * Token
+             * @default
+             */
+            token: string;
+        };
+        /** ItemBulkFilterSchema */
+        ItemBulkFilterSchema: {
+            /** Field */
+            field: string;
+            /** Operator */
+            operator: string;
+            /**
+             * Value
+             * @default
+             */
+            value: string;
+        };
+        /** ItemBulkPreviewActionSchema */
+        ItemBulkPreviewActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "items.bulkPreview";
+            payload: components["schemas"]["ItemBulkPreviewPayloadSchema"];
+        };
+        /** ItemBulkPreviewPayloadSchema */
+        ItemBulkPreviewPayloadSchema: {
+            /**
+             * Filters
+             * @default []
+             */
+            filters: components["schemas"]["ItemBulkFilterSchema"][];
+            /**
+             * Actions
+             * @default []
+             */
+            actions: components["schemas"]["ItemBulkActionSchema"][];
+            /**
+             * Limit
+             * @default 25
+             */
+            limit: number;
+        };
         /** ItemRecheckSpecialActionSchema */
         ItemRecheckSpecialActionSchema: {
             /** Requestid */
@@ -7346,6 +7495,35 @@ export interface operations {
             };
         };
     };
+    backend_api_v1_api_managed_item_bulk_fields: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagementEnvelopeSchema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
+                };
+            };
+        };
+    };
     backend_api_v1_api_managed_characters: {
         parameters: {
             query?: {
@@ -7947,7 +8125,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CharacterCreateActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"] | components["schemas"]["NameGenerateActionSchema"];
+                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CharacterCreateActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["ItemBulkPreviewActionSchema"] | components["schemas"]["ItemBulkApplyActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"] | components["schemas"]["NameGenerateActionSchema"];
             };
         };
         responses: {

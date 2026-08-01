@@ -1225,6 +1225,36 @@ class CharacterWorkspaceApiTests(TestCase):
         self.assertEqual(duplicate.status_code, 409)
         self.assertEqual(duplicate.json()["errors"][0]["code"], "items.duplicate_name")
 
+    def test_item_bulk_editor_previews_then_applies_with_the_matching_token(self):
+        fields = self.client.get("/api/v1/management/items/bulk-fields")
+        self.assertEqual(fields.status_code, 200)
+        self.assertIn("valore", [field["name"] for field in fields.json()["data"]["fields"]])
+
+        target = Oggetto.objects.create(nome="Oggetto massivo", tipo_1="pozione", valore=40)
+        recipe = {
+            "filters": [{"field": "nome", "operator": "eq", "value": "Oggetto massivo"}],
+            "actions": [{"field": "valore", "operator": "mul", "value": "0.5"}],
+        }
+
+        preview = self.command("items.bulkPreview", {**recipe, "limit": 5})
+        self.assertEqual(preview.status_code, 200)
+        summary = preview.json()["data"]["management"]["bulkPreview"]
+        self.assertEqual(summary["total"], 1)
+        self.assertEqual(summary["changed"], 1)
+        self.assertEqual(summary["sample"][0]["changes"][0]["after"], "20")
+
+        stale = self.command("items.bulkApply", {**recipe, "token": "non-e-il-token"})
+        self.assertEqual(stale.status_code, 409)
+        self.assertEqual(stale.json()["errors"][0]["code"], "items.bulk_token_stale")
+        target.refresh_from_db()
+        self.assertEqual(target.valore, 40)
+
+        applied = self.command("items.bulkApply", {**recipe, "token": summary["token"]})
+        self.assertEqual(applied.status_code, 200)
+        self.assertEqual(applied.json()["data"]["management"]["bulkApply"]["updated"], 1)
+        target.refresh_from_db()
+        self.assertEqual(target.valore, 20)
+
     def test_theme_has_character_workspace_tokens(self):
         theme = Theme.objects.get(slug="parchment")
         self.assertTrue(theme.health_color.startswith("#"))
@@ -1242,6 +1272,7 @@ class CharacterWorkspaceApiTests(TestCase):
             "character.adjustQuickStat", "character.rest", "character.updateOverview",
             "character.updateCoins", "campaign.updateSharedCoins", "effects.apply", "effects.remove",
             "items.create", "items.update", "items.archive", "items.compareSave",
+            "items.bulkPreview", "items.bulkApply",
             "management.characters.update", "management.characters.delete", "management.characters.attach",
         ):
             self.assertIn(action, schema_text)

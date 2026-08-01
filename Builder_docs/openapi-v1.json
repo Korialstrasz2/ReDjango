@@ -942,6 +942,44 @@
         ]
       }
     },
+    "/api/v1/management/items/bulk-fields": {
+      "get": {
+        "operationId": "backend_api_v1_api_managed_item_bulk_fields",
+        "summary": "Managed Item Bulk Fields",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManagementEnvelopeSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelopeSchema"
+                }
+              }
+            }
+          }
+        },
+        "description": "Field, operator and choice metadata for the batch editor.\n\nServed instead of hard-coded in the client so the item types, weapon types\nand rarities offered by the batch editor are always the ones the catalogue\nactually accepts.",
+        "tags": [
+          "management"
+        ],
+        "security": [
+          {
+            "SessionCookieAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/management/characters": {
       "get": {
         "operationId": "backend_api_v1_api_managed_characters",
@@ -2153,6 +2191,8 @@
                     "inventory.setQuantity": "#/components/schemas/SetQuantityActionSchema",
                     "inventory.swapItems": "#/components/schemas/SwapActionSchema",
                     "items.archive": "#/components/schemas/ArchiveItemActionSchema",
+                    "items.bulkApply": "#/components/schemas/ItemBulkApplyActionSchema",
+                    "items.bulkPreview": "#/components/schemas/ItemBulkPreviewActionSchema",
                     "items.compareSave": "#/components/schemas/CompareItemActionSchema",
                     "items.create": "#/components/schemas/CreateItemActionSchema",
                     "items.recheckSpecial": "#/components/schemas/ItemRecheckSpecialActionSchema",
@@ -2318,6 +2358,12 @@
                   },
                   {
                     "$ref": "#/components/schemas/ItemRecheckSpecialActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemBulkPreviewActionSchema"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemBulkApplyActionSchema"
                   },
                   {
                     "$ref": "#/components/schemas/DiceSetDuplicateActionSchema"
@@ -10400,6 +10446,191 @@
           "values"
         ],
         "title": "DiceSetUpdatePayloadSchema",
+        "type": "object"
+      },
+      "ItemBulkActionSchema": {
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "operator": {
+            "title": "Operator",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          },
+          "replacement": {
+            "default": "",
+            "title": "Replacement",
+            "type": "string"
+          },
+          "rounding": {
+            "default": "keep",
+            "title": "Rounding",
+            "type": "string"
+          },
+          "decimals": {
+            "default": 0,
+            "title": "Decimals",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "field",
+          "operator"
+        ],
+        "title": "ItemBulkActionSchema",
+        "type": "object"
+      },
+      "ItemBulkApplyActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "items.bulkApply",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ItemBulkApplyPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ItemBulkApplyActionSchema",
+        "type": "object"
+      },
+      "ItemBulkApplyPayloadSchema": {
+        "properties": {
+          "filters": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemBulkFilterSchema"
+            },
+            "title": "Filters",
+            "type": "array"
+          },
+          "actions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemBulkActionSchema"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "token": {
+            "default": "",
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "title": "ItemBulkApplyPayloadSchema",
+        "type": "object"
+      },
+      "ItemBulkFilterSchema": {
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "operator": {
+            "title": "Operator",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "operator"
+        ],
+        "title": "ItemBulkFilterSchema",
+        "type": "object"
+      },
+      "ItemBulkPreviewActionSchema": {
+        "properties": {
+          "requestId": {
+            "title": "Requestid",
+            "type": "string"
+          },
+          "context": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Context",
+            "type": "object"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Meta",
+            "type": "object"
+          },
+          "action": {
+            "const": "items.bulkPreview",
+            "title": "Action",
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ItemBulkPreviewPayloadSchema"
+          }
+        },
+        "required": [
+          "requestId",
+          "action",
+          "payload"
+        ],
+        "title": "ItemBulkPreviewActionSchema",
+        "type": "object"
+      },
+      "ItemBulkPreviewPayloadSchema": {
+        "properties": {
+          "filters": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemBulkFilterSchema"
+            },
+            "title": "Filters",
+            "type": "array"
+          },
+          "actions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemBulkActionSchema"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "limit": {
+            "default": 25,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ItemBulkPreviewPayloadSchema",
         "type": "object"
       },
       "ItemRecheckSpecialActionSchema": {
