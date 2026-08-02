@@ -1,5 +1,10 @@
 # Forgiatura and Incantamento: data audit and implementation guide
 
+> **Status: shipped, 2 August 2026.** Both benches are live in the Creazione page.
+> The audit below is preserved as the reasoning record; *What actually shipped*
+> at the end lists the files, the four registration points a new total really
+> needs, and the two bugs the browser run caught.
+
 ## Goal
 
 Replace the two `EmptyWorkshop` placeholders in
@@ -835,3 +840,117 @@ that needs them.
    scope, or adjudicated at the table?
 5. **`Artigiano di anime` harmonic sum** *(before Slice 4)*. `1 + 1/2 + 1/3 …` —
    round down, or keep fractional levels?
+
+---
+
+## What actually shipped — 2 August 2026
+
+Both benches are live. `EmptyWorkshop` is deleted and the tab labels read
+"Operativa" / "Operativo".
+
+### Files
+
+**Backend**
+
+```
+backend/core/forge_defaults.py            15 materials, 7 tiers, ingot costs, improvement menu
+backend/core/enchant_defaults.py          gem/altar/scroll ladders, mana + charge math
+backend/core/crafting_skill_rules.py      the 79 skill rules, as data
+backend/core/migrations/0050_…leather…    seeds `Pelle conciata`
+backend/core/migrations/0054_crafting_skill_rules.py   writes the rules, idempotent, reversible
+backend/characters/crafting_capability.py what a character may do, read from skills + totals
+backend/characters/services/item_instances.py   clone, ledger→effects, table rules
+backend/characters/services/forge.py      craft / improve / melt / specialist / practical
+backend/characters/services/enchant.py    enchant / scroll / recharge / disenchant
+backend/characters/forge_selectors.py     read model
+backend/characters/enchant_selectors.py   read model
+backend/characters/tests_crafting.py      23 tests
+```
+
+**Frontend**
+
+```
+frontend/src/features/creation/craftingTypes.ts     payload shapes
+frontend/src/features/creation/ForgeWorkbench.tsx   Fucina · Miglioramenti · Fusione
+frontend/src/features/creation/EnchantWorkbench.tsx Incanta · Pergamene · Cariche
+frontend/src/styles/app.css                         ~60 rules, alchemy visual language
+```
+
+Two GET routes (`/creation/forge`, `/creation/enchant`) and nine command actions
+(`forge.craft`, `forge.improve`, `forge.melt`, `forge.setSpecialist`,
+`forge.craftPractical`, `enchant.item`, `enchant.scroll`, `enchant.recharge`,
+`enchant.disenchant`).
+
+### A new total needs four registration points, not two
+
+§1 of this guide said two files. That was wrong — the real list is four, and the
+last two are enforced by tests and validation, not by convention:
+
+1. `PERSONAGGIO_TOT_KEYS` — `backend/characters/models.py`
+2. `PERSONAGGIO_FLOAT_TOTAL_KEYS` + `FORMULE_BASE_VALUE_FLOAT` — `backend/core/defaults.py`
+3. **`EFFECT_TARGET_LABELS`** — `backend/characters/services/custom_effects.py`.
+   Without a label the key is not a legal effect target, so `unlock_skill`
+   rejects any passive that writes to it. `EFFECT_TARGETS` is derived from
+   `PERSONAGGIO_TOT_KEYS` filtered by presence in this dict.
+4. **`CHARACTER_VARIABLE_GROUPS`** — `backend/core/guides_it.py`.
+   `CoreContractTests.test_bootstrap_includes_default_guides` asserts every
+   total appears in the character-variable guide. An undocumented total fails
+   the suite — a good rule, and worth keeping.
+
+Still true: **no schema migration and no new `Personaggio` column.**
+
+### Naming trap: `normalize_stat_key` eats several suffixes
+
+`refresh_personaggio.normalize_stat_key` strips `_tot`, `_base`, `_extra`,
+`_item`, `_bonus`, `_temp` — the Elder alias system (`attacco_extra` → `attacco`).
+A total ending in any of those silently resolves to a different key. The first
+draft used `forgia_miglioramenti_base`, which normalised to
+`forgia_miglioramenti` and failed target validation. It shipped as
+`forgia_tetto_miglioramenti`. Check new keys against `normalize_stat_key(key) == key`.
+
+### Two bugs the browser run caught
+
+**Gems keyed by item id selected duplicates.** Two `Gemma dell'anima lv 4 (piena)`
+in two backpack slots are the *same* `Oggetto` row, so selecting one highlighted
+both and would have consumed two. The enchant payload now takes `gemSlots`
+(backpack slot numbers, unique) instead of `gemItemIds`. This is the shared-template
+problem from §3 reappearing in the inventory — worth remembering wherever a
+selector identifies a carried item.
+
+**Passive icons are validated.** `martello` is not in `EFFECT_ICONS`; forge
+passives use `lama`, enchant passives use `runa`.
+
+### Verified in the browser
+
+Against `verify.sqlite3` with a character carrying Fabbro 1–4, Potenziato 1–4,
+Specialista 1, Scioglitore, Incantatore 1–3, Gioielliere 1–2, Infusore 1–2,
+Anima compressa 1, Multi Incantamento 1, Artigiano di anime, Riciclo di anime:
+
+- Material ladder shows tiers I–IV unlocked, Orchesco locked while Ossa is open
+  (the light/heavy branches really are independent), and a warning badge where
+  the tools are below the tier.
+- Forging an `Ascia (acciaio)` consumed 4 of 8 acciaio and produced
+  `Ascia (acciaio) #2`.
+- `+1 Attacco` priced 1 → 2 → 4 live, budget `Potenziato (5) − fascia (2)` = 3,
+  and the option disabled itself when 4 exceeded the remaining budget.
+- The shared `Ascia (acciaio)` template kept its original effects and `peso 8.0`;
+  the instance carried `{"target": "attacco", "value": 2, "source": "forge_improvement"}`
+  and was not flagged `speciale`.
+- One lv4 gem → level 4, 4 × 7 × 1.25 = 35 mana, 5 charges. Adding a lv2 gem →
+  harmonic level 5, 43.75 mana, 6 charges.
+- Enchanting produced `Anello + pf lv. 1 (4) #2 · Attacco livello 5 · 6 cariche`,
+  consumed both gems, and rendered 6 filled charge pips with Ricarica/Disincanta.
+- Scroll ladder renders 12…118; 12 mana at a +25% altar = 15 → level 1, casts at 7.5.
+- No console errors.
+
+### Still deliberately not done
+
+- **Campaign clock.** Forge hours and the daily 100% recharge are written into
+  `regole_speciali` and tracked at the table. `enchant.recharge` is a manual button.
+- **Weapon enchants.** `Danno da impatto`, `Paralisi da impatto` and
+  `Assorbi Anima` are `table_rule` entries, surfaced in the UI, not calculated.
+- **`Riplasmare` and `Converti oggetto`.** The capability totals exist and the
+  skills declare their rules; no command implements them yet.
+- **`Uso pratico`.** `forge.craftPractical` exists and consumes `Pelle conciata`,
+  but has no dedicated sub-tab — the leather is seeded and the service is tested
+  only through the material stock.

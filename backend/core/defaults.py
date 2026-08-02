@@ -909,6 +909,27 @@ PERSONAGGIO_FLOAT_TOTAL_KEYS = [
     "moltiplicatore_reagenti_livello_2",
     "moltiplicatore_reagenti_livello_3",
     "moltiplicatore_reagenti_livello_4",
+    # Forgiatura. Quali materiali un fabbro sappia lavorare non è un numero —
+    # le fasce 4-7 si sbloccano a rami separati (leggeri e pesanti) — quindi
+    # vive in Skill.metadata["forgeRule"] e non qui. Qui restano le grandezze.
+    "forgia_tetto_miglioramenti",
+    "forgia_miglioramenti_specialista",
+    "forgia_miglioramenti_stanchezza",
+    "forgia_bonus_frecce",
+    "forgia_uso_pratico",
+    "forgia_puo_fondere",
+    "forgia_puo_riplasmare",
+    "forgia_puo_ovunque",
+    # Incantamento.
+    "incanta_livello_max_oggetti",
+    "incanta_livello_max_pergamene",
+    "incanta_mana_per_livello",
+    "incanta_cariche_percento",
+    "incanta_max_effetti",
+    "incanta_puo_reincantare",
+    "incanta_puo_sommare_gemme",
+    "incanta_puo_disincantare",
+    "incanta_bonus_livello_stanchezza",
     "atk_skill_taglio",
     "atk_skill_contundente",
     "atk_skill_perforante",
@@ -965,6 +986,11 @@ FORMULE_BASE_VALUE_FLOAT.update(
         "moltiplicatore_reagenti_livello_2": 1.7,
         "moltiplicatore_reagenti_livello_3": 2.2,
         "moltiplicatore_reagenti_livello_4": 2.7,
+        # Elder: "Ogni livello dell'incantamento permette di castare come se
+        # usassi 5 mana". Infusore 1-5 porta la base a 6, 7, 8, 9, 10.
+        "incanta_mana_per_livello": 5,
+        # Senza Multi Incantamento un oggetto regge un solo effetto.
+        "incanta_max_effetti": 1,
     }
 )
 

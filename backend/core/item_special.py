@@ -38,6 +38,16 @@ SPECIAL_REASON_LABELS: dict[str, dict[str, str]] = {
 REVIEWED_EFFECTS_KEY = "descriptiveEffectsReviewed"
 
 
+# Chiave sotto `Oggetto.metadata` che marca un esemplare prodotto al banco.
+# La scrive `characters.services.item_instances`, mai l'editor oggetti.
+INSTANCE_KEY = "instance"
+
+
+def is_crafted_instance(item: Oggetto) -> bool:
+    metadata = item.metadata if isinstance(item.metadata, dict) else {}
+    return bool(isinstance(metadata.get(INSTANCE_KEY), dict))
+
+
 def _comparable(text: str) -> str:
     return " ".join(str(text or "").split()).casefold()
 
@@ -77,7 +87,11 @@ def compute_special_reasons(item: Oggetto) -> list[str]:
     stuck at whatever the import saw.
     """
     reasons: list[str] = []
-    if not item.modello:
+    # Un esemplare forgiato o incantato è `modello=False` per costruzione: è
+    # l'oggetto di un personaggio, non una riga di catalogo. Segnalarlo come da
+    # rivedere riempirebbe la coda con i martelli dei giocatori, per giunta con
+    # un suggerimento sbagliato ("attiva Modello riutilizzabile").
+    if not item.modello and not is_crafted_instance(item):
         reasons.append("non_modello")
     if item.temporaneo:
         reasons.append("temporaneo")

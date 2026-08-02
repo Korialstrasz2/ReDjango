@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { useApp } from "../../App";
 import { command, getData } from "../../lib/api";
 import type { AlchemyBrewResult, AlchemyCatalogReagent, AlchemyCreationData } from "../../lib/types";
+import { EnchantWorkbench } from "./EnchantWorkbench";
+import { ForgeWorkbench } from "./ForgeWorkbench";
 import { projectedBrew, selectedQuantity, type AlchemyColor, type AlchemySelection } from "./mechanics";
 
 type CreationTab = "alchemy" | "forge" | "enchant";
@@ -18,24 +20,6 @@ const COLOR_ORDER: AlchemyColor[] = ["rosso", "verde", "blu"];
 
 function formatNumber(value: number) {
   return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(2)));
-}
-
-function EmptyWorkshop({ kind }: { kind: "forge" | "enchant" }) {
-  const copy = kind === "forge"
-    ? {
-        eyebrow: "Secondo banco",
-        title: "Forgiatura in ricostruzione",
-        text: "Tipi di oggetto, materiali, lingotti e miglioramenti dell'Elder verranno tradotti in ricette validate e collegate al catalogo oggetti.",
-      }
-    : {
-        eyebrow: "Terzo banco",
-        title: "Incantamento in ricostruzione",
-        text: "Altari, gemme, cariche e pergamene entreranno qui con calcoli server-side e risultati verificabili prima di consumare risorse.",
-      };
-  return <section className="panel creation-roadmap-panel">
-    <span className="creation-roadmap-rune" aria-hidden="true">{kind === "forge" ? "◇" : "✧"}</span>
-    <div><p className="eyebrow">{copy.eyebrow}</p><h2>{copy.title}</h2><p>{copy.text}</p></div>
-  </section>;
 }
 
 function AlchemyWorkbench({ data }: { data: AlchemyCreationData }) {
@@ -252,15 +236,15 @@ export function CreationPage() {
     <header className="page-header"><div><p className="eyebrow">Laboratorio · {query.data?.character.name || "Personaggio attivo"}</p><h1>Creazione</h1></div><Link className="button secondary" to={`/character/${characterId}`}>Torna alla scheda</Link></header>
     <nav className="creation-tabs" aria-label="Banchi di creazione">
       <button type="button" className={tab === "alchemy" ? "active" : ""} onClick={() => setTab("alchemy")}><span>01</span><strong>Alchimia</strong><small>Operativa</small></button>
-      <button type="button" className={tab === "forge" ? "active" : ""} onClick={() => setTab("forge")}><span>02</span><strong>Forgiatura</strong><small>In ricostruzione</small></button>
-      <button type="button" className={tab === "enchant" ? "active" : ""} onClick={() => setTab("enchant")}><span>03</span><strong>Incantamento</strong><small>In ricostruzione</small></button>
+      <button type="button" className={tab === "forge" ? "active" : ""} onClick={() => setTab("forge")}><span>02</span><strong>Forgiatura</strong><small>Operativa</small></button>
+      <button type="button" className={tab === "enchant" ? "active" : ""} onClick={() => setTab("enchant")}><span>03</span><strong>Incantamento</strong><small>Operativo</small></button>
     </nav>
     {tab === "alchemy" && (query.isLoading
       ? <section className="panel loading-state">Preparazione del banco alchemico…</section>
       : query.isError
         ? <section className="panel form-error">{(query.error as Error).message}</section>
         : query.data && <AlchemyWorkbench data={query.data} />)}
-    {tab === "forge" && <EmptyWorkshop kind="forge" />}
-    {tab === "enchant" && <EmptyWorkshop kind="enchant" />}
+    {tab === "forge" && <ForgeWorkbench characterId={characterId} />}
+    {tab === "enchant" && <EnchantWorkbench characterId={characterId} />}
   </div>;
 }

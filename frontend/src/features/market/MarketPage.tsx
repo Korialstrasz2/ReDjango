@@ -1,4 +1,5 @@
-import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import { type CSSProperties, type PointerEvent as ReactPointerEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useApp } from "../../App";
@@ -73,12 +74,56 @@ function stockFacts(line: StockLine): Array<{ label: string; value: string }> {
     { label: "Rarità", value: item.rarityLabel || UNKNOWN_FACT },
     { label: "Peso", value: item.weight == null ? UNKNOWN_FACT : String(item.weight) },
     { label: "Valore di catalogo", value: item.value == null ? UNKNOWN_FACT : `${item.value} monete` },
-    { label: "Livello di bottino", value: item.lootLevel || UNKNOWN_FACT },
-    { label: "Provenienza", value: item.region || "Nessuna regione" },
     { label: "Slot", value: slots.length ? slots.map((slot) => slot.replace(/_/g, " ")).join(", ") : item.compatibleEquipmentSlots.length ? "Solo spazi extra" : "Non equipaggiabile" },
   ];
   if (item.actionPointCost != null) facts.push({ label: "PA per attacco", value: String(item.actionPointCost) });
   return facts;
+}
+
+/** Quanto il puntatore deve restare fermo sull'oggetto prima dell'anteprima. */
+const HOVER_DELAY_MS = 1000;
+const POINTER_GAP = 18;
+const VIEWPORT_MARGIN = 12;
+
+/** Anteprima al volo: i tre dati che decidono un acquisto, senza aprire la scheda.
+ *
+ * Il riquadro insegue il puntatore scrivendo direttamente sullo stile invece di
+ * passare per lo stato: la griglia del banco può contenere centinaia di carte e
+ * ridisegnarla a ogni movimento del mouse la farebbe scattare.
+ */
+function StockHoverCard({ line, origin }: { line: StockLine; origin: { x: number; y: number } }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const place = useCallback((x: number, y: number) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const { offsetWidth: width, offsetHeight: height } = card;
+    // Accanto al puntatore finché ci sta, dall'altro lato quando uscirebbe.
+    const right = x + POINTER_GAP + width + VIEWPORT_MARGIN > window.innerWidth;
+    const below = y + POINTER_GAP + height + VIEWPORT_MARGIN > window.innerHeight;
+    card.style.left = `${Math.max(VIEWPORT_MARGIN, right ? x - POINTER_GAP - width : x + POINTER_GAP)}px`;
+    card.style.top = `${Math.max(VIEWPORT_MARGIN, below ? y - POINTER_GAP - height : y + POINTER_GAP)}px`;
+    card.style.opacity = "1";
+  }, []);
+  // La misura arriva solo dopo il primo disegno: il riquadro resta trasparente
+  // per un fotogramma invece di apparire nell'angolo e saltare al suo posto.
+  useLayoutEffect(() => { place(origin.x, origin.y); }, [place, origin]);
+  useEffect(() => {
+    const onMove = (event: PointerEvent) => place(event.clientX, event.clientY);
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [place]);
+  const { item } = line;
+  return createPortal(
+    <div ref={cardRef} className="market-item-hover" role="presentation" aria-hidden="true" style={{ opacity: 0 }}>
+      <strong>{item.name}</strong>
+      <dl>
+        <div><dt>Prezzo</dt><dd>{line.unitPrice} monete</dd></div>
+        <div><dt>Peso</dt><dd>{item.weight == null ? UNKNOWN_FACT : item.weight}</dd></div>
+      </dl>
+      <p>{item.description || "Nessuna descrizione disponibile."}</p>
+    </div>,
+    document.body,
+  );
 }
 
 function ItemDetail({ line, quantity, position, total, onClose, onSetQuantity, onStep }: {
@@ -169,6 +214,9 @@ export function MarketPage() {
   const [navigationPanel, setNavigationPanel] = useState<"regions" | "locations" | null>("regions");
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<{ itemId: number; x: number; y: number } | null>(null);
+  const hoverTimer = useRef<number | undefined>(undefined);
+  const pointer = useRef({ x: 0, y: 0 });
   const [shopLevelFilter, setShopLevelFilter] = useState("");
   const [shopTypeFilter, setShopTypeFilter] = useState("");
   const [query, setQuery] = useState("");
@@ -212,7 +260,18 @@ export function MarketPage() {
     const nextShopId = resolveSelectedShopId(selectedShopId, shops, Boolean(market));
     if (nextShopId !== selectedShopId) setSelectedShopId(nextShopId);
   }, [market, shops, selectedShopId]);
-  useEffect(() => { setCart({}); setSelectedItemId(null); setNegotiationPercent(0); }, [selectedShopId]);
+  useEffect(() => { setCart({}); setSelectedItemId(null); setHoveredItem(null); setNegotiationPercent(0); }, [selectedShopId]);
+  useEffect(() => () => window.clearTimeout(hoverTimer.current), []);
+  const cancelHover = () => { window.clearTimeout(hoverTimer.current); setHoveredItem(null); };
+  // L'anteprima segue il puntatore da dove si trova allo scadere dell'attesa,
+  // non da dove è entrato nella carta: chi legge guarda lì.
+  const scheduleHover = (itemId: number, event: ReactPointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    pointer.current = { x: event.clientX, y: event.clientY };
+    setHoveredItem(null);
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => setHoveredItem({ itemId, ...pointer.current }), HOVER_DELAY_MS);
+  };
   const selectedShop = market?.selectedShop?.id === selectedShopId ? market.selectedShop : null;
   const availableTypes = useMemo(() => [...new Set((selectedShop?.stock || []).flatMap((line) => line.item.types).filter(Boolean))].sort(), [selectedShop]);
   const visibleStock = useMemo(() => {
@@ -221,6 +280,7 @@ export function MarketPage() {
   }, [selectedShop, query, typeFilter, maxPrice, sort]);
   const detailIndex = visibleStock.findIndex((line) => line.item.id === selectedItemId);
   const selectedLine = detailIndex < 0 ? null : visibleStock[detailIndex];
+  const hoveredLine = hoveredItem ? visibleStock.find((line) => line.item.id === hoveredItem.itemId) || null : null;
   const stepDetail = (delta: number) => setSelectedItemId(visibleStock[(detailIndex + delta + visibleStock.length) % visibleStock.length].item.id);
   const cartLines = selectedShop?.stock.filter((line) => cart[line.item.id] > 0).map((line) => ({ itemId: line.item.id, quantity: cart[line.item.id] })) || [];
   const maximumNegotiationPercent = Number(market?.configuration.limits.maximumNegotiationPercent || 0);
@@ -257,19 +317,24 @@ export function MarketPage() {
       </aside>
       <main className="market-catalog" data-component-type="panel" data-theme="parchment">
         {activeLocation && <section className="market-shop-browser">
-          <header><div><p className="eyebrow">{activeRegion?.label}</p><h2>Negozi · {activeLocation.label}</h2><small>{shops.length} di {locationShops.length} visibili</small></div><div className="market-shop-filters"><label>Grado<select value={shopLevelFilter} onChange={(event) => setShopLevelFilter(event.target.value)}><option value="">Tutti</option>{shopLevels.map((level) => <option key={level} value={level}>Livello {level}</option>)}</select></label><label>Tipo<select value={shopTypeFilter} onChange={(event) => setShopTypeFilter(event.target.value)}><option value="">Tutti</option>{locationShopTypes.map((key) => <option key={key} value={key}>{market.shopTypes.find((type) => type.key === key)?.label || key}</option>)}</select></label></div></header>
-          <nav className="market-shop-nav market-location-nav skill-family-nav" aria-label={`Negozi di ${activeLocation.label}`} data-component-type="tabset" data-theme="gold">{shops.map((shop) => { const type = market.shopTypes.find((entry) => entry.key === shop.categoryKey); return <button type="button" key={shop.id} className={shop.id === selectedShopId ? "active" : ""} aria-pressed={shop.id === selectedShopId} onClick={() => setSelectedShopId(shop.id)}><span className="market-shop-icon">{shopIcon(type)}</span><span><strong>{shop.name}</strong><small>{type?.label || shop.categoryKey} · liv. {shop.level}</small></span><b>{shop.stockCount}</b>{shop.featured && <em>★</em>}</button>; })}</nav>
+          <header><div><p className="eyebrow">{activeRegion?.label}</p><h2>Negozi · {activeLocation.label}</h2><small>{shops.length} di {locationShops.length} visibili</small></div><div className="market-shop-filters"><label>Grado<select value={shopLevelFilter} onChange={(event) => setShopLevelFilter(event.target.value)}><option value="">Tutti</option>{shopLevels.map((level) => <option key={level} value={level}>Livello {level}</option>)}</select></label></div></header>
+          {locationShopTypes.length > 0 && <div className="market-shop-type-filter" role="group" aria-label="Filtra per tipo di negozio">
+            <button type="button" className={shopTypeFilter ? "" : "active"} aria-pressed={!shopTypeFilter} onClick={() => setShopTypeFilter("")}><span>Tutti</span></button>
+            {locationShopTypes.map((key) => { const type = market.shopTypes.find((entry) => entry.key === key); return <button type="button" key={key} className={shopTypeFilter === key ? "active" : ""} aria-pressed={shopTypeFilter === key} onClick={() => setShopTypeFilter(key)}><b aria-hidden="true">{shopIcon(type)}</b><span>{type?.label || key}</span></button>; })}
+          </div>}
+          <nav className="market-shop-nav market-location-nav skill-family-nav" aria-label={`Negozi di ${activeLocation.label}`} data-component-type="tabset" data-theme="gold">{shops.map((shop) => { const type = market.shopTypes.find((entry) => entry.key === shop.categoryKey); return <button type="button" key={shop.id} className={shop.id === selectedShopId ? "active" : ""} aria-pressed={shop.id === selectedShopId} onClick={() => setSelectedShopId(shop.id)}><span className="market-shop-icon">{shopIcon(type)}</span><span><strong>{type?.label || shop.categoryKey}</strong><small>{shop.name}</small></span><b title={`Livello ${shop.level}`}>{shop.level}</b>{shop.featured && <em>★</em>}</button>; })}</nav>
           {!shops.length && <p className="market-shop-filter-empty">{locationShops.length ? "Nessun negozio corrisponde ai filtri scelti." : "Non ci sono negozi in questa località."}</p>}
         </section>}
         {selectedShop ? <div className="market-shop-workspace">
           <header className="market-shop-heading" style={{ "--shop-art": selectedShop.backgroundUrl ? `url(${selectedShop.backgroundUrl})` : "none" } as CSSProperties}><div><p className="eyebrow">{selectedShop.regionName} · {selectedShop.placeName}</p><h2><span>{shopIcon(selectedType)}</span>{selectedShop.name}</h2><p>{selectedShop.owner ? `Gestito da ${selectedShop.owner}. ` : ""}{selectedShop.description || "Le merci disponibili cambiano con il livello e la regione."}</p><div className="market-shop-facts"><span>Livello {selectedShop.level}</span><span>{selectedShop.stockCount} oggetti</span><span>Scorte #{selectedShop.stockRevision}</span>{selectedShop.priceModifierPercent !== 0 && <span>Prezzi {selectedShop.priceModifierPercent > 0 ? "+" : ""}{selectedShop.priceModifierPercent}%</span>}</div></div>{market.permissions.canManage && <div className="market-shop-management"><button type="button" onClick={() => setEditing("edit")}>Modifica</button>{market.permissions.canRegenerate && <button type="button" disabled={actionMutation.isPending} onClick={() => actionMutation.mutate({ action: "market.shop.regenerate", payload: { shopId: selectedShop.id } })}>Rigenera</button>}{market.permissions.canArchive && <button type="button" className="danger" disabled={actionMutation.isPending} onClick={() => actionMutation.mutate({ action: "market.shop.state", payload: { shopId: selectedShop.id, archived: !selectedShop.archived } })}>{selectedShop.archived ? "Ripristina" : "Archivia"}</button>}</div>}</header>
           <details className="market-filters"><summary><span>⌕</span><strong>Cerca e filtra</strong><small>{visibleStock.length} di {selectedShop.stock.length}</small></summary><div><label className="market-search">Cerca<input type="search" value={query} placeholder="Nome, descrizione, rarità…" onChange={(event) => setQuery(event.target.value)} /></label><label>Prezzo massimo<input type="number" min="0" value={maxPrice} placeholder="Qualsiasi" onChange={(event) => setMaxPrice(event.target.value)} /></label><div className="market-filter-buttons"><button type="button" className={!typeFilter ? "active" : ""} onClick={() => setTypeFilter("")}>Tutti</button>{availableTypes.map((type) => <button type="button" key={type} className={typeFilter === type ? "active" : ""} onClick={() => setTypeFilter(type)}>{type}</button>)}</div><div className="market-sort-buttons"><span>Ordina</span><button type="button" className={sort === "name" ? "active" : ""} onClick={() => setSort("name")}>Nome</button><button type="button" className={sort === "price" ? "active" : ""} onClick={() => setSort("price")}>Prezzo</button><button type="button" className={sort === "rarity" ? "active" : ""} onClick={() => setSort("rarity")}>Rarità</button></div>{market.permissions.canManage && <label className="market-switch"><input type="checkbox" checked={includeArchived} onChange={(event) => setIncludeArchived(event.target.checked)} /><span><strong>Mostra archiviati</strong></span></label>}</div></details>
-          <section className="market-stock-grid">{visibleStock.map((line) => <button type="button" key={line.item.id} title={line.item.name} className={`market-item-card ${selectedItemId === line.item.id ? "active" : ""}`} onClick={() => setSelectedItemId(line.item.id)}>{line.item.imageUrl ? <img src={line.item.imageUrl} alt="" /> : <span className="market-item-placeholder">◇</span>}<span className="market-item-copy"><small>{line.item.rarityLabel || line.item.types[0] || "Oggetto"}</small><strong>{line.item.name}</strong><span>{line.unitPrice} monete</span></span><span className="market-item-stock">{line.quantity}</span>{cart[line.item.id] > 0 && <b>{cart[line.item.id]} nel carrello</b>}</button>)}</section>
+          <section className="market-stock-grid">{visibleStock.map((line) => <button type="button" key={line.item.id} className={`market-item-card ${selectedItemId === line.item.id ? "active" : ""}`} onPointerEnter={(event) => scheduleHover(line.item.id, event)} onPointerMove={(event) => { pointer.current = { x: event.clientX, y: event.clientY }; }} onPointerLeave={cancelHover} onClick={() => { cancelHover(); setSelectedItemId(line.item.id); }}>{line.item.imageUrl ? <img src={line.item.imageUrl} alt="" /> : <span className="market-item-placeholder">◇</span>}<span className="market-item-copy"><small>{line.item.rarityLabel || line.item.types[0] || "Oggetto"}</small><strong>{line.item.name}</strong><span>{line.unitPrice} monete</span></span><span className="market-item-stock">{line.quantity}</span>{cart[line.item.id] > 0 && <b>{cart[line.item.id]} nel carrello</b>}</button>)}</section>
           {!visibleStock.length && <div className="market-empty"><span>◇</span><h3>Nessun oggetto trovato</h3><p>Prova a cambiare i filtri o chiedi al Master di rigenerare le scorte.</p></div>}
         </div> : <div className="market-empty"><span>⌂</span><h3>{activeLocation ? "Nessun negozio selezionato" : activeRegion ? "Scegli una località" : "Scegli una regione"}</h3><p>{activeLocation ? (market.permissions.canManage ? "Crea il primo negozio oppure modifica i filtri." : "Modifica i filtri o scegli un'altra località.") : "Usa i due elenchi a sinistra per entrare nel mercato."}</p>{activeLocation && market.permissions.canManage && !locationShops.length && <button className="button primary" onClick={() => setEditing("new")}>Crea negozio</button>}</div>}
       </main>
       <PurchaseSidebar shop={selectedShop} character={market.character} cart={cart} negotiationPercent={negotiationPercent} maximumNegotiationPercent={maximumNegotiationPercent} pending={actionMutation.isPending} onSetQuantity={(itemId, quantity) => setCart((current) => ({ ...current, [itemId]: quantity }))} onSetNegotiation={setNegotiationPercent} onClear={() => { setCart({}); setNegotiationPercent(0); }} onPurchase={() => actionMutation.mutate({ action: "market.purchase", payload: { characterId: market.character?.id, shopId: selectedShop?.id, stockRevision: selectedShop?.stockRevision, lines: cartLines, negotiationPercent } })} />
     </div>
+    {hoveredLine && hoveredItem && !selectedLine && !editing && <StockHoverCard line={hoveredLine} origin={hoveredItem} />}
     {selectedLine && <ItemDetail line={selectedLine} quantity={cart[selectedLine.item.id] || 0} position={detailIndex + 1} total={visibleStock.length} onStep={stepDetail} onClose={() => setSelectedItemId(null)} onSetQuantity={(quantity) => setCart((current) => ({ ...current, [selectedLine.item.id]: quantity }))} />}
     {editing && <ShopEditor key={`${editing}-${selectedShop?.id || "new"}`} market={market} shop={editing === "edit" ? selectedShop : null} saving={actionMutation.isPending} onClose={() => setEditing(null)} onSave={saveShop} />}
   </div>;

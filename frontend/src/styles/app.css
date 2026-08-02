@@ -404,14 +404,22 @@
 .market-shop-filters { display: flex; gap: 7px; }
 .market-shop-filters label { display: grid; gap: 2px; min-width: 105px; color: var(--muted); font-size: .51rem; text-transform: uppercase; }
 .market-shop-filters select { height: 30px; padding: 4px 7px; }
+.market-shop-type-filter { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; padding: 0 13px 9px; }
+.market-shop-type-filter > button { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 29px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--muted); font-size: .55rem; cursor: pointer; transition: border-color .14s ease, background .14s ease, color .14s ease; }
+.market-shop-type-filter > button:hover { border-color: color-mix(in srgb, var(--gold), transparent 42%); color: var(--text); }
+.market-shop-type-filter > button.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 90%); color: var(--gold); }
+.market-shop-type-filter > button > b { color: var(--gold); font-size: .74rem; font-weight: 400; }
+/* Il nome del tipo può essere lungo quanto vuole: il pulsante resta un quinto
+   della riga e taglia con i puntini invece di sfondare la griglia. */
+.market-shop-type-filter > button > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .market-location-nav { border-radius: 0; }
 .market-shop-browser .market-shop-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); grid-auto-rows: auto; gap: 5px; max-height: 190px; padding: 7px 10px 10px; overflow-y: auto; border: 0; background: transparent; }
 .market-shop-browser .market-shop-nav > button { position: relative; display: grid; grid-template-columns: 29px minmax(0, 1fr) 24px; align-items: center; gap: 7px; width: 100%; min-width: 0; min-height: 46px; height: auto; padding: 6px 7px; border: 1px solid var(--line); border-radius: 5px; background: var(--theme-panel-surface); color: var(--text); text-align: left; cursor: pointer; transition: transform .14s ease, border-color .14s ease, background .14s ease; }
 .market-shop-nav > button:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--gold), transparent 42%); }
 .market-shop-nav > button.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 92%); box-shadow: inset 0 -2px var(--gold); }
 .market-shop-nav strong, .market-shop-nav small { display: block; }
-.market-shop-nav strong { overflow: hidden; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
-.market-shop-nav small { margin-top: 1px; color: var(--muted); font-size: .5rem; }
+.market-shop-nav strong { overflow: hidden; font-size: .545rem; text-overflow: ellipsis; white-space: nowrap; }
+.market-shop-nav small { margin-top: 1px; overflow: hidden; color: var(--muted); font-size: .5rem; text-overflow: ellipsis; white-space: nowrap; }
 .market-shop-nav b { display: grid; place-items: center; height: 24px; border-radius: 50%; background: color-mix(in srgb, var(--gold), transparent 82%); color: var(--gold); font-size: .54rem; }
 .market-shop-nav em { position: absolute; top: 4px; right: 5px; color: var(--gold); font-style: normal; font-size: .55rem; }
 .market-shop-icon { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid color-mix(in srgb, var(--gold), transparent 58%); border-radius: 50%; color: var(--gold); }
@@ -457,6 +465,16 @@
 .market-item-copy > span { color: var(--gold); font-size: .65rem; }
 .market-item-stock { display: grid; place-items: center; align-self: start; height: 27px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); font-size: .58rem; }
 .market-item-card > b { position: absolute; right: 8px; bottom: 4px; color: var(--accent); font-size: .48rem; }
+/* Anteprima al puntatore: sotto la finestra della scheda (z 100), che la
+   sostituisce appena si clicca, e sopra tutto il resto del banco. */
+.market-item-hover { position: fixed; z-index: 90; display: grid; gap: 6px; width: 248px; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line)); border-radius: 6px; background: var(--theme-overlay-strong-surface); box-shadow: 0 14px 30px #000b; pointer-events: none; }
+.market-item-hover > strong { color: var(--gold); font-size: .7rem; line-height: 1.3; }
+.market-item-hover dl { display: grid; gap: 3px; margin: 0; }
+.market-item-hover dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.market-item-hover dt, .market-item-hover dd { margin: 0; font-size: .58rem; }
+.market-item-hover dt { color: var(--muted); }
+.market-item-hover dd { font-weight: 700; }
+.market-item-hover > p { display: -webkit-box; margin: 0; overflow: hidden; color: var(--muted); font-size: .58rem; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
 .modal-backdrop:has(.market-item-modal) .rd-modal { width: min(860px, calc(100% - 40px)); }
 .market-item-sheet { display: grid; grid-template-columns: 172px minmax(0, 1fr); gap: 16px; }
 .market-item-portrait { align-self: start; text-align: center; }
@@ -565,6 +583,7 @@
   .market-purchase-sidebar { grid-column: auto; }
   .market-shop-heading { display: grid; }
   .market-shop-browser > header { align-items: stretch; flex-direction: column; }
+  .market-shop-type-filter { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .market-item-sheet { grid-template-columns: 1fr; }
   .market-item-portrait img, .market-item-portrait .market-item-placeholder { height: 140px; }
   .market-editor-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -577,7 +596,7 @@
   .market-category-grid > div { grid-template-columns: 1fr; }
   .market-filters > div { grid-template-columns: 1fr; }
   .market-editor-numbers { grid-template-columns: 1fr; }
-  .market-shop-filters { display: grid; grid-template-columns: 1fr 1fr; }
+  .market-shop-type-filter { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .modal-backdrop:has(.market-shop-modal) { left: 0; }
   .market-shop-management { flex-wrap: wrap; }
 }
@@ -3141,12 +3160,13 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .skill-family-rail b { display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid color-mix(in srgb, var(--gold), transparent 55%); border-radius: 50%; background: var(--theme-overlay-surface); color: var(--gold); font-size: .65rem; }
 
 .skill-catalog { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--theme-panel-surface); }
-.skill-family-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); grid-auto-rows: 1fr; gap: 6px; padding: 10px; border-bottom: 1px solid var(--line); background: var(--theme-overlay-strong-surface); }
-.skill-family-nav button { position: relative; width: 100%; min-height: 64px; height: 100%; padding: 9px 13px; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: linear-gradient(100deg, var(--theme-panel-strong-surface), color-mix(in srgb, var(--theme-panel-surface), transparent 5%)); color: var(--text); cursor: pointer; isolation: isolate; }
+.skill-family-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); align-items: start; gap: 6px; padding: 10px; border-bottom: 1px solid var(--line); background: var(--theme-overlay-strong-surface); }
+.skill-family-nav button { position: relative; width: 100%; min-height: 64px; padding: 9px 13px; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: linear-gradient(100deg, var(--theme-panel-strong-surface), color-mix(in srgb, var(--theme-panel-surface), transparent 5%)); color: var(--text); cursor: pointer; isolation: isolate; }
 .skill-family-nav button::before { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--theme-overlay-strong-surface), transparent), var(--family-art) center / cover; content: ""; opacity: .22; }
 .skill-family-nav button:hover, .skill-family-nav button.active { border-color: var(--gold); color: var(--gold); }
 .skill-family-nav button.active { background: color-mix(in srgb, var(--gold), transparent 90%); box-shadow: inset 0 -2px var(--gold); }
-.skill-family-nav button[data-has-art="true"][aria-selected="true"]::before { background: var(--family-art) center / cover; opacity: 1; filter: none; }
+.skill-family-nav button[data-has-art="true"][aria-selected="true"] { aspect-ratio: 1; }
+.skill-family-nav button[data-has-art="true"][aria-selected="true"]::before { background: var(--family-art) center / contain no-repeat; opacity: 1; filter: none; }
 .skill-family-nav button[data-has-art="true"][aria-selected="true"] > span { visibility: hidden; }
 .skill-family-nav strong, .skill-family-nav small { display: block; }
 .skill-family-nav small { margin-top: 3px; color: var(--muted); font-size: .54rem; }
@@ -3206,48 +3226,72 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .skill-empty-catalog span { color: var(--gold); font-size: 2.3rem; }
 .skill-empty-catalog h3 { margin: 12px 0 0; color: var(--text); font-family: var(--font-display); }
 
-.skill-detail-card { margin: -19px; }
-.skill-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 112px; padding: 20px 24px; background: radial-gradient(circle at 85% 50%, color-mix(in srgb, var(--gold), transparent 88%), transparent 34%), var(--theme-panel-strong-surface); }
-.skill-detail-heading p:last-child { max-width: 700px; margin: 5px 0 0; color: var(--text); font-size: .92rem; line-height: 1.65; }
-.skill-seal { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font-size: 1.7rem; box-shadow: inset 0 0 0 7px color-mix(in srgb, var(--gold), transparent 92%), 0 0 22px color-mix(in srgb, var(--gold), transparent 78%); }
+.skill-detail-card { --skill-document-accent: var(--gold); min-height: 100%; margin: -19px; background: var(--theme-panel-surface); }
+.skill-detail-card[data-theme="arcane"] { --skill-document-accent: var(--accent); }
+.skill-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 112px; padding: 20px 24px; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 85% 50%, color-mix(in srgb, var(--skill-document-accent), transparent 88%), transparent 34%), var(--theme-overlay-strong-surface); }
+.skill-detail-heading h3 { margin: 4px 0 0; color: var(--text); font: 1.45rem var(--font-display); }
+.skill-seal { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; border: 1px solid var(--skill-document-accent); border-radius: 50%; color: var(--skill-document-accent); font-size: 1.7rem; box-shadow: inset 0 0 0 7px color-mix(in srgb, var(--skill-document-accent), transparent 92%), 0 0 22px color-mix(in srgb, var(--skill-document-accent), transparent 78%); }
 .skill-card-tabs { display: flex; gap: 0; overflow-x: auto; border-block: 1px solid var(--line); background: var(--theme-overlay-strong-surface); }
-.skill-card-tabs button { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 18px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
-.skill-card-tabs button:hover, .skill-card-tabs button.active { color: var(--gold); }
-.skill-card-tabs button.active { box-shadow: inset 0 -2px var(--gold); }
-.skill-card-tabs span { display: grid; place-items: center; min-width: 18px; height: 18px; border-radius: 9px; background: color-mix(in srgb, var(--gold), transparent 82%); font-size: .55rem; }
-.skill-tab-panel { min-height: 360px; padding: 22px 24px; }
-.skill-tab-panel h3 { font-family: var(--font-display); }
-.skill-prose { max-width: 760px; }
-.skill-prose > p { color: var(--text); font-size: .94rem; line-height: 1.75; white-space: pre-wrap; }
-.skill-prose aside, .skill-tab-panel > aside { margin-top: 15px; padding: 12px 14px; border-left: 3px solid var(--gold); background: color-mix(in srgb, var(--gold), transparent 94%); }
-.skill-prose aside p, .skill-tab-panel > aside p { margin: 4px 0 0; color: var(--text); line-height: 1.6; }
-.skill-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; margin: 22px 0 0; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: var(--line); }
-.skill-facts > div { padding: 11px; background: var(--theme-panel-strong-surface); }
-.skill-facts dt { color: var(--muted); font-size: .57rem; text-transform: uppercase; }
-.skill-facts dd { margin: 5px 0 0; font-weight: 700; }
+.skill-card-tabs button { display: flex; align-items: center; justify-content: center; min-width: 132px; min-height: 44px; padding: 0 22px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.skill-card-tabs button:hover, .skill-card-tabs button.active { color: var(--skill-document-accent); background: color-mix(in srgb, var(--skill-document-accent), transparent 94%); }
+.skill-card-tabs button.active { box-shadow: inset 0 -2px var(--skill-document-accent); }
+.skill-player-document { display: grid; gap: 24px; width: min(860px, 100%); min-height: 360px; margin: 0 auto; padding: 30px 34px 40px; }
+.skill-document-facts, .skill-management-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--line); }
+.skill-document-facts > div, .skill-management-facts > div { padding: 12px 14px; background: var(--theme-panel-strong-surface); }
+.skill-document-facts dt, .skill-management-facts dt { color: var(--muted); font-size: .57rem; letter-spacing: .07em; text-transform: uppercase; }
+.skill-document-facts dd, .skill-management-facts dd { margin: 5px 0 0; color: var(--text); font-weight: 700; line-height: 1.45; }
+.skill-document-facts dd small { display: block; margin-top: 5px; color: var(--muted); font-size: .58rem; font-weight: 500; }
+.skill-document-section { display: grid; gap: 10px; }
+.skill-document-section > .eyebrow { margin: 0; }
+.skill-document-section > p:not(.eyebrow) { margin: 0; color: var(--text); font-size: .94rem; line-height: 1.75; white-space: pre-wrap; }
+.skill-document-callout, .skill-document-note { margin: 0; padding: 13px 15px; border-left: 3px solid var(--skill-document-accent); background: color-mix(in srgb, var(--skill-document-accent), transparent 94%); }
+.skill-document-callout p, .skill-document-note p { margin: 5px 0 0; color: var(--text); line-height: 1.65; white-space: pre-wrap; }
+.skill-document-note { position: relative; border: 1px solid color-mix(in srgb, var(--gold), transparent 55%); border-left-width: 3px; background: linear-gradient(110deg, color-mix(in srgb, var(--gold), transparent 91%), var(--theme-panel-strong-surface)); }
+.skill-document-note strong { color: var(--gold); }
 .skill-blocked-reasons { border-left-color: var(--slot-invalid) !important; background: color-mix(in srgb, var(--slot-invalid), transparent 94%) !important; }
 .skill-blocked-reasons ul { margin-bottom: 0; color: var(--muted); }
-.skill-feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); align-content: start; gap: 12px; }
-.skill-feature-list > article { padding: 15px; border: 1px solid var(--line); border-radius: 6px; background: var(--theme-panel-strong-surface); }
-.skill-feature-list article > header { display: flex; align-items: center; gap: 10px; }
-.skill-feature-list article > header > span { color: var(--gold); font-size: 1.2rem; }
-.skill-feature-list h3, .skill-feature-list header small { margin: 0; }
-.skill-feature-list header small { color: var(--muted); }
-.skill-feature-list article > p { color: var(--text); font-size: .9rem; line-height: 1.65; }
-.skill-feature-list article ul { padding-left: 18px; color: var(--text); font-family: ui-monospace, monospace; font-size: .69rem; }
-.skill-feature-list dl { display: grid; gap: 7px; }
-.skill-feature-list dl div { display: grid; grid-template-columns: 82px 1fr; gap: 8px; }
-.skill-feature-list dt { color: var(--muted); font-size: .6rem; text-transform: uppercase; }
-.skill-feature-list dd { margin: 0; }
-.skill-feature-list article aside { padding: 9px; border: 1px solid var(--line); color: var(--text); font-size: .74rem; line-height: 1.5; }
-.skill-empty-tab { grid-column: 1 / -1; display: grid; place-items: center; min-height: 260px; color: var(--muted); text-align: center; }
-.skill-empty-tab span { color: var(--gold); font-size: 2rem; }
-.skill-tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+.skill-document-section-heading, .skill-spell-document > header, .skill-management-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.skill-document-section-heading h3, .skill-spell-document h3, .skill-management-heading h3 { margin: 3px 0 0; font-family: var(--font-display); }
+.skill-document-section-heading > span { display: grid; min-width: 26px; height: 26px; place-items: center; color: var(--skill-document-accent); border: 1px solid color-mix(in srgb, var(--skill-document-accent), transparent 58%); border-radius: 50%; background: color-mix(in srgb, var(--skill-document-accent), transparent 90%); font-size: .62rem; font-weight: 700; }
+.skill-rule-list { display: grid; gap: 8px; }
+.skill-rule-disclosure { --skill-rule-accent: var(--gold); overflow: hidden; border: 1px solid var(--line); border-radius: 7px; background: var(--theme-panel-strong-surface); }
+.skill-rule-disclosure[data-theme="arcane"] { --skill-rule-accent: var(--accent); }
+.skill-rule-disclosure[open] { border-color: color-mix(in srgb, var(--skill-rule-accent), var(--line) 52%); }
+.skill-rule-disclosure summary { display: grid; grid-template-columns: 34px minmax(0, 1fr) 24px; gap: 11px; align-items: center; min-height: 58px; padding: 9px 13px; color: var(--text); cursor: pointer; list-style: none; }
+.skill-rule-disclosure summary::-webkit-details-marker { display: none; }
+.skill-rule-disclosure summary:hover { background: color-mix(in srgb, var(--skill-rule-accent), transparent 95%); }
+.skill-rule-disclosure summary > span:nth-child(2) { display: grid; gap: 3px; min-width: 0; }
+.skill-rule-disclosure summary strong { font: 700 .83rem var(--font-display); }
+.skill-rule-disclosure summary small { color: var(--muted); font-size: .58rem; }
+.skill-rule-symbol { display: grid; width: 30px; height: 30px; place-items: center; color: var(--skill-rule-accent); border: 1px solid color-mix(in srgb, var(--skill-rule-accent), transparent 56%); border-radius: 50%; background: color-mix(in srgb, var(--skill-rule-accent), transparent 91%); }
+.skill-rule-chevron { color: var(--muted); font-size: 1rem; text-align: center; transition: transform .16s ease; }
+.skill-rule-disclosure[open] .skill-rule-chevron { color: var(--skill-rule-accent); transform: rotate(180deg); }
+.skill-rule-body { display: grid; gap: 13px; padding: 2px 18px 17px 58px; border-top: 1px solid color-mix(in srgb, var(--line), transparent 28%); }
+.skill-rule-body > p { margin: 13px 0 0; color: var(--text); font-size: .88rem; line-height: 1.7; white-space: pre-wrap; }
+.skill-rule-body ul { margin: 13px 0 0; padding-left: 18px; color: var(--text); font-family: ui-monospace, monospace; font-size: .69rem; line-height: 1.6; }
+.skill-rule-body dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 7px; margin: 13px 0 0; }
+.skill-rule-body dl div { padding: 9px 10px; border: 1px solid var(--line); background: var(--theme-panel-surface); }
+.skill-rule-body dt { color: var(--muted); font-size: .56rem; letter-spacing: .06em; text-transform: uppercase; }
+.skill-rule-body dd { margin: 4px 0 0; color: var(--text); }
+.skill-rule-body aside { padding: 10px 12px; border-left: 2px solid var(--skill-rule-accent); background: color-mix(in srgb, var(--skill-rule-accent), transparent 95%); }
+.skill-rule-body aside p { margin: 4px 0 0; color: var(--text); line-height: 1.55; white-space: pre-wrap; }
+.skill-spell-document { padding: 16px; border: 1px solid color-mix(in srgb, var(--accent), var(--line) 45%); border-radius: 8px; background: linear-gradient(145deg, color-mix(in srgb, var(--accent), transparent 94%), var(--theme-panel-strong-surface)); }
+.skill-spell-document > header > span { display: grid; gap: 3px; min-width: 120px; padding: 8px 10px; border: 1px solid var(--line); background: var(--theme-panel-surface); color: var(--text); font-size: .72rem; }
+.skill-spell-document > header small { color: var(--muted); font-size: .52rem; letter-spacing: .06em; text-transform: uppercase; }
+.skill-spell-cost-summary { margin: 0; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
+.skill-spell-document > aside { padding: 11px 13px; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent), transparent 94%); }
+.skill-spell-document > aside p { margin: 4px 0 0; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
+.skill-management-document { min-height: 360px; padding: 26px 30px 36px; }
+.skill-management-heading { margin-bottom: 18px; }
+.skill-management-facts { margin-bottom: 18px; }
+.skill-management-notes { max-width: 760px; padding: 14px; border: 1px solid var(--line); background: var(--theme-panel-strong-surface); }
+.skill-management-notes h4 { margin: 0 0 7px; font-family: var(--font-display); }
+.skill-management-notes p { margin: 0; color: var(--text); line-height: 1.65; white-space: pre-wrap; }
+.skill-tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
 .skill-tag-cloud span { display: flex; gap: 7px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--theme-panel-strong-surface); color: var(--muted); font-size: .68rem; }
 .skill-tag-cloud strong { color: var(--gold); }
 .skill-detail-status { margin-right: auto; color: var(--muted); font-size: .68rem; }
 .skill-edit-tab { padding: 0; }
-.skill-tab-panel > p { color: var(--text); font-size: .9rem; line-height: 1.65; }
 
 .skill-example-picker { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(280px, 1.25fr); align-items: end; gap: 16px; margin: -4px -4px 14px; padding: 14px 18px; border: 1px solid color-mix(in srgb, var(--gold), transparent 55%); border-radius: 7px; background: color-mix(in srgb, var(--gold), transparent 93%); }
 .skill-example-picker label { display: grid; gap: 6px; color: var(--text); font-size: .68rem; font-weight: 750; }
@@ -3458,14 +3502,19 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
   .skill-catalog-toolbar .archive-toggle { grid-column: auto; }
   .skill-search-primary, .skill-search-advanced > div { grid-template-columns: 1fr; }
   .skill-search-workspace > header, .skill-search-results-heading { align-items: stretch; flex-direction: column; }
-  .skill-facts, .skill-spend-grid { grid-template-columns: repeat(2, 1fr); }
+  .skill-document-facts, .skill-management-facts, .skill-spend-grid { grid-template-columns: repeat(2, 1fr); }
+  .skill-player-document, .skill-management-document { padding-right: 18px; padding-left: 18px; }
+  .skill-rule-body { padding-left: 18px; }
+  .skill-spell-document > header { align-items: stretch; flex-direction: column; }
+  .skill-spell-document > header > span { min-width: 0; }
   .skill-operation-row { grid-template-columns: 1fr 1fr; }
   .skill-operation-row > button { align-self: end; }
   .skill-example-picker { grid-template-columns: 1fr; }
 }
 
 [data-reduced-motion="true"] .skill-unlock-loading span { animation: none; }
-@media (prefers-reduced-motion: reduce) { .skill-unlock-loading span { animation: none; } }
+[data-reduced-motion="true"] .skill-rule-chevron { transition: none; }
+@media (prefers-reduced-motion: reduce) { .skill-unlock-loading span { animation: none; } .skill-rule-chevron { transition: none; } }
 
 /* Competenze workspace */
 .competencies-page { max-width: 1720px; gap: 22px; }
@@ -4657,6 +4706,115 @@ html[data-reduced-motion="true"] .alchemy-slot-epic, html[data-reduced-motion="t
 .alchemy-reference-panel details { border-top: 1px solid var(--line); padding-top: 12px; }.alchemy-reference-panel summary { color: var(--gold); font-size: .66rem; font-weight: 700; cursor: pointer; }
 .alchemy-catalog { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }.alchemy-catalog > div { padding: 11px; border: 1px solid color-mix(in srgb, currentColor, var(--line) 70%); border-radius: 7px; background: color-mix(in srgb, currentColor, transparent 94%); }.alchemy-catalog h3 { display: flex; align-items: center; gap: 7px; color: currentColor; }.alchemy-catalog section { margin-top: 9px; }.alchemy-catalog section strong { color: var(--text); font-size: .55rem; text-transform: uppercase; }.alchemy-catalog section p { margin: 2px 0 0; color: var(--muted); font-size: .55rem; line-height: 1.45; }
 .creation-roadmap-panel { display: grid; grid-template-columns: 80px minmax(0, 680px); gap: 24px; align-items: center; min-height: 270px; }.creation-roadmap-rune { display: grid; width: 70px; height: 70px; place-items: center; color: var(--gold); border: 1px solid var(--gold); font-size: 1.8rem; transform: rotate(45deg); }.creation-roadmap-panel p:last-child { color: var(--muted); line-height: 1.7; }
+
+/* Forgiatura e Incantamento — stessa lingua visiva del banco alchemico */
+.crafting-bench { display: grid; gap: 14px; }
+.crafting-subtabs { display: flex; flex-wrap: wrap; gap: 7px; }
+.crafting-subtabs button { display: flex; align-items: center; gap: 7px; padding: 8px 15px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: var(--theme-overlay-surface); font-size: .68rem; font-weight: 700; letter-spacing: .02em; cursor: pointer; transition: color .15s, border-color .15s, background .15s; }
+.crafting-subtabs button:hover { color: var(--text); border-color: color-mix(in srgb, var(--gold), var(--line)); }
+.crafting-subtabs button.active { color: var(--text); border-color: color-mix(in srgb, var(--gold), transparent 30%); background: color-mix(in srgb, var(--gold), transparent 88%); }
+.crafting-subtabs button em { display: grid; min-width: 17px; height: 17px; place-items: center; padding: 0 4px; color: var(--gold); border-radius: 999px; background: color-mix(in srgb, var(--gold), transparent 80%); font: 700 .55rem var(--font-display); font-style: normal; }
+.forge-workspace, .enchant-workspace { display: grid; grid-template-columns: minmax(430px, .95fr) minmax(430px, 1.05fr); gap: 14px; align-items: start; }
+.forge-workspace > section, .enchant-workspace > section, .enchant-left-column { min-width: 0; }
+.enchant-left-column { display: grid; gap: 14px; align-content: start; }
+.forge-bench-panel, .enchant-bench-panel { position: sticky; top: calc(var(--quick-tools-height) + 14px); }
+
+.forge-ladder { display: grid; gap: 6px; }
+.forge-ladder-row { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 9px; align-items: center; }
+.forge-tier { display: grid; height: 100%; min-height: 46px; place-items: center; color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold), transparent 65%); border-radius: 5px; background: color-mix(in srgb, var(--gold), transparent 93%); font: 700 .68rem var(--font-display); }
+.forge-ladder-row > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 6px; }
+.forge-material { position: relative; display: grid; gap: 1px; min-height: 46px; padding: 7px 34px 7px 10px; color: var(--text); border: 1px solid var(--line); border-radius: 5px; background: #0002; text-align: left; cursor: pointer; transition: border-color .15s, background .15s; }
+.forge-material:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold), var(--line)); }
+.forge-material.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 87%); }
+.forge-material.locked { color: var(--muted); opacity: .5; cursor: not-allowed; }
+.forge-material strong { font: 700 .68rem var(--font-display); }
+.forge-material small { color: var(--muted); font-size: .5rem; text-transform: uppercase; letter-spacing: .07em; }
+.forge-material em { position: absolute; top: 50%; right: 9px; color: var(--gold); font: 700 .85rem var(--font-display); font-style: normal; transform: translateY(-50%); }
+.forge-material em.empty { color: var(--muted); opacity: .55; }
+.forge-material em.lock { font-size: .75rem; }
+.forge-warn { position: absolute; top: 5px; right: 5px; display: grid; width: 13px; height: 13px; place-items: center; color: #e3c07a; border: 1px solid #c797493f; border-radius: 50%; background: #b1762733; font: 700 .5rem var(--font-display); font-style: normal; }
+
+.forge-filter-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.forge-filter-row button { padding: 5px 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: transparent; font-size: .58rem; cursor: pointer; }
+.forge-filter-row button.active { color: var(--gold); border-color: color-mix(in srgb, var(--gold), transparent 45%); background: color-mix(in srgb, var(--gold), transparent 90%); }
+.forge-blueprint-list { display: grid; gap: 6px; max-height: 420px; overflow-y: auto; padding-right: 3px; }
+.forge-blueprint { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 9px 12px; color: var(--text); border: 1px solid var(--line); border-radius: 6px; background: #0002; text-align: left; cursor: pointer; transition: border-color .15s, transform .15s; }
+.forge-blueprint:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold), transparent 40%); transform: translateX(2px); }
+.forge-blueprint:disabled { cursor: not-allowed; opacity: .42; }
+.forge-blueprint-name { display: grid; gap: 2px; min-width: 0; }
+.forge-blueprint-name strong { overflow: hidden; font: 700 .7rem var(--font-display); text-overflow: ellipsis; white-space: nowrap; }
+.forge-blueprint-name small, .forge-cost small { color: var(--muted); font-size: .52rem; }
+.forge-cost { display: grid; justify-items: end; gap: 1px; }
+.forge-cost strong { color: var(--gold); font: 700 1rem var(--font-display); }
+
+.forge-instance-list { display: grid; gap: 6px; max-height: 460px; overflow-y: auto; padding-right: 3px; }
+.forge-instance-list.wide { max-height: none; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.forge-instance { position: relative; display: grid; gap: 2px; padding: 10px 62px 10px 12px; color: var(--text); border: 1px solid var(--line); border-radius: 6px; background: #0002; text-align: left; cursor: pointer; }
+.forge-instance:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold), transparent 45%); }
+.forge-instance.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 88%); }
+.forge-instance strong { font: 700 .7rem var(--font-display); }
+.forge-instance small { color: var(--muted); font-size: .53rem; }
+.forge-instance em { position: absolute; top: 50%; right: 11px; color: var(--gold); font: 700 .68rem var(--font-display); font-style: normal; transform: translateY(-50%); }
+
+.forge-budget { display: grid; gap: 7px; margin-bottom: 14px; padding: 13px; border: 1px solid color-mix(in srgb, var(--gold), transparent 57%); border-radius: 7px; background: linear-gradient(110deg, color-mix(in srgb, var(--gold), transparent 92%), #0002); }
+.forge-budget > div:first-child { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.forge-budget span { color: var(--muted); font-size: .55rem; text-transform: uppercase; letter-spacing: .07em; }
+.forge-budget strong { color: var(--gold); font: 700 1.2rem var(--font-display); }
+.forge-budget strong small { color: var(--muted); font-size: .7rem; }
+.forge-budget p { margin: 0; color: var(--muted); font-size: .55rem; }
+.forge-budget-bar { display: flex; gap: 3px; }
+.forge-budget-bar i { height: 6px; flex: 1; border: 1px solid color-mix(in srgb, var(--gold), transparent 65%); border-radius: 2px; }
+.forge-budget-bar i.spent { background: var(--gold); }
+.forge-fatigue-toggle { display: flex; align-items: center; gap: 9px; margin-bottom: 13px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 6px; background: #0002; cursor: pointer; }
+.forge-fatigue-toggle span { font-size: .62rem; }
+.forge-fatigue-toggle small { display: block; color: var(--muted); font-size: .52rem; }
+
+.forge-improvement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
+.forge-improvement { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 11px; color: var(--text); border: 1px solid var(--line); border-radius: 6px; background: #0002; text-align: left; cursor: pointer; }
+.forge-improvement:hover:not(:disabled) { border-color: color-mix(in srgb, var(--gold), transparent 40%); }
+.forge-improvement:disabled { cursor: not-allowed; opacity: .38; }
+.forge-improvement.owned { border-color: color-mix(in srgb, var(--gold), transparent 55%); background: color-mix(in srgb, var(--gold), transparent 92%); }
+.forge-improvement > span:first-child { display: grid; gap: 2px; min-width: 0; }
+.forge-improvement strong { font-size: .65rem; font-weight: 700; }
+.forge-table-badge { color: #e3c07a; font-size: .48rem; font-style: normal; text-transform: uppercase; letter-spacing: .06em; }
+.forge-improvement-cost { display: grid; justify-items: end; }
+.forge-improvement-cost strong { color: var(--gold); font: 700 .95rem var(--font-display); }
+.forge-improvement-cost small { color: var(--muted); font-size: .48rem; }
+.forge-rules-note { display: grid; gap: 5px; margin-top: 14px; padding: 11px; color: #e3c07a; border: 1px solid #c797493f; border-radius: 6px; background: #b1762720; font-size: .6rem; }
+.forge-rules-note ul, .forge-rules-panel ul { margin: 0; padding-left: 16px; }
+.forge-rules-note li, .forge-rules-panel li { color: var(--muted); font-size: .58rem; line-height: 1.55; }
+.forge-rules-panel strong { color: var(--text); }
+
+.enchant-gem-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 6px; }
+.enchant-gem { display: grid; min-height: 58px; place-items: center; align-content: center; gap: 1px; color: var(--text); border: 1px solid var(--line); border-radius: 7px; background: linear-gradient(155deg, color-mix(in srgb, var(--alchemy-blue), transparent 88%), #0002); cursor: pointer; }
+.enchant-gem:hover:not(:disabled) { border-color: color-mix(in srgb, var(--alchemy-blue), transparent 40%); }
+.enchant-gem.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 84%); box-shadow: 0 0 14px color-mix(in srgb, var(--gold), transparent 78%); }
+.enchant-gem.empty { cursor: not-allowed; opacity: .38; }
+.enchant-gem strong { font: 700 1.15rem var(--font-display); }
+.enchant-gem small { color: var(--muted); font-size: .48rem; text-transform: uppercase; letter-spacing: .06em; }
+.enchant-target-list { display: grid; gap: 6px; max-height: 280px; overflow-y: auto; padding-right: 3px; }
+.enchant-target { display: grid; gap: 2px; padding: 9px 12px; color: var(--text); border: 1px solid var(--line); border-radius: 6px; background: #0002; text-align: left; cursor: pointer; }
+.enchant-target:hover { border-color: color-mix(in srgb, var(--gold), transparent 45%); }
+.enchant-target.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold), transparent 88%); }
+.enchant-target strong { font: 700 .68rem var(--font-display); }
+.enchant-target small { color: var(--muted); font-size: .52rem; text-transform: capitalize; }
+.enchant-formula { grid-template-columns: 1fr auto 1.3fr auto 1fr; }
+.enchant-kind-picker { display: grid; gap: 5px; margin-bottom: 13px; }
+.enchant-inventory { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 9px; }
+.enchant-card { display: grid; gap: 7px; align-content: start; padding: 13px; border: 1px solid color-mix(in srgb, var(--gold), var(--line) 70%); border-radius: 7px; background: linear-gradient(140deg, color-mix(in srgb, var(--gold), transparent 94%), #0002); }
+.enchant-card header { display: grid; gap: 2px; }
+.enchant-card header strong { font: 700 .74rem var(--font-display); }
+.enchant-card header small, .enchant-card-note { color: var(--muted); font-size: .54rem; }
+.enchant-card-note { margin: 0; }
+.enchant-charge-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .58rem; }
+.enchant-charge-row em { color: var(--muted); font-size: .52rem; font-style: normal; }
+.enchant-charge-pips { display: flex; flex-wrap: wrap; gap: 3px; }
+.enchant-charge-pips i { width: 7px; height: 7px; border: 1px solid color-mix(in srgb, var(--gold), transparent 55%); border-radius: 50%; }
+.enchant-charge-pips i.full { background: var(--gold); box-shadow: 0 0 7px color-mix(in srgb, var(--gold), transparent 55%); }
+.enchant-card footer { display: flex; gap: 6px; margin-top: 3px; }
+.enchant-card footer .button { padding: 5px 12px; font-size: .58rem; }
+
+@media (max-width: 1180px) { .forge-workspace, .enchant-workspace { grid-template-columns: minmax(0, 1fr); } .forge-bench-panel, .enchant-bench-panel { position: static; } }
 
 /* Character-owned combat buttons */
 .combat-buttons-workspace { display: grid; gap: 18px; padding: 20px; }

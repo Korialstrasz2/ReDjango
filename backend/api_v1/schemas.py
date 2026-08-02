@@ -1424,6 +1424,55 @@ class AlchemyExtractPayloadSchema(Schema):
     characterId: int
 
 
+class ForgeCraftPayloadSchema(Schema):
+    characterId: int
+    blueprintItemId: int
+
+
+class ForgeImprovePayloadSchema(Schema):
+    characterId: int
+    instanceId: int
+    improvementKey: str
+    useFatigue: bool = False
+
+
+class ForgeMeltPayloadSchema(Schema):
+    characterId: int
+    instanceId: int
+
+
+class ForgeSpecialistPayloadSchema(Schema):
+    characterId: int
+    materialKey: str
+
+
+class ForgePracticalPayloadSchema(Schema):
+    characterId: int
+    blueprintItemId: int
+    level: int = 1
+
+
+class EnchantItemPayloadSchema(Schema):
+    characterId: int
+    targetItemId: int
+    gemSlots: list[int]
+    kind: str
+    altarItemId: int | None = None
+    useFatigue: bool = False
+
+
+class EnchantScrollPayloadSchema(Schema):
+    characterId: int
+    spellId: int
+    manaSpent: float
+    altarItemId: int | None = None
+
+
+class EnchantInstancePayloadSchema(Schema):
+    characterId: int
+    instanceId: int
+
+
 class SkillPreviewPayloadSchema(Schema):
     characterId: int
     skillId: int
@@ -1907,6 +1956,51 @@ class AlchemyExtractActionSchema(ActionBaseSchema):
     payload: AlchemyExtractPayloadSchema
 
 
+class ForgeCraftActionSchema(ActionBaseSchema):
+    action: Literal["forge.craft"]
+    payload: ForgeCraftPayloadSchema
+
+
+class ForgeImproveActionSchema(ActionBaseSchema):
+    action: Literal["forge.improve"]
+    payload: ForgeImprovePayloadSchema
+
+
+class ForgeMeltActionSchema(ActionBaseSchema):
+    action: Literal["forge.melt"]
+    payload: ForgeMeltPayloadSchema
+
+
+class ForgeSpecialistActionSchema(ActionBaseSchema):
+    action: Literal["forge.setSpecialist"]
+    payload: ForgeSpecialistPayloadSchema
+
+
+class ForgePracticalActionSchema(ActionBaseSchema):
+    action: Literal["forge.craftPractical"]
+    payload: ForgePracticalPayloadSchema
+
+
+class EnchantItemActionSchema(ActionBaseSchema):
+    action: Literal["enchant.item"]
+    payload: EnchantItemPayloadSchema
+
+
+class EnchantScrollActionSchema(ActionBaseSchema):
+    action: Literal["enchant.scroll"]
+    payload: EnchantScrollPayloadSchema
+
+
+class EnchantRechargeActionSchema(ActionBaseSchema):
+    action: Literal["enchant.recharge"]
+    payload: EnchantInstancePayloadSchema
+
+
+class EnchantDisenchantActionSchema(ActionBaseSchema):
+    action: Literal["enchant.disenchant"]
+    payload: EnchantInstancePayloadSchema
+
+
 class SkillPreviewActionSchema(ActionBaseSchema):
     action: Literal["skills.previewUnlock"]
     payload: SkillPreviewPayloadSchema
@@ -2231,6 +2325,15 @@ ActionEnvelopeSchema = Annotated[
     | LoreCharacterDeleteActionSchema
     | LoreTimelineSaveActionSchema
     | LoreTimelineArchiveActionSchema
+    | ForgeCraftActionSchema
+    | ForgeImproveActionSchema
+    | ForgeMeltActionSchema
+    | ForgeSpecialistActionSchema
+    | ForgePracticalActionSchema
+    | EnchantItemActionSchema
+    | EnchantScrollActionSchema
+    | EnchantRechargeActionSchema
+    | EnchantDisenchantActionSchema
     | NameGenerateActionSchema,
     Field(discriminator="action"),
 ]
@@ -2256,6 +2359,10 @@ class ActionDataSchema(Schema):
     creation: AlchemyCreationDataSchema | None = None
     alchemyResult: AlchemyBrewResultSchema | None = None
     extractedReagent: AlchemyCatalogReagentSchema | None = None
+    forge: dict[str, Any] | None = None
+    forgeResult: dict[str, Any] | None = None
+    enchant: dict[str, Any] | None = None
+    enchantResult: dict[str, Any] | None = None
     market: dict[str, Any] | None = None
     marketQuote: dict[str, Any] | None = None
     lore: dict[str, Any] | None = None
@@ -2281,6 +2388,15 @@ class ErrorEnvelopeSchema(Schema):
 
 
 class MarketEnvelopeSchema(Schema):
+    ok: bool
+    requestId: str
+    data: dict[str, Any]
+    events: list[EventSchema] = []
+    warnings: list[dict[str, Any]] = []
+    errors: list[ErrorSchema] = []
+
+
+class CraftingBenchEnvelopeSchema(Schema):
     ok: bool
     requestId: str
     data: dict[str, Any]

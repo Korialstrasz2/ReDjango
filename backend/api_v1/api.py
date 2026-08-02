@@ -12,6 +12,8 @@ from backend.characters.models import Personaggio
 from backend.characters.race_rules import race_configuration_payload
 from backend.characters.competence_selectors import competence_catalog_payload
 from backend.characters.alchemy_selectors import alchemy_creation_payload
+from backend.characters.enchant_selectors import enchant_payload
+from backend.characters.forge_selectors import forge_payload
 from backend.characters.note_selectors import character_notes_payload
 from backend.characters.selectors import effect_catalog_payload, ordered_personaggi_for, personaggio_detail, serialize_item
 from backend.characters.services.commands import adjust_quick_stat, apply_effect, assign_item, recover_mana_from_siphon, rest_character, swap_items, switch_primary_weapon, update_overview, update_resource
@@ -42,6 +44,19 @@ from backend.characters.services.competencies import (
     upgrade_competence,
 )
 from backend.characters.services.alchemy import brew_alchemy, extract_alchemy_reagent
+from backend.characters.services.enchant import (
+    disenchant_item,
+    enchant_item,
+    inscribe_scroll,
+    recharge_item,
+)
+from backend.characters.services.forge import (
+    craft_item,
+    craft_practical_item,
+    improve_item,
+    melt_item,
+    set_specialist_material,
+)
 from backend.characters.services.combat_buttons import create_combat_button, delete_combat_button, update_combat_button
 from backend.core.api import ApiError
 from backend.core.campaigns import (
@@ -190,7 +205,7 @@ from backend.market.services import (
     set_shop_state as set_market_shop_state,
 )
 
-from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, ItemCompendiumPageEnvelopeSchema, ItemCompendiumReferenceEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, NameCatalogEnvelopeSchema, SkillCatalogEnvelopeSchema
+from .schemas import ActionEnvelopeResponseSchema, ActionEnvelopeSchema, AlchemyCreationEnvelopeSchema, CraftingBenchEnvelopeSchema, CharacterNotesEnvelopeSchema, CharacterSheetEnvelopeSchema, CompetenceCatalogEnvelopeSchema, DiceHistoryEnvelopeSchema, DiceSetsEnvelopeSchema, ErrorEnvelopeSchema, ItemCatalogEnvelopeSchema, ItemCompendiumPageEnvelopeSchema, ItemCompendiumReferenceEnvelopeSchema, LoreEnvelopeSchema, ManagementEnvelopeSchema, MarketEnvelopeSchema, NameCatalogEnvelopeSchema, SkillCatalogEnvelopeSchema
 
 
 class SessionCookieAuth(APIKeyCookie):
@@ -735,6 +750,28 @@ def character_creation(request: HttpRequest, character_id: int):
     user, giocatore = _identity(request)
     character = _allowed_character(user, giocatore, character_id)
     return _envelope(request, alchemy_creation_payload(character))
+
+
+@api.get(
+    "/characters/{character_id}/creation/forge",
+    response={200: CraftingBenchEnvelopeSchema, 404: ErrorEnvelopeSchema},
+    tags=["creation"],
+)
+def character_forge(request: HttpRequest, character_id: int):
+    user, giocatore = _identity(request)
+    character = _allowed_character(user, giocatore, character_id)
+    return _envelope(request, forge_payload(character))
+
+
+@api.get(
+    "/characters/{character_id}/creation/enchant",
+    response={200: CraftingBenchEnvelopeSchema, 404: ErrorEnvelopeSchema},
+    tags=["creation"],
+)
+def character_enchant(request: HttpRequest, character_id: int, slotType: str = "", level: int = 0):
+    user, giocatore = _identity(request)
+    character = _allowed_character(user, giocatore, character_id)
+    return _envelope(request, enchant_payload(character, slot_type=slotType, level=level))
 
 
 @api.get(
@@ -1317,6 +1354,85 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 "extractedReagent": extracted_reagent,
             }
             message = f"Estratto {extracted_reagent['name']}."
+        elif action == "forge.craft":
+            character, forge_result = craft_item(payload["characterId"], payload["blueprintItemId"])
+            data = {"forge": forge_payload(character), "forgeResult": forge_result}
+            produced = f" ×{forge_result['quantity']}" if forge_result["quantity"] > 1 else ""
+            message = (
+                f"{forge_result['name']}{produced} forgiato con {forge_result['ingotsSpent']} "
+                f"unità di {forge_result['materialLabel']} in {forge_result['hours']} ore."
+            )
+            if not forge_result["stored"]:
+                warnings.append({"code": "forge.backpack_full", "message": "Zaino pieno: l'oggetto resta senza posto."})
+        elif action == "forge.improve":
+            character, forge_result = improve_item(
+                payload["characterId"],
+                payload["instanceId"],
+                payload["improvementKey"],
+                payload.get("useFatigue", False),
+            )
+            data = {"forge": forge_payload(character), "forgeResult": forge_result}
+            message = (
+                f"{forge_result['label']} applicato a {forge_result['name']} "
+                f"per {forge_result['cost']} punti ({forge_result['pointsSpent']}/{forge_result['pointsMax']})."
+            )
+        elif action == "forge.melt":
+            character, forge_result = melt_item(payload["characterId"], payload["instanceId"])
+            data = {"forge": forge_payload(character), "forgeResult": forge_result}
+            message = (
+                f"{forge_result['name']} fuso: recuperate {forge_result['recovered']} "
+                f"unità di {forge_result['materialLabel']}."
+            )
+            if forge_result["backpackFull"]:
+                warnings.append({"code": "forge.backpack_full", "message": "Zaino pieno: parte del materiale è andata persa."})
+        elif action == "forge.setSpecialist":
+            character, forge_result = set_specialist_material(payload["characterId"], payload["materialKey"])
+            data = {"forge": forge_payload(character), "forgeResult": forge_result}
+            fatigue = f" (costo {forge_result['fatigueSpent']} Stanchezza)" if forge_result["fatigueSpent"] else ""
+            message = f"Specialista legato a {forge_result['materialLabel']}{fatigue}."
+        elif action == "forge.craftPractical":
+            character, forge_result = craft_practical_item(
+                payload["characterId"], payload["blueprintItemId"], payload.get("level", 1)
+            )
+            data = {"forge": forge_payload(character), "forgeResult": forge_result}
+            message = f"{forge_result['name']} creato con {forge_result['leatherSpent']} unità di pelle."
+        elif action == "enchant.item":
+            character, enchant_result = enchant_item(
+                payload["characterId"],
+                payload["targetItemId"],
+                payload.get("gemSlots", []),
+                payload["kind"],
+                payload.get("altarItemId"),
+                payload.get("useFatigue", False),
+            )
+            data = {"enchant": enchant_payload(character), "enchantResult": enchant_result}
+            message = (
+                f"{enchant_result['name']}: {enchant_result['label']} livello {enchant_result['level']}, "
+                f"{enchant_result['charges']} cariche."
+            )
+        elif action == "enchant.scroll":
+            character, enchant_result = inscribe_scroll(
+                payload["characterId"],
+                payload["spellId"],
+                payload["manaSpent"],
+                payload.get("altarItemId"),
+            )
+            data = {"enchant": enchant_payload(character), "enchantResult": enchant_result}
+            message = (
+                f"{enchant_result['spell']} impresso in una pergamena di livello {enchant_result['level']}: "
+                f"casta a {enchant_result['castEffect']:g} mana."
+            )
+        elif action == "enchant.recharge":
+            character, enchant_result = recharge_item(payload["characterId"], payload["instanceId"])
+            data = {"enchant": enchant_payload(character), "enchantResult": enchant_result}
+            message = f"{enchant_result['name']}: cariche ripristinate."
+        elif action == "enchant.disenchant":
+            character, enchant_result = disenchant_item(payload["characterId"], payload["instanceId"])
+            data = {"enchant": enchant_payload(character), "enchantResult": enchant_result}
+            message = (
+                f"{enchant_result['name']} disincantato: anima di livello "
+                f"{enchant_result['soulLevelRecovered']} recuperata."
+            )
         elif action == "competencies.upgrade":
             character = upgrade_competence(
                 payload["characterId"],
