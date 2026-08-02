@@ -18,7 +18,7 @@ from .defaults import (
 )
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-08-01-glossario-meccaniche-v3"
+V2_GUIDE_DEFAULT_VERSION = "2026-08-02-tailscale-private-access-v6-media-cache-lifecycle"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
@@ -1611,5 +1611,128 @@ V2_GUIDE_DEFAULTS = [
         "categoria": "Personaggio",
         "ordine": 60,
         "contenuto": _guide_content({"type": "dynamic_character_variables"}),
+    },
+    {
+        "seed_key": "accesso-remoto-tailscale",
+        "nome": "Accesso remoto privato · Tailscale",
+        "categoria": "Amministrazione",
+        "ordine": 90,
+        "minimum_role": "admin",
+        "contenuto": _guide_content(
+            {
+                "type": "paragraph",
+                "text": (
+                    "Questa guida è visibile soltanto agli Amministratori di gioco. Tailscale non è una quarta "
+                    "modalità di ReDjango: è un adattatore di rete isolato che pubblica la modalità online tramite "
+                    "un indirizzo HTTPS privato. Database, media e login restano interamente gestiti da ReDjango."
+                ),
+            },
+            {"type": "heading", "text": "Spiegazione semplice (ELI5)"},
+            {
+                "type": "list",
+                "items": [
+                    "Il computer che ospita ReDjango è la casa del gioco: deve rimanere acceso, connesso e senza sospensione.",
+                    "Tailscale crea una strada privata e cifrata fra quella casa e i computer degli amici.",
+                    "Tailscale Serve mette una porta HTTPS sulla strada privata e accompagna le richieste fino a ReDjango su 127.0.0.1:8003.",
+                    "Ogni amico deve essere invitato in Tailscale e deve comunque accedere con il proprio account ReDjango.",
+                    "Spegnere Tailscale non modifica il gioco: interrompe soltanto la strada privata. In futuro si potrà sostituire con Cloudflare, un VPS o Vercel senza creare una nuova modalità applicativa.",
+                    "La Mappa Globale viene divisa in tasselli: il giocatore scarica soltanto la zona e il dettaglio che sta guardando, ma ingrandendo ritrova sempre le scritte alla risoluzione originale.",
+                    "Impostazioni → Media locali è come uno zaino sul computer del giocatore: conserva in anticipo i media condivisi della campagna e li riusa senza riscaricarli.",
+                ],
+            },
+            {"type": "heading", "text": "Avvio rapido per l'Amministratore"},
+            {
+                "type": "list",
+                "items": [
+                    "Installa Tailscale sul computer server, accedi e attendi che lo stato sia Running.",
+                    "Se il server deve restare raggiungibile dopo un logout o riavvio, dall'icona Tailscale scegli Preferences → Run unattended. Questa opzione mantiene Tailscale attivo, ma non avvia automaticamente ReDjango.",
+                    "Dalla radice del progetto esegui lo script indicato sotto. Il launcher rileva il nome .ts.net, prepara una chiave privata persistente e avvia ReDjango in modalità online.",
+                    "Apri l'indirizzo HTTPS stampato dal launcher e verifica il login prima di invitare altre persone.",
+                    "Dalla pagina Machines di Tailscale condividi soltanto questo computer con gli indirizzi dei giocatori.",
+                    "Crea un account ReDjango distinto per ogni giocatore e non condividere mai l'account amministratore.",
+                    "Prima della prima sessione esegui prepare_travel_tiles per preparare una volta sola i tasselli delle mappe; altrimenti ReDjango li preparerà al primo accesso a Viaggio.",
+                    "Prima di partire copia fuori dal computer sia db.sqlite3 sia l'intera cartella media: i backup integrati non comprendono i file multimediali.",
+                ],
+            },
+            {
+                "type": "code",
+                "language": "powershell",
+                "text": (
+                    ".\\run_tailscale_plus_server.bat\n"
+                    "# Il launcher richiede automaticamente l'autorizzazione Windows per Tailscale Serve.\n"
+                    "# Avvio PowerShell avanzato, se necessario:\n"
+                    "powershell -ExecutionPolicy Bypass -File .\\redjango\\deployment\\tailscale\\start.ps1\n"
+                    "# Per controllare configurazione e connettività:\n"
+                    "powershell -ExecutionPolicy Bypass -File .\\redjango\\deployment\\tailscale\\diagnose.ps1\n"
+                    "# Prepara in anticipo tutte le mappe globali senza modificare gli originali:\n"
+                    ".\\venv\\Scripts\\python.exe manage.py prepare_travel_tiles\n"
+                    "# Per rimuovere soltanto la pubblicazione HTTPS di ReDjango:\n"
+                    "powershell -ExecutionPolicy Bypass -File .\\redjango\\deployment\\tailscale\\stop.ps1"
+                ),
+            },
+            {"type": "heading", "text": "Guida per i giocatori"},
+            {
+                "type": "list",
+                "items": [
+                    "Installa Tailscale dal sito ufficiale e accedi con il tuo account personale.",
+                    "Apri l'invito ricevuto dall'Amministratore e accetta la condivisione del computer ReDjango.",
+                    "Apri nel browser l'indirizzo https://nome-computer.nome-rete.ts.net comunicato dall'Amministratore.",
+                    "Accedi con il tuo nome utente e la tua password ReDjango; l'invito Tailscale non sostituisce il login del gioco.",
+                    "Apri Impostazioni → Media locali. Premi Mantieni su questo dispositivo, poi Scarica media campagna e lascia aperta la pagina fino al completamento.",
+                    "In seguito usa Aggiorna media locali: vengono scaricati soltanto i file nuovi o cambiati. Svuota cache media locale cancella esclusivamente il pacchetto ReDjango di quell'account e campagna.",
+                    "Se la pagina non si apre, verifica che Tailscale dica Connected, poi prova di nuovo senza VPN aziendali o filtri concorrenti.",
+                    "Non inoltrare l'invito o le credenziali. Se perdi un dispositivo, avvisa l'Amministratore perché possa revocare subito la condivisione.",
+                ],
+            },
+            {"type": "heading", "text": "Full Tech Debug"},
+            {
+                "type": "callout",
+                "title": "Confine architetturale",
+                "text": (
+                    "ReDjango usa sempre REDJANGO_ACCESS_MODE=online. Lo script Tailscale valorizza soltanto il "
+                    "contratto generico REDJANGO_PUBLIC_ORIGIN e inoltra HTTPS a http://127.0.0.1:8003. Nessun "
+                    "pacchetto Tailscale viene importato da Django o React e gli header di identità Tailscale non "
+                    "vengono usati per autorizzare un giocatore."
+                ),
+            },
+            {
+                "type": "list",
+                "items": [
+                    "REDJANGO_PUBLIC_ORIGIN viene validata come origine HTTPS senza percorso, query, frammento o credenziali; da essa Django deriva ALLOWED_HOSTS e CSRF_TRUSTED_ORIGINS.",
+                    "REDJANGO_SECRET_KEY viene letta da .redjango/django-secret-key, che è ignorato da Git e deve restare privato. Cambiarla invalida le sessioni e rende illeggibili eventuali segreti AI cifrati con la chiave precedente.",
+                    "REDJANGO_TRUSTED_PROXIES resta limitato ai loopback. Tailscale Serve è configurato verso 127.0.0.1, quindi non è necessario fidarsi della rete Tailscale intera.",
+                    "Il proxy deve preservare X-Forwarded-Proto=https. Se il controllo remoto segnala troppi redirect, esegui diagnose.ps1 e controlla gli header prima di disattivare qualsiasi protezione HTTPS.",
+                    "Il flusso Combattimento usa Server-Sent Events: verificare che la connessione /api/combat/.../events resti aperta e si riconnetta dopo cinque minuti.",
+                    "Il controllo pubblico /api/auth/session/ deve rispondere senza richiedere un login. Un errore locale indica ReDjango; un locale verde e un remoto rosso indica Tailscale, DNS, condivisione o policy.",
+                    "I media condivisi con URL versionati rispondono con Cache-Control private, max-age=31536000, immutable, ETag e Last-Modified. Un 304 indica che la convalida funziona; no-store è intenzionale per i media a visibilità limitata.",
+                    "Le tile native sono artefatti rigenerabili sotto media/.derived/travel_tiles. Ogni URL contiene la revisione della sorgente; l'originale non viene ridimensionato né sovrascritto.",
+                    "Il Service Worker vive a /service-worker.js, controlla soltanto richieste /media/ e salva una risposta soltanto quando X-ReDjango-Cacheability vale immutable. L'associazione client/utente/campagna è conservata anche se il browser riavvia il worker; le richieste Range di audio/video vengono ricostruite dalla copia completa locale.",
+                    "La cache gestita è separata per utente e campagna e viene disattivata al logout. I media visibilita_limitata sono esclusi dal manifest e una risposta restricted-no-store viene rifiutata anche durante un download manuale.",
+                    "Cache Storage e navigator.storage.persist richiedono HTTPS o localhost. Il browser può rifiutare la persistenza o essere svuotato manualmente; Media locali mostra uso, quota e stato effettivo.",
+                    "Tailscale Serve resta configurato in background anche dopo il riavvio del servizio. ReDjango deve comunque essere avviato e Windows non deve sospendere il computer.",
+                    "Su Windows, Run unattended mantiene Tailscale connesso senza un utente attivo. Dopo un riavvio bisogna comunque rilanciare run_tailscale_plus_server.bat, finché ReDjango non dispone di un servizio di avvio automatico dedicato.",
+                ],
+            },
+            {
+                "type": "code",
+                "language": "powershell",
+                "text": (
+                    "tailscale status\n"
+                    "tailscale serve status\n"
+                    "Invoke-WebRequest http://127.0.0.1:8003/api/auth/session/ -UseBasicParsing\n"
+                    "$dns = (tailscale status --json | ConvertFrom-Json).Self.DNSName.TrimEnd('.')\n"
+                    "Invoke-WebRequest (\"https://{0}/api/auth/session/\" -f $dns) -UseBasicParsing\n"
+                    "Get-NetTCPConnection -LocalPort 8003 -State Listen"
+                ),
+            },
+            {
+                "type": "warning",
+                "title": "Non usare Funnel per questa configurazione",
+                "text": (
+                    "Serve limita l'accesso agli utenti Tailscale autorizzati. Funnel renderebbe il servizio pubblico "
+                    "su Internet e richiederebbe una revisione separata di esposizione, rate limit e monitoraggio."
+                ),
+            },
+        ),
     },
 ]

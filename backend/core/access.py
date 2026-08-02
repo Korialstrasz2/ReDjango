@@ -6,6 +6,8 @@ from pathlib import Path
 from django.conf import settings
 from django.db import OperationalError, ProgrammingError
 
+from redjango.public_origin import parse_public_origin
+
 
 ACCESS_MODE_LOCKED = "locked"
 ACCESS_MODE_LAN = "lan"
@@ -58,8 +60,15 @@ def online_configuration_errors() -> list[str]:
     secret_key = os.environ.get("REDJANGO_SECRET_KEY", "").strip()
     if len(secret_key) < 50 or secret_key == "dev-only-redjango-secret-key":
         missing.append("REDJANGO_SECRET_KEY")
-    if not os.environ.get("REDJANGO_ALLOWED_HOSTS", "").strip():
-        missing.append("REDJANGO_ALLOWED_HOSTS")
+    configured_hosts = os.environ.get("REDJANGO_ALLOWED_HOSTS", "").strip()
+    configured_origin = os.environ.get("REDJANGO_PUBLIC_ORIGIN", "").strip()
+    if not configured_hosts and not configured_origin:
+        missing.append("REDJANGO_PUBLIC_ORIGIN oppure REDJANGO_ALLOWED_HOSTS")
+    elif configured_origin:
+        try:
+            parse_public_origin(configured_origin)
+        except ValueError:
+            missing.append("REDJANGO_PUBLIC_ORIGIN valido")
     return missing
 
 

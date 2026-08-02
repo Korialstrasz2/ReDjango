@@ -9,7 +9,9 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from .access import schedule_managed_restart
+from redjango.public_origin import parse_public_origin
+
+from .access import online_configuration_errors, schedule_managed_restart
 from .models import Giocatore, LoginThrottle, SettingDefinition, SettingOverride
 from .request_security import client_ip
 
@@ -247,6 +249,38 @@ class AccessModeAdministrationTests(TestCase):
 
 
 class ManagedDeploymentTests(TestCase):
+    def test_public_origin_is_normalized_for_reverse_proxy_configuration(self):
+        origin = parse_public_origin(" HTTPS://Game-Host.Example.ts.net.:443/ ")
+        self.assertIsNotNone(origin)
+        self.assertEqual(origin.origin, "https://game-host.example.ts.net")
+        self.assertEqual(origin.allowed_host, "game-host.example.ts.net")
+
+    def test_public_origin_rejects_non_origin_and_insecure_values(self):
+        for value in (
+            "http://game.example.ts.net",
+            "https://game.example.ts.net/path",
+            "https://user:secret@game.example.ts.net",
+            "https://game.example.ts.net?debug=1",
+        ):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                parse_public_origin(value)
+
+    def test_online_configuration_accepts_public_origin_instead_of_host_lists(self):
+        with patch.dict(os.environ, {
+            "REDJANGO_SECRET_KEY": "s" * 60,
+            "REDJANGO_PUBLIC_ORIGIN": "https://game.example.ts.net",
+            "REDJANGO_ALLOWED_HOSTS": "",
+        }):
+            self.assertEqual(online_configuration_errors(), [])
+
+    def test_online_configuration_rejects_an_invalid_public_origin(self):
+        with patch.dict(os.environ, {
+            "REDJANGO_SECRET_KEY": "s" * 60,
+            "REDJANGO_PUBLIC_ORIGIN": "http://game.example.ts.net/path",
+            "REDJANGO_ALLOWED_HOSTS": "",
+        }):
+            self.assertIn("REDJANGO_PUBLIC_ORIGIN valido", online_configuration_errors())
+
     def test_lan_certificate_is_generated_and_reused(self):
         with TemporaryDirectory() as temporary_directory, override_settings(
             BASE_DIR=Path(temporary_directory),

@@ -567,6 +567,7 @@ class Command(BaseCommand):
                         "seed_kind": "guide",
                         "seed_key": seed_key,
                         "seed_version": V2_GUIDE_DEFAULT_VERSION,
+                        "minimum_role": guide_defaults.get("minimum_role", "user"),
                     },
                 )
                 touched += 1
@@ -589,6 +590,7 @@ class Command(BaseCommand):
                 "seed_kind": "guide",
                 "seed_key": seed_key,
                 "seed_version": V2_GUIDE_DEFAULT_VERSION,
+                "minimum_role": guide_defaults.get("minimum_role", "user"),
             }
             guide.save(update_fields=["nome", "categoria", "ordine", "contenuto", "metadata", "updated_at"])
             touched += 1

@@ -7,6 +7,8 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
+from .public_origin import parse_public_origin
+
 
 mimetypes.add_type("image/webp", ".webp")
 # The Windows registry rarely knows these containers, and a wrong guess would make
@@ -35,6 +37,12 @@ if REDJANGO_ACCESS_MODE not in ACCESS_MODES:
 def _environment_list(name: str) -> list[str]:
     return [value.strip() for value in os.environ.get(name, "").split(",") if value.strip()]
 
+
+try:
+    public_origin = parse_public_origin(os.environ.get("REDJANGO_PUBLIC_ORIGIN", ""))
+except ValueError as exc:
+    raise ImproperlyConfigured(str(exc)) from exc
+REDJANGO_PUBLIC_ORIGIN = public_origin.origin if public_origin else ""
 
 configured_secret_key = os.environ.get("REDJANGO_SECRET_KEY", "").strip()
 if REDJANGO_ACCESS_MODE == "online" and (
@@ -68,10 +76,14 @@ else:
 DEBUG = os.environ.get("REDJANGO_DEBUG", "0") == "1"
 
 configured_hosts = _environment_list("REDJANGO_ALLOWED_HOSTS")
+if public_origin and public_origin.allowed_host not in configured_hosts:
+    configured_hosts.append(public_origin.allowed_host)
 if configured_hosts:
     ALLOWED_HOSTS = configured_hosts
 elif REDJANGO_ACCESS_MODE == "online":
-    raise ImproperlyConfigured("La modalità online richiede REDJANGO_ALLOWED_HOSTS.")
+    raise ImproperlyConfigured(
+        "La modalità online richiede REDJANGO_PUBLIC_ORIGIN oppure REDJANGO_ALLOWED_HOSTS."
+    )
 else:
     local_hosts = {"127.0.0.1", "localhost", "::1"}
     if REDJANGO_ACCESS_MODE == "lan":
@@ -88,6 +100,8 @@ else:
     ALLOWED_HOSTS = sorted(local_hosts)
 
 CSRF_TRUSTED_ORIGINS = _environment_list("REDJANGO_CSRF_TRUSTED_ORIGINS")
+if public_origin and public_origin.origin not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append(public_origin.origin)
 if REDJANGO_ACCESS_MODE == "locked":
     CSRF_TRUSTED_ORIGINS.extend([
         "http://127.0.0.1:8003",

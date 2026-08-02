@@ -102,14 +102,48 @@ i file sono protetti dalla sessione e le immagini riservate dal ruolo di
 gioco.
 
 La modalità online abilita cookie sicuri, redirect HTTPS e HSTS. Il launcher
-rifiuta il passaggio a `online` se `REDJANGO_SECRET_KEY` o
-`REDJANGO_ALLOWED_HOSTS` mancano. `DEBUG` è disattivato per impostazione
+rifiuta il passaggio a `online` se `REDJANGO_SECRET_KEY` o una destinazione
+pubblica (`REDJANGO_PUBLIC_ORIGIN`, oppure le liste avanzate di host/origini)
+mancano. `DEBUG` è disattivato per impostazione
 predefinita in tutte le modalità; `REDJANGO_DEBUG=1` va usato soltanto
 durante lo sviluppo locale. Nelle modalità bloccata e LAN viene generata
 anche una chiave Django privata persistente; online la chiave deve sempre
 arrivare da `REDJANGO_SECRET_KEY`. La terminazione TLS online, gli aggiornamenti di
 sicurezza, il firewall e i backup restano responsabilità del
 server/reverse proxy.
+
+### Accesso remoto privato con Tailscale
+
+Tailscale Serve è un adattatore isolato della modalità `online`, non una quarta
+modalità applicativa. Il launcher doppio clic richiede l'autorizzazione Windows
+necessaria a Tailscale Serve, rileva il nome HTTPS privato `.ts.net` e lo passa a
+Django tramite il contratto generico `REDJANGO_PUBLIC_ORIGIN`:
+
+```bat
+run_tailscale_plus_server.bat
+```
+
+Il launcher PowerShell resta disponibile per uso avanzato:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\redjango\deployment\tailscale\start.ps1
+```
+
+Per controllare separatamente server locale, DNS e proxy:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\redjango\deployment\tailscale\diagnose.ps1
+```
+
+Gli Amministratori di gioco trovano la procedura completa, una spiegazione
+semplice, la guida da consegnare ai giocatori e il debug tecnico in
+**Guide → Accesso remoto privato · Tailscale**. I dettagli dell'adattatore sono
+anche in `redjango/deployment/tailscale/README.md`.
+
+`REDJANGO_PUBLIC_ORIGIN` accetta una sola origine HTTPS senza percorso, per
+esempio `https://gioco.example.it`. Quando è presente, configura automaticamente
+l'host Django e l'origine CSRF; `REDJANGO_ALLOWED_HOSTS` e
+`REDJANGO_CSRF_TRUSTED_ORIGINS` restano disponibili per configurazioni avanzate.
 
 ## Sviluppo frontend
 

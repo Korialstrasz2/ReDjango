@@ -1,9 +1,10 @@
 from django.urls import path
 
-from . import audio_views, travel_views, views
+from . import audio_views, cache_views, travel_views, views
 
 
 urlpatterns = [
+    path("media/cache-manifest/", cache_views.cache_manifest, name="api-media-cache-manifest"),
     path("media/", views.media_collection, name="api-media-list"),
     path("media/<int:asset_id>/", views.media_detail, name="api-media-detail"),
     path("audio/tracks/", audio_views.audio_track_collection, name="api-audio-tracks"),

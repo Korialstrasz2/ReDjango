@@ -277,7 +277,11 @@ class CoreContractTests(TestCase):
         self.assertFalse(body["data"]["security"]["showRoleLabels"])
         self.assertEqual(body["data"]["security"]["hierarchy"], [])
         guides = body["data"]["guides"]
-        self.assertEqual(len(guides), len(V2_GUIDE_DEFAULTS))
+        self.assertEqual(
+            len(guides),
+            sum(1 for guide in V2_GUIDE_DEFAULTS if guide.get("minimum_role", "user") != "admin"),
+        )
+        self.assertNotIn("Accesso remoto privato · Tailscale", {guide["name"] for guide in guides})
         # Le guide vanno cercate per nome: l'ordine dipende da "ordine" e
         # cambia ogni volta che se ne aggiunge una prima delle altre.
         rules_guide = next(guide for guide in guides if guide["name"] == "Regole Varie")
@@ -337,6 +341,46 @@ class CoreContractTests(TestCase):
             },
         )
         self.assertNotEqual(rules_guide["content"][-1].get("type"), "warning")
+
+    def test_tailscale_guide_is_visible_only_to_game_admins(self):
+        profile = Giocatore.objects.get(nome="local_master")
+
+        master_response = self.client.get("/api/bootstrap/")
+        self.assertNotIn(
+            "Accesso remoto privato · Tailscale",
+            {guide["name"] for guide in master_response.json()["data"]["guides"]},
+        )
+
+        profile.role = Giocatore.ROLE_ADMIN
+        profile.save(update_fields=["role", "updated_at"])
+        admin_response = self.client.get("/api/bootstrap/")
+        admin_guide = next(
+            guide
+            for guide in admin_response.json()["data"]["guides"]
+            if guide["name"] == "Accesso remoto privato · Tailscale"
+        )
+        guide_text = json.dumps(admin_guide["content"], ensure_ascii=False)
+        self.assertIn("Spiegazione semplice (ELI5)", guide_text)
+        self.assertIn("Guida per i giocatori", guide_text)
+        self.assertIn("Full Tech Debug", guide_text)
+
+    def test_persisted_admin_guide_is_filtered_on_the_backend(self):
+        Guida.objects.create(
+            nome="Segreti infrastruttura",
+            contenuto='[{"type":"paragraph","text":"Privato"}]',
+            metadata={"minimum_role": "admin"},
+        )
+        response = self.client.get("/api/bootstrap/")
+        self.assertEqual(response.json()["data"]["guides"], [])
+
+        profile = Giocatore.objects.get(nome="local_master")
+        profile.role = Giocatore.ROLE_ADMIN
+        profile.save(update_fields=["role", "updated_at"])
+        response = self.client.get("/api/bootstrap/")
+        self.assertEqual(
+            [guide["name"] for guide in response.json()["data"]["guides"]],
+            ["Segreti infrastruttura"],
+        )
 
     def test_guides_do_not_contradict_implemented_market_and_combat(self):
         response = self.client.get("/api/bootstrap/", HTTP_X_REDJANGO_REQUEST_ID="guide-contradictions")

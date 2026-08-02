@@ -1,7 +1,10 @@
 from backend.core.models import Giocatore
 from backend.core.security import effective_role, get_or_create_giocatore_for_user, has_minimum_role
+from PIL import UnidentifiedImageError
 
 from .models import DatiMappa
+from .selectors import user_can_view_limited_images
+from .travel_tiles import ensure_travel_tiles
 
 
 def can_manage_travel_maps(user, giocatore: Giocatore | None = None) -> bool:
@@ -13,10 +16,19 @@ def can_manage_travel_maps(user, giocatore: Giocatore | None = None) -> bool:
 
 def serialize_travel_map(travel_map: DatiMappa) -> dict:
     grid = travel_map.grid_data if isinstance(travel_map.grid_data, dict) else {}
+    image_url = travel_map.image.file.url if travel_map.image_id and travel_map.image.file else ""
+    try:
+        tiles = ensure_travel_tiles(travel_map) if image_url else None
+    except (OSError, UnidentifiedImageError):
+        # Legacy/test records may point at a file whose extension says image but
+        # whose bytes cannot be decoded. Keep the API usable and let the original
+        # URL/fallback surface the broken asset without hiding the other maps.
+        tiles = None
     return {
         "id": travel_map.id,
         "name": travel_map.nome,
-        "imageUrl": travel_map.image.file.url if travel_map.image_id and travel_map.image.file else "",
+        "imageUrl": image_url,
+        "tiles": tiles,
         "grid": {
             "orientation": grid.get("orientation", "pointy"),
             "cols": grid.get("cols", 20),
@@ -39,13 +51,16 @@ def travel_maps_payload(user, giocatore: Giocatore) -> dict:
     campaign = giocatore.active_campaign
     maps = []
     if campaign:
+        queryset = DatiMappa.objects.select_related("image").filter(
+            campagna=campaign,
+            tipo="globale",
+            archived_at__isnull=True,
+        )
+        if not user_can_view_limited_images(user):
+            queryset = queryset.filter(image__visibilita_limitata=False)
         maps = [
             serialize_travel_map(travel_map)
-            for travel_map in DatiMappa.objects.select_related("image").filter(
-                campagna=campaign,
-                tipo="globale",
-                archived_at__isnull=True,
-            ).order_by("-default_for_campaign", "nome", "id")
+            for travel_map in queryset.order_by("-default_for_campaign", "nome", "id")
         ]
     return {
         "campaign": (

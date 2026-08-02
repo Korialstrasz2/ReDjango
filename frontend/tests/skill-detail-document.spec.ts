@@ -1,12 +1,14 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
 
-async function createSkill(request: APIRequestContext, values: Record<string, unknown>, requestId: string) {
+async function createSkill(request: APIRequestContext, values: Record<string, unknown>, requestId: string): Promise<number> {
   const csrfToken = (await request.storageState()).cookies.find((cookie) => cookie.name === "csrftoken")?.value || "";
   const response = await request.post("/api/v1/actions", {
     headers: { "X-CSRFToken": csrfToken },
     data: { action: "skills.create", requestId, payload: { values } },
   });
-  expect(response.ok(), await response.text()).toBe(true);
+  const body = await response.json();
+  expect(response.ok(), JSON.stringify(body)).toBe(true);
+  return body.data.skill.id;
 }
 
 test("il documento abilità mostra i campi esistenti senza inventare regole", async ({ page, request }) => {
@@ -14,7 +16,7 @@ test("il documento abilità mostra i campi esistenti senza inventare regole", as
   expect(catalogResponse.ok()).toBe(true);
   const catalog = (await catalogResponse.json()).data;
   const familyId = catalog.families.find((family: { name: string }) => family.name === "Misticismo")?.id || catalog.families[0].id;
-  await createSkill(request, {
+  const prerequisiteSkillId = await createSkill(request, {
     name: "Test - Documento incantesimo", number: 990001, familyId, familyOrder: 0,
     magic: true, baseXpCost: 7, xpType: "blue", rulesCost: "3 Mana",
     description: "Un incantesimo usato per verificare il documento adattivo.", requirementsText: "", prerequisiteIds: [],
@@ -23,8 +25,8 @@ test("il documento abilità mostra i campi esistenti senza inventare regole", as
   }, "skill-document-spell");
   await createSkill(request, {
     name: "Test - Triplo Missile", number: 990002, familyId, familyOrder: 1,
-    magic: false, baseXpCost: 6, xpType: "general", rulesCost: "3 Energia",
-    description: "Scagli tre armi contro lo stesso bersaglio.", requirementsText: "", prerequisiteIds: [], spell: null,
+    magic: false, baseXpCost: 9999, xpType: "general", rulesCost: "3 Energia",
+    description: "Scagli tre armi contro lo stesso bersaglio.", requirementsText: "Test - Documento incantesimo", prerequisiteIds: [prerequisiteSkillId], spell: null,
     profileTags: { tipo: ["attiva"] }, profileNotes: "", passiveEffects: [],
     activeReminders: [{ id: "triplo-missile", name: "Triplo Missile", description: "Scagli tre armi contro lo stesso bersaglio.", trigger: "", duration: "", usageNotes: "", costs: { energia: 3 }, icon: "runa" }],
     icon: "runa", notes: "Solo con armi a distanza. Non utilizzabile con armi da fuoco.", metadata: {},
@@ -40,6 +42,8 @@ test("il documento abilità mostra i campi esistenti senza inventare regole", as
   await spellCard.click();
 
   const spellDialog = page.getByRole("dialog", { name: "Test - Documento incantesimo" });
+  await expect(spellDialog.locator(".modal-header").getByRole("heading", { name: "Test - Documento incantesimo", exact: true })).toBeVisible();
+  await expect(spellDialog.locator(".skill-detail-heading").getByText("Test - Documento incantesimo", { exact: true })).toHaveCount(0);
   await expect(spellDialog.getByRole("heading", { name: "Calcola l'incantesimo", exact: true })).toBeVisible();
   await expect(spellDialog.getByRole("tab", { name: "Incantesimo", exact: true })).toHaveCount(0);
   await expect(spellDialog.getByRole("tab", { name: "Giocatore", exact: true })).toHaveAttribute("aria-selected", "true");
@@ -57,6 +61,10 @@ test("il documento abilità mostra i campi esistenti senza inventare regole", as
   await actionCard.click();
 
   const actionDialog = page.getByRole("dialog", { name: "Test - Triplo Missile" });
+  await expect(actionDialog.getByText("Test - Documento incantesimo", { exact: true })).toHaveCount(1);
+  await expect(actionDialog.getByText("Requisiti", { exact: true })).toHaveCount(0);
+  await expect(actionDialog.locator(".modal-footer").getByText("Avvertenze:", { exact: true })).toBeVisible();
+  await expect(actionDialog.locator(".skill-player-document").getByText("Avvertenze:", { exact: true })).toHaveCount(0);
   await expect(actionDialog.getByText("Solo con armi a distanza. Non utilizzabile con armi da fuoco.", { exact: true })).toBeVisible();
   const actionSummary = actionDialog.locator(".skill-rule-disclosure summary").filter({ hasText: "Triplo Missile" });
   await expect(actionSummary).toHaveCount(1);

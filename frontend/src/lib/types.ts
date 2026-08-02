@@ -723,10 +723,22 @@ export type TravelMarker = {
   createdAt: string;
 };
 
+export type TravelMapTiles = {
+  width: number;
+  height: number;
+  tileSize: number;
+  maxLevel: number;
+  revision: string;
+  baseUrl: string;
+  format: string;
+  byteSize: number;
+};
+
 export type TravelMap = {
   id: number;
   name: string;
   imageUrl: string;
+  tiles: TravelMapTiles | null;
   grid: TravelGrid;
   hexEffects: Record<string, TravelHexEffect>;
   markers: TravelMarker[];

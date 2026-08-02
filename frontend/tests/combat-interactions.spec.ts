@@ -1,5 +1,40 @@
 import { expect, test } from "@playwright/test";
 
+test("gli strumenti esagono si aprono solo dal comando esplicito", async ({ page }) => {
+  await page.goto("/combat");
+  const launcher = page.locator(".combat-hex-tool-launcher");
+  if (await launcher.count() === 0) {
+    await page.evaluate(async () => {
+      const workspaceResponse = await fetch("/api/combat/");
+      const workspace = await workspaceResponse.json();
+      const mapTypeId = workspace.data?.mapTypes?.[0]?.id;
+      if (!mapTypeId) throw new Error("Nessun tipo mappa disponibile per il test.");
+      const csrfToken = decodeURIComponent(document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || "");
+      const requestId = `e2e-hex-tool-${Date.now()}`;
+      const response = await fetch("/api/combat/actions/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+        body: JSON.stringify({
+          action: "maps.save",
+          requestId,
+          payload: { name: "Mappa test strumenti esagono", mapTypeId, rows: 3, columns: 3 },
+        }),
+      });
+      if (!response.ok) throw new Error(`Creazione mappa fallita: ${response.status}`);
+    });
+    await page.reload();
+  }
+
+  await expect(page.locator(".combat-hex-tool-window")).toHaveCount(0);
+  const mapSurface = page.locator(".combat-map-stage svg");
+  await expect(page.locator(".combat-hex").first()).toBeVisible();
+  await mapSurface.click({ position: { x: 45, y: 45 } });
+  await expect(page.locator(".combat-hex-tool-window")).toHaveCount(0);
+
+  await launcher.click();
+  await expect(page.locator(".combat-hex-tool-window")).toBeVisible();
+});
+
 test("la barra attivi prepara l'attacco e Percorso calcola dalla mappa", async ({ page }) => {
   await page.goto("/combat");
   const activeHeader = page.locator(".combat-active-strip-heading");

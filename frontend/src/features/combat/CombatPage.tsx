@@ -870,7 +870,7 @@ function hexSelectionArea(map: CombatMap, center: Axial, radius: number) {
   });
 }
 
-function HexInspector({ workspace, selectedCells, canManage, tab, terrainBadges, onTabChange, onSelectionChange, onApply, onFog }: {
+export function HexInspector({ workspace, selectedCells, canManage, tab, terrainBadges, onTabChange, onSelectionChange, onApply, onFog }: {
   workspace: CombatWorkspace; selectedCells: Axial[]; canManage: boolean;
   tab: "colors" | "types";
   terrainBadges: Record<number, TerrainBadge>;
@@ -882,6 +882,7 @@ function HexInspector({ workspace, selectedCells, canManage, tab, terrainBadges,
   const map = workspace.map;
   const anchor = selectedCells.at(-1) || null;
   const setTab = onTabChange;
+  const activeTab = canManage ? tab : "colors";
   const [color, setColor] = useState<string>(HEX_COLOR_PRESETS[0]);
   const [opacity, setOpacity] = useState(.42);
   const [radius, setRadius] = useState(0);
@@ -902,20 +903,20 @@ function HexInspector({ workspace, selectedCells, canManage, tab, terrainBadges,
       <p>Un clic aggiunge o rimuove un esagono. Trascina per selezionare o deselezionare più celle con lo stesso gesto.</p>
       <div className="combat-radius-selector"><label>Raggio<button type="button" onClick={() => setRadius(Math.max(0, radius - 1))}>−</button><input type="number" min="0" max="12" value={radius} onChange={(event) => setRadius(Math.max(0, Math.min(12, Number(event.target.value))))} /><button type="button" onClick={() => setRadius(Math.min(12, radius + 1))}>+</button></label><button type="button" className="button secondary small" disabled={!anchor} onClick={selectRadius}>Aggiungi area</button><small>Raggio 0 seleziona un solo esagono.</small></div>
     </section>
-    {!canManage ? <div className="combat-tool-empty">La personalizzazione della mappa è disponibile al Master.</div> : <section className="combat-hex-editor-tabs">
-      <nav role="tablist" aria-label="Personalizzazione esagoni"><button role="tab" aria-selected={tab === "colors"} className={tab === "colors" ? "active" : ""} onClick={() => setTab("colors")}>Colori</button><button role="tab" aria-selected={tab === "types"} className={tab === "types" ? "active" : ""} onClick={() => setTab("types")}>Tipologia</button></nav>
-      {tab === "colors" ? <div className="combat-color-tab" role="tabpanel">
+    <section className="combat-hex-editor-tabs">
+      {canManage && <nav role="tablist" aria-label="Personalizzazione esagoni"><button role="tab" aria-selected={activeTab === "colors"} className={activeTab === "colors" ? "active" : ""} onClick={() => setTab("colors")}>Colori</button><button role="tab" aria-selected={activeTab === "types"} className={activeTab === "types" ? "active" : ""} onClick={() => setTab("types")}>Tipologia</button></nav>}
+      {activeTab === "colors" ? <div className="combat-color-tab" role="tabpanel">
         <div className="combat-color-presets" aria-label="Colori predefiniti">{HEX_COLOR_PRESETS.map((preset, index) => <button key={preset} type="button" className={color === preset ? "active" : ""} style={{ "--hex-preset": preset } as React.CSSProperties} onClick={() => setColor(preset)} aria-label={`Colore predefinito ${index + 1}`} />)}</div>
         <div className="combat-color-controls"><label>Personalizzato<input type="color" value={color} onChange={(event) => setColor(event.target.value)} /></label><label>Opacità<input type="range" min=".1" max="1" step=".05" value={opacity} onChange={(event) => setOpacity(Number(event.target.value))} /><output>{Math.round(opacity * 100)}%</output></label></div>
-        <div className="combat-hex-apply-row"><button className="button primary" disabled={!selectedCells.length} onClick={() => apply({ overlayColor: color, overlayOpacity: opacity, fogEffect: false })}>Applica colore</button><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ clear: true, fogEffect: false })}>Rimuovi colore</button></div>
-        <div className="combat-fog-preset"><div><strong>Nebbia di guerra</strong><span>Desatura, scurisce e sfoca gli esagoni scelti.</span></div><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ fogEffect: true })}>Applica nebbia</button><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ fogEffect: false })}>Rimuovi</button></div>
-        <details><summary>Visibilità per i giocatori</summary><div className="button-row"><button className="button secondary" onClick={() => onFog({ enabled: !map?.fogEnabled })}>{map?.fogEnabled ? "Disattiva maschera globale" : "Attiva maschera globale"}</button><button className="button secondary" disabled={!anchor} onClick={() => onFog({ mode: "reveal", center: anchor, radius, enabled: true })}>Rivela area</button><button className="button secondary" disabled={!anchor} onClick={() => onFog({ mode: "hide", center: anchor, radius })}>Nascondi area</button></div></details>
+        <div className="combat-hex-apply-row"><button className="button primary" disabled={!selectedCells.length} onClick={() => apply({ overlayColor: color, overlayOpacity: opacity })}>Applica colore</button><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ clear: true })}>Rimuovi colore</button></div>
+        {canManage && <><div className="combat-fog-preset"><div><strong>Nebbia di guerra</strong><span>Desatura, scurisce e sfoca gli esagoni scelti.</span></div><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ fogEffect: true })}>Applica nebbia</button><button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ fogEffect: false })}>Rimuovi</button></div>
+        <details><summary>Visibilità per i giocatori</summary><div className="button-row"><button className="button secondary" onClick={() => onFog({ enabled: !map?.fogEnabled })}>{map?.fogEnabled ? "Disattiva maschera globale" : "Attiva maschera globale"}</button><button className="button secondary" disabled={!anchor} onClick={() => onFog({ mode: "reveal", center: anchor, radius, enabled: true })}>Rivela area</button><button className="button secondary" disabled={!anchor} onClick={() => onFog({ mode: "hide", center: anchor, radius })}>Nascondi area</button></div></details></>}
       </div> : <div className="combat-type-tab" role="tabpanel">
         <p>Scegli una tipologia: il tag, il costo di movimento e l'eventuale blocco vengono applicati a tutti gli esagoni selezionati. Finché resti su questa scheda la mappa mostra la sigla di ogni esagono già tipizzato.</p>
         <div className="combat-hex-type-grid">{workspace.hexTypes.map((terrain) => <button key={terrain.id} type="button" style={{ "--terrain-color": terrain.color } as React.CSSProperties} disabled={!selectedCells.length} onClick={() => apply({ terrainTypeIds: [terrain.id], blocked: terrain.impassable })}><span style={{ background: terrain.color, color: terrainBadges[terrain.id]?.ink }}>{terrainBadges[terrain.id]?.label}</span><strong>{terrain.name}</strong><small>{terrain.impassable ? "Intransitabile" : `Costo ×${terrain.movementMultiplier}`}</small></button>)}</div>
         <button className="button secondary" disabled={!selectedCells.length} onClick={() => apply({ terrainTypeIds: [], blocked: false })}>Rimuovi tipologia</button>
       </div>}
-    </section>}
+    </section>
   </div>;
 }
 
@@ -1370,7 +1371,7 @@ export function CombatPage() {
     }
   };
   const handleHex = (cell: Axial) => {
-    if (!pathMode) { setSelectedHex(cell); setHexOpen(true); setPlannerOpen(false); setAttackOpen(false); return; }
+    if (!pathMode) { setSelectedHex(cell); return; }
     if (!pathStart) { setPathStart(cell); notify("Ora scegli la destinazione del percorso.", "info"); return; }
     act("maps.calculatePaths", { start: pathStart, end: cell, participantId: map?.participants.find((entry) => entry.character.id === map.activeCharacterId)?.id });
     setSelectedHex(cell); setPathMode(false);
@@ -1414,7 +1415,7 @@ export function CombatPage() {
             <DraggableHexTool open={hexOpen} selectionCount={selectedHexes.length} onToggle={() => setHexOpen((current) => { const next = !current; if (next) { setPlannerOpen(false); setAttackOpen(false); if (selectedHex && !selectedHexes.length) setSelectedHexes([selectedHex]); } return next; })}>
               <HexInspector workspace={workspace} selectedCells={selectedHexes} canManage={workspace.permissions.canManageMaps} tab={hexTab} terrainBadges={terrainBadges} onTabChange={setHexTab} onSelectionChange={handleHexSelection} onApply={(payload) => act("maps.paintHexes", payload)} onFog={(payload) => act("maps.updateFog", payload)} />
             </DraggableHexTool>
-            <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen && workspace.permissions.canManageMaps} terrainBadges={hexOpen && hexTab === "types" && workspace.permissions.canManageMaps ? terrainBadges : null} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} />
+            <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen} terrainBadges={hexOpen && hexTab === "types" && workspace.permissions.canManageMaps ? terrainBadges : null} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} />
           </div>
         </section>
         <aside className={`combat-attack-drawer ${attackOpen ? "open" : ""}`} data-component-type="drawer" data-theme="combat">

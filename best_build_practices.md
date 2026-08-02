@@ -46,6 +46,16 @@ Rules for every future feature:
 - `locked` must bind to loopback and independently reject non-loopback sockets in middleware. `lan` may bind to all local interfaces but never weakens authentication. `online` must fail closed without an explicit production secret and allowed-host list, use secure cookies/HTTPS hardening, and normally remain behind a reverse proxy.
 - Never restore an anonymous `local_master` fallback. A `Giocatore` must be linked to the authenticated Django user; Django staff permission and game role remain separate concerns.
 
+## Deployment Adapter Contract
+
+- Access modes describe application security, not hosting vendors. Keep exactly `locked`, `lan`, and `online`; Tailscale Serve, Cloudflare Tunnel, nginx/Caddy, a VPS, and future serverless adapters all belong outside that enum.
+- Reverse-proxy adapters use the generic `REDJANGO_PUBLIC_ORIGIN` contract. It must be one HTTPS origin without credentials, path, query, or fragment; Django derives its allowed host and trusted CSRF origin from the validated value.
+- Provider-specific commands and diagnostics live under `redjango/deployment/<provider>/`. Application settings, authentication, API payloads, and React code must not import or identify the provider.
+- ReDjango authentication remains authoritative. Do not authorize game roles from Tailscale, Cloudflare, or hosting-platform identity headers without a separate reviewed authentication design.
+- Trust only the direct proxy socket ranges through `REDJANGO_TRUSTED_PROXIES`. A local reverse proxy should target loopback and must not require trusting an entire private network.
+- Deployment secrets remain outside Git. Reuse the persistent Django secret when changing adapters so encrypted provider credentials and sessions are not unexpectedly invalidated.
+- Guide visibility is enforced while serializing the bootstrap payload. A seeded or authored guide with `metadata.minimum_role` must never rely on the SPA merely hiding it.
+
 ## Project Origin And Direction
 
 ReDjango originates from:
@@ -784,6 +794,15 @@ Recommended source format:
 ## Resource Efficiency
 
 ReDjango should stay light.
+
+### Persistent Media And Large Map Contract
+
+- Uploaded media URLs are immutable because their storage names contain a UUID. Shared media uses a one-year private browser cache with validators; restricted images remain `private, no-store`.
+- A global travel map keeps its original upload untouched and is rendered from a derived 512 px WebP tile pyramid. Tile coordinates always map back to native image coordinates, so grid, effects and markers never depend on a preview resolution.
+- Derived tiles live below `media/.derived/travel_tiles`, are keyed by the source revision and may be regenerated with `prepare_travel_tiles`. They are not source data or a backup substitute.
+- The root-scoped Service Worker may cache only successful `/media/` responses explicitly marked `X-ReDjango-Cacheability: immutable`. It must never cache restricted responses, API payloads, HTML or authentication endpoints.
+- Managed caches are partitioned by authenticated user and selected campaign, deactivated before logout, and exposed through the Italian Media locali settings panel. Cache Storage holds responses; `StorageManager.persist()` is a best-effort durability request, never a guarantee.
+- Campaign downloads use a server-authored manifest, deduplicate versioned URLs, update incrementally and include full cached responses for local audio/video range playback. Limited-visibility media is excluded at the selector and worker boundaries.
 
 ### Market Management And Generation Profiles
 

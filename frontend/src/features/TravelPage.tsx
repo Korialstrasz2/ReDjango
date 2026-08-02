@@ -9,6 +9,8 @@ type Hex = { col: number; row: number };
 type Point = { x: number; y: number };
 type MarkerDraft = { markerType: string; hex: string; marker?: TravelMarker };
 type Quality = "high" | "balanced" | "light" | "verylow";
+type TileDescriptor = { key: string; url: string; nativeX: number; nativeY: number; nativeWidth: number; nativeHeight: number };
+type TileCacheEntry = { image: HTMLImageElement; state: "loading" | "loaded" | "error"; lastUsed: number };
 
 const SHAPES = [
   ["circle", "●", "Cerchio"], ["flag", "⚑", "Bandiera"], ["sword", "⚔", "Spada"], ["house", "⌂", "Casa"],
@@ -20,17 +22,17 @@ const COLORS: Record<string, { fill: string; text: string; edge: string }> = {
   green: { fill: "#2d6f52", text: "#cdeedf", edge: "#154332" },
   purple: { fill: "#5f3e87", text: "#ebdefd", edge: "#392058" },
 };
-const QUALITY: Record<Quality, { pixelRatio: number; maxTextureSize: number; grid: boolean; blur: boolean; hover: boolean; markerGradient: boolean; gridAlpha: number; gridPadding: number }> = {
-  high: { pixelRatio: 1, maxTextureSize: 8192, grid: true, blur: true, hover: true, markerGradient: true, gridAlpha: .58, gridPadding: 2.4 },
-  balanced: { pixelRatio: .9, maxTextureSize: 2300, grid: true, blur: true, hover: true, markerGradient: true, gridAlpha: .45, gridPadding: 1.8 },
-  light: { pixelRatio: .72, maxTextureSize: 1450, grid: true, blur: false, hover: false, markerGradient: false, gridAlpha: .32, gridPadding: 1.2 },
-  verylow: { pixelRatio: .58, maxTextureSize: 1100, grid: false, blur: false, hover: false, markerGradient: false, gridAlpha: 0, gridPadding: 1.1 },
+const QUALITY: Record<Quality, { pixelRatio: number; tileLevelBias: number; tileCacheLimit: number; grid: boolean; blur: boolean; hover: boolean; markerGradient: boolean; gridAlpha: number; gridPadding: number }> = {
+  high: { pixelRatio: 1, tileLevelBias: 0, tileCacheLimit: 96, grid: true, blur: true, hover: true, markerGradient: true, gridAlpha: .58, gridPadding: 2.4 },
+  balanced: { pixelRatio: .9, tileLevelBias: -.25, tileCacheLimit: 72, grid: true, blur: true, hover: true, markerGradient: true, gridAlpha: .45, gridPadding: 1.8 },
+  light: { pixelRatio: .72, tileLevelBias: -.75, tileCacheLimit: 48, grid: true, blur: false, hover: false, markerGradient: false, gridAlpha: .32, gridPadding: 1.2 },
+  verylow: { pixelRatio: .58, tileLevelBias: -1.25, tileCacheLimit: 32, grid: false, blur: false, hover: false, markerGradient: false, gridAlpha: 0, gridPadding: 1.1 },
 };
 const QUALITY_DESCRIPTION: Record<Quality, string> = {
-  high: "Texture fino a 8192px, griglia ed effetti completi.",
-  balanced: "Texture fino a 2300px con effetti completi.",
-  light: "Texture fino a 1450px, senza blur, gradienti o tooltip.",
-  verylow: "Texture fino a 1100px, senza griglia, blur, gradienti o tooltip.",
+  high: "Tile alla massima densità utile, griglia ed effetti completi.",
+  balanced: "Tile adattive ad alta qualità con effetti completi.",
+  light: "Tile adattive leggere, senza blur, gradienti o tooltip.",
+  verylow: "Tile a basso consumo, senza griglia, blur, gradienti o tooltip.",
 };
 const hexKey = (hex: Hex) => `${hex.col}-${hex.row}`;
 const parseHex = (value: string): Hex | null => {
@@ -101,6 +103,62 @@ function visibleHexBounds(grid: TravelGrid, width: number, height: number, paddi
   };
 }
 
+function chooseTileLevel(maxLevel: number, mapScale: number, canvasRatio: number, bias: number) {
+  const density = Math.max(.01, mapScale * canvasRatio);
+  return clamp(Math.ceil(maxLevel + Math.log2(density) + bias), 0, maxLevel);
+}
+
+function visibleMapTiles(travelMap: TravelMap, grid: TravelGrid, viewWidth: number, viewHeight: number, level: number): TileDescriptor[] {
+  const manifest = travelMap.tiles;
+  if (!manifest || manifest.width < 1 || manifest.height < 1 || manifest.tileSize < 1 || grid.scale <= 0) return [];
+  const divisor = 2 ** (manifest.maxLevel - level);
+  const levelWidth = Math.ceil(manifest.width / divisor); const levelHeight = Math.ceil(manifest.height / divisor);
+  const columns = Math.ceil(levelWidth / manifest.tileSize); const rows = Math.ceil(levelHeight / manifest.tileSize);
+  const nativeLeft = Math.max(0, (0 - grid.offsetX) / grid.scale); const nativeRight = Math.min(manifest.width, (viewWidth - grid.offsetX) / grid.scale);
+  const nativeTop = Math.max(0, (0 - grid.offsetY) / grid.scale); const nativeBottom = Math.min(manifest.height, (viewHeight - grid.offsetY) / grid.scale);
+  if (nativeRight <= nativeLeft || nativeBottom <= nativeTop) return [];
+  const nativeTileSize = manifest.tileSize * divisor;
+  const firstColumn = clamp(Math.floor(nativeLeft / nativeTileSize) - 1, 0, columns - 1);
+  const lastColumn = clamp(Math.floor(Math.max(nativeLeft, nativeRight - 1) / nativeTileSize) + 1, 0, columns - 1);
+  const firstRow = clamp(Math.floor(nativeTop / nativeTileSize) - 1, 0, rows - 1);
+  const lastRow = clamp(Math.floor(Math.max(nativeTop, nativeBottom - 1) / nativeTileSize) + 1, 0, rows - 1);
+  const baseUrl = manifest.baseUrl.replace(/\/$/, ""); const format = manifest.format.replace(/^\./, "") || "webp";
+  const result: TileDescriptor[] = [];
+  for (let row = firstRow; row <= lastRow; row += 1) for (let column = firstColumn; column <= lastColumn; column += 1) {
+    const levelX = column * manifest.tileSize; const levelY = row * manifest.tileSize;
+    const sourceWidth = Math.min(manifest.tileSize, levelWidth - levelX); const sourceHeight = Math.min(manifest.tileSize, levelHeight - levelY);
+    const nativeX = levelX * divisor; const nativeY = levelY * divisor;
+    result.push({
+      key: `${manifest.revision}:${level}:${column}:${row}`,
+      url: `${baseUrl}/${level}/${column}/${row}.${format}`,
+      nativeX,
+      nativeY,
+      nativeWidth: Math.min(manifest.width - nativeX, sourceWidth * divisor),
+      nativeHeight: Math.min(manifest.height - nativeY, sourceHeight * divisor),
+    });
+  }
+  return result;
+}
+
+function clearTileCache(cache: Map<string, TileCacheEntry>) {
+  cache.forEach((entry) => {
+    entry.image.onload = null; entry.image.onerror = null;
+    if (entry.state === "loading") entry.image.src = "";
+  });
+  cache.clear();
+}
+
+function trimTileCache(cache: Map<string, TileCacheEntry>, visibleKeys: Set<string>, limit: number) {
+  if (cache.size <= limit) return;
+  const candidates = [...cache.entries()].filter(([key]) => !visibleKeys.has(key)).sort((left, right) => left[1].lastUsed - right[1].lastUsed);
+  for (const [key, entry] of candidates) {
+    if (cache.size <= limit) break;
+    entry.image.onload = null; entry.image.onerror = null;
+    if (entry.state === "loading") entry.image.src = "";
+    cache.delete(key);
+  }
+}
+
 function TravelCanvas({ travelMap, grid, effects, markers, selected, quality, focusedMarkerId, onGridChange, onSelect, onMarkerDrop, onMarkerEdit }: {
   travelMap: TravelMap; grid: TravelGrid; effects: Record<string, TravelHexEffect>; markers: TravelMarker[]; selected: Set<string>; quality: Quality;
   focusedMarkerId?: string | null;
@@ -109,16 +167,30 @@ function TravelCanvas({ travelMap, grid, effects, markers, selected, quality, fo
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const qualityImageRef = useRef<{ key: string; source: CanvasImageSource } | null>(null);
+  const tileCacheRef = useRef<Map<string, TileCacheEntry>>(new Map());
+  const tileClockRef = useRef(0);
+  const tileGenerationRef = useRef(0);
   const dragRef = useRef<{ start: Point; grid: TravelGrid; gridOnly: boolean; moved: boolean } | null>(null);
   const [hover, setHover] = useState<{ marker: TravelMarker; point: Point } | null>(null);
   const [revision, setRevision] = useState(0);
   useEffect(() => {
+    tileGenerationRef.current += 1;
+    clearTileCache(tileCacheRef.current);
+    if (travelMap.tiles) {
+      imageRef.current = null;
+      setRevision((value) => value + 1);
+      return;
+    }
     const image = new Image();
-    image.onload = () => { imageRef.current = image; qualityImageRef.current = null; setRevision((value) => value + 1); };
+    image.onload = () => { imageRef.current = image; setRevision((value) => value + 1); };
+    image.onerror = () => { imageRef.current = null; setRevision((value) => value + 1); };
     image.src = travelMap.imageUrl;
-    return () => { imageRef.current = null; qualityImageRef.current = null; };
-  }, [travelMap.imageUrl]);
+    return () => { image.onload = null; image.onerror = null; imageRef.current = null; };
+  }, [travelMap.imageUrl, travelMap.tiles?.baseUrl, travelMap.tiles?.revision]);
+  useEffect(() => () => {
+    tileGenerationRef.current += 1;
+    clearTileCache(tileCacheRef.current);
+  }, []);
   useEffect(() => {
     const canvas = canvasRef.current; const container = canvas?.parentElement;
     if (!canvas || !container) return;
@@ -140,30 +212,44 @@ function TravelCanvas({ travelMap, grid, effects, markers, selected, quality, fo
     const ratio = canvas.width / Math.max(1, canvas.clientWidth);
     context.setTransform(ratio, 0, 0, ratio, 0, 0); context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     context.fillStyle = "rgba(8, 12, 16, .88)"; context.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-    let source: CanvasImageSource | null = image;
-    if (image && Math.max(image.width, image.height) > profile.maxTextureSize) {
-      const key = `${travelMap.imageUrl}:${profile.maxTextureSize}:${image.width}x${image.height}`;
-      if (qualityImageRef.current?.key !== key) {
-        const textureRatio = profile.maxTextureSize / Math.max(image.width, image.height);
-        const texture = document.createElement("canvas");
-        texture.width = Math.max(1, Math.floor(image.width * textureRatio)); texture.height = Math.max(1, Math.floor(image.height * textureRatio));
-        const textureContext = texture.getContext("2d");
-        textureContext?.drawImage(image, 0, 0, texture.width, texture.height);
-        qualityImageRef.current = { key, source: texture };
-      }
-      source = qualityImageRef.current?.source || image;
-    }
-    if (source && image) context.drawImage(source, grid.offsetX, grid.offsetY, image.width * grid.scale, image.height * grid.scale);
+    context.imageSmoothingEnabled = true; context.imageSmoothingQuality = quality === "high" || quality === "balanced" ? "high" : "medium";
+    const manifest = travelMap.tiles;
+    const level = manifest ? chooseTileLevel(manifest.maxLevel, grid.scale, ratio, profile.tileLevelBias) : 0;
+    const visibleTiles = manifest ? visibleMapTiles(travelMap, grid, canvas.clientWidth, canvas.clientHeight, level) : [];
+    const visibleKeys = new Set(visibleTiles.map((tile) => tile.key)); const generation = tileGenerationRef.current;
+    visibleTiles.forEach((tile) => {
+      let entry = tileCacheRef.current.get(tile.key);
+      if (!entry) {
+        const tileImage = new Image();
+        entry = { image: tileImage, state: "loading", lastUsed: ++tileClockRef.current };
+        tileCacheRef.current.set(tile.key, entry);
+        const currentEntry = entry;
+        tileImage.decoding = "async";
+        tileImage.onload = () => { currentEntry.state = "loaded"; if (tileGenerationRef.current === generation) setRevision((value) => value + 1); };
+        tileImage.onerror = () => { currentEntry.state = "error"; if (tileGenerationRef.current === generation) setRevision((value) => value + 1); };
+        tileImage.src = tile.url;
+      } else entry.lastUsed = ++tileClockRef.current;
+    });
+    trimTileCache(tileCacheRef.current, visibleKeys, profile.tileCacheLimit);
+    const drawMapSource = (filter = "none") => {
+      context.filter = filter;
+      if (manifest) {
+        visibleTiles.forEach((tile) => {
+          const entry = tileCacheRef.current.get(tile.key);
+          if (entry?.state !== "loaded") return;
+          context.drawImage(entry.image, grid.offsetX + tile.nativeX * grid.scale, grid.offsetY + tile.nativeY * grid.scale, tile.nativeWidth * grid.scale, tile.nativeHeight * grid.scale);
+        });
+      } else if (image) context.drawImage(image, grid.offsetX, grid.offsetY, image.width * grid.scale, image.height * grid.scale);
+      context.filter = "none";
+    };
+    drawMapSource();
     const bounds = visibleHexBounds(grid, canvas.clientWidth, canvas.clientHeight, profile.gridPadding);
     for (let row = bounds.minRow; row <= bounds.maxRow; row += 1) for (let col = bounds.minCol; col <= bounds.maxCol; col += 1) {
       const key = `${col}-${row}`; const center = hexCenter({ col, row }, grid);
       const effect = effects[key];
       if (effect && (effect.black || effect.bw || effect.blur > 0)) {
         context.save(); drawPath(context, hexCorners(center, grid)); context.clip();
-        if (source && image && (effect.bw || (effect.blur > 0 && profile.blur))) {
-          context.filter = `${effect.bw ? "grayscale(1)" : ""} ${effect.blur > 0 && profile.blur ? `blur(${effect.blur}px)` : ""}`.trim();
-          context.drawImage(source, grid.offsetX, grid.offsetY, image.width * grid.scale, image.height * grid.scale); context.filter = "none";
-        }
+        if ((manifest || image) && (effect.bw || (effect.blur > 0 && profile.blur))) drawMapSource(`${effect.bw ? "grayscale(1)" : ""} ${effect.blur > 0 && profile.blur ? `blur(${effect.blur}px)` : ""}`.trim());
         if (effect.black || (!profile.blur && effect.blur > 0)) { context.fillStyle = "rgba(0, 0, 0, .92)"; context.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight); }
         context.restore();
       }
@@ -199,7 +285,7 @@ function TravelCanvas({ travelMap, grid, effects, markers, selected, quality, fo
       context.strokeStyle = "rgba(206, 169, 83, .75)"; context.strokeRect(hover.point.x + 12, hover.point.y + 12, width, 30);
       context.fillStyle = "#f5eedc"; context.textAlign = "left"; context.textBaseline = "middle"; context.fillText(text, hover.point.x + 21, hover.point.y + 27);
     }
-  }, [effects, focusedMarkerId, grid, hover, markers, quality, revision, selected, travelMap.imageUrl]);
+  }, [effects, focusedMarkerId, grid, hover, markers, quality, revision, selected, travelMap.imageUrl, travelMap.tiles]);
   const markerAt = (point: Point) => markers.find((marker) => {
     const hex = parseHex(marker.hex); if (!hex) return false; const center = hexCenter(hex, grid);
     return (center.x - point.x) ** 2 + (center.y - point.y) ** 2 < 20 ** 2;

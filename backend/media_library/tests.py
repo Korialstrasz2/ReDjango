@@ -1,14 +1,16 @@
 import json
+from io import BytesIO
 from tempfile import TemporaryDirectory
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from PIL import Image
 
 from backend.core.models import DatiCampagna, Giocatore, Oggetto
 from backend.dice_tools.models import DiceSet, DiceTexture
 
-from .models import ImageCategory, UploadedImage
+from .models import DatiMappa, ImageCategory, UploadedImage
 
 
 def media_envelope(request_id: str, payload: dict | None = None) -> str:
@@ -232,8 +234,90 @@ class MediaApiContractTests(TestCase):
         visible = self.client.get(limited.file.url)
         self.assertEqual(visible.status_code, 200)
         self.assertEqual(visible.headers["Cache-Control"], "private, no-store")
+        cached = self.client.get(public.file.url)
+        self.assertEqual(cached.status_code, 200)
+        self.assertEqual(cached.headers["Cache-Control"], "private, max-age=31536000, immutable")
+        self.assertTrue(cached.headers["ETag"].startswith('"'))
+        not_modified = self.client.get(public.file.url, HTTP_IF_NONE_MATCH=cached.headers["ETag"])
+        self.assertEqual(not_modified.status_code, 304)
         self.assertEqual(visible.headers["X-Content-Type-Options"], "nosniff")
         self.assertEqual(visible.headers["Cross-Origin-Resource-Policy"], "same-origin")
+        visible.close()
+        cached.close()
+        not_modified.close()
+
+    def test_large_global_travel_map_exposes_and_serves_native_resolution_tiles(self):
+        source = BytesIO()
+        Image.new("RGB", (1100, 700), "#4c7898").save(source, format="WEBP")
+        image = UploadedImage.objects.create(
+            title="Mappa enorme",
+            folder="mappe",
+            file=SimpleUploadedFile("huge-map.webp", source.getvalue(), content_type="image/webp"),
+            category=self.generic_category,
+        )
+        campaign = DatiCampagna.objects.create(nome="Tile viaggio", attiva=True)
+        travel_map = DatiMappa.objects.create(nome="Mappa enorme", campagna=campaign, tipo="globale", image=image)
+        giocatore = Giocatore.objects.get(user__username="media_master")
+        giocatore.active_campaign = campaign
+        giocatore.save(update_fields=["active_campaign", "updated_at"])
+
+        response = self.client.get("/api/travel/maps/")
+
+        self.assertEqual(response.status_code, 200)
+        serialized = response.json()["data"]["maps"][0]
+        self.assertEqual(serialized["id"], travel_map.id)
+        self.assertEqual(serialized["imageUrl"], image.file.url)
+        self.assertEqual(serialized["tiles"]["width"], 1100)
+        self.assertEqual(serialized["tiles"]["height"], 700)
+        self.assertGreaterEqual(serialized["tiles"]["maxLevel"], 1)
+        tile_url = f"{serialized['tiles']['baseUrl']}/{serialized['tiles']['maxLevel']}/0/0.webp"
+        tile = self.client.get(tile_url)
+        self.assertEqual(tile.status_code, 200)
+        self.assertEqual(tile["Content-Type"], "image/webp")
+        self.assertEqual(tile["Cache-Control"], "private, max-age=31536000, immutable")
+        tile.close()
+
+        manifest_response = self.client.get("/api/media/cache-manifest/")
+        self.assertEqual(manifest_response.status_code, 200)
+        manifest = manifest_response.json()["data"]
+        self.assertEqual(manifest["scope"], f"user-{giocatore.user_id}-campaign-{campaign.id}")
+        self.assertEqual(manifest["campaign"]["id"], campaign.id)
+        urls = {entry["url"] for entry in manifest["entries"]}
+        self.assertIn(image.file.url, urls)
+        self.assertTrue(any(url.startswith(serialized["tiles"]["baseUrl"]) for url in urls))
+        self.assertEqual(manifest["totalBytes"], sum(entry["size"] for entry in manifest["entries"]))
+
+    def test_media_cache_manifest_never_contains_limited_images(self):
+        public = UploadedImage.objects.create(
+            title="Condivisa cache",
+            folder="cache",
+            file=SimpleUploadedFile("cache-public.png", b"public", content_type="image/png"),
+            category=self.generic_category,
+        )
+        limited = UploadedImage.objects.create(
+            title="Riservata cache",
+            folder="cache",
+            file=SimpleUploadedFile("cache-secret.png", b"secret", content_type="image/png"),
+            category=self.generic_category,
+            visibilita_limitata=True,
+        )
+
+        response = self.client.get("/api/media/cache-manifest/")
+
+        self.assertEqual(response.status_code, 200)
+        urls = {entry["url"] for entry in response.json()["data"]["entries"]}
+        self.assertIn(public.file.url, urls)
+        self.assertNotIn(limited.file.url, urls)
+
+    def test_service_worker_is_public_and_controls_the_origin(self):
+        self.client.logout()
+
+        response = self.client.get("/service-worker.js")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Service-Worker-Allowed"], "/")
+        self.assertEqual(response["Cache-Control"], "no-cache")
+        self.assertEqual(response["X-Content-Type-Options"], "nosniff")
 
     def test_context_upload_uses_admin_configured_category_and_default_group(self):
         uploaded = SimpleUploadedFile("die.png", b"not-a-rendered-image", content_type="image/png")

@@ -31,10 +31,12 @@ import { DiceManagementPage } from "./features/management/DiceManagementPage";
 import { QuickTools } from "./features/quick-tools/QuickTools";
 import { SkillsPage } from "./features/skills/SkillsPage";
 import { TravelPage } from "./features/TravelPage";
+import { MediaCachePanel } from "./features/MediaCachePanel";
 import { colorLuminance, contrastingTextOutline } from "./lib/appearance";
 import { ThemeSurfacesContext } from "./lib/surfaces";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
 import { FIXED_SHORTCUTS, pageShortcutTargets, quickToolShortcutTargets, SHORTCUT_CATEGORY, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
+import { activateMediaCache, deactivateMediaCache } from "./lib/mediaCache";
 import type { AuthData, BootstrapData, Guide, GuideEntry, GuideVariable, GuideVariableGroup, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
@@ -427,7 +429,10 @@ function Dashboard() {
     onError: (error: Error) => notify(error.message, "error")
   });
   const logoutMutation = useMutation({
-    mutationFn: () => apiRequest<AuthData>("/api/auth/logout/", { method: "POST" }),
+    mutationFn: async () => {
+      await deactivateMediaCache().catch(() => undefined);
+      return apiRequest<AuthData>("/api/auth/logout/", { method: "POST" });
+    },
     onSuccess: () => {
       queryClient.clear();
       window.location.assign("/login/");
@@ -828,7 +833,7 @@ function PlayerSettingsPanel() {
   </section>;
 }
 
-type SettingsTabId = "profilo" | "aspetto" | "accessibilita" | "dadi" | "audio" | "scorciatoie" | "sessione" | "amministrazione" | "altro";
+type SettingsTabId = "profilo" | "aspetto" | "accessibilita" | "dadi" | "audio" | "media" | "scorciatoie" | "sessione" | "amministrazione" | "altro";
 
 // Ordine deliberato: prima ciò che riguarda il giocatore, poi la sessione, infine l'amministrazione.
 // Le categorie non elencate qui confluiscono nella scheda "Altro", così nessuna impostazione resta invisibile.
@@ -838,6 +843,7 @@ const SETTINGS_TABS: Array<{ id: SettingsTabId; label: string; categories: strin
   { id: "accessibilita", label: "Accessibilità", categories: ["accessibilità"] },
   { id: "dadi", label: "Dadi", categories: ["dadi"] },
   { id: "audio", label: "Audio", categories: ["audio"] },
+  { id: "media", label: "Media locali", categories: [] },
   { id: "scorciatoie", label: "Scorciatoie", categories: ["scorciatoie da tastiera"] },
   { id: "sessione", label: "Sessione", categories: ["sessione"] },
   { id: "amministrazione", label: "Amministrazione", categories: ["identità", "navigazione", "sicurezza", "funzioni"] },
@@ -878,6 +884,7 @@ function SettingsPage() {
     mutationFn: (campaignId: number) => command<{ campaigns: Pick<BootstrapData, "activeCampaignId" | "campaigns"> }>("campaign.select", { campaignId }, "settings"),
     onSuccess: async (result) => {
       queryClient.setQueryData<BootstrapData>(["bootstrap"], (current) => current ? { ...current, ...result.data.campaigns } : current);
+      await queryClient.invalidateQueries({ queryKey: ["media-cache-manifest"] });
       await queryClient.invalidateQueries({ queryKey: ["personaggi"] });
       notify("Campagna selezionata.");
     },
@@ -914,6 +921,7 @@ function SettingsPage() {
     return SETTINGS_TABS.map((tab) => {
       const categories = (tab.id === "altro" ? unmapped : tab.categories).filter((category) => groups[category]?.length);
       const hasPanel = tab.id === "profilo"
+        || tab.id === "media"
         || (tab.id === "sessione" && settings.security.canManageMasterSettings)
         || (tab.id === "dadi" && settings.security.canManageAdminSettings);
       const pending = categories.reduce((total, category) => total + groups[category].filter((setting) => dirtyKeys.has(setting.key)).length, 0);
@@ -938,6 +946,7 @@ function SettingsPage() {
     </nav>
     {activeTab && <div className="settings-tab-panel" role="tabpanel" id={`settings-panel-${activeTab.id}`} aria-labelledby={`settings-tab-${activeTab.id}`}>
       {activeTab.id === "profilo" && <PlayerSettingsPanel />}
+      {activeTab.id === "media" && <MediaCachePanel userId={bootstrap.user.id} campaignId={bootstrap.activeCampaignId} notify={notify} />}
       {activeTab.id === "sessione" && settings.security.canManageMasterSettings && <section className="panel campaign-settings-panel" data-component-type="panel" data-theme="gold"><div><p className="eyebrow">Sessione</p><h2>Campagna attiva</h2><p>Scegli la campagna mostrata nella postazione. Il cambio può deselezionare il personaggio attivo.</p></div><label><span>Campagna</span><select value={bootstrap.activeCampaignId ?? ""} disabled={campaignMutation.isPending || !bootstrap.campaigns.length} onChange={(event) => campaignMutation.mutate(Number(event.target.value))}>{bootstrap.campaigns.map((campaign) => <option key={campaign.id} value={campaign.id}>{campaign.name}</option>)}</select></label></section>}
       {activeTab.categories.length > 0 && <form onSubmit={(event) => { event.preventDefault(); saveSettings(); }}>
         <div className="settings-grid" data-columns={activeTab.categories.length === 1 ? "1" : "2"}>{activeTab.categories.map((category) => <section className="panel" key={category}><h2>{category}</h2>{groups[category].map((setting) => {
@@ -966,7 +975,7 @@ function SettingsPage() {
     >
       <p><strong>Cambiare questa impostazione richiede il riavvio del server. Riavviare?</strong></p>
       <p>La sessione verrà conservata. Passando alla modalità bloccata, i dispositivi collegati dalla rete perderanno immediatamente l’accesso.</p>
-      {onlineConfigurationMissing && <p className="setting-inline-warning" role="alert">Prima di attivare il server online configura <code>REDJANGO_SECRET_KEY</code> e <code>REDJANGO_ALLOWED_HOSTS</code> nell'ambiente del launcher.</p>}
+      {onlineConfigurationMissing && <p className="setting-inline-warning" role="alert">Prima di attivare il server online configura <code>REDJANGO_SECRET_KEY</code> e <code>REDJANGO_PUBLIC_ORIGIN</code> (oppure host e origini separatamente) nell'ambiente del launcher.</p>}
       {!settings.runtime.restartAvailable && <p className="setting-inline-warning">Il server non è stato avviato con <code>start_server.bat</code>: dopo il salvataggio dovrai riavviarlo manualmente.</p>}
     </Modal>}
     {restartingMode && <ServerRestartScreen mode={restartingMode} />}
@@ -1032,6 +1041,10 @@ export function App() {
   const notify = (message: string, kind: "success" | "error" | "info" = "success") => { setToast({ message, kind }); window.setTimeout(() => setToast(null), 4200); };
 
   useEffect(() => applyUiPreferences(settings.data), [settings.data]);
+  useEffect(() => {
+    if (!authenticated || !bootstrap.data || !settings.data) return;
+    void activateMediaCache(bootstrap.data.user.id, bootstrap.data.activeCampaignId).catch(() => undefined);
+  }, [authenticated, bootstrap.data?.activeCampaignId, bootstrap.data?.user.id, settings.data]);
   const error = auth.error || bootstrap.error || personaggi.error || settings.error || media.error;
   if (error) return <div className="fatal-error"><h1>ReDjango non può avviarsi</h1><p>{(error as Error).message}</p><button onClick={() => window.location.reload()}>Riprova</button></div>;
   if (!auth.data) return <Loading />;

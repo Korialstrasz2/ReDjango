@@ -835,15 +835,49 @@ class FogBackupAndControlTests(CombatTestCase):
             [character.id for character in ordered_personaggi_for(self.giocatore, include_all=True)],
         )
 
-    def test_player_cannot_paint_or_take_control(self):
-        with self.assertRaises(ApiError) as paint_error:
+    def test_player_can_paint_colors_but_cannot_change_hex_rules_or_take_control(self):
+        paint_hexes(self.player_user, self.player, {
+            "mapId": self.map.id,
+            "cells": [{"q": 1, "r": 2}],
+            "overlayColor": "#cc8844",
+            "overlayOpacity": .6,
+        })
+        painted = self.map.hexes.get(q=1, r=2)
+        self.assertEqual(painted.overlay_color, "#cc8844")
+        self.assertEqual(float(painted.overlay_opacity), .6)
+        original_rule_state = (painted.blocked, painted.fog_effect, painted.revealed)
+
+        protected_changes = {
+            "terrainTypeIds": [],
+            "blocked": True,
+            "fogEffect": True,
+            "revealed": False,
+        }
+        for field, value in protected_changes.items():
+            with self.subTest(field=field), self.assertRaises(ApiError) as paint_error:
+                paint_hexes(self.player_user, self.player, {
+                    "mapId": self.map.id,
+                    "cells": [{"q": 1, "r": 2}],
+                    "overlayColor": "#112233",
+                    field: value,
+                })
+            self.assertEqual(paint_error.exception.code, "combat.hex_color_only")
+            self.assertEqual(paint_error.exception.status, 403)
+
+        painted.refresh_from_db()
+        self.assertEqual(painted.overlay_color, "#cc8844")
+        self.assertEqual(
+            (painted.blocked, painted.fog_effect, painted.revealed),
+            original_rule_state,
+        )
+
+        with self.assertRaises(ApiError) as no_color_error:
             paint_hexes(self.player_user, self.player, {
                 "mapId": self.map.id,
-                "center": {"q": 0, "r": 0},
-                "radius": 1,
-                "overlayColor": "#cc8844",
+                "cells": [{"q": 1, "r": 2}],
             })
-        self.assertEqual(paint_error.exception.status, 403)
+        self.assertEqual(no_color_error.exception.code, "combat.hex_color_required")
+
         with self.assertRaises(ApiError) as control_error:
             take_control(self.player_user, self.player, {"mapId": self.map.id, "characterId": self.enemy.id})
         self.assertEqual(control_error.exception.status, 403)

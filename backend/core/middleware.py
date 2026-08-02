@@ -17,6 +17,7 @@ from .request_security import peer_ip, strip_untrusted_proxy_headers
 
 PUBLIC_EXACT_PATHS = {
     "/login/",
+    "/service-worker.js",
     "/api/auth/session/",
     "/api/auth/login/",
     "/favicon.ico",

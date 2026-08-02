@@ -901,7 +901,20 @@ def _hexes_in_radius(map_obj: MapMetadata, center: tuple[int, int], radius: int)
 
 @transaction.atomic
 def paint_hexes(user, giocatore, payload):
-    require_master(user, giocatore)
+    can_manage = has_minimum_role(effective_role(user, giocatore), Giocatore.ROLE_MASTER)
+    protected_fields = {"terrainTypeIds", "blocked", "fogEffect", "revealed"}
+    if not can_manage and protected_fields.intersection(payload):
+        raise ApiError(
+            "combat.hex_color_only",
+            "I giocatori possono cambiare soltanto il colore degli esagoni.",
+            status=403,
+        )
+    if not can_manage and "overlayColor" not in payload and not payload.get("clear"):
+        raise ApiError(
+            "combat.hex_color_required",
+            "Scegli un colore da applicare agli esagoni.",
+            "overlayColor",
+        )
     map_obj = MapMetadata.objects.select_for_update().get(pk=payload["mapId"])
     raw_cells = payload.get("cells") or []
     if payload.get("center") is not None:

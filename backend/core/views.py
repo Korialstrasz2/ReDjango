@@ -23,7 +23,7 @@ from .guides_it import (
 )
 from .item_selectors import weapon_type_profiles
 from .models import GlobalModifiers, Guida
-from .security import get_or_create_giocatore_for_user, security_payload
+from .security import get_or_create_giocatore_for_user, has_minimum_role, security_payload
 
 
 def get_authenticated_user(request):
@@ -95,7 +95,14 @@ def _guide_blocks(raw_content):
     return expanded
 
 
-def _default_guides_payload():
+def _guide_minimum_role(metadata: object) -> str:
+    if not isinstance(metadata, dict):
+        return "user"
+    role = str(metadata.get("minimum_role") or "user")
+    return role if role in {"user", "master", "admin"} else "admin"
+
+
+def _default_guides_payload(role: str):
     return [
         {
             "id": None,
@@ -105,13 +112,14 @@ def _default_guides_payload():
             "content": _guide_blocks(guide["contenuto"]),
         }
         for guide in sorted(V2_GUIDE_DEFAULTS, key=lambda item: (item.get("ordine", 0), item["nome"]))
+        if has_minimum_role(role, str(guide.get("minimum_role") or "user"))
     ]
 
 
-def _guides_payload():
+def _guides_payload(role: str):
     guides = list(Guida.objects.order_by("ordine", "nome"))
     if not guides:
-        return _default_guides_payload()
+        return _default_guides_payload(role)
     return [
         {
             "id": guide.id,
@@ -121,6 +129,7 @@ def _guides_payload():
             "content": _guide_blocks(guide.contenuto),
         }
         for guide in guides
+        if has_minimum_role(role, _guide_minimum_role(guide.metadata))
     ]
 
 
@@ -161,7 +170,7 @@ def bootstrap(request):
             },
             "security": security,
             "menus": menus,
-            "guides": _guides_payload(),
+            "guides": _guides_payload(security["role"]),
             **campaigns_payload(giocatore),
         }
     )

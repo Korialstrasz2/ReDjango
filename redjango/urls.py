@@ -4,14 +4,21 @@ from django.urls import include, path, re_path
 from backend.core import auth_views, system_views
 from backend.core.views import index
 from backend.api_v1 import api as api_v1
-from backend.media_library.file_views import protected_media
+from backend.media_library.file_views import protected_media, travel_tile
+from backend.media_library.cache_views import service_worker
 
 urlpatterns = [
+    path("service-worker.js", service_worker, name="service-worker"),
     path("admin/", admin.site.urls),
     path("api/auth/session/", auth_views.session_status, name="auth-session"),
     path("api/auth/login/", auth_views.login_session, name="auth-login"),
     path("api/auth/logout/", auth_views.logout_session, name="auth-logout"),
     path("api/system/restart/", system_views.restart_server, name="system-restart"),
+    path(
+        "media/travel-tiles/<int:map_id>/<str:revision>/<int:level>/<int:column>/<int:row>.webp",
+        travel_tile,
+        name="travel-tile",
+    ),
     path("media/<path:media_path>", protected_media, name="protected-media"),
     path("", index, name="index"),
     path("api/", include("backend.core.urls")),
