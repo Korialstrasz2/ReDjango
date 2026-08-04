@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -27,16 +27,26 @@ const actionLabel = { create: "Crea", update: "Modifica", archive: "Archivia" } 
 const statusLabel: Record<string, string> = { proposed: "Bozza", valid: "Valida", invalid: "Non valida", applied: "Applicata", skipped: "Esclusa" };
 
 function ConfirmDialog({ title, children, confirmLabel, danger = false, onConfirm, onClose, pending }: {
-  title: string; children: React.ReactNode; confirmLabel: string; danger?: boolean; onConfirm: () => void; onClose: () => void; pending: boolean;
+  title: string; children: ReactNode; confirmLabel: string; danger?: boolean; onConfirm: () => void; onClose: () => void; pending: boolean;
 }) {
+  const dialogRef = useRef<HTMLElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
   useEffect(() => { confirmRef.current?.focus(); }, []);
   useEffect(() => {
-    const key = (event: KeyboardEvent) => { if (event.key === "Escape" && !pending) onClose(); };
+    const key = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !pending) { onClose(); return; }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = [...dialogRef.current.querySelectorAll<HTMLElement>("button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href]")];
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable.at(-1)!;
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
     window.addEventListener("keydown", key); return () => window.removeEventListener("keydown", key);
   }, [onClose, pending]);
   return <div className="master-ai-dialog-backdrop" onMouseDown={(event) => event.target === event.currentTarget && !pending && onClose()}>
-    <section className="master-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="master-ai-dialog-title">
+    <section ref={dialogRef} className="master-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="master-ai-dialog-title">
       <h2 id="master-ai-dialog-title">{title}</h2><div>{children}</div>
       <footer><button type="button" className="button secondary" disabled={pending} onClick={onClose}>Annulla</button>
         <button ref={confirmRef} type="button" className={`button ${danger ? "danger" : "primary"}`} disabled={pending} onClick={onConfirm}>{pending ? "Operazione…" : confirmLabel}</button></footer>
@@ -94,11 +104,30 @@ export function MasterAIPage({ notify }: Props) {
   const [conflict, setConflict] = useState("");
   const [confirm, setConfirm] = useState<"apply" | "discard" | null>(null);
   const handledRun = useRef("");
+  const hydrated = useRef(false);
   const transcriptRef = useRef<HTMLDivElement>(null);
 
   const proposerAgents = useMemo(() => (workspace.data?.agents || []).filter((agent) => agent.mode === "proposer" || agent.canProposeChanges), [workspace.data]);
+  const proposerAgentIds = useMemo(() => new Set(proposerAgents.map((agent) => agent.id)), [proposerAgents]);
   useEffect(() => { if (!agentId && proposerAgents[0]) setAgentId(proposerAgents[0].id); }, [agentId, proposerAgents]);
   useEffect(() => { const node = transcriptRef.current; if (node) node.scrollTop = node.scrollHeight; }, [bubbles, activeRun?.progress]);
+  useEffect(() => {
+    if (hydrated.current || !workspace.data || !proposerAgents.length) return;
+    hydrated.current = true;
+    const restoredRun = workspace.data.activeRun;
+    const restoredConversation = restoredRun?.conversation && proposerAgentIds.has(restoredRun.conversation.agentId || 0)
+      ? restoredRun.conversation
+      : workspace.data.conversations.find((conversation) => proposerAgentIds.has(conversation.agentId || 0));
+    if (restoredRun && restoredConversation && isWorking(restoredRun)) setActiveRun(restoredRun);
+    if (restoredConversation) {
+      setConversationId(restoredConversation.id);
+      setAgentId(restoredConversation.agentId || proposerAgents[0].id);
+      setHistory(restoredConversation.history);
+      setBubbles(restoredConversation.bubbles);
+    }
+    const runChangeSet = restoredRun?.result && "changeSet" in restoredRun.result ? (restoredRun.result as MasterAIChatResult).changeSet : undefined;
+    if (runChangeSet) setChangeSetId(runChangeSet.id);
+  }, [proposerAgentIds, proposerAgents, workspace.data]);
 
   const changeSetQuery = useQuery({
     queryKey: ["aiChangeSet", changeSetId], enabled: Boolean(changeSetId),
@@ -112,10 +141,29 @@ export function MasterAIPage({ notify }: Props) {
     if (!exists) setSelectedOperationId(changeSet.operations.at(-1)?.id ?? null);
   }, [changeSet, selectedOperationId]);
   useEffect(() => { setLocalValues(selectedOperation?.effectiveValues || {}); }, [selectedOperation?.id, selectedOperation?.effectiveValues, changeSet?.revision]);
+  useEffect(() => {
+    if (!changeSet?.conversationId || !workspace.data) return;
+    const conversation = workspace.data.conversations.find((entry) => entry.id === changeSet.conversationId);
+    if (!conversation || conversation.id === conversationId) return;
+    setConversationId(conversation.id);
+    setAgentId(conversation.agentId || agentId);
+    setHistory(conversation.history);
+    setBubbles(conversation.bubbles);
+  }, [agentId, changeSet?.conversationId, conversationId, workspace.data]);
   const dirty = Boolean(selectedOperation && JSON.stringify(localValues) !== JSON.stringify(selectedOperation.effectiveValues));
 
   const storeSet = (next: AIChangeSet) => {
     setChangeSetId(next.id); queryClient.setQueryData(["aiChangeSet", next.id], next); void queryClient.invalidateQueries({ queryKey: ["aiChangeSets"] });
+  };
+  const chooseAgent = (nextId: number) => {
+    if (nextId === agentId) return;
+    if (dirty && !window.confirm("Scartare le modifiche locali non salvate e cambiare agente?")) return;
+    setAgentId(nextId); setConversationId(null); setHistory([]); setBubbles([]); setChangeSetId(null); setSelectedOperationId(null); setConflict("");
+  };
+  const chooseChangeSet = (nextId: string | null) => {
+    if (nextId === changeSetId) return;
+    if (dirty && !window.confirm("Scartare le modifiche locali non salvate e cambiare proposta?")) return;
+    setChangeSetId(nextId); setSelectedOperationId(null); setConflict("");
   };
 
   useEffect(() => {
@@ -192,7 +240,7 @@ export function MasterAIPage({ notify }: Props) {
   };
   const counts = changeSet?.operations.filter((operation) => operation.selected).reduce((result, operation) => ({ ...result, [operation.action]: result[operation.action] + 1 }), { create: 0, update: 0, archive: 0 }) || { create: 0, update: 0, archive: 0 };
   const selectedCount = counts.create + counts.update + counts.archive;
-  const canApply = Boolean(changeSet?.canApply && changeSet.validation.token && !dirty && !applySet.isPending);
+  const canApply = Boolean(changeSet?.canApply && changeSet.validation.token && !dirty && !conflict && !applySet.isPending);
 
   if (workspace.isLoading) return <main className="master-ai-root"><p className="empty-copy">Preparazione del Master AI…</p></main>;
   if (workspace.isError) return <main className="master-ai-root"><p className="form-error">{(workspace.error as Error).message}</p></main>;
@@ -202,13 +250,15 @@ export function MasterAIPage({ notify }: Props) {
   return <main className="master-ai-root">
     <header className="master-ai-header"><div><p className="eyebrow">Revisione controllata</p><h1>Master AI</h1><p>L'agente può preparare proposte, ma non può applicarle. Solo i pulsanti del pannello di revisione possono salvare le modifiche selezionate.</p></div>
       <nav><Link className="button secondary" to="/tools">Strumenti</Link><Link className="button secondary" to="/tools/ai">Configura agenti</Link></nav></header>
-    <section className="master-ai-statusbar"><label>Agente<select value={agentId} disabled={Boolean(isWorking(activeRun))} onChange={(event) => setAgentId(Number(event.target.value))}>{proposerAgents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name} · {agent.effectiveProviderName || agent.providerName}</option>)}</select></label>
-      <label>Proposta<select value={changeSetId || ""} disabled={Boolean(isWorking(activeRun))} onChange={(event) => setChangeSetId(event.target.value || null)}><option value="">Nuova proposta</option>{(recentSets.data?.changeSets || []).map((entry) => <option key={entry.id} value={entry.id}>{entry.title || entry.id} · {entry.status}</option>)}</select></label>
+    <section className="master-ai-statusbar"><label>Agente<select value={agentId} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseAgent(Number(event.target.value))}>{proposerAgents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name} · {agent.effectiveProviderName || agent.providerName}</option>)}</select></label>
+      <label>Proposta<select value={changeSetId || ""} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseChangeSet(event.target.value || null)}><option value="">Nuova proposta</option>{(recentSets.data?.changeSets || []).map((entry) => <option key={entry.id} value={entry.id}>{entry.title || entry.id} · {entry.status}</option>)}</select></label>
       <span data-state={changeSet?.status || "empty"}>{changeSet ? `${changeSet.status} · revisione ${changeSet.revision}` : "Nessuna proposta aperta"}</span></section>
+    {recentSets.isError && <p className="form-error" role="alert">Non è stato possibile caricare le proposte recenti.</p>}
+    {changeSetQuery.isError && <p className="form-error" role="alert">{(changeSetQuery.error as Error).message}</p>}
     {conflict && <aside className="master-ai-conflict" role="alert"><strong>Conflitto di versione</strong><p>{conflict}</p><button type="button" className="button secondary" disabled={validateSet.isPending} onClick={() => validateSet.mutate()}>Ricarica e convalida di nuovo</button></aside>}
 
     <div className="master-ai-layout">
-      <section className="master-ai-chat panel"><header><h2>Richiesta</h2>{isWorking(activeRun) && <button type="button" className="button secondary small" onClick={() => activeRun && cancelMasterAIExecutionRun(activeRun.id).then((response) => setActiveRun(response.data.run))}>Annulla</button>}</header>
+      <section className="master-ai-chat panel"><header><h2>Richiesta</h2>{isWorking(activeRun) && <button type="button" className="button secondary small" onClick={() => activeRun && cancelMasterAIExecutionRun(activeRun.id).then((response) => setActiveRun(response.data.run)).catch((error: Error) => notify(error.message, "error"))}>Annulla</button>}</header>
         <div className="master-ai-transcript" ref={transcriptRef} aria-live="polite">{bubbles.length ? bubbles.map((bubble) => <article key={bubble.id} data-role={bubble.role}><strong>{bubble.role === "user" ? "Tu" : "Master AI"}</strong><p>{bubble.text}</p>{bubble.tools.length > 0 && <details><summary>{bubble.tools.length} strumenti usati</summary><ul>{bubble.tools.map((tool, index) => <li key={`${tool.name}-${index}`}>{tool.name}{tool.isError ? " · errore" : ""}</li>)}</ul></details>}</article>) : <div className="master-ai-chat-empty"><p>Descrivi una creazione, modifica, clone o archiviazione. L'agente userà il database come fonte e aggiungerà operazioni alla proposta.</p><button type="button" className="button secondary small" onClick={() => setQuestion("Crea un nuovo oggetto simile a un oggetto esistente, ma chiedimi prima quale usare come modello.")}>Esempio oggetto</button><button type="button" className="button secondary small" onClick={() => setQuestion("Cerca una Skill e proponi una modifica senza applicarla.")}>Esempio Skill</button></div>}
           {isWorking(activeRun) && <article data-role="assistant" className="pending"><strong>Master AI</strong><p>{activeRun?.progress || "Elaborazione…"}</p></article>}</div>
         <form onSubmit={submit}><textarea rows={4} value={question} maxLength={8000} disabled={Boolean(isWorking(activeRun))} placeholder="Esempio: crea un incantesimo chiamato Tocco mortale simile a…" onChange={(event) => setQuestion(event.target.value)} /><button className="button primary" disabled={!question.trim() || !agentId || Boolean(isWorking(activeRun)) || ask.isPending}>Invia richiesta</button></form>
@@ -220,8 +270,8 @@ export function MasterAIPage({ notify }: Props) {
           onRemove={(operation) => { if (window.confirm(`Rimuovere l'operazione «${operation.displayLabel}»?`)) removeOperation.mutate(operation); }} />
         <div className="master-ai-operation-detail">{selectedOperation ? <>
           <header><div><p className="eyebrow">{selectedOperation.entityLabel}</p><h2>{actionLabel[selectedOperation.action]} · {selectedOperation.displayLabel}</h2></div><span data-state={selectedOperation.status}>{statusLabel[selectedOperation.status] || selectedOperation.status}</span></header>
-          {selectedOperation.errors.length > 0 && <aside className="master-ai-problems error" role="alert"><strong>Errori</strong><ul>{selectedOperation.errors.map((error, index) => <li key={`${error.code}-${index}`}>{error.message}</li>)}</ul></aside>}
-          {selectedOperation.warnings.length > 0 && <aside className="master-ai-problems warning"><strong>Avvisi</strong><ul>{selectedOperation.warnings.map((warning, index) => <li key={`${warning.code}-${index}`}>{warning.message}</li>)}</ul></aside>}
+          {selectedOperation.errors.length > 0 && <aside className="master-ai-problems error" role="alert" aria-live="polite"><strong>Errori</strong><ul>{selectedOperation.errors.map((error, index) => <li key={`${error.code}-${index}`}>{error.message}</li>)}</ul></aside>}
+          {selectedOperation.warnings.length > 0 && <aside className="master-ai-problems warning" aria-live="polite"><strong>Avvisi</strong><ul>{selectedOperation.warnings.map((warning, index) => <li key={`${warning.code}-${index}`}>{warning.message}</li>)}</ul></aside>}
           {selectedOperation.action !== "archive" && <><ProposalFieldRenderer fields={selectedOperation.fields} values={localValues} errors={selectedOperation.errors} disabled={!changeSet.canEdit || saveOperation.isPending} onChange={(name, value) => setLocalValues((current) => ({ ...current, [name]: value }))} />
             <div className="master-ai-draft-actions"><span>{dirty ? "Modifiche locali non salvate" : "Bozza sincronizzata"}</span><button type="button" className="button primary" disabled={!dirty || saveOperation.isPending || !changeSet.canEdit} onClick={() => saveOperation.mutate()}>Salva bozza operazione</button></div></>}
           <ProposalDiff operation={selectedOperation} />
@@ -229,7 +279,7 @@ export function MasterAIPage({ notify }: Props) {
       </> : <div className="master-ai-no-proposal"><h2>Nessuna proposta aperta</h2><p>Invia una richiesta al Master AI oppure apri una proposta recente. Le operazioni compariranno qui per la revisione umana.</p></div>}</section>
     </div>
 
-    {changeSet && <footer className="master-ai-actionbar"><div><strong>{selectedCount} operazioni selezionate</strong><span>{changeSet.validation.errors.length} errori · {changeSet.validation.warnings.length} avvisi</span></div>
+    {changeSet && <footer className="master-ai-actionbar" aria-live="polite"><div><strong>{selectedCount} operazioni selezionate</strong><span>{changeSet.validation.errors.length} errori · {changeSet.validation.warnings.length} avvisi</span></div>
       <button type="button" className="button secondary" disabled={!changeSet.canDiscard || discardSet.isPending} onClick={() => setConfirm("discard")}>Scarta proposta</button>
       <button type="button" className="button secondary" disabled={!changeSet.canValidate || dirty || validateSet.isPending} onClick={() => validateSet.mutate()}>{changeSet.status === "ready" ? "Convalida di nuovo" : "Convalida proposta"}</button>
       <button type="button" className="button primary" disabled={!canApply} onClick={() => setConfirm("apply")}>Applica selezionate</button>
