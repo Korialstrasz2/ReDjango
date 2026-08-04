@@ -1,9 +1,13 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { ProposalFieldRenderer } from "./FieldRenderer";
 import type { AIChangeField } from "./types";
+
+beforeAll(() => {
+  (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+});
 
 const field = (values: Partial<AIChangeField> & Pick<AIChangeField, "name" | "label" | "kind">): AIChangeField => ({
   group: "Test", required: false, nullable: false, readOnly: false, help: "", choices: [], ui: {}, ...values,
@@ -13,6 +17,15 @@ const render = async (fields: AIChangeField[], values: Record<string, unknown>, 
   const host = document.createElement("div"); document.body.append(host); const root = createRoot(host);
   await act(async () => root.render(<ProposalFieldRenderer fields={fields} values={values} errors={[]} disabled={false} onChange={onChange} />));
   return { host, root, onChange };
+};
+
+const setNativeValue = (element: HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement, value: string) => {
+  const prototype = element instanceof HTMLTextAreaElement
+    ? HTMLTextAreaElement.prototype
+    : element instanceof HTMLSelectElement
+      ? HTMLSelectElement.prototype
+      : HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(prototype, "value")?.set?.call(element, value);
 };
 
 afterEach(() => { document.body.innerHTML = ""; vi.restoreAllMocks(); });
@@ -29,7 +42,7 @@ describe("ProposalFieldRenderer", () => {
     const onChange = vi.fn();
     const { host, root } = await render([field({ name: "familyId", label: "Famiglia", kind: "relation", choices: [{ value: 12, label: "Distruzione" }, { value: 19, label: "Illusione" }] })], { familyId: 12 }, onChange);
     const select = host.querySelector("select") as HTMLSelectElement;
-    await act(async () => { select.value = "19"; select.dispatchEvent(new Event("change", { bubbles: true })); });
+    await act(async () => { setNativeValue(select, "19"); select.dispatchEvent(new Event("change", { bubbles: true })); });
     expect(onChange).toHaveBeenCalledWith("familyId", 19);
     await act(async () => root.unmount());
   });
@@ -45,7 +58,11 @@ describe("ProposalFieldRenderer", () => {
     const onChange = vi.fn();
     const { host, root } = await render([field({ name: "effects", label: "Effetti", kind: "structured", ui: { widget: "itemEffects" } })], { effects: [] }, onChange);
     const textarea = host.querySelector("textarea") as HTMLTextAreaElement;
-    await act(async () => { textarea.value = "{"; textarea.dispatchEvent(new Event("input", { bubbles: true })); textarea.dispatchEvent(new Event("change", { bubbles: true })); });
+    await act(async () => {
+      setNativeValue(textarea, "{");
+      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+      textarea.dispatchEvent(new Event("change", { bubbles: true }));
+    });
     expect(host.textContent).toContain("JSON non valido");
     expect(onChange).not.toHaveBeenCalled();
     await act(async () => root.unmount());
