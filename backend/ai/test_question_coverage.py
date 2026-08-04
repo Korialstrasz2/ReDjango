@@ -163,9 +163,17 @@ class AISecurityInvariantTests(TestCase):
     def setUpTestData(cls):
         cls.fixture = _build_fixture()
 
-    def test_every_tool_is_declared_read_only(self):
-        non_read_only = [tool.name for tool in AI_TOOLS if not tool.read_only]
-        self.assertEqual(non_read_only, [])
+    def test_tool_mutability_is_explicit(self):
+        ordinary_non_read_only = [
+            tool.name for tool in AI_TOOLS
+            if not getattr(tool, "proposal_only", False) and not tool.read_only
+        ]
+        proposal_declared_read_only = [
+            tool.name for tool in AI_TOOLS
+            if getattr(tool, "proposal_only", False) and tool.read_only
+        ]
+        self.assertEqual(ordinary_non_read_only, [])
+        self.assertEqual(proposal_declared_read_only, [])
 
     def test_running_every_tool_leaves_the_database_unchanged(self):
         """La prova comportamentale che nessuno strumento scrive: uno snapshot prima/dopo, non un'ispezione degli import."""

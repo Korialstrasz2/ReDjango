@@ -136,6 +136,8 @@ class AiConfig(AppConfig):
         original_ask_assistant = services.ask_assistant
 
         def ask_assistant(user, giocatore, payload, *, budget=None, progress=None):
+            if not str((payload or {}).get("message") or "").strip():
+                raise ApiError("ai.message_required", "Scrivi una domanda per l'assistente.", "message")
             return original_ask_assistant(
                 user,
                 giocatore,

@@ -214,6 +214,10 @@ def install() -> None:
             return json.dumps({"errore": f"Strumento non autorizzato per questo agente: {name}"}, ensure_ascii=False), True
         mode = resolved_mode(agent_mode)
         if not tool_is_available(tool, user, giocatore, agent_mode=mode):
+            from backend.core.security import effective_role, has_minimum_role
+
+            if not has_minimum_role(effective_role(user, giocatore), tool.minimum_role):
+                return json.dumps({"errore": f"Permessi insufficienti per usare lo strumento: {name}"}, ensure_ascii=False), True
             return json.dumps({"errore": f"Strumento non autorizzato nella modalità {mode}: {name}"}, ensure_ascii=False), True
         safe_arguments = {
             key: value
