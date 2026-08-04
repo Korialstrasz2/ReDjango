@@ -161,8 +161,10 @@ export function ThemeRevealRuntime() {
   useEffect(() => {
     const refreshPreviewImage = () => {
       document.querySelectorAll<HTMLElement>(".theme-preview.theme-reveal-surface").forEach((preview) => {
-        const background = preview.querySelector<HTMLElement>(".theme-preview-background")?.style.backgroundImage || "none";
-        preview.style.setProperty("--theme-showcase-image", background);
+        const layer = preview.querySelector<HTMLElement>(".theme-preview-background");
+        preview.style.setProperty("--theme-showcase-image", layer?.style.backgroundImage || "none");
+        preview.style.setProperty("--theme-showcase-position", layer?.style.backgroundPosition || "center center");
+        preview.style.setProperty("--theme-showcase-filter", layer?.style.filter || "none");
       });
     };
     refreshPreviewImage();
