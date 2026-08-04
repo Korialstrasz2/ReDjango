@@ -71,7 +71,7 @@ def validate_change_context(user, giocatore, context: dict[str, Any] | None) -> 
     sanitized: dict[str, Any] = {}
     if entity_type:
         handler = get_change_handler(entity_type)
-        handler.require_access(user, giocatore, "create")
+        handler.require_access(user, giocatore, "update" if target_id is not None else "create")
         sanitized["entityType"] = handler.entity_type
         if target_id is not None:
             handler.snapshot(user, giocatore, target_id)
