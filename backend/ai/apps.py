@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.apps import AppConfig
 
 
@@ -31,3 +33,52 @@ class AiConfig(AppConfig):
             return payload
 
         selectors.serialize_agent = serialize_agent
+
+        # Skill and Spell are two public entity names for the same authoring root.
+        # Cross-operation checks therefore share their target and name namespace.
+        from .changes import services as change_services
+        from .models import AIChangeOperation
+
+        def root_entity(entity_type: str) -> str:
+            return "skill" if entity_type in {"skill", "spell"} else entity_type
+
+        def append_error(operation, error):
+            errors = list(operation.validation_errors or [])
+            errors.append(error)
+            operation.validation_errors = errors
+            operation.status = AIChangeOperation.STATUS_INVALID
+
+        def cross_operation_checks(operations):
+            target_groups = defaultdict(list)
+            create_names = defaultdict(list)
+            for operation in operations:
+                if not operation.selected:
+                    continue
+                root = root_entity(operation.entity_type)
+                if operation.action in {AIChangeOperation.ACTION_UPDATE, AIChangeOperation.ACTION_ARCHIVE} and operation.target_id:
+                    target_groups[(root, operation.target_id)].append(operation)
+                if operation.action == AIChangeOperation.ACTION_CREATE:
+                    values = operation.effective_values
+                    name = str(values.get("name") or values.get("nome") or "").strip().casefold()
+                    if name:
+                        create_names[(root, name)].append(operation)
+            for group in target_groups.values():
+                if len(group) > 1:
+                    for operation in group:
+                        append_error(
+                            operation,
+                            {"code": "ai.change_target_conflict", "message": "Più operazioni selezionate agiscono sullo stesso record."},
+                        )
+            for group in create_names.values():
+                if len(group) > 1:
+                    for operation in group:
+                        append_error(
+                            operation,
+                            {
+                                "code": "ai.change_create_name_conflict",
+                                "message": "Due creazioni selezionate usano lo stesso nome.",
+                                "field": "name" if operation.entity_type in {"skill", "spell", "theme"} else "nome",
+                            },
+                        )
+
+        change_services._cross_operation_checks = cross_operation_checks
