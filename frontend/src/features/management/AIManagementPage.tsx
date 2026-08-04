@@ -8,7 +8,7 @@ import { useApp } from "../../App";
 type AgentMode = "read_only" | "proposer";
 type ManagedTool = AIToolSummary & { proposalOnly?: boolean; requiresChangeSet?: boolean };
 type ManagedAgent = AIManagedAgent & { mode?: AgentMode; canProposeChanges?: boolean };
-type ManagementData = AIManagementData & {
+type ManagementData = Omit<AIManagementData, "agents" | "tools"> & {
   agents: ManagedAgent[];
   tools: ManagedTool[];
   agentModes?: Array<{ value: AgentMode; label: string }>;
