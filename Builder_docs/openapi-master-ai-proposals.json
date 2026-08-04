@@ -3,204 +3,1325 @@
   "info": {
     "title": "ReDjango Master AI Proposal API",
     "version": "1.0.0",
-    "description": "Authenticated proposal-review endpoints outside the generated /api/v1 Django Ninja schema. All mutation endpoints require the normal ReDjango CSRF cookie and action envelope."
+    "description": "Authenticated proposal-review endpoints outside the generated /api/v1 Django Ninja schema. Mutation endpoints use ReDjango CSRF and action envelopes. The apply endpoint is human-only and is never exposed as an AI tool."
   },
-  "servers": [{ "url": "/" }],
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
   "tags": [
-    { "name": "Master AI proposals" },
-    { "name": "Master AI entities" }
+    {
+      "name": "Master AI proposals"
+    },
+    {
+      "name": "Master AI entities"
+    }
   ],
   "paths": {
     "/api/ai/change-sets/": {
       "get": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "List owner-scoped proposal summaries",
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetList" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetList"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
       },
       "post": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Create an empty proposal",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "requestBody": { "$ref": "#/components/requestBodies/ChangeSetCreate" },
-        "responses": { "201": { "$ref": "#/components/responses/ChangeSetDetail" }, "400": { "$ref": "#/components/responses/Error" }, "403": { "$ref": "#/components/responses/Forbidden" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvelopeChangeSetCreate"
+              }
+            }
+          }
+        }
       }
     },
     "/api/ai/change-sets/{changeSetId}/": {
-      "parameters": [{ "$ref": "#/components/parameters/ChangeSetId" }],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ChangeSetId"
+        }
+      ],
       "get": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Read an owner-scoped proposal",
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "404": { "$ref": "#/components/responses/NotFound" } }
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
       },
       "patch": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Edit proposal metadata or safe context",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "requestBody": { "$ref": "#/components/requestBodies/ChangeSetUpdate" },
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "400": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvelopeChangeSetUpdate"
+              }
+            }
+          }
+        }
       },
       "delete": {
-        "tags": ["Master AI proposals"],
-        "summary": "Discard a proposal without applying domain changes",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "tags": [
+          "Master AI proposals"
+        ],
+        "summary": "Discard a proposal without domain writes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
       }
     },
     "/api/ai/change-sets/{changeSetId}/operations/": {
-      "parameters": [{ "$ref": "#/components/parameters/ChangeSetId" }],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ChangeSetId"
+        }
+      ],
       "post": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Add a staged create, update, clone, or archive operation",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "requestBody": { "$ref": "#/components/requestBodies/OperationCreate" },
-        "responses": { "201": { "$ref": "#/components/responses/ChangeSetDetail" }, "400": { "$ref": "#/components/responses/Error" }, "403": { "$ref": "#/components/responses/Forbidden" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvelopeOperationCreate"
+              }
+            }
+          }
+        }
       }
     },
     "/api/ai/change-sets/{changeSetId}/operations/{operationId}/": {
-      "parameters": [{ "$ref": "#/components/parameters/ChangeSetId" }, { "$ref": "#/components/parameters/OperationId" }],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ChangeSetId"
+        },
+        {
+          "$ref": "#/components/parameters/OperationId"
+        }
+      ],
       "patch": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Edit, select, or reorder an operation",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "requestBody": { "$ref": "#/components/requestBodies/OperationUpdate" },
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "400": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvelopeOperationUpdate"
+              }
+            }
+          }
+        }
       },
       "delete": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Remove an operation from a mutable proposal",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
       }
     },
     "/api/ai/change-sets/{changeSetId}/validate/": {
-      "parameters": [{ "$ref": "#/components/parameters/ChangeSetId" }],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ChangeSetId"
+        }
+      ],
       "post": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Validate selected operations and issue a short-lived signed token",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "403": { "$ref": "#/components/responses/Forbidden" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
       }
     },
     "/api/ai/change-sets/{changeSetId}/apply/": {
-      "parameters": [{ "$ref": "#/components/parameters/ChangeSetId" }],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ChangeSetId"
+        }
+      ],
       "post": {
-        "tags": ["Master AI proposals"],
+        "tags": [
+          "Master AI proposals"
+        ],
         "summary": "Apply all selected operations atomically after explicit human confirmation",
-        "description": "This endpoint is not exposed as an AI tool. It rechecks ownership, role, signed token, revision, selection, values, and target timestamp/digest. Stale conflicts return 409 and clear ready authorization.",
-        "parameters": [{ "$ref": "#/components/parameters/ActionHeader" }],
-        "requestBody": { "$ref": "#/components/requestBodies/Apply" },
-        "responses": { "200": { "$ref": "#/components/responses/ChangeSetDetail" }, "403": { "$ref": "#/components/responses/Forbidden" }, "409": { "$ref": "#/components/responses/Conflict" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ActionHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ChangeSetDetail"
+          },
+          "400": {
+            "$ref": "#/components/responses/Error"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnvelopeApply"
+              }
+            }
+          }
+        },
+        "description": "Rechecks ownership, role, signed token, revision, selection, values, and target timestamp/digest. Stale conflicts return 409 and clear ready authorization."
       }
     },
     "/api/ai/change-entities/": {
       "get": {
-        "tags": ["Master AI entities"],
-        "summary": "List entity handlers accessible to the current user",
-        "responses": { "200": { "$ref": "#/components/responses/EntityCatalog" }, "403": { "$ref": "#/components/responses/Forbidden" } }
+        "tags": [
+          "Master AI entities"
+        ],
+        "summary": "List accessible explicit entity handlers",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EntityCatalog"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
       }
     },
     "/api/ai/change-entities/{entityType}/search/": {
       "get": {
-        "tags": ["Master AI entities"],
+        "tags": [
+          "Master AI entities"
+        ],
         "summary": "Search minimal manageable records",
         "parameters": [
-          { "$ref": "#/components/parameters/EntityType" },
-          { "in": "query", "name": "q", "schema": { "type": "string", "maxLength": 160 } },
-          { "in": "query", "name": "limit", "schema": { "type": "integer", "minimum": 1, "maximum": 25, "default": 10 } }
+          {
+            "$ref": "#/components/parameters/EntityType"
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25,
+              "default": 10
+            }
+          }
         ],
-        "responses": { "200": { "$ref": "#/components/responses/EntitySearch" }, "403": { "$ref": "#/components/responses/Forbidden" }, "404": { "$ref": "#/components/responses/NotFound" } }
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EntitySearch"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
       }
     }
   },
   "components": {
     "parameters": {
-      "ActionHeader": { "in": "header", "name": "X-ReDjango-Action", "required": true, "schema": { "type": "string" } },
-      "ChangeSetId": { "in": "path", "name": "changeSetId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-      "OperationId": { "in": "path", "name": "operationId", "required": true, "schema": { "type": "integer" } },
-      "EntityType": { "in": "path", "name": "entityType", "required": true, "schema": { "$ref": "#/components/schemas/EntityType" } }
-    },
-    "requestBodies": {
-      "ChangeSetCreate": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnvelopeChangeSetCreate" } } } },
-      "ChangeSetUpdate": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnvelopeChangeSetUpdate" } } } },
-      "OperationCreate": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnvelopeOperationCreate" } } } },
-      "OperationUpdate": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnvelopeOperationUpdate" } } } },
-      "Apply": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnvelopeApply" } } } }
+      "ActionHeader": {
+        "in": "header",
+        "name": "X-ReDjango-Action",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ChangeSetId": {
+        "in": "path",
+        "name": "changeSetId",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "OperationId": {
+        "in": "path",
+        "name": "operationId",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "EntityType": {
+        "in": "path",
+        "name": "entityType",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/EntityType"
+        }
+      }
     },
     "responses": {
-      "ChangeSetList": { "description": "Proposal summaries", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChangeSetListEnvelope" } } } },
-      "ChangeSetDetail": { "description": "Complete proposal", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChangeSetEnvelope" } } } },
-      "EntityCatalog": { "description": "Accessible handlers", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EntityCatalogEnvelope" } } } },
-      "EntitySearch": { "description": "Minimal search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EntitySearchEnvelope" } } } },
-      "Error": { "description": "Validation or envelope error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
-      "Unauthorized": { "description": "Authentication required", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
-      "Forbidden": { "description": "Role or domain permission denied", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
-      "NotFound": { "description": "Owner-scoped resource or supported record not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
-      "Conflict": { "description": "Immutable set, active run, stale target, token, replay, or selection conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } }
+      "ChangeSetList": {
+        "description": "Proposal summaries",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChangeSetListEnvelope"
+            }
+          }
+        }
+      },
+      "ChangeSetDetail": {
+        "description": "Complete proposal",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChangeSetEnvelope"
+            }
+          }
+        }
+      },
+      "EntityCatalog": {
+        "description": "Accessible handlers",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EntityCatalogEnvelope"
+            }
+          }
+        }
+      },
+      "EntitySearch": {
+        "description": "Minimal records",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EntitySearchEnvelope"
+            }
+          }
+        }
+      },
+      "Error": {
+        "description": "Validation or envelope error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Authentication required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Role or domain permission denied",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Owner-scoped resource or supported record not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Immutable, stale, token, replay, or selection conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ChangeSetCreate": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnvelopeChangeSetCreate"
+            }
+          }
+        }
+      },
+      "ChangeSetUpdate": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnvelopeChangeSetUpdate"
+            }
+          }
+        }
+      },
+      "OperationCreate": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnvelopeOperationCreate"
+            }
+          }
+        }
+      },
+      "OperationUpdate": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnvelopeOperationUpdate"
+            }
+          }
+        }
+      },
+      "Apply": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EnvelopeApply"
+            }
+          }
+        }
+      }
     },
     "schemas": {
-      "EntityType": { "type": "string", "enum": ["item", "skill", "spell", "theme"] },
-      "Action": { "type": "string", "enum": ["create", "update", "archive"] },
-      "ChangeSetStatus": { "type": "string", "enum": ["draft", "ready", "applied", "discarded", "expired"] },
-      "OperationStatus": { "type": "string", "enum": ["proposed", "valid", "invalid", "applied", "skipped"] },
+      "EntityType": {
+        "type": "string",
+        "enum": [
+          "item",
+          "skill",
+          "spell",
+          "theme"
+        ]
+      },
       "SafeContext": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "entityType": { "$ref": "#/components/schemas/EntityType" },
-          "targetId": { "type": "integer", "minimum": 1 },
-          "sourceId": { "type": "integer", "minimum": 1 },
-          "sourceSurface": { "type": "string", "enum": ["item-management", "skill-management", "theme-management", "management-hub", "master-ai"] }
+          "entityType": {
+            "$ref": "#/components/schemas/EntityType"
+          },
+          "targetId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sourceId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sourceSurface": {
+            "type": "string",
+            "enum": [
+              "item-management",
+              "skill-management",
+              "theme-management",
+              "management-hub",
+              "master-ai"
+            ]
+          }
         }
       },
-      "FieldChoice": { "type": "object", "required": ["value", "label"], "properties": { "value": {}, "label": { "type": "string" } } },
+      "Problem": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "field": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "operationId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      },
       "FieldSchema": {
         "type": "object",
-        "required": ["name", "label", "kind", "group", "required", "nullable", "readOnly", "choices", "ui"],
+        "required": [
+          "name",
+          "label",
+          "kind",
+          "group",
+          "required",
+          "nullable",
+          "readOnly",
+          "choices",
+          "ui"
+        ],
         "properties": {
-          "name": { "type": "string" }, "label": { "type": "string" }, "kind": { "type": "string" }, "group": { "type": "string" },
-          "required": { "type": "boolean" }, "nullable": { "type": "boolean" }, "readOnly": { "type": "boolean" }, "help": { "type": "string" },
-          "choices": { "type": "array", "items": { "$ref": "#/components/schemas/FieldChoice" } }, "ui": { "type": "object", "additionalProperties": true }
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "nullable": {
+            "type": "boolean"
+          },
+          "readOnly": {
+            "type": "boolean"
+          },
+          "help": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "value",
+                "label"
+              ],
+              "properties": {
+                "value": {},
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ui": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       },
-      "Problem": { "type": "object", "required": ["code", "message"], "properties": { "code": { "type": "string" }, "message": { "type": "string" }, "field": { "type": "string" }, "operationId": { "type": "integer" } } },
-      "Diff": { "type": "object", "required": ["field", "label", "changed"], "properties": { "field": { "type": "string" }, "label": { "type": "string" }, "before": {}, "after": {}, "changed": { "type": "boolean" } } },
       "Operation": {
         "type": "object",
-        "required": ["id", "position", "entityType", "intent", "action", "selected", "status", "effectiveValues", "fields", "diff", "errors", "warnings"],
+        "required": [
+          "id",
+          "position",
+          "entityType",
+          "intent",
+          "action",
+          "selected",
+          "status",
+          "effectiveValues",
+          "fields",
+          "diff",
+          "errors",
+          "warnings"
+        ],
         "properties": {
-          "id": { "type": "integer" }, "position": { "type": "integer" }, "entityType": { "$ref": "#/components/schemas/EntityType" }, "entityLabel": { "type": "string" },
-          "intent": { "type": "string", "enum": ["create", "clone", "update", "archive"] }, "action": { "$ref": "#/components/schemas/Action" },
-          "targetId": { "type": ["integer", "null"] }, "sourceId": { "type": ["integer", "null"] }, "displayLabel": { "type": "string" }, "selected": { "type": "boolean" },
-          "status": { "$ref": "#/components/schemas/OperationStatus" }, "original": { "type": "object" }, "proposedValues": { "type": "object" }, "editedValues": { "type": "object" },
-          "effectiveValues": { "type": "object" }, "fields": { "type": "array", "items": { "$ref": "#/components/schemas/FieldSchema" } }, "diff": { "type": "array", "items": { "$ref": "#/components/schemas/Diff" } },
-          "errors": { "type": "array", "items": { "$ref": "#/components/schemas/Problem" } }, "warnings": { "type": "array", "items": { "$ref": "#/components/schemas/Problem" } }, "result": { "type": "object" },
-          "baseUpdatedAt": { "type": ["string", "null"], "format": "date-time" }, "baseDigest": { "type": "string" }
+          "id": {
+            "type": "integer"
+          },
+          "position": {
+            "type": "integer"
+          },
+          "entityType": {
+            "$ref": "#/components/schemas/EntityType"
+          },
+          "entityLabel": {
+            "type": "string"
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "create",
+              "clone",
+              "update",
+              "archive"
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update",
+              "archive"
+            ]
+          },
+          "targetId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "sourceId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "displayLabel": {
+            "type": "string"
+          },
+          "selected": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "valid",
+              "invalid",
+              "applied",
+              "skipped"
+            ]
+          },
+          "original": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "proposedValues": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "editedValues": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "effectiveValues": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldSchema"
+            }
+          },
+          "diff": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "baseUpdatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "baseDigest": {
+            "type": "string"
+          }
         }
       },
       "ChangeSet": {
         "type": "object",
-        "required": ["id", "title", "status", "revision", "requestText", "context", "canEdit", "canValidate", "canApply", "canDiscard", "validation"],
+        "required": [
+          "id",
+          "title",
+          "status",
+          "revision",
+          "requestText",
+          "context",
+          "canEdit",
+          "canValidate",
+          "canApply",
+          "canDiscard",
+          "validation"
+        ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" }, "title": { "type": "string" }, "status": { "$ref": "#/components/schemas/ChangeSetStatus" }, "revision": { "type": "integer" },
-          "requestText": { "type": "string" }, "context": { "$ref": "#/components/schemas/SafeContext" }, "conversationId": { "type": ["integer", "null"] }, "agentId": { "type": ["integer", "null"] },
-          "canEdit": { "type": "boolean" }, "canValidate": { "type": "boolean" }, "canApply": { "type": "boolean" }, "canDiscard": { "type": "boolean" },
-          "validation": { "type": "object", "properties": { "token": { "type": "string" }, "validatedAt": { "type": ["string", "null"], "format": "date-time" }, "summary": { "type": "object" }, "errors": { "type": "array", "items": { "$ref": "#/components/schemas/Problem" } }, "warnings": { "type": "array", "items": { "$ref": "#/components/schemas/Problem" } } },
-          "operations": { "type": "array", "items": { "$ref": "#/components/schemas/Operation" } }, "appliedBy": { "type": ["integer", "null"] }, "appliedAt": { "type": ["string", "null"], "format": "date-time" },
-          "discardedAt": { "type": ["string", "null"], "format": "date-time" }, "expiresAt": { "type": ["string", "null"], "format": "date-time" }, "createdAt": { "type": ["string", "null"], "format": "date-time" }, "updatedAt": { "type": ["string", "null"], "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "ready",
+              "applied",
+              "discarded",
+              "expired"
+            ]
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "requestText": {
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/SafeContext"
+          },
+          "conversationId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "agentId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "canEdit": {
+            "type": "boolean"
+          },
+          "canValidate": {
+            "type": "boolean"
+          },
+          "canApply": {
+            "type": "boolean"
+          },
+          "canDiscard": {
+            "type": "boolean"
+          },
+          "validation": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string"
+              },
+              "validatedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "summary": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Operation"
+            }
+          },
+          "appliedBy": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "appliedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "discardedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
         }
       },
-      "EnvelopeBase": { "type": "object", "required": ["action", "requestId", "context", "payload", "meta"], "properties": { "action": { "type": "string" }, "requestId": { "type": "string" }, "context": { "type": "object" }, "payload": { "type": "object" }, "meta": { "type": "object" } } },
-      "EnvelopeChangeSetCreate": { "allOf": [{ "$ref": "#/components/schemas/EnvelopeBase" }, { "properties": { "payload": { "type": "object", "additionalProperties": false, "properties": { "title": { "type": "string", "maxLength": 160 }, "requestText": { "type": "string", "maxLength": 8000 }, "context": { "$ref": "#/components/schemas/SafeContext" } } } } }] },
-      "EnvelopeChangeSetUpdate": { "allOf": [{ "$ref": "#/components/schemas/EnvelopeChangeSetCreate" }] },
-      "EnvelopeOperationCreate": { "allOf": [{ "$ref": "#/components/schemas/EnvelopeBase" }, { "properties": { "payload": { "type": "object", "required": ["entityType", "action", "values"], "additionalProperties": false, "properties": { "entityType": { "$ref": "#/components/schemas/EntityType" }, "action": { "$ref": "#/components/schemas/Action" }, "values": { "type": "object" }, "targetId": { "type": ["integer", "null"] }, "sourceId": { "type": ["integer", "null"] }, "selected": { "type": "boolean" } } } } }] },
-      "EnvelopeOperationUpdate": { "allOf": [{ "$ref": "#/components/schemas/EnvelopeBase" }, { "properties": { "payload": { "type": "object", "additionalProperties": false, "properties": { "editedValues": { "type": "object" }, "selected": { "type": "boolean" }, "position": { "type": "integer", "minimum": 0 } } } } }] },
-      "EnvelopeApply": { "allOf": [{ "$ref": "#/components/schemas/EnvelopeBase" }, { "properties": { "payload": { "type": "object", "required": ["token"], "additionalProperties": false, "properties": { "token": { "type": "string" } } } } }] },
-      "ResponseEnvelope": { "type": "object", "required": ["ok", "requestId", "data", "events", "warnings", "errors"], "properties": { "ok": { "type": "boolean" }, "requestId": { "type": "string" }, "data": { "type": "object" }, "events": { "type": "array", "items": { "type": "object" } }, "warnings": { "type": "array", "items": { "type": "object" } }, "errors": { "type": "array", "items": { "$ref": "#/components/schemas/Problem" } } } },
-      "ChangeSetEnvelope": { "allOf": [{ "$ref": "#/components/schemas/ResponseEnvelope" }, { "properties": { "data": { "type": "object", "required": ["changeSet"], "properties": { "changeSet": { "$ref": "#/components/schemas/ChangeSet" }, "operationId": { "type": "integer" } } } } }] },
-      "ChangeSetListEnvelope": { "allOf": [{ "$ref": "#/components/schemas/ResponseEnvelope" }, { "properties": { "data": { "type": "object", "required": ["changeSets"], "properties": { "changeSets": { "type": "array", "items": { "$ref": "#/components/schemas/ChangeSet" } } } } } }] },
-      "EntityCatalogEnvelope": { "allOf": [{ "$ref": "#/components/schemas/ResponseEnvelope" }, { "properties": { "data": { "type": "object", "required": ["entities"], "properties": { "entities": { "type": "array", "items": { "type": "object", "required": ["type", "label", "minimumRole", "actions", "fields"], "properties": { "type": { "$ref": "#/components/schemas/EntityType" }, "label": { "type": "string" }, "minimumRole": { "type": "string", "enum": ["master", "admin"] }, "actions": { "type": "array", "items": { "$ref": "#/components/schemas/Action" } }, "fields": { "type": "array", "items": { "$ref": "#/components/schemas/FieldSchema" } } } } } } } }] },
-      "EntitySearchEnvelope": { "allOf": [{ "$ref": "#/components/schemas/ResponseEnvelope" }, { "properties": { "data": { "type": "object", "required": ["results"], "properties": { "results": { "type": "array", "items": { "type": "object", "required": ["id", "label"], "properties": { "id": { "type": "integer" }, "label": { "type": "string" }, "description": { "type": "string" }, "meta": { "type": "object" } } } } } } } }] },
-      "ErrorEnvelope": { "allOf": [{ "$ref": "#/components/schemas/ResponseEnvelope" }, { "properties": { "ok": { "const": false } } }] }
+      "EnvelopeBase": {
+        "type": "object",
+        "required": [
+          "action",
+          "requestId",
+          "context",
+          "payload",
+          "meta"
+        ],
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "payload": {
+            "type": "object"
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "EnvelopeChangeSetCreate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvelopeBase"
+          },
+          {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "requestText": {
+                    "type": "string",
+                    "maxLength": 8000
+                  },
+                  "context": {
+                    "$ref": "#/components/schemas/SafeContext"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EnvelopeChangeSetUpdate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvelopeBase"
+          },
+          {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "requestText": {
+                    "type": "string",
+                    "maxLength": 8000
+                  },
+                  "context": {
+                    "$ref": "#/components/schemas/SafeContext"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EnvelopeOperationCreate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvelopeBase"
+          },
+          {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entityType": {
+                    "$ref": "#/components/schemas/EntityType"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "create",
+                      "update",
+                      "archive"
+                    ]
+                  },
+                  "values": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "targetId": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "sourceId": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "selected": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "entityType",
+                  "action",
+                  "values"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "EnvelopeOperationUpdate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvelopeBase"
+          },
+          {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "editedValues": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "selected": {
+                    "type": "boolean"
+                  },
+                  "position": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EnvelopeApply": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EnvelopeBase"
+          },
+          {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "ResponseEnvelope": {
+        "type": "object",
+        "required": [
+          "ok",
+          "requestId",
+          "data",
+          "events",
+          "warnings",
+          "errors"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "ChangeSetEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseEnvelope"
+          },
+          {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "changeSet"
+                ],
+                "properties": {
+                  "changeSet": {
+                    "$ref": "#/components/schemas/ChangeSet"
+                  },
+                  "operationId": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ChangeSetListEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseEnvelope"
+          },
+          {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "changeSets"
+                ],
+                "properties": {
+                  "changeSets": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChangeSet"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EntityCatalogEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseEnvelope"
+          },
+          {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "entities"
+                ],
+                "properties": {
+                  "entities": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EntitySearchEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseEnvelope"
+          },
+          {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "results"
+                ],
+                "properties": {
+                  "results": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ErrorEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseEnvelope"
+          },
+          {
+            "properties": {
+              "ok": {
+                "const": false
+              }
+            }
+          }
+        ]
+      }
     }
   }
 }
