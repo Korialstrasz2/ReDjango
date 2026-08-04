@@ -59,8 +59,7 @@ function ThemeRevealConfigurator() {
         setContainer(null);
         return;
       }
-      const target = document.querySelector(".theme-editor-surfaces");
-      setContainer(target);
+      setContainer(document.querySelector(".theme-editor-surfaces"));
       const nextSlug = selectedThemeSlug();
       if (nextSlug) setSlug(nextSlug);
       if (!themes.length) {
@@ -138,10 +137,25 @@ function ThemeRevealConfigurator() {
 export function ThemeRevealRuntime() {
   useEffect(() => {
     let cancelled = false;
-    getData<SettingsPayload>("/api/settings/")
-      .then((settings) => { if (!cancelled) applyTiming(settings.theme); })
-      .catch(() => applyTiming(null));
-    return () => { cancelled = true; };
+    let loadedSlug = "";
+    const loadTiming = async () => {
+      try {
+        const settings = await getData<SettingsPayload>("/api/settings/");
+        if (!cancelled) {
+          applyTiming(settings.theme);
+          loadedSlug = settings.theme?.slug || "";
+        }
+      } catch {
+        if (!cancelled) applyTiming(null);
+      }
+    };
+    void loadTiming();
+    const observer = new MutationObserver(() => {
+      const slug = activeThemeSlug();
+      if (slug && slug !== loadedSlug) void loadTiming();
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => { cancelled = true; observer.disconnect(); };
   }, []);
 
   useEffect(() => {
