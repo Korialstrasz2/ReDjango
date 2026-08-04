@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import AIAgentProfile, AIConversation, AIExecutionRun, AIProvider
+from .models import (
+    AIAgentProfile,
+    AIChangeOperation,
+    AIChangeSet,
+    AIConversation,
+    AIExecutionRun,
+    AIProvider,
+)
 
 
 @admin.register(AIProvider)
@@ -32,8 +39,8 @@ class AIProviderAdmin(admin.ModelAdmin):
 
 @admin.register(AIAgentProfile)
 class AIAgentProfileAdmin(admin.ModelAdmin):
-    list_display = ("name", "minimum_role", "provider", "max_iterations", "is_enabled", "is_default")
-    list_filter = ("minimum_role", "is_enabled", "is_default")
+    list_display = ("name", "mode", "minimum_role", "provider", "max_iterations", "is_enabled", "is_default")
+    list_filter = ("mode", "minimum_role", "is_enabled", "is_default")
     search_fields = ("name", "slug", "description", "instructions")
     ordering = ("order", "name")
 
@@ -56,3 +63,30 @@ class AIExecutionRunAdmin(admin.ModelAdmin):
         "started_at", "completed_at",
     )
     ordering = ("-created_at",)
+
+
+class ReadOnlyAuditAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        return [field.name for field in self.model._meta.fields]
+
+
+@admin.register(AIChangeSet)
+class AIChangeSetAdmin(ReadOnlyAuditAdmin):
+    list_display = ("id", "status", "title", "user", "agent", "revision", "created_at", "validated_at", "applied_at")
+    list_filter = ("status", "agent")
+    search_fields = ("id", "title", "user__username", "request_text")
+    ordering = ("-updated_at",)
+
+
+@admin.register(AIChangeOperation)
+class AIChangeOperationAdmin(ReadOnlyAuditAdmin):
+    list_display = ("change_set", "position", "entity_type", "action", "target_id", "selected", "status")
+    list_filter = ("entity_type", "action", "selected", "status")
+    search_fields = ("change_set__id", "display_label", "target_id")
+    ordering = ("-change_set__updated_at", "position")
