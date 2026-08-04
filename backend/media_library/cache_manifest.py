@@ -63,7 +63,7 @@ def _entry(*, url: str, revision: str, size: int, kind: str, label: str, cache_k
 
 @lru_cache(maxsize=4096)
 def _content_digest(path_string: str, size: int, modified_ns: int) -> str:
-    del size, modified_ns  # They intentionally form part of the cache key.
+    del size, modified_ns
     digest = hashlib.sha256()
     with Path(path_string).open("rb") as source:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
@@ -87,9 +87,6 @@ def _static_media_entries() -> list[dict]:
             try:
                 static_url = staticfiles_storage.url(static_name)
             except ValueError:
-                # Online startup runs collectstatic before serving requests. The
-                # fallback keeps management/tests diagnostic-friendly if the
-                # manifest has not been collected yet.
                 static_url = f"/static/{quote(static_name, safe='/')}"
             entries.append(_entry(
                 url=static_url,
@@ -138,7 +135,11 @@ def _tile_entries(travel_map: DatiMappa) -> list[dict]:
 
 
 def media_cache_manifest(user, giocatore: Giocatore) -> dict:
-    """Describe immutable, non-restricted media for this player and campaign."""
+    """Describe cacheable media for this player and campaign.
+
+    Campaign-map images are included regardless of their library visibility;
+    other limited images remain excluded.
+    """
 
     campaign_id = selected_campaign_id(giocatore)
     campaign = (
@@ -150,7 +151,7 @@ def media_cache_manifest(user, giocatore: Giocatore) -> dict:
         DatiMappa.objects.select_related("image").filter(
             campagna_id=campaign_id,
             archived_at__isnull=True,
-        ).exclude(image__visibilita_limitata=True)
+        )
     ) if campaign_id else []
     map_image_ids = {travel_map.image_id for travel_map in maps}
     image_filter = Q(campagna__isnull=True)
@@ -166,7 +167,8 @@ def media_cache_manifest(user, giocatore: Giocatore) -> dict:
     images = UploadedImage.objects.filter(
         image_filter,
         archived_at__isnull=True,
-        visibilita_limitata=False,
+    ).filter(
+        Q(visibilita_limitata=False) | Q(pk__in=map_image_ids),
     ).order_by("id")
     for image in images:
         if image.file:
