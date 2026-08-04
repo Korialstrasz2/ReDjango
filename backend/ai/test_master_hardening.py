@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -6,12 +7,24 @@ from django.utils import timezone
 
 from backend.core.api import ApiError
 from backend.core.item_services import create_item
-from backend.core.models import Giocatore
+from backend.core.models import Giocatore, Oggetto
 
 from .changes.cleanup import cleanup_abandoned_change_sets
 from .changes.context import validate_change_context
-from .changes.services import create_change_set
+from .changes.services import MAX_OPERATIONS, add_change_operation, create_change_set
 from .models import AIChangeOperation, AIChangeSet
+
+
+def envelope(action: str, payload: dict) -> str:
+    return json.dumps(
+        {
+            "action": action,
+            "requestId": "master-ai-hardening",
+            "context": {"screen": "master-ai"},
+            "payload": payload,
+            "meta": {"clientVersion": "test"},
+        }
+    )
 
 
 class MasterAIContextHardeningTests(TestCase):
@@ -74,6 +87,51 @@ class MasterAIContextHardeningTests(TestCase):
                 {"entityType": "item", "targetId": 999999, "sourceSurface": "item-management"},
             )
         self.assertEqual(captured.exception.status, 404)
+
+    def test_raw_api_context_injection_is_rejected(self):
+        self.client.force_login(self.master_user)
+        response = self.client.post(
+            "/api/ai/change-sets/",
+            data=envelope(
+                "ai.changeSet.create",
+                {
+                    "title": "Injected context",
+                    "context": {
+                        "entityType": "item",
+                        "targetId": self.item.id,
+                        "modelName": "backend.core.Oggetto",
+                    },
+                },
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["errors"][0]["code"], "ai.change_context_field_unknown")
+        self.assertFalse(AIChangeSet.objects.filter(title="Injected context").exists())
+
+    def test_operation_limit_fails_without_domain_mutation(self):
+        change_set = create_change_set(self.master_user, self.master, title="Operation cap")
+        for index in range(MAX_OPERATIONS):
+            add_change_operation(
+                self.master_user,
+                self.master,
+                change_set.id,
+                entity_type="item",
+                action="create",
+                values={"nome": f"Proposta limite {index}"},
+            )
+        with self.assertRaises(ApiError) as captured:
+            add_change_operation(
+                self.master_user,
+                self.master,
+                change_set.id,
+                entity_type="item",
+                action="create",
+                values={"nome": "Oltre limite"},
+            )
+        self.assertEqual(captured.exception.code, "ai.change_operation_limit")
+        self.assertEqual(change_set.operations.count(), MAX_OPERATIONS)
+        self.assertFalse(Oggetto.objects.filter(nome__startswith="Proposta limite").exists())
 
 
 class MasterAICleanupTests(TestCase):
