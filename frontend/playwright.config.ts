@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
-const python = process.platform === "win32" ? "..\\venv\\Scripts\\python.exe" : "python";
+const runtimePlatform = (globalThis as typeof globalThis & { process?: { platform?: string } }).process?.platform || "";
+const python = runtimePlatform.startsWith("win") ? "..\\venv\\Scripts\\python.exe" : "python";
 const django = (command: string) => `${python} ../manage.py ${command}`;
 
 export default defineConfig({
