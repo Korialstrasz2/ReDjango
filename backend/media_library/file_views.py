@@ -12,7 +12,7 @@ from django.views.decorators.http import require_GET
 from backend.core.security import get_or_create_giocatore_for_user
 from backend.core.views import get_authenticated_user
 
-from .models import UploadedImage
+from .models import DatiMappa, UploadedImage
 from .selectors import user_can_view_limited_images
 from .travel_services import get_travel_map
 from .travel_tiles import travel_tile_path
@@ -150,6 +150,20 @@ def _secure_media_headers(
         response.headers["Accept-Ranges"] = "bytes"
 
 
+def _is_campaign_map_for_player(user, image: UploadedImage | None) -> bool:
+    if image is None or not user or not user.is_authenticated:
+        return False
+    giocatore = get_or_create_giocatore_for_user(user)
+    if not giocatore.active_campaign_id:
+        return False
+    return DatiMappa.objects.filter(
+        image=image,
+        campagna_id=giocatore.active_campaign_id,
+        tipo="globale",
+        archived_at__isnull=True,
+    ).exists()
+
+
 @require_GET
 def protected_media(request, media_path: str):
     """Stream local uploads through Django's session and game-role checks."""
@@ -160,15 +174,17 @@ def protected_media(request, media_path: str):
     ).first()
     if image is not None and image.archived_at is not None:
         raise Http404
+    campaign_map_access = _is_campaign_map_for_player(request.user, image)
     if (
         image is not None
         and image.visibilita_limitata
+        and not campaign_map_access
         and not user_can_view_limited_images(request.user)
     ):
         # Do not disclose whether a hidden asset exists.
         raise Http404
 
-    immutable = image is None or not image.visibilita_limitata
+    immutable = image is None or not image.visibilita_limitata or campaign_map_access
     stat = candidate.stat()
     modified_at = int(stat.st_mtime)
     etag = _strong_etag(candidate, image, storage_name) if immutable else ""
@@ -237,13 +253,11 @@ def protected_media(request, media_path: str):
 
 @require_GET
 def travel_tile(request, map_id: int, revision: str, level: int, column: int, row: int):
-    """Serve one immutable tile after the same campaign and role checks as Viaggio."""
+    """Serve one immutable tile after the same campaign checks as Viaggio."""
 
     user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     travel_map = get_travel_map(giocatore, map_id)
-    if travel_map.image.visibilita_limitata and not user_can_view_limited_images(user):
-        raise Http404
     candidate = travel_tile_path(travel_map, revision, level, column, row)
     if candidate is None:
         raise Http404
@@ -258,7 +272,7 @@ def travel_tile(request, map_id: int, revision: str, level: int, column: int, ro
     _secure_media_headers(
         response,
         candidate,
-        immutable=not travel_map.image.visibilita_limitata,
+        immutable=True,
         etag=etag,
         modified_at=modified_at,
     )
