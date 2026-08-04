@@ -6,6 +6,11 @@ export function ManagementHub() {
   return <div className="page management-page">
     <header className="page-header"><div><p className="eyebrow">Strumenti riservati</p><h1>Gestione del gioco</h1></div></header>
     <section className="management-launcher" data-component-type="grid" data-theme="default">
+      <Link className="management-tool-card" to="/tools/master-ai" data-component-type="card" data-theme="arcane">
+        <span className="management-tool-icon" aria-hidden="true">✳</span>
+        <span><small>Bozze controllate e revisione</small><strong>Master AI</strong><p>Chiedi creazioni, modifiche, cloni o archiviazioni; controlla il diff e applica soltanto dopo una convalida esplicita.</p></span>
+        <b aria-hidden="true">Apri →</b>
+      </Link>
       <Link className="management-tool-card" to="/tools/characters" data-component-type="card" data-theme="parchment">
         <span className="management-tool-icon" aria-hidden="true">♙</span>
         <span><small>Archivio e relazioni</small><strong>Gestione Personaggi</strong><p>Modifica schede e record collegati, trova gli orfani e controlla ogni eliminazione prima di confermarla.</p></span>
