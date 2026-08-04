@@ -128,7 +128,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   // Il portale su body tiene la finestra sopra la barra laterale e la barra superiore,
   // che altrimenti coprirebbero il contesto di impilamento dell'area di lavoro.
   return createPortal(
-    <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+    <div className={`modal-backdrop ${background ? "theme-reveal-surface" : ""}`} role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section
         ref={modalRef}
         className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${hideHeader ? "rd-modal-headless" : ""} ${background ? "rd-modal-dressed" : ""} ${className}`.trim()}

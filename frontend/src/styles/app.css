@@ -45,8 +45,13 @@
   --stat-rd_elettro: #aa9746;
   --slot-valid: #6fae68;
   --slot-invalid: #b75751;
-  --overlay-opacity: .52;
-  --panel-opacity: .96;
+  /* Valori configurati dal tema: sono i bersagli verso cui le superfici si
+     portano durante l'animazione di ingresso. I valori effettivi sotto sono
+     derivati dal progresso della rivelazione (vedi .theme-reveal-surface). */
+  --theme-overlay-opacity-target: .52;
+  --theme-panel-opacity-target: .96;
+  --overlay-opacity: var(--theme-overlay-opacity-target);
+  --panel-opacity: var(--theme-panel-opacity-target);
   --theme-panel-surface: color-mix(in srgb, var(--panel) calc(var(--panel-opacity) * 100%), transparent);
   --theme-panel-strong-surface: color-mix(in srgb, var(--panel-strong) calc(var(--panel-opacity) * 100%), transparent);
   --theme-overlay-surface: color-mix(in srgb, var(--panel) calc(var(--overlay-opacity) * 100%), transparent);
@@ -65,6 +70,36 @@
   --font-display: Georgia, "Times New Roman", serif;
   font-family: var(--font-body);
   font-synthesis: none;
+}
+
+/* Rivelazione delle superfici con sfondo: al montaggio le trasparenze del tema
+   partono da 0 (sfondo pienamente visibile, pannelli trasparenti) e raggiungono
+   i valori configurati in 1,5s. Testo, bordi e controlli restano pieni: si
+   animano soltanto i numeri usati da color-mix(). La proprietà registrata parte
+   da 1 fuori dallo scope, così le superfici senza rivelazione valgono subito il
+   tema, e con "reduced motion" l'animazione viene già disattivata dalle regole
+   globali lasciando il progresso a 1. */
+@property --theme-reveal-progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@keyframes theme-surface-reveal {
+  from { --theme-reveal-progress: 0; }
+  to { --theme-reveal-progress: 1; }
+}
+.theme-reveal-surface {
+  --overlay-opacity: calc(var(--theme-overlay-opacity-target) * var(--theme-reveal-progress));
+  --panel-opacity: calc(var(--theme-panel-opacity-target) * var(--theme-reveal-progress));
+  /* Le cinque superfici derivate vanno ridefinite qui: quelle di :root risolvono
+     i propri var() già in fase di calcolo su :root e non ereditano i valori
+     locali sovrascritti sopra. */
+  --theme-panel-surface: color-mix(in srgb, var(--panel) calc(var(--panel-opacity) * 100%), transparent);
+  --theme-panel-strong-surface: color-mix(in srgb, var(--panel-strong) calc(var(--panel-opacity) * 100%), transparent);
+  --theme-overlay-surface: color-mix(in srgb, var(--panel) calc(var(--overlay-opacity) * 100%), transparent);
+  --theme-overlay-strong-surface: color-mix(in srgb, var(--panel-strong) calc(var(--overlay-opacity) * 100%), transparent);
+  --theme-background-veil: color-mix(in srgb, var(--background) calc(var(--overlay-opacity) * 100%), transparent);
+  animation: theme-surface-reveal 1.5s ease-in-out both;
 }
 
 .auth-screen {
@@ -1631,6 +1666,10 @@ label > input, label > select, label > textarea { display: block; margin-top: 6p
 }
 
 .tool-drawer { --tool-background: none; --tool-x: 0px; --tool-y: 0px; --tool-gold: var(--gold); --tool-gold-strong: color-mix(in srgb, var(--gold), var(--text) 26%); position: fixed; top: 50%; left: 50%; z-index: 90; display: grid; grid-template-rows: auto minmax(0, 1fr); width: min(570px, calc(100vw - 48px)); height: min(760px, calc(100vh - 70px)); max-width: calc(100vw - 32px); max-height: calc(100vh - 70px); overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold), var(--text) 10%); border-radius: 8px; background: var(--theme-overlay-strong-surface); box-shadow: 0 24px 80px #0009, inset 0 0 0 1px color-mix(in srgb, var(--line), transparent 55%); transform: translate(calc(-50% + var(--tool-x)), calc(-50% + var(--tool-y))); animation: tool-drawer-in 190ms ease-out; backdrop-filter: blur(12px); isolation: isolate; }
+/* Il cassetto ha già la sua animazione di ingresso: la rivelazione delle
+   trasparenze deve girare insieme a quella (la regola generica più in alto
+   perderebbe contro l'`animation` di .tool-drawer). */
+.tool-drawer.theme-reveal-surface { animation: tool-drawer-in 190ms ease-out, theme-surface-reveal 1.5s ease-in-out both; }
 /* Sui temi chiari l'oro puro sparisce sul pannello: lo si scurisce verso il colore del testo. */
 html[data-color-mode="light"] .tool-drawer { --tool-gold: color-mix(in srgb, var(--gold), var(--text) 46%); --tool-gold-strong: color-mix(in srgb, var(--gold), var(--text) 38%); }
 .tool-drawer-wide { width: min(1060px, calc(100vw - 48px)); height: min(830px, calc(100vh - 70px)); }
@@ -5156,6 +5195,10 @@ html[data-reduced-motion="true"] .alchemy-slot-epic, html[data-reduced-motion="t
 
 .theme-preview { position: relative; min-height: 260px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; }
 .theme-preview-background { position: absolute; inset: -24px; background-size: cover; }
+.theme-preview-veil { position: absolute; inset: 0; background: var(--theme-background-veil); }
+.theme-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.theme-preview-replay { padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--theme-overlay-surface); color: var(--muted); font-size: .66rem; font-weight: 700; cursor: pointer; }
+.theme-preview-replay:hover { border-color: var(--gold); color: var(--text); }
 .theme-preview-shell { position: relative; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; height: 100%; padding: 14px; }
 .theme-preview-nav { display: grid; align-content: start; gap: 7px; padding: 13px 11px; border-radius: 6px; }
 .theme-preview-nav strong { font: 700 1rem var(--font-display); }

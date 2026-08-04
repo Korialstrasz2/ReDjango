@@ -154,7 +154,7 @@ export function resolveThemeColors(theme: ThemeData, ui: Record<string, unknown>
   }));
 }
 
-function applyTheme(theme: ThemeData | null, ui: Record<string, unknown> = {}) {
+export function applyTheme(theme: ThemeData | null, ui: Record<string, unknown> = {}) {
   if (!theme) return;
   const root = document.documentElement;
   const colors = resolveThemeColors(theme, ui);
@@ -162,8 +162,8 @@ function applyTheme(theme: ThemeData | null, ui: Record<string, unknown> = {}) {
     if (colors[key]) root.style.setProperty(variable, colors[key]);
     else root.style.removeProperty(variable);
   });
-  root.style.setProperty("--overlay-opacity", String(theme.overlayOpacity));
-  root.style.setProperty("--panel-opacity", String(theme.panelOpacity));
+  root.style.setProperty("--theme-overlay-opacity-target", String(theme.overlayOpacity));
+  root.style.setProperty("--theme-panel-opacity-target", String(theme.panelOpacity));
   root.style.setProperty("--background-position", theme.backgroundPosition);
   root.style.setProperty("--background-blur", `${theme.backgroundBlur}px`);
   root.dataset.theme = theme.slug;
@@ -354,7 +354,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>}
       </aside>
       <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} notify={notify} />
-      <main className="workspace" data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
+      <main key={`${location.key}:${background}`} className={`workspace ${background ? "theme-reveal-surface" : ""}`} data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
         <div className="workspace-background" aria-hidden="true" />
         <div className="workspace-content">{children}</div>
       </main>

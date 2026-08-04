@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
@@ -101,7 +101,9 @@ function previewThemeColors(draft: Draft, fallbacks: Record<string, string>): Re
 }
 
 // Anteprima autonoma: ricalcola gli stessi token CSS applicati dall'app, così il
-// riquadro mostra il tema com'è davvero, riserve globali comprese.
+// riquadro mostra il tema com'è davvero, riserve globali comprese. Le trasparenze
+// usano i bersagli del tema e la stessa rivelazione delle superfici vere: il
+// riquadro riproduce l'ingresso di 1,5s con «Riproduci entrata».
 function ThemePreview({ draft, fallbacks, backgroundUrl, scene, onScene }: {
   draft: Draft;
   fallbacks: Record<string, string>;
@@ -110,30 +112,50 @@ function ThemePreview({ draft, fallbacks, backgroundUrl, scene, onScene }: {
   onScene: (scene: PreviewScene) => void;
 }) {
   const colors = previewThemeColors(draft, fallbacks);
+  // Il valore cambia a ogni clic su «Riproduci entrata» e rimonta il riquadro,
+  // riavviando l'animazione di rivelazione. I cursori, invece, aggiornano solo i
+  // bersagli senza far ripartire nulla.
+  const [reveal, setReveal] = useState(0);
   const navLabels = scene === "tools"
     ? ["Personaggi", "Oggetti", "Temi"]
     : ["Sala principale", "Personaggi", "Combattimento"];
 
   return <div className="theme-preview-shell-outer">
-    <div className="theme-preview-scenes" role="tablist" aria-label="Schermata dell'anteprima">
-      {PREVIEW_SCENES.map((entry) => <button
-        key={entry.key}
-        type="button"
-        role="tab"
-        aria-selected={scene === entry.key}
-        className={scene === entry.key ? "active" : ""}
-        onClick={() => onScene(entry.key)}
-      >{entry.label}</button>)}
+    <div className="theme-preview-toolbar">
+      <div className="theme-preview-scenes" role="tablist" aria-label="Schermata dell'anteprima">
+        {PREVIEW_SCENES.map((entry) => <button
+          key={entry.key}
+          type="button"
+          role="tab"
+          aria-selected={scene === entry.key}
+          className={scene === entry.key ? "active" : ""}
+          onClick={() => onScene(entry.key)}
+        >{entry.label}</button>)}
+      </div>
+      <button type="button" className="theme-preview-replay" onClick={() => setReveal((value) => value + 1)} aria-label="Riproduci l'animazione di ingresso">Riproduci entrata</button>
     </div>
-    <div className="theme-preview" style={{ background: colors.background }}>
-      {backgroundUrl && <div className="theme-preview-background" style={{ backgroundImage: `url(${backgroundUrl})`, backgroundPosition: draft.backgroundPosition, filter: draft.backgroundBlur ? `blur(${draft.backgroundBlur}px)` : undefined, opacity: 1 - draft.overlayOpacity }} />}
+    <div
+      key={reveal}
+      className="theme-preview theme-reveal-surface"
+      style={{
+        background: colors.background,
+        "--background": colors.background,
+        "--panel": colors.panel || colors.panelStrong || colors.background,
+        "--panel-strong": colors.panelStrong || colors.panel || colors.background,
+        "--theme-overlay-opacity-target": String(draft.overlayOpacity),
+        "--theme-panel-opacity-target": String(draft.panelOpacity),
+      } as CSSProperties}
+    >
+      {backgroundUrl && <div className="theme-preview-background" style={{ backgroundImage: `url(${backgroundUrl})`, backgroundPosition: draft.backgroundPosition, filter: draft.backgroundBlur ? `blur(${draft.backgroundBlur}px)` : undefined }}>
+        <span className="theme-preview-veil" aria-hidden="true" />
+      </div>}
       <div className="theme-preview-shell">
         <div className="theme-preview-nav" style={{ background: colors.sidebar }}>
           <strong style={{ color: colors.gold }}>ReDjango</strong>
           {navLabels.map((label) => <span key={label} style={{ color: colors.line }}>{label}</span>)}
         </div>
         <div className="theme-preview-body">
-          <div className="theme-preview-panel" style={{ background: colors.panelStrong, borderColor: colors.line, opacity: draft.panelOpacity }}>
+          <div className="theme-preview-panel" style={{ background: "var(--theme-panel-surface)", borderColor: colors.line }}>
             <strong style={{ color: colors.text }}>{scene === "combat" ? "Turno di Kaelen" : scene === "personaggio" ? "Panoramica" : scene === "tools" ? "Gestione temi" : "Titolo del pannello"}</strong>
             <small style={{ color: colors.mutedText }}>Testo secondario di esempio</small>
             <div className="theme-preview-buttons">

@@ -135,7 +135,7 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
 
   return <aside
     ref={drawerRef}
-    className={`tool-drawer ${wide ? "tool-drawer-wide" : ""} ${compact ? "tool-drawer-compact" : ""} ${draggable ? "tool-drawer-draggable" : ""}`}
+    className={`tool-drawer ${background ? "theme-reveal-surface" : ""} ${wide ? "tool-drawer-wide" : ""} ${compact ? "tool-drawer-compact" : ""} ${draggable ? "tool-drawer-draggable" : ""}`}
     role="dialog"
     aria-modal="false"
     aria-label={title}
