@@ -3,7 +3,6 @@ from backend.core.security import effective_role, get_or_create_giocatore_for_us
 from PIL import UnidentifiedImageError
 
 from .models import DatiMappa
-from .selectors import user_can_view_limited_images
 from .travel_tiles import ensure_travel_tiles
 
 
@@ -51,16 +50,13 @@ def travel_maps_payload(user, giocatore: Giocatore) -> dict:
     campaign = giocatore.active_campaign
     maps = []
     if campaign:
-        queryset = DatiMappa.objects.select_related("image").filter(
-            campagna=campaign,
-            tipo="globale",
-            archived_at__isnull=True,
-        )
-        if not user_can_view_limited_images(user):
-            queryset = queryset.filter(image__visibilita_limitata=False)
         maps = [
             serialize_travel_map(travel_map)
-            for travel_map in queryset.order_by("-default_for_campaign", "nome", "id")
+            for travel_map in DatiMappa.objects.select_related("image").filter(
+                campagna=campaign,
+                tipo="globale",
+                archived_at__isnull=True,
+            ).order_by("-default_for_campaign", "nome", "id")
         ]
     return {
         "campaign": (
