@@ -88,6 +88,7 @@ def serialize_uploaded_image(asset: UploadedImage, user=None, *, manage_all: boo
 def list_uploaded_images_for_user(user):
     assets = UploadedImage.objects.select_related("category").filter(
         archived_at__isnull=True,
+        travel_maps__isnull=True,
     )
     if not user_can_view_limited_images(user):
         assets = assets.filter(visibilita_limitata=False)
@@ -95,7 +96,11 @@ def list_uploaded_images_for_user(user):
 
 
 def get_uploaded_image_for_user(user, asset_id: int) -> UploadedImage:
-    assets = UploadedImage.objects.select_related("category").filter(id=asset_id, archived_at__isnull=True)
+    assets = UploadedImage.objects.select_related("category").filter(
+        id=asset_id,
+        archived_at__isnull=True,
+        travel_maps__isnull=True,
+    )
     if user_can_manage_all_images(user):
         return assets.get()
     if user_can_view_limited_images(user):
