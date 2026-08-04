@@ -3,12 +3,20 @@ from collections import defaultdict
 from django.apps import AppConfig
 
 
+_READY_INSTALLED = False
+
+
 class AiConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "backend.ai"
     verbose_name = "Intelligenza artificiale"
 
     def ready(self) -> None:
+        global _READY_INSTALLED
+        if _READY_INSTALLED:
+            return
+        _READY_INSTALLED = True
+
         from .master_runtime import install
 
         install()
@@ -82,3 +90,22 @@ class AiConfig(AppConfig):
                         )
 
         change_services._cross_operation_checks = cross_operation_checks
+
+        # Preserve the current domain rule during dry validation: a default
+        # Theme cannot be deactivated before another Theme becomes the default.
+        from backend.core.api import ApiError
+
+        from .changes.handlers.theme import ThemeChangeHandler
+
+        original_theme_validate = ThemeChangeHandler._validate_values
+
+        def validate_theme_values(handler, values, *, instance):
+            if instance is not None and instance.is_default and "isActive" in values and not bool(values.get("isActive")):
+                raise ApiError(
+                    "management.themes.default_must_stay_active",
+                    "Il tema predefinito deve restare attivo: designane un altro come predefinito prima di disattivarlo.",
+                    "isActive",
+                )
+            return original_theme_validate(handler, values, instance=instance)
+
+        ThemeChangeHandler._validate_values = validate_theme_values
