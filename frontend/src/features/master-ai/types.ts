@@ -45,6 +45,7 @@ export type AIChangeOperation = {
   entityType: "item" | "skill" | "spell" | "theme" | string;
   entityLabel: string;
   action: "create" | "update" | "archive";
+  intent: "create" | "update" | "archive" | "clone";
   targetId: number | null;
   sourceId: number | null;
   displayLabel: string;
