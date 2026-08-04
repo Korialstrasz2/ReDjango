@@ -1,5 +1,6 @@
 import { apiRequest, getData, requestId } from "../../lib/api";
 import type { AIExecutionRun, AIHistoryEntry } from "../../lib/types";
+import { parseMasterAILaunch } from "./context";
 import type { AIChangeSet, AIChangeSetSummary, MasterAIExecutionRun } from "./types";
 
 const actionRequest = <T>(path: string, method: "POST" | "PATCH" | "DELETE", action: string, payload: Record<string, unknown> = {}) => {
@@ -36,13 +37,15 @@ export function askMasterAssistant(payload: {
   agentId: number;
   conversationId?: number;
   changeSetId?: string;
-  context?: { entityType?: string; targetId?: number; sourceSurface?: string };
+  context?: { entityType?: string; targetId?: number; sourceId?: number; sourceSurface?: string };
 }) {
   const id = requestId();
+  const launch = parseMasterAILaunch(window.location.search);
+  const safePayload = { ...payload, context: payload.context || launch.context || undefined };
   return apiRequest<{ run: MasterAIExecutionRun }>("/api/ai/", {
     method: "POST",
     headers: { "X-ReDjango-Action": "ai.ask", "X-ReDjango-Request-Id": id },
-    body: JSON.stringify({ action: "ai.ask", requestId: id, context: { screen: "master-ai" }, payload, meta: { clientVersion: "react-v1" } }),
+    body: JSON.stringify({ action: "ai.ask", requestId: id, context: { screen: "master-ai" }, payload: safePayload, meta: { clientVersion: "react-v1" } }),
   });
 }
 
