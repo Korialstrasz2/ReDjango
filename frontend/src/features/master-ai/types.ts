@@ -63,7 +63,7 @@ export type AIChangeOperation = {
   baseDigest: string;
 };
 
-export type AIChangeSet = {
+export type AIChangeSetSummary = {
   id: string;
   title: string;
   status: "draft" | "ready" | "applied" | "discarded" | "expired";
@@ -89,6 +89,9 @@ export type AIChangeSet = {
   expiresAt: string | null;
   createdAt: string | null;
   updatedAt: string | null;
+};
+
+export type AIChangeSet = AIChangeSetSummary & {
   operations: AIChangeOperation[];
 };
 
