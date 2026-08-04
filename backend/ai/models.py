@@ -229,6 +229,13 @@ class AIExecutionRun(V2Model):
         blank=True,
         related_name="runs",
     )
+    change_set = models.ForeignKey(
+        "AIChangeSet",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="runs",
+    )
     kind = models.CharField(max_length=12, choices=KIND_CHOICES)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_QUEUED)
     progress = models.CharField(max_length=180, blank=True)
