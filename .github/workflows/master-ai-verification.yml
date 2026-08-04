@@ -9,6 +9,8 @@ on:
       - "frontend/src/features/management/**"
       - "frontend/src/main.tsx"
       - "frontend/src/styles/master-ai*.css"
+      - "Builder_docs/openapi-master-ai-proposals.json"
+      - "docs/MASTER_AI_PROPOSALS.md"
       - "requirements.txt"
       - "frontend/package*.json"
       - ".github/workflows/master-ai-verification.yml"
@@ -38,6 +40,8 @@ jobs:
           cache: pip
       - name: Install backend dependencies
         run: python -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Validate Master AI OpenAPI JSON
+        run: python -m json.tool Builder_docs/openapi-master-ai-proposals.json > /dev/null
       - name: Check migrations
         run: python manage.py makemigrations --check --dry-run
       - name: Apply migrations
