@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 
 import { App } from "./App";
 import { MasterAIRoot } from "./features/master-ai/MasterAIRoot";
@@ -17,14 +17,17 @@ const queryClient = new QueryClient({
   }
 });
 
-const masterAIPath = window.location.pathname === "/tools/master-ai" || window.location.pathname.startsWith("/tools/master-ai/");
+function RootApplication() {
+  const location = useLocation();
+  const masterAIPath = location.pathname === "/tools/master-ai" || location.pathname.startsWith("/tools/master-ai/");
+  return <><ThemeRevealRuntime />{masterAIPath ? <MasterAIRoot /> : <App />}</>;
+}
 
 createRoot(document.getElementById("app")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ThemeRevealRuntime />
-        {masterAIPath ? <MasterAIRoot /> : <App />}
+        <RootApplication />
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>
