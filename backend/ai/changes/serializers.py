@@ -23,7 +23,13 @@ def operation_diff(operation: AIChangeOperation) -> list[dict[str, Any]]:
     effective_values = operation.effective_values
     result = []
     for name, field in fields.items():
-        before = None if operation.action == AIChangeOperation.ACTION_CREATE else original_values.get(name)
+        if operation.action == AIChangeOperation.ACTION_CREATE:
+            # A plain create compares against an empty record. A clone compares
+            # against the captured source snapshot so the reviewer sees exactly
+            # which fields the new record keeps and which ones diverge.
+            before = original_values.get(name) if operation.source_id else None
+        else:
+            before = original_values.get(name)
         after = effective_values.get(name)
         result.append(
             {
@@ -42,12 +48,14 @@ def serialize_change_operation(operation: AIChangeOperation) -> dict[str, Any]:
         entity_label = get_change_handler(operation.entity_type).label
     except Exception:
         entity_label = operation.entity_type
+    intent = "clone" if operation.action == AIChangeOperation.ACTION_CREATE and operation.source_id else operation.action
     return {
         "id": operation.id,
         "position": operation.position,
         "entityType": operation.entity_type,
         "entityLabel": entity_label,
         "action": operation.action,
+        "intent": intent,
         "targetId": operation.target_id,
         "sourceId": operation.source_id,
         "displayLabel": operation.display_label,
