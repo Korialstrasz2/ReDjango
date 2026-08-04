@@ -1,9 +1,12 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
+import logging
+from time import monotonic
 
 from django.apps import AppConfig
 
 
 _READY_INSTALLED = False
+logger = logging.getLogger("backend.ai.master_ai")
 
 
 class AiConfig(AppConfig):
@@ -24,7 +27,7 @@ class AiConfig(AppConfig):
         # The original modules import these registry objects by name. Rebind the
         # expanded registry after installation so agent validation and selector
         # serialization see proposal tools as well as read-only tools.
-        from . import selectors, services, tools
+        from . import execution, selectors, services, tools
 
         services.AI_TOOLS_BY_NAME = tools.AI_TOOLS_BY_NAME
         original_serialize_agent = selectors.serialize_agent
@@ -109,3 +112,161 @@ class AiConfig(AppConfig):
             return original_theme_validate(handler, values, instance=instance)
 
         ThemeChangeHandler._validate_values = validate_theme_values
+
+        # Contextual launch parameters are hints only. Validate them before they
+        # enter a run or proposal, then let normal handlers/tools resolve the data
+        # again. This prevents a URL or raw payload from becoming an authorization
+        # shortcut.
+        from backend.core.security import get_or_create_giocatore_for_user
+
+        from .changes.context import validate_change_context
+
+        def sanitized_payload(user, giocatore, payload):
+            safe = dict(payload or {})
+            safe["context"] = validate_change_context(user, giocatore, safe.get("context"))
+            return safe
+
+        original_start_chat_run = execution.start_chat_run
+
+        def start_chat_run(user, giocatore, payload):
+            return original_start_chat_run(user, giocatore, sanitized_payload(user, giocatore, payload))
+
+        execution.start_chat_run = start_chat_run
+
+        original_ask_assistant = services.ask_assistant
+
+        def ask_assistant(user, giocatore, payload, *, budget=None, progress=None):
+            return original_ask_assistant(
+                user,
+                giocatore,
+                sanitized_payload(user, giocatore, payload),
+                budget=budget,
+                progress=progress,
+            )
+
+        services.ask_assistant = ask_assistant
+        execution.ask_assistant = ask_assistant
+
+        original_create_change_set = change_services.create_change_set
+
+        def create_change_set(user, giocatore, **kwargs):
+            kwargs["context"] = validate_change_context(user, giocatore, kwargs.get("context"))
+            return original_create_change_set(user, giocatore, **kwargs)
+
+        change_services.create_change_set = create_change_set
+
+        original_update_change_set = change_services.update_change_set
+
+        def update_change_set(user, change_set_id, values):
+            safe_values = dict(values or {})
+            if "context" in safe_values:
+                giocatore = get_or_create_giocatore_for_user(user)
+                safe_values["context"] = validate_change_context(user, giocatore, safe_values.get("context"))
+            return original_update_change_set(user, change_set_id, safe_values)
+
+        change_services.update_change_set = update_change_set
+
+        # Operational logs intentionally contain IDs, counts, outcomes and
+        # duration only. Prompts, snapshots, descriptions, values and secrets are
+        # never emitted.
+        def operation_counts(change_set):
+            counts = Counter(
+                f"{operation.entity_type}:{operation.action}"
+                for operation in change_set.operations.all()
+                if operation.selected
+            )
+            return dict(sorted(counts.items()))
+
+        original_validate_change_set = change_services.validate_change_set
+
+        def validate_change_set(user, giocatore, change_set_id):
+            started = monotonic()
+            try:
+                change_set = original_validate_change_set(user, giocatore, change_set_id)
+            except ApiError as error:
+                logger.warning(
+                    "master_ai_validation_failed",
+                    extra={
+                        "change_set_id": str(change_set_id),
+                        "user_id": user.id,
+                        "error_code": error.code,
+                        "duration_ms": round((monotonic() - started) * 1000),
+                    },
+                )
+                raise
+            logger.info(
+                "master_ai_validation_completed",
+                extra={
+                    "change_set_id": str(change_set.id),
+                    "user_id": user.id,
+                    "agent_id": change_set.agent_id,
+                    "status": change_set.status,
+                    "operation_counts": operation_counts(change_set),
+                    "error_count": int((change_set.validation_summary or {}).get("errorCount", 0)),
+                    "warning_count": int((change_set.validation_summary or {}).get("warningCount", 0)),
+                    "duration_ms": round((monotonic() - started) * 1000),
+                },
+            )
+            return change_set
+
+        change_services.validate_change_set = validate_change_set
+
+        original_apply_change_set = change_services.apply_change_set
+
+        def apply_change_set(user, giocatore, change_set_id, token):
+            started = monotonic()
+            try:
+                change_set = original_apply_change_set(user, giocatore, change_set_id, token)
+            except ApiError as error:
+                logger.warning(
+                    "master_ai_apply_failed",
+                    extra={
+                        "change_set_id": str(change_set_id),
+                        "user_id": user.id,
+                        "error_code": error.code,
+                        "stale_conflict": error.status == 409 and "stale" in error.code,
+                        "duration_ms": round((monotonic() - started) * 1000),
+                    },
+                )
+                raise
+            logger.info(
+                "master_ai_apply_completed",
+                extra={
+                    "change_set_id": str(change_set.id),
+                    "user_id": user.id,
+                    "agent_id": change_set.agent_id,
+                    "operation_counts": operation_counts(change_set),
+                    "duration_ms": round((monotonic() - started) * 1000),
+                },
+            )
+            return change_set
+
+        change_services.apply_change_set = apply_change_set
+
+        original_discard_change_set = change_services.discard_change_set
+
+        def discard_change_set(user, change_set_id):
+            change_set = original_discard_change_set(user, change_set_id)
+            logger.info(
+                "master_ai_proposal_discarded",
+                extra={
+                    "change_set_id": str(change_set.id),
+                    "user_id": user.id,
+                    "agent_id": change_set.agent_id,
+                    "operation_counts": operation_counts(change_set),
+                },
+            )
+            return change_set
+
+        change_services.discard_change_set = discard_change_set
+
+        # Views import service callables by name. Rebind them so manual API calls
+        # receive the same context validation and safe operational logging as the
+        # agent runtime.
+        from . import change_views
+
+        change_views.create_change_set = create_change_set
+        change_views.update_change_set = update_change_set
+        change_views.validate_change_set = validate_change_set
+        change_views.apply_change_set = apply_change_set
+        change_views.discard_change_set = discard_change_set
