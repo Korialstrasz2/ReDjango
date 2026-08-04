@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from backend.core.api import ApiError
 
-from .handlers import ItemChangeHandler
+from .handlers import ItemChangeHandler, SkillChangeHandler, SpellChangeHandler, ThemeChangeHandler
 
 
 ENTITY_HANDLERS = {
     "item": ItemChangeHandler(),
+    "skill": SkillChangeHandler(),
+    "spell": SpellChangeHandler(),
+    "theme": ThemeChangeHandler(),
 }
 
 
