@@ -1,6 +1,6 @@
 import { apiRequest, getData, requestId } from "../../lib/api";
 import type { AIExecutionRun, AIHistoryEntry } from "../../lib/types";
-import type { AIChangeSet, MasterAIExecutionRun } from "./types";
+import type { AIChangeSet, AIChangeSetSummary, MasterAIExecutionRun } from "./types";
 
 const actionRequest = <T>(path: string, method: "POST" | "PATCH" | "DELETE", action: string, payload: Record<string, unknown> = {}) => {
   const id = requestId();
@@ -17,7 +17,7 @@ const actionRequest = <T>(path: string, method: "POST" | "PATCH" | "DELETE", act
   });
 };
 
-export const getAIChangeSets = () => getData<{ changeSets: AIChangeSet[] }>("/api/ai/change-sets/");
+export const getAIChangeSets = () => getData<{ changeSets: AIChangeSetSummary[] }>("/api/ai/change-sets/");
 export const getAIChangeSet = (id: string) => getData<{ changeSet: AIChangeSet }>(`/api/ai/change-sets/${id}/`);
 export const createAIChangeSet = (payload: Record<string, unknown>) => actionRequest<{ changeSet: AIChangeSet }>("/api/ai/change-sets/", "POST", "ai.changeSet.create", payload);
 export const updateAIChangeSet = (id: string, payload: Record<string, unknown>) => actionRequest<{ changeSet: AIChangeSet }>(`/api/ai/change-sets/${id}/`, "PATCH", "ai.changeSet.update", payload);
