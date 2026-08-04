@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import type { AIChangeField, AIChangeProblem } from "./types";
 
 type Props = {
@@ -16,9 +16,10 @@ const parseChoice = (field: AIChangeField, raw: string) => {
 };
 
 function StructuredField({ field, value, disabled, onChange }: { field: AIChangeField; value: unknown; disabled: boolean; onChange: (value: unknown) => void }) {
-  const initial = useMemo(() => JSON.stringify(value ?? (field.nullable ? null : {}), null, 2), [field.nullable, value]);
-  const [text, setText] = useState(initial);
+  const formatted = useMemo(() => JSON.stringify(value ?? (field.nullable ? null : {}), null, 2), [field.nullable, value]);
+  const [text, setText] = useState(formatted);
   const [error, setError] = useState("");
+  useEffect(() => { setText(formatted); setError(""); }, [formatted]);
   return <label className="master-ai-field full structured">
     <span><strong>{field.label}</strong><small>{field.ui.widget && field.ui.widget !== "json" ? `Editor strutturato · ${field.ui.widget}` : "JSON strutturato"}</small></span>
     <textarea rows={10} value={text} disabled={disabled} onChange={(event) => {
@@ -80,7 +81,7 @@ export function ProposalFieldRenderer({ fields, values, errors, disabled, onChan
           {field.choices.map((choice) => <option key={valueKey(choice.value)} value={valueKey(choice.value)}>{choice.label}</option>)}</select>{field.help && <small>{field.help}</small>}{fieldError && <small className="form-error">{fieldError.message}</small>}</label>;
       }
       if (["text", "longText", "integer", "number", "color"].includes(field.kind)) {
-        const common = { disabled, required: field.required, value: value === null || value === undefined ? "" : String(value), onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const common = { disabled, required: field.required, value: value === null || value === undefined ? "" : String(value), onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
           const raw = event.target.value; onChange(field.name, field.kind === "integer" ? (raw === "" ? null : Number.parseInt(raw, 10)) : field.kind === "number" ? (raw === "" ? null : Number(raw)) : raw);
         }};
         return <label key={field.name} className={`master-ai-field ${field.ui.width || (field.kind === "longText" ? "full" : "half")}`}><span><strong>{field.label}{field.required ? " *" : ""}</strong></span>
