@@ -14,8 +14,10 @@
   to { --theme-reveal-progress: 1; }
 }
 
-/* The same image is briefly painted above the component at 75% opacity. It
-   never receives pointer events and fades out exactly while the surfaces settle. */
+/* The same image is briefly painted above the component at 75% opacity. Use
+   ::before because workspace and tool drawer already reserve ::after for their
+   permanent decorative veils. Each surface below repeats the exact geometry of
+   its real background, so the cross-fade cannot jump between two crop boxes. */
 .workspace.theme-reveal-surface,
 .modal-backdrop.theme-reveal-surface .rd-modal,
 .tool-drawer.theme-reveal-surface,
@@ -23,26 +25,59 @@
   isolation: isolate;
 }
 
-.workspace.theme-reveal-surface::after,
-.modal-backdrop.theme-reveal-surface .rd-modal::after,
-.tool-drawer.theme-reveal-surface::after,
-.theme-preview.theme-reveal-surface::after {
+.workspace.theme-reveal-surface::before,
+.modal-backdrop.theme-reveal-surface .rd-modal::before,
+.tool-drawer.theme-reveal-surface::before,
+.theme-preview.theme-reveal-surface::before {
   content: "";
-  position: absolute;
-  inset: 0;
   z-index: 1000;
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: var(--background-position, center center);
   opacity: .75;
   animation: theme-showcase-fade var(--theme-reveal-fade) cubic-bezier(.22, .7, .2, 1) var(--theme-reveal-hold) both;
 }
 
-.workspace.theme-reveal-surface::after { background-image: var(--screen-background); }
-.modal-backdrop.theme-reveal-surface .rd-modal::after { background-image: var(--modal-background); }
-.tool-drawer.theme-reveal-surface::after { background-image: var(--tool-background); }
-.theme-preview.theme-reveal-surface::after { background-image: var(--theme-showcase-image, none); }
+/* The live page background is fixed to the viewport, offset by the sidebar,
+   blurred and enlarged slightly to hide the blur edge. The showcase must use
+   all four details rather than the workspace's document-height box. */
+.workspace.theme-reveal-surface::before {
+  position: fixed;
+  inset: 0 0 0 var(--sidebar-width);
+  background-image: var(--screen-background);
+  background-position: var(--background-position, center center);
+  filter: blur(var(--background-blur));
+  transform: scale(1.01);
+  transform-origin: center;
+}
+
+.modal-backdrop.theme-reveal-surface .rd-modal::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--modal-background);
+  background-position: var(--background-position, center center);
+}
+
+/* Tool backgrounds deliberately use centre positioning in the permanent
+   atmosphere, independently of the page background-position theme setting. */
+.tool-drawer.theme-reveal-surface::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--tool-background);
+  background-position: center;
+}
+
+/* Theme preview backgrounds extend beyond the clipped frame so blur never
+   exposes an edge. Runtime variables mirror its draft image, position and blur. */
+.theme-preview.theme-reveal-surface::before {
+  position: absolute;
+  inset: -24px;
+  background-image: var(--theme-showcase-image, none);
+  background-position: var(--theme-showcase-position, center center);
+  filter: var(--theme-showcase-filter, none);
+}
 
 @keyframes theme-showcase-fade {
   from { opacity: .75; }
@@ -59,8 +94,8 @@ html[data-reduced-motion="true"] .theme-reveal-surface {
   --theme-reveal-progress: 1;
   animation: none !important;
 }
-html[data-reduced-motion="true"] .theme-reveal-surface::after,
-html[data-reduced-motion="true"] .theme-reveal-surface .rd-modal::after {
+html[data-reduced-motion="true"] .theme-reveal-surface::before,
+html[data-reduced-motion="true"] .theme-reveal-surface .rd-modal::before {
   display: none;
 }
 
