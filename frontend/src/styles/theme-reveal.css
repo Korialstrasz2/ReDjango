@@ -1,0 +1,85 @@
+:root {
+  --theme-reveal-hold: .5s;
+  --theme-reveal-fade: 1s;
+}
+
+/* Phase 2 drives only the values used by color-mix(). During phase 1 they stay
+   at zero, leaving the image unobstructed beneath the foreground showcase. */
+.theme-reveal-surface {
+  animation: theme-surface-settle var(--theme-reveal-fade) cubic-bezier(.22, .7, .2, 1) var(--theme-reveal-hold) both;
+}
+
+@keyframes theme-surface-settle {
+  from { --theme-reveal-progress: 0; }
+  to { --theme-reveal-progress: 1; }
+}
+
+/* The same image is briefly painted above the component at 75% opacity. It
+   never receives pointer events and fades out exactly while the surfaces settle. */
+.workspace.theme-reveal-surface,
+.modal-backdrop.theme-reveal-surface .rd-modal,
+.tool-drawer.theme-reveal-surface,
+.theme-preview.theme-reveal-surface {
+  isolation: isolate;
+}
+
+.workspace.theme-reveal-surface::after,
+.modal-backdrop.theme-reveal-surface .rd-modal::after,
+.tool-drawer.theme-reveal-surface::after,
+.theme-preview.theme-reveal-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: var(--background-position, center center);
+  opacity: .75;
+  animation: theme-showcase-fade var(--theme-reveal-fade) cubic-bezier(.22, .7, .2, 1) var(--theme-reveal-hold) both;
+}
+
+.workspace.theme-reveal-surface::after { background-image: var(--screen-background); }
+.modal-backdrop.theme-reveal-surface .rd-modal::after { background-image: var(--modal-background); }
+.tool-drawer.theme-reveal-surface::after { background-image: var(--tool-background); }
+.theme-preview.theme-reveal-surface::after { background-image: var(--theme-showcase-image, none); }
+
+@keyframes theme-showcase-fade {
+  from { opacity: .75; }
+  to { opacity: 0; }
+}
+
+/* Keep the drawer's physical entrance while replacing only the old opacity
+   reveal. The showcase and surface settle continue independently. */
+.tool-drawer.theme-reveal-surface {
+  animation: tool-drawer-in 190ms ease-out, theme-surface-settle var(--theme-reveal-fade) cubic-bezier(.22, .7, .2, 1) var(--theme-reveal-hold) both;
+}
+
+html[data-reduced-motion="true"] .theme-reveal-surface {
+  --theme-reveal-progress: 1;
+  animation: none !important;
+}
+html[data-reduced-motion="true"] .theme-reveal-surface::after,
+html[data-reduced-motion="true"] .theme-reveal-surface .rd-modal::after {
+  display: none;
+}
+
+.theme-reveal-configurator {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.theme-reveal-configurator h3 { margin: 0; font-family: var(--font-display); }
+.theme-reveal-configurator p { margin: 0; }
+.theme-reveal-configurator-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.theme-reveal-configurator-grid label { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; color: var(--muted); font-size: .65rem; font-weight: 700; }
+.theme-reveal-configurator-grid input { grid-column: 1 / -1; width: 100%; }
+.theme-reveal-configurator-grid output { color: var(--gold); font-variant-numeric: tabular-nums; }
+.theme-reveal-configurator-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.theme-reveal-configurator-actions small { margin-right: auto; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .theme-reveal-configurator-grid { grid-template-columns: 1fr; }
+}
