@@ -112,14 +112,18 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   await expect(page.getByRole("button", { name: "Crea simile con AI" })).toBeVisible();
   await page.getByRole("button", { name: "Crea simile con AI" }).click();
 
-  await expect(page).toHaveURL(/\/tools\/master-ai\?.*entity=item.*source=\d+.*surface=item-management/);
+  await expect(page).toHaveURL(/\/tools\/master-ai\?/);
+  const contextualUrl = new URL(page.url());
+  expect(contextualUrl.searchParams.get("entity")).toBe("item");
+  expect(Number(contextualUrl.searchParams.get("source"))).toBeGreaterThan(0);
+  expect(contextualUrl.searchParams.get("surface")).toBe("item-management");
   await expect(page.getByRole("heading", { name: "Master AI" })).toBeVisible();
   await expect(page.locator(".master-ai-context-chip")).toContainText(appliedName);
   await expect(page.locator(".master-ai-chat textarea")).toHaveValue(new RegExp(`simile a .*${appliedName}`));
   expect(assistantPosts).toBe(0);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".master-ai-actionbar")).toBeVisible();
+  await expect(page.locator(".master-ai-layout")).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(2);
 
