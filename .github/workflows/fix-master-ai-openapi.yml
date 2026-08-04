@@ -1,0 +1,109 @@
+name: Fix Master AI OpenAPI syntax
+
+on:
+  push:
+    branches:
+      - agent/master-ai-proposal-system
+    paths:
+      - ".github/workflows/fix-master-ai-openapi.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/master-ai-proposal-system
+      - name: Expand and validate compact response schemas
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          path = Path("Builder_docs/openapi-master-ai-proposals.json")
+          lines = path.read_text(encoding="utf-8").splitlines()
+          replacements = {
+              '      "EntityCatalogEnvelope":': '''      "EntityCatalogEnvelope": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/ResponseEnvelope" },
+                  {
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": ["entities"],
+                        "properties": {
+                          "entities": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": ["type", "label", "minimumRole", "actions", "fields"],
+                              "properties": {
+                                "type": { "$ref": "#/components/schemas/EntityType" },
+                                "label": { "type": "string" },
+                                "minimumRole": { "type": "string", "enum": ["master", "admin"] },
+                                "actions": { "type": "array", "items": { "$ref": "#/components/schemas/Action" } },
+                                "fields": { "type": "array", "items": { "$ref": "#/components/schemas/FieldSchema" } }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },''',
+              '      "EntitySearchEnvelope":': '''      "EntitySearchEnvelope": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/ResponseEnvelope" },
+                  {
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": ["results"],
+                        "properties": {
+                          "results": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": ["id", "label"],
+                              "properties": {
+                                "id": { "type": "integer" },
+                                "label": { "type": "string" },
+                                "description": { "type": "string" },
+                                "meta": { "type": "object" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },''',
+          }
+          output = []
+          replaced = set()
+          for line in lines:
+              matched = next((prefix for prefix in replacements if line.startswith(prefix)), None)
+              if matched:
+                  output.extend(replacements[matched].splitlines())
+                  replaced.add(matched)
+              else:
+                  output.append(line)
+          if replaced != set(replacements):
+              raise SystemExit(f"Expected schema lines not found: {set(replacements) - replaced}")
+          content = "\n".join(output) + "\n"
+          json.loads(content)
+          path.write_text(content, encoding="utf-8")
+          PY
+          rm .github/workflows/fix-master-ai-openapi.yml
+      - name: Commit validated contract and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Builder_docs/openapi-master-ai-proposals.json .github/workflows/fix-master-ai-openapi.yml
+          git commit -m "Fix Master AI OpenAPI contract"
+          git push origin HEAD:agent/master-ai-proposal-system
