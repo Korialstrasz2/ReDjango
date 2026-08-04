@@ -109,20 +109,20 @@ function LauncherPortals({ pathname, revision }: { pathname: string; revision: n
 
   if (selected && pathname === "/tools/items" && itemActions) portals.push(createPortal(
     <span className="master-ai-context-actions" key={`item-${selected.id}`}>
-      <MasterAIAssistButton entityType="item" targetId={selected.id} sourceSurface="item-management" defaultPrompt={`Rivedi «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton>
-      <MasterAIAssistButton entityType="item" sourceId={selected.id} sourceSurface="item-management" defaultPrompt={`Crea un nuovo oggetto simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Crea simile con AI</MasterAIAssistButton>
+      <MasterAIAssistButton entityType="item" targetId={selected.id} recordLabel={selected.name} sourceSurface="item-management" defaultPrompt={`Rivedi «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton>
+      <MasterAIAssistButton entityType="item" sourceId={selected.id} recordLabel={selected.name} sourceSurface="item-management" defaultPrompt={`Crea un nuovo oggetto simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Crea simile con AI</MasterAIAssistButton>
     </span>, itemActions, "master-ai-item-record",
   ));
   if (selected && pathname === "/tools/skills" && skillActions) portals.push(createPortal(
     <span className="master-ai-context-actions" key={`${selected.entityType}-${selected.id}`}>
-      <MasterAIAssistButton entityType={selected.entityType} targetId={selected.id} sourceSurface="skill-management" defaultPrompt={`Rivedi «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton>
-      <MasterAIAssistButton entityType={selected.entityType} sourceId={selected.id} sourceSurface="skill-management" defaultPrompt={`Crea ${selected.entityType === "spell" ? "un incantesimo" : "una Skill"} simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Crea simile con AI</MasterAIAssistButton>
+      <MasterAIAssistButton entityType={selected.entityType} targetId={selected.id} recordLabel={selected.name} sourceSurface="skill-management" defaultPrompt={`Rivedi «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton>
+      <MasterAIAssistButton entityType={selected.entityType} sourceId={selected.id} recordLabel={selected.name} sourceSurface="skill-management" defaultPrompt={`Crea ${selected.entityType === "spell" ? "un incantesimo" : "una Skill"} simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Crea simile con AI</MasterAIAssistButton>
     </span>, skillActions, "master-ai-skill-record",
   ));
   if (selected && pathname === "/tools/themes" && themeActions) portals.push(createPortal(
     <span className="master-ai-context-actions" key={`theme-${selected.id}`}>
-      <MasterAIAssistButton entityType="theme" targetId={selected.id} sourceSurface="theme-management" defaultPrompt={`Rivedi il tema «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton>
-      <MasterAIAssistButton entityType="theme" sourceId={selected.id} sourceSurface="theme-management" defaultPrompt={`Crea un nuovo tema simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Duplica con AI</MasterAIAssistButton>
+      <MasterAIAssistButton entityType="theme" targetId={selected.id} recordLabel={selected.name} sourceSurface="theme-management" defaultPrompt={`Rivedi il tema «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton>
+      <MasterAIAssistButton entityType="theme" sourceId={selected.id} recordLabel={selected.name} sourceSurface="theme-management" defaultPrompt={`Crea un nuovo tema simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Duplica con AI</MasterAIAssistButton>
     </span>, themeActions, "master-ai-theme-record",
   ));
   return <>{portals}</>;
@@ -142,10 +142,10 @@ function WorkspaceContextPortal({ search, revision }: { search: string; revision
     if (!parsed.context) return () => { cancelled = true; };
     const id = contextRecordId(parsed.context);
     const request = id
-      ? searchAIChangeEntities(parsed.context.entityType, "", 25).then((payload) => {
+      ? searchAIChangeEntities(parsed.context.entityType, parsed.recordLabel, 10).then((payload) => {
         const record = payload.results.find((entry) => Number(entry.id) === id);
         if (!record) throw new Error("Il record contestuale non è accessibile o non esiste più.");
-        return String(record.label || `#${id}`);
+        return String(record.label || parsed.recordLabel || `#${id}`);
       })
       : getAIChangeEntities().then((payload) => {
         const descriptor = payload.entities.find((entry) => entry.type === parsed.context!.entityType);
@@ -154,7 +154,7 @@ function WorkspaceContextPortal({ search, revision }: { search: string; revision
       });
     void request.then((value) => { if (!cancelled) setLabel(value); }).catch((caught: Error) => { if (!cancelled) setError(caught.message); });
     return () => { cancelled = true; };
-  }, [parsed.context?.entityType, parsed.context?.targetId, parsed.context?.sourceId]);
+  }, [parsed.context?.entityType, parsed.context?.targetId, parsed.context?.sourceId, parsed.recordLabel]);
 
   useEffect(() => {
     if (!parsed.prompt || prefilled.current === search) return;
@@ -171,7 +171,7 @@ function WorkspaceContextPortal({ search, revision }: { search: string; revision
   const mode = parsed.context.sourceId ? "Sorgente" : parsed.context.targetId ? "Destinazione" : "Ambito";
   return createPortal(
     <aside className={`master-ai-context-chip ${error ? "error" : ""}`} role={error ? "alert" : "status"}>
-      <span><small>{mode} · {parsed.context.entityType}</small><strong>{error || label || "Verifica del contesto…"}</strong></span>
+      <span><small>{mode} · {parsed.context.entityType}</small><strong>{error || label || parsed.recordLabel || "Verifica del contesto…"}</strong></span>
       <button type="button" className="icon-button" aria-label="Rimuovi contesto" onClick={() => navigate("/tools/master-ai", { replace: true })}>×</button>
     </aside>,
     host,
