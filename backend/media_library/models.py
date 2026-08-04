@@ -146,6 +146,18 @@ class DatiMappa(V2Model):
         indexes = [
             models.Index(fields=["campagna", "tipo", "default_for_campaign"]),
         ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["campagna"],
+                condition=models.Q(
+                    tipo="globale",
+                    default_for_campaign=True,
+                    archived_at__isnull=True,
+                    campagna__isnull=False,
+                ),
+                name="one_default_global_map_per_campaign",
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.nome
