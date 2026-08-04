@@ -90,7 +90,14 @@ class AIProvider(V2Model):
 
 
 class AIAgentProfile(V2Model):
-    """Policy configurabile per un agente di sola lettura."""
+    """Policy configurabile per un agente AI."""
+
+    MODE_READ_ONLY = "read_only"
+    MODE_PROPOSER = "proposer"
+    MODE_CHOICES = [
+        (MODE_READ_ONLY, "Sola lettura"),
+        (MODE_PROPOSER, "Proposte di modifica"),
+    ]
 
     ROUTING_OFF = "off"
     ROUTING_AUTO = "auto"
@@ -103,6 +110,7 @@ class AIAgentProfile(V2Model):
     slug = models.SlugField(max_length=120, unique=True)
     description = models.TextField(blank=True)
     instructions = models.TextField(blank=True)
+    mode = models.CharField(max_length=16, choices=MODE_CHOICES, default=MODE_READ_ONLY)
     minimum_role = models.CharField(
         max_length=20,
         choices=Giocatore.ROLE_CHOICES,
@@ -221,6 +229,13 @@ class AIExecutionRun(V2Model):
         blank=True,
         related_name="runs",
     )
+    change_set = models.ForeignKey(
+        "AIChangeSet",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="runs",
+    )
     kind = models.CharField(max_length=12, choices=KIND_CHOICES)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_QUEUED)
     progress = models.CharField(max_length=180, blank=True)
@@ -252,3 +267,150 @@ class AIExecutionRun(V2Model):
 
     def __str__(self) -> str:
         return f"{self.kind} {self.id} · {self.status}"
+
+
+class AIChangeSet(V2Model):
+    STATUS_DRAFT = "draft"
+    STATUS_READY = "ready"
+    STATUS_APPLIED = "applied"
+    STATUS_DISCARDED = "discarded"
+    STATUS_EXPIRED = "expired"
+    STATUS_CHOICES = [
+        (STATUS_DRAFT, "Bozza"),
+        (STATUS_READY, "Pronta"),
+        (STATUS_APPLIED, "Applicata"),
+        (STATUS_DISCARDED, "Scartata"),
+        (STATUS_EXPIRED, "Scaduta"),
+    ]
+    EDITABLE_STATUSES = {STATUS_DRAFT, STATUS_READY}
+    IMMUTABLE_STATUSES = {STATUS_APPLIED, STATUS_DISCARDED, STATUS_EXPIRED}
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="ai_change_sets",
+    )
+    conversation = models.ForeignKey(
+        AIConversation,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="change_sets",
+    )
+    agent = models.ForeignKey(
+        AIAgentProfile,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="change_sets",
+    )
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_DRAFT)
+    title = models.CharField(max_length=160, blank=True)
+    request_text = models.TextField(blank=True)
+    context = models.JSONField(default=dict, blank=True)
+    revision = models.PositiveIntegerField(default=1)
+    validation_summary = models.JSONField(default=dict, blank=True)
+    validation_token = models.TextField(blank=True)
+    validated_at = models.DateTimeField(null=True, blank=True)
+    applied_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="applied_ai_change_sets",
+    )
+    applied_at = models.DateTimeField(null=True, blank=True)
+    discarded_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "proposta AI"
+        verbose_name_plural = "proposte AI"
+        indexes = [
+            models.Index(fields=["user", "status", "-updated_at"], name="ai_changeset_user_status_idx"),
+            models.Index(fields=["conversation", "status"], name="ai_changeset_conversation_idx"),
+            models.Index(fields=["status", "expires_at"], name="ai_changeset_expiry_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return self.title or f"Proposta {self.id}"
+
+
+class AIChangeOperation(V2Model):
+    ACTION_CREATE = "create"
+    ACTION_UPDATE = "update"
+    ACTION_ARCHIVE = "archive"
+    ACTION_CHOICES = [
+        (ACTION_CREATE, "Crea"),
+        (ACTION_UPDATE, "Modifica"),
+        (ACTION_ARCHIVE, "Archivia"),
+    ]
+
+    STATUS_PROPOSED = "proposed"
+    STATUS_VALID = "valid"
+    STATUS_INVALID = "invalid"
+    STATUS_APPLIED = "applied"
+    STATUS_SKIPPED = "skipped"
+    STATUS_CHOICES = [
+        (STATUS_PROPOSED, "Proposta"),
+        (STATUS_VALID, "Valida"),
+        (STATUS_INVALID, "Non valida"),
+        (STATUS_APPLIED, "Applicata"),
+        (STATUS_SKIPPED, "Saltata"),
+    ]
+
+    change_set = models.ForeignKey(
+        AIChangeSet,
+        on_delete=models.CASCADE,
+        related_name="operations",
+    )
+    position = models.PositiveSmallIntegerField(default=0)
+    entity_type = models.CharField(max_length=32)
+    action = models.CharField(max_length=16, choices=ACTION_CHOICES)
+    target_id = models.PositiveBigIntegerField(null=True, blank=True)
+    source_id = models.PositiveBigIntegerField(null=True, blank=True)
+    display_label = models.CharField(max_length=200, blank=True)
+    selected = models.BooleanField(default=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_PROPOSED)
+    original_snapshot = models.JSONField(default=dict, blank=True)
+    proposed_values = models.JSONField(default=dict, blank=True)
+    edited_values = models.JSONField(default=dict, blank=True)
+    field_schema = models.JSONField(default=list, blank=True)
+    base_updated_at = models.DateTimeField(null=True, blank=True)
+    base_digest = models.CharField(max_length=64, blank=True)
+    validation_errors = models.JSONField(default=list, blank=True)
+    validation_warnings = models.JSONField(default=list, blank=True)
+    application_result = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ["position", "id"]
+        verbose_name = "operazione proposta AI"
+        verbose_name_plural = "operazioni proposte AI"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["change_set", "position"],
+                name="ai_change_operation_unique_position",
+            ),
+            models.CheckConstraint(
+                condition=Q(action__in=["create", "update", "archive"]),
+                name="ai_change_operation_valid_action",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    Q(action="create", target_id__isnull=True)
+                    | Q(action__in=["update", "archive"], target_id__isnull=False)
+                ),
+                name="ai_change_operation_target_shape",
+            ),
+        ]
+
+    @property
+    def effective_values(self) -> dict:
+        if isinstance(self.edited_values, dict) and self.edited_values:
+            return self.edited_values
+        return self.proposed_values if isinstance(self.proposed_values, dict) else {}
+
+    def __str__(self) -> str:
+        return f"{self.change_set_id} · {self.position} · {self.entity_type}:{self.action}"

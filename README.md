@@ -17,6 +17,7 @@ Ricostruzione moderna, veloce e a pagina singola di **The Elder Django**. Django
 - Archivio immagini, guide strutturate e impostazioni gerarchiche `user < master < admin`. La pagina Impostazioni include un profilo Giocatore dedicato per alias, richieste di assegnazione dei personaggi e codici di promozione a Game Master/Game Admin; richieste e codici restano sotto il controllo dell'Amministrazione Django.
 - Archivio immagini organizzato con categorie configurabili soltanto dall'Amministrazione Django e gruppi liberi, filtri per la navigazione e selettore visuale a miniature riutilizzato negli editor degli oggetti.
 - Assistente AI con gestione protetta per Master/Amministratori, cataloghi modelli letti dai provider, controlli coerenti con le capacità del modello e indicatori di configurazione pronta. Chat e immagini lavorano in background con avanzamento, annullamento e limiti di tempo/token/strumenti; ogni utente conserva soltanto le ultime tre conversazioni.
+- **Master AI** per Master e Amministratori: agenti in modalità Proposte possono cercare record e preparare una coda persistita per Item, Skill, Spell e, solo per Admin, Theme. Il modello non applica mai le modifiche: `/tools/master-ai` mostra campi, scelte server, diff, errori e avvisi; soltanto l'utente può convalidare, applicare atomicamente o scartare.
 - Area **Gestione** per master e amministratori: editor organizzato di personaggi e record collegati con ricerca degli orfani e anteprima sicura dell'eliminazione; catalogo oggetti completo con filtri e confronto/copia affiancato; postazione **Gestione Skill** con panoramica, catalogo completo, gruppi e famiglie modificabili e coda persistente per correggere/importare le skill Elder escluse; postazione **Gestione Unit** per autore, validare e provare Animali, Creature e Umanoidi usati dalla generazione rapida in Combattimento; postazione amministrativa **Gestione Variabili** con controlli tipizzati, guide contestuali e convalida server-side obbligatoria prima del salvataggio del profilo globale. Il relativo **Tool Danno** modifica la matrice completa d20 × differenza Attacco/Difesa, le formule dei Tier e le percentuali di resistenza realmente lette dal motore di combattimento.
 - **Gestione Negozi** è una postazione separata dal Mercato operativo: organizza e rinomina regioni, località e tipi senza cambiare le chiavi stabili, modifica ordine, icone, sfondi e assortimenti, e configura profili riutilizzabili per quantità, rarità e prezzi. Un profilo è predefinito per il mondo e può essere sostituito per ogni negozio; master e amministratori possono assegnarlo, mentre la definizione globale dei preset e delle regole del generatore resta amministrativa.
 - Generazione Unit variabile e riproducibile senza LLM: gli Umanoidi ripercorrono PE, prerequisiti, Skill, la tabella perk dell'AI Elder e pool equipaggiamento per fascia; sette profili accessori condivisi riprendono i pool pesati, le eccezioni ai duplicati, la curva quantità e la variazione di livello oggetto di Elder senza copiare liste di oggetti in ogni Unit. `auto` crea una build diversa a ogni importazione, mentre una Variante nominata resta deterministica. Animali e Creature non hanno Skill a PE né equipaggiamento e usano curve configurabili con valori finali al livello 1/20 e abilità innate. Combattimento offre un selettore di livello per ogni Unit e master/admin possono prendere il controllo del risultato e aprirne la scheda completa. Il seed include l'Umanoide **Arciere Bandito** e l'Animale **Lupo**, ricostruiti dalle Unit Elder e pronti dal livello 1 al 20.
@@ -32,6 +33,43 @@ Ricostruzione moderna, veloce e a pagina singola di **The Elder Django**. Django
 - Pagina **Creazione** avviata con il banco Alchimia completo: le pile canoniche di reagenti Rossi, Verdi e Blu dal livello 1 al 4 vivono direttamente in **Alchimia&Contenitori**, insieme al catalogo dei 42 ingredienti Elder, estrazione atomica, miscela fino a quattro reagenti, anteprima trasparente della formula e distillazione server-side con consumo transazionale. Le soglie da 3 a 30 e i bonus di livello/colore restano collegati alle variabili calcolate del personaggio; Forgiatura e Incantamento hanno già una sede coerente per le prossime fasi.
 - Pagina **Lore** con tre sezioni. **Fazioni** tiene le carte delle fazioni nella colonna principale e affianca una barra laterale con due schede: `Aggiungi` per registrare o correggere un evento e `Storico` per scorrere la cronologia e modificarne o rimuoverne le voci. Ogni fazione mostra la reputazione verso il gruppo su una scala da -100 a +100 con fascia narrativa, e il nome apre lo storico della singola fazione. La reputazione attuale non è mai salvata: nasce dal valore iniziale ripercorrendo tutti gli eventi in ordine di giorno, quindi rimuovere o retrodatare un evento ricalcola davvero il presente. Il master registra eventi con motivo obbligatorio, su una o più fazioni, in variazione o a valore imposto; una variazione si propaga di un solo passo alle fazioni collegate dalla matrice asimmetrica delle reazioni, mentre un valore imposto resta locale. I giocatori leggono fazioni, punteggi ed eventi, ma non vedono la matrice, i valori base, gli strumenti di modifica né gli eventi marcati come riservati, che continuano comunque a spostare i punteggi visibili. **Personaggi** è una galleria di ritratti con il solo nome: aprendo una carta compaiono descrizione, ruolo e appartenenza, e soltanto lì master e amministratori trovano i comandi per modificarla o archiviarla. **Timeline** porta la cronologia storica dentro la stessa pagina: ricerca, navigazione cronologica, dettaglio, immagini facoltative e authoring riservato a master/amministratori, con anni numerici ordinati rispetto alla caduta di Dagoth Ur. Le schede restano narrative e leggere, indipendenti dalle schede giocabili.
 - Contratto OpenAPI versionato e tipi frontend generati.
+
+## Master AI · proposte controllate
+
+`/tools/ai` configura provider e agenti. Un agente `read_only` conserva il comportamento di sola consultazione; un agente `proposer`, disponibile da Master in su, può usare strumenti separati che scrivono esclusivamente `AIChangeSet` e `AIChangeOperation`.
+
+La revisione avviene in `/tools/master-ai`:
+
+1. il Master AI cerca e legge record accessibili;
+2. crea operazioni di creazione, clone, modifica o archiviazione;
+3. l'utente controlla il diff e può modificare i campi proposti;
+4. la convalida server-side produce un token firmato e temporaneo;
+5. un POST umano separato applica tutte le operazioni selezionate in una sola transazione, oppure nessuna;
+6. scarto, applicazione e scadenza lasciano un riepilogo di audit in sola lettura.
+
+I launcher contestuali sono presenti soltanto in Gestione Oggetti, Gestione Skill/Spell e, per gli Admin, Gestione Temi. I parametri URL sono suggerimenti: il backend rivalida tipo, record e ruolo. Non esiste un launcher generico per Unit, Negozi, Personaggi, Player, Variabili o impostazioni arbitrarie.
+
+Endpoint principali:
+
+```text
+GET/POST         /api/ai/change-sets/
+GET/PATCH/DELETE /api/ai/change-sets/<uuid>/
+POST             /api/ai/change-sets/<uuid>/operations/
+PATCH/DELETE     /api/ai/change-sets/<uuid>/operations/<id>/
+POST             /api/ai/change-sets/<uuid>/validate/
+POST             /api/ai/change-sets/<uuid>/apply/
+GET              /api/ai/change-entities/
+GET              /api/ai/change-entities/<type>/search/
+```
+
+Manutenzione manuale delle proposte abbandonate:
+
+```bat
+venv\Scripts\python.exe manage.py cleanup_ai_change_sets --dry-run
+venv\Scripts\python.exe manage.py cleanup_ai_change_sets --review-days 14 --empty-days 2
+```
+
+La documentazione tecnica completa, inclusi sicurezza, token, concorrenza, osservabilità, estensione dei handler e verifica, è in `docs/MASTER_AI_PROPOSALS.md`. Il contratto degli endpoint legacy `/api/ai` è versionato separatamente in `Builder_docs/openapi-master-ai-proposals.json`; il contratto generato `Builder_docs/openapi-v1.json` continua a descrivere l'API Ninja `/api/v1`.
 
 ## Backup amministrativi
 
@@ -248,6 +286,10 @@ Prima di `--apply` creare sempre una copia di `db.sqlite3`. L'importatore legge 
 
 ```text
 backend/api_v1/                 contratti Ninja/OpenAPI e action dispatcher
+backend/ai/changes/              proposal kernel, handler espliciti, token e apply atomico
+backend/ai/master_runtime.py     modalità proposer e strumenti AI isolati
+frontend/src/features/master-ai/ workspace centrale e launcher contestuali
+docs/MASTER_AI_PROPOSALS.md      sicurezza, uso, manutenzione ed estensione
 backend/characters/services/    regole, calcoli e comandi atomici
 backend/characters/competence_selectors.py proiezione delle competenze e bonus collegati
 backend/dice_tools/              catalogo set, palette, validazione e tiri sicuri

@@ -8,6 +8,7 @@ import { command, getData } from "../../lib/api";
 import { contrastLevel, contrastRatio } from "../../lib/appearance";
 import type { ManagedTheme, ManagedThemesData, ThemeSurface } from "../../lib/types";
 import { resolveThemeColors, useApp } from "../../App";
+import { MasterAIAssistButton } from "../master-ai/launchers";
 
 type Draft = {
   name: string;
@@ -327,6 +328,7 @@ export function ThemeManagementPage() {
       <div><p className="eyebrow">Strumenti riservati</p><h1>Gestione Temi</h1></div>
       <div className="button-row">
         <Link className="button secondary" to="/tools">Tutti gli strumenti</Link>
+        <MasterAIAssistButton entityType="theme" sourceSurface="theme-management" defaultPrompt="Aiutami a creare o aggiornare un tema. Prepara soltanto una proposta da revisionare.">AI Assist</MasterAIAssistButton>
         <button type="button" className="button secondary" onClick={() => setCreating({ name: "", duplicateOfId: selected.id })}>Duplica</button>
         <button type="button" className="button primary" onClick={() => setCreating({ name: "", duplicateOfId: null })}>Nuovo tema</button>
       </div>
@@ -362,6 +364,7 @@ export function ThemeManagementPage() {
           <label>Descrizione<textarea rows={2} value={draft.description} onChange={(event) => update({ description: event.target.value })} /></label>
           <div className="theme-editor-identity-actions">
             <span className="muted-copy">{selected.isDefault ? "Questo è il tema predefinito." : "Identificatore: " + selected.slug}</span>
+            <span className="master-ai-context-actions"><MasterAIAssistButton entityType="theme" targetId={selected.id} recordLabel={selected.name} sourceSurface="theme-management" defaultPrompt={`Rivedi il tema «${selected.name}» e proponi le modifiche necessarie senza applicarle.`}>Chiedi al Master AI</MasterAIAssistButton><MasterAIAssistButton entityType="theme" sourceId={selected.id} recordLabel={selected.name} sourceSurface="theme-management" defaultPrompt={`Crea un nuovo tema simile a «${selected.name}», ma attendi le mie indicazioni per le differenze.`}>Duplica con AI</MasterAIAssistButton></span>
             {!selected.isDefault && <button type="button" className="button secondary" disabled={defaultMutation.isPending || !selected.isActive} onClick={() => defaultMutation.mutate(selected.id)}>Rendi predefinito</button>}
             {!selected.isSeeded && !selected.isDefault && <button type="button" className="button danger" onClick={() => setConfirmArchive(selected)}>Archivia</button>}
           </div>

@@ -777,6 +777,8 @@ class AIToolSmokeTests(TestCase):
         }
         failures = []
         for tool in AI_TOOLS:
+            if getattr(tool, "proposal_only", False):
+                continue
             kwargs = required_arguments.get(tool.name, {})
             try:
                 tool.run(self.user, self.giocatore, **kwargs)
