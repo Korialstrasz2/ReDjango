@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+const python = process.platform === "win32" ? "..\\venv\\Scripts\\python.exe" : "python";
+const django = (command: string) => `${python} ../manage.py ${command}`;
+
 export default defineConfig({
   testDir: "./tests",
   use: {
@@ -20,7 +23,13 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "..\\venv\\Scripts\\python.exe ..\\manage.py migrate --noinput && ..\\venv\\Scripts\\python.exe ..\\manage.py flush --noinput && ..\\venv\\Scripts\\python.exe ..\\manage.py seed_minimum_data && ..\\venv\\Scripts\\python.exe ..\\manage.py ensure_admin_login && ..\\venv\\Scripts\\python.exe ..\\manage.py runserver 127.0.0.1:8128 --noreload",
+    command: [
+      django("migrate --noinput"),
+      django("flush --noinput"),
+      django("seed_minimum_data"),
+      django("ensure_admin_login"),
+      django("runserver 127.0.0.1:8128 --noreload"),
+    ].join(" && "),
     env: {
       REDJANGO_ACCESS_MODE: "locked",
       REDJANGO_DATABASE_NAME: "frontend/e2e.sqlite3",
