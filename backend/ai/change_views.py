@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from backend.core.api import ApiError, api_error_response, api_response, request_payload
@@ -21,12 +22,37 @@ from .changes.services import (
     update_change_set,
     validate_change_set,
 )
+from .models import AIChangeSet
+
+
+STALE_APPLY_CODES = {"ai.change_target_stale", "ai.change_token_stale"}
 
 
 def _context(request):
     user = get_authenticated_user(request)
     giocatore = get_or_create_giocatore_for_user(user)
     return user, giocatore
+
+
+def _clear_ready_validation(user, change_set_id) -> None:
+    """A stale review can no longer authorize a commit, even after the request ends.
+
+    `apply_change_set` is atomic, so its conflict exception rolls back every write made
+    inside that transaction. Clearing the signed token here, in the view's separate
+    error path, persists the required transition back to an editable draft.
+    """
+
+    AIChangeSet.objects.filter(
+        id=change_set_id,
+        user=user,
+        status=AIChangeSet.STATUS_READY,
+    ).update(
+        status=AIChangeSet.STATUS_DRAFT,
+        validation_token="",
+        validation_summary={},
+        validated_at=None,
+        updated_at=timezone.now(),
+    )
 
 
 @require_http_methods(["GET", "POST"])
@@ -143,6 +169,8 @@ def ai_change_set_apply(request, change_set_id):
             events=[{"type": "ai.change_set_applied", "message": "Proposta applicata."}],
         )
     except ApiError as error:
+        if error.code in STALE_APPLY_CODES:
+            _clear_ready_validation(user, change_set_id)
         return api_error_response(request, error)
 
 
