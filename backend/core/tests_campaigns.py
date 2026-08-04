@@ -7,8 +7,12 @@ from django.test import TestCase
 from backend.characters.models import Personaggio
 from backend.core.api import ApiError
 from backend.core.campaigns import (
+    archive_special_resource,
     campaigns_payload,
+    reorder_special_resources,
     reroll_campaign_weather,
+    review_special_resource_proposal,
+    save_special_resource,
     select_campaign,
     update_campaign_clock,
     update_shared_campaign_notes,
@@ -73,6 +77,167 @@ class CampaignSelectionTests(TestCase):
                 DatiCampagna(nome="Attiva A", attiva=True),
                 DatiCampagna(nome="Attiva B", attiva=True),
             ])
+
+
+class CampaignSpecialResourceTests(TestCase):
+    def setUp(self):
+        self.campaign = DatiCampagna.objects.create(nome="Sanguine", attiva=True, giorni_da_inizio=35)
+        self.master_user = User.objects.create(username="resource_master")
+        self.player_user = User.objects.create(username="resource_player")
+        self.master = Giocatore.objects.create(
+            user=self.master_user,
+            nome="resource_master",
+            display_name="Master",
+            role=Giocatore.ROLE_MASTER,
+            active_campaign=self.campaign,
+        )
+        self.player = Giocatore.objects.create(
+            user=self.player_user,
+            nome="resource_player",
+            display_name="Giocatore",
+            role=Giocatore.ROLE_USER,
+            active_campaign=self.campaign,
+        )
+
+    def create_resource(self, name="Dono di Sanguine"):
+        payload, proposed = save_special_resource(
+            self.master_user,
+            self.master,
+            self.campaign.id,
+            None,
+            {"character": "Illaoi", "name": name, "value": "2 disponibili", "notes": "Si rinnova ogni giorno."},
+        )
+        self.assertFalse(proposed)
+        return payload["campaigns"][0]["specialResources"]["resources"][0]
+
+    def test_master_creates_dynamic_resources_and_players_can_read_them(self):
+        created = self.create_resource()
+
+        player_payload = campaigns_payload(self.player)["campaigns"][0]["specialResources"]
+
+        self.assertEqual(created["character"], "Illaoi")
+        self.assertEqual(created["value"], "2 disponibili")
+        self.assertEqual(player_payload["resources"][0]["name"], "Dono di Sanguine")
+        self.assertFalse(player_payload["canManage"])
+
+    def test_player_changes_are_proposals_until_a_master_approves_them(self):
+        created = self.create_resource()
+
+        payload, proposed = save_special_resource(
+            self.player_user,
+            self.player,
+            self.campaign.id,
+            created["id"],
+            {"value": "1 disponibile"},
+        )
+
+        self.assertTrue(proposed)
+        player_resource = payload["campaigns"][0]["specialResources"]["resources"][0]
+        self.assertEqual(player_resource["value"], "2 disponibili")
+        proposal = payload["campaigns"][0]["specialResources"]["proposals"][0]
+        self.assertEqual(proposal["proposedBy"]["name"], "Giocatore")
+        self.assertEqual(proposal["before"], {"value": "2 disponibili"})
+        self.assertEqual(proposal["values"], {"value": "1 disponibile"})
+        approved = review_special_resource_proposal(
+            self.master_user,
+            self.master,
+            self.campaign.id,
+            proposal["id"],
+            True,
+        )
+        self.assertEqual(
+            approved["campaigns"][0]["specialResources"]["resources"][0]["value"],
+            "1 disponibile",
+        )
+
+    def test_stale_proposals_do_not_overwrite_a_newer_master_edit(self):
+        created = self.create_resource()
+        payload, _ = save_special_resource(
+            self.player_user,
+            self.player,
+            self.campaign.id,
+            created["id"],
+            {"value": "1 disponibile"},
+        )
+        proposal_id = payload["campaigns"][0]["specialResources"]["proposals"][0]["id"]
+        save_special_resource(
+            self.master_user,
+            self.master,
+            self.campaign.id,
+            created["id"],
+            {"value": "3 disponibili"},
+        )
+
+        with self.assertRaises(ApiError) as raised:
+            review_special_resource_proposal(
+                self.master_user,
+                self.master,
+                self.campaign.id,
+                proposal_id,
+                True,
+            )
+
+        self.assertEqual(raised.exception.status, 409)
+
+    def test_a_player_cannot_submit_an_empty_proposal(self):
+        created = self.create_resource()
+
+        with self.assertRaises(ApiError) as raised:
+            save_special_resource(
+                self.player_user,
+                self.player,
+                self.campaign.id,
+                created["id"],
+                {
+                    "character": created["character"],
+                    "name": created["name"],
+                    "value": created["value"],
+                    "notes": created["notes"],
+                    "highlighted": created["highlighted"],
+                },
+            )
+
+        self.assertEqual(raised.exception.code, "campaign.special_resource_no_changes")
+
+    def test_only_master_can_reorder_directly_and_archive_is_recoverable(self):
+        first = self.create_resource("Prima")
+        second_payload, _ = save_special_resource(
+            self.master_user,
+            self.master,
+            self.campaign.id,
+            None,
+            {"character": "Ra Zirr", "name": "Seconda", "value": "Disponibile", "notes": ""},
+        )
+        second = next(row for row in second_payload["campaigns"][0]["specialResources"]["resources"] if row["name"] == "Seconda")
+
+        ordered = reorder_special_resources(
+            self.master_user,
+            self.master,
+            self.campaign.id,
+            [second["id"], first["id"]],
+        )
+        self.assertEqual(
+            [row["name"] for row in ordered["campaigns"][0]["specialResources"]["resources"]],
+            ["Seconda", "Prima"],
+        )
+        archived, proposed = archive_special_resource(
+            self.master_user,
+            self.master,
+            self.campaign.id,
+            second["id"],
+            True,
+        )
+        self.assertFalse(proposed)
+        self.assertIsNotNone(next(row for row in archived["campaigns"][0]["specialResources"]["resources"] if row["id"] == second["id"])["archivedAt"])
+
+        with self.assertRaises(ApiError) as raised:
+            reorder_special_resources(
+                self.player_user,
+                self.player,
+                self.campaign.id,
+                [first["id"]],
+            )
+        self.assertEqual(raised.exception.status, 403)
 
 
 class ScriptedRandom(random.Random):

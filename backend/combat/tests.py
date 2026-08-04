@@ -41,6 +41,7 @@ from .services import (
     reload_active_weapon,
     remove_quiver_item,
     restore_map_snapshot,
+    set_active_character,
     duplicate_map,
     generate_unit,
     take_control,
@@ -254,14 +255,8 @@ class MapWorkspaceTests(CombatTestCase):
         self.assertFalse(added_again)
         self.assertFalse(participant.active)
 
-    def test_a_character_joining_takes_over_the_map_focus_from_the_previous_one(self):
-        """Chi entra diventa il personaggio attivo della mappa.
-
-        L'inspector, il token evidenziato e il pannello d'attacco leggono tutti
-        `activeCharacterId`: lasciandolo sul PG della sessione precedente, chi
-        apre Combattimento con un personaggio nuovo continuava a vedere quello
-        vecchio a sinistra.
-        """
+    def test_a_character_joining_does_not_take_over_the_shared_map_focus(self):
+        """Presence updates must not change what another viewer is inspecting."""
         previous = self.character("Occupante")
         self.map.active_character = previous
         self.map.save(update_fields=["active_character", "updated_at"])
@@ -275,18 +270,13 @@ class MapWorkspaceTests(CombatTestCase):
         self.map.refresh_from_db()
 
         self.assertTrue(added)
-        self.assertEqual(self.map.active_character_id, arriving.id)
+        self.assertEqual(self.map.active_character_id, previous.id)
         payload = combat_workspace_payload(self.user, self.giocatore, self.map.id)
-        self.assertEqual(payload["map"]["activeCharacterId"], arriving.id)
-        self.assertEqual(payload["focusCharacter"]["id"], arriving.id)
+        self.assertEqual(payload["map"]["activeCharacterId"], previous.id)
+        self.assertEqual(payload["focusCharacter"]["id"], previous.id)
 
-    def test_an_already_present_character_reclaims_the_focus_without_being_added_twice(self):
-        """La mappa ricorda i partecipanti: rientrare deve comunque riportare il fuoco.
-
-        È il caso reale, non quello della prima entrata: il PG era già sulla mappa
-        da una visita precedente, quindi il ramo di ingresso non scatta e senza
-        questo l'inspector resterebbe sul personaggio di prima per sempre.
-        """
+    def test_an_already_present_character_does_not_reclaim_shared_focus(self):
+        """Reopening combat only confirms presence and never changes focus."""
         returning = self.character("Ritornante")
         self.giocatore.active_character = returning
         self.giocatore.character_ids = [returning.id]
@@ -302,7 +292,7 @@ class MapWorkspaceTests(CombatTestCase):
 
         self.assertFalse(added)
         self.assertEqual(self.map.participants.filter(character=returning).count(), 1)
-        self.assertEqual(self.map.active_character_id, returning.id)
+        self.assertEqual(self.map.active_character_id, occupant.id)
 
     def test_a_character_removed_by_the_master_does_not_reclaim_the_focus(self):
         """La disattivazione decisa dal Master vince sul ritorno del giocatore."""
@@ -786,6 +776,30 @@ class FogBackupAndControlTests(CombatTestCase):
         self.assertNotIn("revision", player_payload["map"])
         self.assertNotIn("revision", player_payload["maps"][0])
         self.assertEqual(master_payload["map"]["revision"], self.map.revision)
+
+    def test_player_payload_always_focuses_their_active_character(self):
+        self.map.active_character = self.enemy
+        self.map.save(update_fields=["active_character", "updated_at"])
+
+        payload = combat_workspace_payload(self.player_user, self.player, self.map.id)
+
+        self.assertEqual(payload["map"]["activeCharacterId"], self.hero.id)
+        self.assertEqual(payload["focusCharacter"]["id"], self.hero.id)
+
+    def test_only_master_can_change_the_shared_foreground_character(self):
+        with self.assertRaises(ApiError) as denied:
+            set_active_character(self.player_user, self.player, {
+                "mapId": self.map.id,
+                "characterId": self.enemy.id,
+            })
+        self.assertEqual(denied.exception.code, "combat.permission_denied")
+
+        set_active_character(self.user, self.giocatore, {
+            "mapId": self.map.id,
+            "characterId": self.enemy.id,
+        })
+        self.map.refresh_from_db()
+        self.assertEqual(self.map.active_character_id, self.enemy.id)
 
     def test_snapshot_restore_and_duplicate_keep_map_runtime_state(self):
         painted = MapHex.objects.create(map=self.map, q=2, r=3, overlay_color="#cc8844", overlay_opacity=.5, revealed=True)

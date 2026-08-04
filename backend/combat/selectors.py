@@ -477,6 +477,10 @@ def _map_payload(map_obj: MapMetadata, *, can_manage: bool, viewer_character_id:
         )
         for character_id, character in characters.items()
     }
+    visible_character_ids = {row.character_id for row in participant_rows}
+    active_character_id = map_obj.active_character_id
+    if not can_manage and viewer_character_id in visible_character_ids:
+        active_character_id = viewer_character_id
     modifier_states = {state.modifier_id: state.enabled for state in map_obj.modifier_states.all()}
     return {
         **_map_summary(map_obj, include_revision=can_manage),
@@ -497,7 +501,7 @@ def _map_payload(map_obj: MapMetadata, *, can_manage: bool, viewer_character_id:
         "fogEnabled": map_obj.fog_enabled,
         "fogOpacity": float(map_obj.fog_opacity),
         "viewerCanSeeAll": can_manage,
-        "activeCharacterId": map_obj.active_character_id,
+        "activeCharacterId": active_character_id,
         "activeCharacterIds": [row.character_id for row in participant_rows],
         "participants": [
             {
@@ -590,7 +594,7 @@ def combat_workspace_payload(user, giocatore: Giocatore, map_id=None):
     can_manage = has_minimum_role(effective_role(user, giocatore), Giocatore.ROLE_MASTER)
     characters = Personaggio.objects.filter(archived_at__isnull=True).order_by("nome")
     focus_character = characters.filter(pk=giocatore.active_character_id).first()
-    if selected and selected.active_character_id:
+    if can_manage and selected and selected.active_character_id:
         focus_character = characters.filter(pk=selected.active_character_id).first() or focus_character
     selected_map_payload = (
         _map_payload(

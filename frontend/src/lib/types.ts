@@ -73,6 +73,44 @@ export type CampaignData = {
   currentHour: number;
   daysSinceStart: number;
   sharedNotes: string;
+  specialResources: CampaignSpecialResources;
+};
+
+export type CampaignResourceActor = { id: number; name: string };
+
+export type CampaignSpecialResource = {
+  id: string;
+  character: string;
+  name: string;
+  value: string;
+  notes: string;
+  highlighted: boolean;
+  order: number;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: CampaignResourceActor;
+};
+
+export type CampaignSpecialResourceProposal = {
+  id: string;
+  resourceId: string | null;
+  resourceName: string;
+  action: "save" | "archive" | "restore";
+  before: Partial<Pick<CampaignSpecialResource, "character" | "name" | "value" | "notes" | "highlighted">>;
+  values: Partial<Pick<CampaignSpecialResource, "character" | "name" | "value" | "notes" | "highlighted">>;
+  baseUpdatedAt: string | null;
+  status: "pending" | "approved" | "rejected";
+  proposedBy: CampaignResourceActor;
+  createdAt: string;
+  reviewedAt: string | null;
+  reviewedBy: CampaignResourceActor | null;
+};
+
+export type CampaignSpecialResources = {
+  resources: CampaignSpecialResource[];
+  proposals: CampaignSpecialResourceProposal[];
+  canManage: boolean;
 };
 
 export type SecurityData = {

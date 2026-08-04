@@ -499,6 +499,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/characters/{character_id}/creation/forge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Character Forge */
+        get: operations["backend_api_v1_api_character_forge"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/characters/{character_id}/creation/enchant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Character Enchant */
+        get: operations["backend_api_v1_api_character_enchant"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/characters/{character_id}/competencies": {
         parameters: {
             query?: never;
@@ -2652,6 +2686,34 @@ export interface components {
             /** Quantity */
             quantity: number;
         };
+        /** CraftingBenchEnvelopeSchema */
+        CraftingBenchEnvelopeSchema: {
+            /** Ok */
+            ok: boolean;
+            /** Requestid */
+            requestId: string;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+            /**
+             * Events
+             * @default []
+             */
+            events: components["schemas"]["EventSchema"][];
+            /**
+             * Warnings
+             * @default []
+             */
+            warnings: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Errors
+             * @default []
+             */
+            errors: components["schemas"]["ErrorSchema"][];
+        };
         /** CompetenceCatalogDataSchema */
         CompetenceCatalogDataSchema: {
             character: components["schemas"]["CompetenceCharacterContextSchema"];
@@ -3425,6 +3487,22 @@ export interface components {
             creation?: components["schemas"]["AlchemyCreationDataSchema"] | null;
             alchemyResult?: components["schemas"]["AlchemyBrewResultSchema"] | null;
             extractedReagent?: components["schemas"]["AlchemyCatalogReagentSchema"] | null;
+            /** Forge */
+            forge?: {
+                [key: string]: unknown;
+            } | null;
+            /** Forgeresult */
+            forgeResult?: {
+                [key: string]: unknown;
+            } | null;
+            /** Enchant */
+            enchant?: {
+                [key: string]: unknown;
+            } | null;
+            /** Enchantresult */
+            enchantResult?: {
+                [key: string]: unknown;
+            } | null;
             /** Market */
             market?: {
                 [key: string]: unknown;
@@ -3974,6 +4052,145 @@ export interface components {
         CampaignSelectPayloadSchema: {
             /** Campaignid */
             campaignId: number;
+        };
+        /** CampaignSpecialResourceArchiveActionSchema */
+        CampaignSpecialResourceArchiveActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "campaign.specialResources.archive";
+            payload: components["schemas"]["CampaignSpecialResourceArchivePayloadSchema"];
+        };
+        /** CampaignSpecialResourceArchivePayloadSchema */
+        CampaignSpecialResourceArchivePayloadSchema: {
+            /** Campaignid */
+            campaignId: number;
+            /** Resourceid */
+            resourceId: string;
+            /**
+             * Archived
+             * @default true
+             */
+            archived: boolean;
+        };
+        /** CampaignSpecialResourceReorderActionSchema */
+        CampaignSpecialResourceReorderActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "campaign.specialResources.reorder";
+            payload: components["schemas"]["CampaignSpecialResourceReorderPayloadSchema"];
+        };
+        /** CampaignSpecialResourceReorderPayloadSchema */
+        CampaignSpecialResourceReorderPayloadSchema: {
+            /** Campaignid */
+            campaignId: number;
+            /** Resourceids */
+            resourceIds: string[];
+        };
+        /** CampaignSpecialResourceReviewActionSchema */
+        CampaignSpecialResourceReviewActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "campaign.specialResources.review";
+            payload: components["schemas"]["CampaignSpecialResourceReviewPayloadSchema"];
+        };
+        /** CampaignSpecialResourceReviewPayloadSchema */
+        CampaignSpecialResourceReviewPayloadSchema: {
+            /** Campaignid */
+            campaignId: number;
+            /** Proposalid */
+            proposalId: string;
+            /** Approve */
+            approve: boolean;
+        };
+        /** CampaignSpecialResourceSaveActionSchema */
+        CampaignSpecialResourceSaveActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "campaign.specialResources.save";
+            payload: components["schemas"]["CampaignSpecialResourceSavePayloadSchema"];
+        };
+        /** CampaignSpecialResourceSavePayloadSchema */
+        CampaignSpecialResourceSavePayloadSchema: {
+            /** Campaignid */
+            campaignId: number;
+            /** Resourceid */
+            resourceId?: string | null;
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            };
         };
         /** CampaignWeatherRerollActionSchema */
         CampaignWeatherRerollActionSchema: {
@@ -4635,6 +4852,314 @@ export interface components {
             values: {
                 [key: string]: unknown;
             };
+        };
+        /** EnchantDisenchantActionSchema */
+        EnchantDisenchantActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "enchant.disenchant";
+            payload: components["schemas"]["EnchantInstancePayloadSchema"];
+        };
+        /** EnchantInstancePayloadSchema */
+        EnchantInstancePayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Instanceid */
+            instanceId: number;
+        };
+        /** EnchantItemActionSchema */
+        EnchantItemActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "enchant.item";
+            payload: components["schemas"]["EnchantItemPayloadSchema"];
+        };
+        /** EnchantItemPayloadSchema */
+        EnchantItemPayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Targetitemid */
+            targetItemId: number;
+            /** Gemslots */
+            gemSlots: number[];
+            /** Kind */
+            kind: string;
+            /** Altaritemid */
+            altarItemId?: number | null;
+            /**
+             * Usefatigue
+             * @default false
+             */
+            useFatigue: boolean;
+        };
+        /** EnchantRechargeActionSchema */
+        EnchantRechargeActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "enchant.recharge";
+            payload: components["schemas"]["EnchantInstancePayloadSchema"];
+        };
+        /** EnchantScrollActionSchema */
+        EnchantScrollActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "enchant.scroll";
+            payload: components["schemas"]["EnchantScrollPayloadSchema"];
+        };
+        /** EnchantScrollPayloadSchema */
+        EnchantScrollPayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Spellid */
+            spellId: number;
+            /** Manaspent */
+            manaSpent: number;
+            /** Altaritemid */
+            altarItemId?: number | null;
+        };
+        /** ForgeCraftActionSchema */
+        ForgeCraftActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "forge.craft";
+            payload: components["schemas"]["ForgeCraftPayloadSchema"];
+        };
+        /** ForgeCraftPayloadSchema */
+        ForgeCraftPayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Blueprintitemid */
+            blueprintItemId: number;
+        };
+        /** ForgeImproveActionSchema */
+        ForgeImproveActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "forge.improve";
+            payload: components["schemas"]["ForgeImprovePayloadSchema"];
+        };
+        /** ForgeImprovePayloadSchema */
+        ForgeImprovePayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Instanceid */
+            instanceId: number;
+            /** Improvementkey */
+            improvementKey: string;
+            /**
+             * Usefatigue
+             * @default false
+             */
+            useFatigue: boolean;
+        };
+        /** ForgeMeltActionSchema */
+        ForgeMeltActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "forge.melt";
+            payload: components["schemas"]["ForgeMeltPayloadSchema"];
+        };
+        /** ForgeMeltPayloadSchema */
+        ForgeMeltPayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Instanceid */
+            instanceId: number;
+        };
+        /** ForgePracticalActionSchema */
+        ForgePracticalActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "forge.craftPractical";
+            payload: components["schemas"]["ForgePracticalPayloadSchema"];
+        };
+        /** ForgePracticalPayloadSchema */
+        ForgePracticalPayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Blueprintitemid */
+            blueprintItemId: number;
+            /**
+             * Level
+             * @default 1
+             */
+            level: number;
+        };
+        /** ForgeSpecialistActionSchema */
+        ForgeSpecialistActionSchema: {
+            /** Requestid */
+            requestId: string;
+            /**
+             * Context
+             * @default {}
+             */
+            context: {
+                [key: string]: unknown;
+            };
+            /**
+             * Meta
+             * @default {}
+             */
+            meta: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "forge.setSpecialist";
+            payload: components["schemas"]["ForgeSpecialistPayloadSchema"];
+        };
+        /** ForgeSpecialistPayloadSchema */
+        ForgeSpecialistPayloadSchema: {
+            /** Characterid */
+            characterId: number;
+            /** Materialkey */
+            materialKey: string;
         };
         /** ItemBulkActionSchema */
         ItemBulkActionSchema: {
@@ -8077,6 +8602,71 @@ export interface operations {
             };
         };
     };
+    backend_api_v1_api_character_forge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CraftingBenchEnvelopeSchema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
+                };
+            };
+        };
+    };
+    backend_api_v1_api_character_enchant: {
+        parameters: {
+            query?: {
+                slotType?: string;
+                level?: number;
+            };
+            header?: never;
+            path: {
+                character_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CraftingBenchEnvelopeSchema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeSchema"];
+                };
+            };
+        };
+    };
     backend_api_v1_api_character_competencies: {
         parameters: {
             query?: never;
@@ -8160,7 +8750,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["ManaSiphonActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CharacterCreateActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["ItemBulkPreviewActionSchema"] | components["schemas"]["ItemBulkApplyActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopRegenerateAllActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"] | components["schemas"]["NameGenerateActionSchema"];
+                "application/json": components["schemas"]["SwapActionSchema"] | components["schemas"]["AssignItemActionSchema"] | components["schemas"]["SetQuantityActionSchema"] | components["schemas"]["SwitchPrimaryWeaponActionSchema"] | components["schemas"]["ResourceActionSchema"] | components["schemas"]["ManaSiphonActionSchema"] | components["schemas"]["QuickStatActionSchema"] | components["schemas"]["RestActionSchema"] | components["schemas"]["OverviewActionSchema"] | components["schemas"]["CharacterCreateActionSchema"] | components["schemas"]["CoinsActionSchema"] | components["schemas"]["SharedCoinsActionSchema"] | components["schemas"]["ApplyEffectActionSchema"] | components["schemas"]["RemoveEffectActionSchema"] | components["schemas"]["CreateEffectActionSchema"] | components["schemas"]["UpdateEffectActionSchema"] | components["schemas"]["MoveEffectActionSchema"] | components["schemas"]["CreateItemActionSchema"] | components["schemas"]["UpdateItemActionSchema"] | components["schemas"]["ArchiveItemActionSchema"] | components["schemas"]["CompareItemActionSchema"] | components["schemas"]["ManagedCharacterUpdateActionSchema"] | components["schemas"]["ManagedCharacterDeleteActionSchema"] | components["schemas"]["ManagedCharacterAttachActionSchema"] | components["schemas"]["ManagedPlayerCreateActionSchema"] | components["schemas"]["ManagedPlayerUpdateActionSchema"] | components["schemas"]["ManagedPlayerPasswordActionSchema"] | components["schemas"]["ManagedPlayerCharactersActionSchema"] | components["schemas"]["ManagedSkillGroupSaveActionSchema"] | components["schemas"]["ManagedSkillGroupStateActionSchema"] | components["schemas"]["ManagedSkillFamilySaveActionSchema"] | components["schemas"]["ManagedSkillFamilyStateActionSchema"] | components["schemas"]["ItemSetSpecialActionSchema"] | components["schemas"]["ItemRecheckSpecialActionSchema"] | components["schemas"]["ItemBulkPreviewActionSchema"] | components["schemas"]["ItemBulkApplyActionSchema"] | components["schemas"]["DiceSetDuplicateActionSchema"] | components["schemas"]["DiceHistoryPurgeActionSchema"] | components["schemas"]["ManagedSkillStructureReorderActionSchema"] | components["schemas"]["ManagedSkillStateActionSchema"] | components["schemas"]["ManagedUnitSaveActionSchema"] | components["schemas"]["ManagedUnitStateActionSchema"] | components["schemas"]["ManagedUnitPreviewActionSchema"] | components["schemas"]["ManagedVariablesValidateActionSchema"] | components["schemas"]["ManagedVariablesSaveActionSchema"] | components["schemas"]["ManagedBackupSettingsActionSchema"] | components["schemas"]["ManagedBackupCreateActionSchema"] | components["schemas"]["ManagedBackupDeleteActionSchema"] | components["schemas"]["ManagedBackupInspectActionSchema"] | components["schemas"]["ManagedThemeSaveActionSchema"] | components["schemas"]["ManagedThemeCreateActionSchema"] | components["schemas"]["ManagedThemeSetDefaultActionSchema"] | components["schemas"]["ManagedThemeArchiveActionSchema"] | components["schemas"]["ManagedDamageRulesValidateActionSchema"] | components["schemas"]["ManagedDamageRulesSaveActionSchema"] | components["schemas"]["DiceRollActionSchema"] | components["schemas"]["DiceSetCreateActionSchema"] | components["schemas"]["DiceSetUpdateActionSchema"] | components["schemas"]["DiceSetArchiveActionSchema"] | components["schemas"]["NoteUpdateActionSchema"] | components["schemas"]["CampaignSelectActionSchema"] | components["schemas"]["CampaignNotesUpdateActionSchema"] | components["schemas"]["CampaignSpecialResourceSaveActionSchema"] | components["schemas"]["CampaignSpecialResourceArchiveActionSchema"] | components["schemas"]["CampaignSpecialResourceReorderActionSchema"] | components["schemas"]["CampaignSpecialResourceReviewActionSchema"] | components["schemas"]["CampaignClockUpdateActionSchema"] | components["schemas"]["CampaignWeatherRerollActionSchema"] | components["schemas"]["AlchemyBrewActionSchema"] | components["schemas"]["AlchemyExtractActionSchema"] | components["schemas"]["SkillPreviewActionSchema"] | components["schemas"]["SkillUnlockActionSchema"] | components["schemas"]["SkillXpUpdateActionSchema"] | components["schemas"]["SpellPreviewActionSchema"] | components["schemas"]["SkillConfigureCharacterActionsActionSchema"] | components["schemas"]["CombatButtonCreateActionSchema"] | components["schemas"]["CombatButtonUpdateActionSchema"] | components["schemas"]["CombatButtonDeleteActionSchema"] | components["schemas"]["SkillCreateActionSchema"] | components["schemas"]["SkillUpdateActionSchema"] | components["schemas"]["SkillArchiveActionSchema"] | components["schemas"]["SkillReorderActionSchema"] | components["schemas"]["SkillDeleteActionSchema"] | components["schemas"]["CompetenceUpgradeActionSchema"] | components["schemas"]["CompetenceExtraActionSchema"] | components["schemas"]["CompetenceRollActionSchema"] | components["schemas"]["CompetenceRerollActionSchema"] | components["schemas"]["MarketShopSaveActionSchema"] | components["schemas"]["MarketShopPreviewActionSchema"] | components["schemas"]["MarketShopRegenerateActionSchema"] | components["schemas"]["MarketShopRegenerateAllActionSchema"] | components["schemas"]["MarketShopBatchActionSchema"] | components["schemas"]["MarketShopStateActionSchema"] | components["schemas"]["MarketSettingsSaveActionSchema"] | components["schemas"]["MarketQuoteActionSchema"] | components["schemas"]["MarketPurchaseActionSchema"] | components["schemas"]["LoreFactionSaveActionSchema"] | components["schemas"]["LoreFactionDeleteActionSchema"] | components["schemas"]["LoreRelationsSaveActionSchema"] | components["schemas"]["LoreEventRecordActionSchema"] | components["schemas"]["LoreEventUpdateActionSchema"] | components["schemas"]["LoreEventDeleteActionSchema"] | components["schemas"]["LoreCharacterSaveActionSchema"] | components["schemas"]["LoreCharacterDeleteActionSchema"] | components["schemas"]["LoreTimelineSaveActionSchema"] | components["schemas"]["LoreTimelineArchiveActionSchema"] | components["schemas"]["ForgeCraftActionSchema"] | components["schemas"]["ForgeImproveActionSchema"] | components["schemas"]["ForgeMeltActionSchema"] | components["schemas"]["ForgeSpecialistActionSchema"] | components["schemas"]["ForgePracticalActionSchema"] | components["schemas"]["EnchantItemActionSchema"] | components["schemas"]["EnchantScrollActionSchema"] | components["schemas"]["EnchantRechargeActionSchema"] | components["schemas"]["EnchantDisenchantActionSchema"] | components["schemas"]["NameGenerateActionSchema"];
             };
         };
         responses: {

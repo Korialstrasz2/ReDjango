@@ -58,6 +58,43 @@ test("Diario e Dadi sono strumenti rapidi persistenti e usabili", async ({ page,
   await expect(pageNotes).toHaveValue(originalNotes);
 });
 
+test("le Risorse speciali seguono Condivise e il Master gestisce schede dinamiche", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Diario/ }).click();
+  const journal = page.getByRole("dialog", { name: "Diario" });
+  const sectionLabels = await journal.locator(".journal-sections button").allTextContents();
+  const sharedIndex = sectionLabels.findIndex((label) => label.includes("Condivise"));
+  expect(sectionLabels[sharedIndex + 1]).toContain("Risorse speciali");
+
+  await journal.getByRole("button", { name: "Risorse speciali" }).click();
+  await expect(journal.getByText("risorse attive")).toBeVisible();
+  await journal.getByRole("button", { name: "Nuova risorsa" }).click();
+  const editor = journal.getByRole("dialog", { name: "Nuova risorsa speciale" });
+  const suffix = Date.now();
+  await editor.getByLabel("Personaggio o gruppo").fill("Gruppo E2E");
+  await editor.getByLabel("Nome della risorsa").fill(`Sigillo E2E ${suffix}`);
+  await editor.getByLabel("Stato corrente").fill("2 disponibili");
+  await editor.getByLabel("Regola, scadenza o promemoria").fill("Si rinnova all'alba.");
+  await editor.getByLabel("Metti in evidenza").check();
+  await editor.getByRole("button", { name: "Salva", exact: true }).click();
+
+  const card = journal.locator(".special-resource-grid article", { hasText: `Sigillo E2E ${suffix}` });
+  await expect(card).toContainText("Gruppo E2E");
+  await expect(card.locator(".special-resource-value")).toHaveText("2 disponibili");
+  await expect(card).toHaveClass(/highlighted/);
+  await journal.getByLabel("Cerca").fill(String(suffix));
+  await expect(journal.locator(".special-resource-grid > article")).toHaveCount(1);
+  await journal.getByLabel("Cerca").fill("");
+
+  await card.getByRole("button", { name: "Archivia" }).click();
+  await expect(card).toHaveCount(0);
+  await journal.getByLabel("Mostra archiviate").check();
+  const archived = journal.locator(".special-resource-grid article", { hasText: `Sigillo E2E ${suffix}` });
+  await expect(archived).toHaveAttribute("data-state", "archived");
+  await archived.getByRole("button", { name: "Ripristina" }).click();
+  await expect(archived).toHaveCount(0);
+});
+
 test("la barra rapida mostra la campagna e ricorda il meteo ogni sei ore", async ({ page, request }) => {
   const bootstrap = await (await request.get("/api/bootstrap/")).json();
   const campaign = bootstrap.data.campaigns.find((entry: { id: number }) => entry.id === bootstrap.data.activeCampaignId);

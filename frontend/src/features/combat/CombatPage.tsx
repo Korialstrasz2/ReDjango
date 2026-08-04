@@ -10,6 +10,7 @@ import { apiRequest, command, getData, requestId, uploadCombatMapImage } from ".
 import type { MediaAsset } from "../../lib/types";
 import { CombatMapCanvas } from "./CombatMapCanvas";
 import { AttackPanel as CompactAttackPanel } from "./AttackPanel";
+import { combatFocusedCharacterId } from "./focus";
 import { cellKey, offsetToAxial } from "./hex";
 import { MapCalibrationPreview, type MapCalibrationDraft } from "./MapCalibrationPreview";
 import { NoteSectionEditor } from "../notes/NoteSectionEditor";
@@ -391,10 +392,10 @@ function CombatantRail({ map, busy, canManage, controlledCharacterId, onSelect, 
   </aside>;
 }
 
-function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDragChange, onSelect, onRemove, onContext, onPairSelect, toolbar }: {
+function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDragChange, onRemove, onContext, onPairSelect, toolbar }: {
   map: CombatMap; busy: boolean; canManage: boolean;
   draggedCharacterId: number | null; onDragChange: (id: number | null) => void;
-  onSelect: (id: number) => void; onRemove: (id: number) => void; onContext?: (participant: MapParticipant) => void;
+  onRemove: (id: number) => void; onContext?: (participant: MapParticipant) => void;
   onPairSelect: (attackerId: number, defenderId: number) => void;
   toolbar: ReactNode;
 }) {
@@ -433,8 +434,7 @@ function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDrag
           draggable={map.participants.length > 1}
           onDragStart={(event) => startCombatantDrag(event, entry.character.id, onDragChange)}
           onDragEnd={() => { setDropTargetId(null); onDragChange(null); }}
-          onClick={() => onContext ? onContext(entry) : onSelect(entry.character.id)}
-          onDoubleClick={() => { if (canManage) onSelect(entry.character.id); }}
+          onClick={() => onContext?.(entry)}
           title={`${entry.character.name} · clic per le azioni, trascina per preparare un attacco`}
         >
           {entry.character.portrait ? <img src={entry.character.portrait} alt="" /> : <span className="combat-active-avatar">{entry.character.name.slice(0, 2).toUpperCase()}</span>}
@@ -1180,6 +1180,7 @@ export function CombatPage() {
   const [characterManager, setCharacterManager] = useState(false);
   const [versionsOpen, setVersionsOpen] = useState(false);
   const [contextParticipant, setContextParticipant] = useState<MapParticipant | null>(null);
+  const [masterForegroundByMap, setMasterForegroundByMap] = useState<Record<number, number>>({});
   const autoPresenceAttempt = useRef(new Set<string>());
   const [selectedHex, setSelectedHex] = useState<Axial | null>(null);
   const [selectedHexes, setSelectedHexes] = useState<Axial[]>([]);
@@ -1198,8 +1199,15 @@ export function CombatPage() {
   const workspace = query.data;
   const terrainBadges = useMemo(() => buildTerrainBadges(workspace?.hexTypes || []), [workspace?.hexTypes]);
   const rawMap = workspace?.map;
+  const focusedCharacterId = combatFocusedCharacterId(
+    rawMap,
+    workspace?.viewerCharacterId,
+    Boolean(workspace?.permissions.canControlCharacters),
+    rawMap ? masterForegroundByMap[rawMap.id] : null,
+  );
   const map = useMemo(() => rawMap ? {
     ...rawMap,
+    activeCharacterId: focusedCharacterId,
     participants: rawMap.participants.map((participant) => ({
       ...participant,
       character: {
@@ -1211,7 +1219,7 @@ export function CombatPage() {
         }),
       },
     })),
-  } : rawMap, [localActionPoints, rawMap]);
+  } : rawMap, [focusedCharacterId, localActionPoints, rawMap]);
   useEffect(() => { if (!mapId && map?.id) setMapId(map.id); }, [map?.id, mapId]);
   useEffect(() => {
     // Scorciatoia fissa della pagina Combattimento: Ctrl + Alt apre e chiude le Azioni rapide.
@@ -1304,16 +1312,14 @@ export function CombatPage() {
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
-  /* All'ingresso la mappa deve puntare al personaggio di chi guarda: inspector,
-     token evidenziato e pannello d'attacco leggono tutti `activeCharacterId`, che
-     la mappa ricorda fra una sessione e l'altra. Si tenta una volta sola per mappa
-     e personaggio, così dopo il Master resta libero di selezionare un altro token. */
+  /* All'ingresso si garantisce soltanto la presenza del personaggio di chi guarda.
+     Il focus dell'inspector è personale e non deve mai diventare un aggiornamento
+     condiviso capace di cambiare il pannello degli altri utenti. */
   useEffect(() => {
     if (!map || !workspace?.viewerCharacterId) return;
     const key = `${map.id}:${workspace.viewerCharacterId}`;
-    const alreadyFocused = map.activeCharacterId === workspace.viewerCharacterId
-      && map.activeCharacterIds.includes(workspace.viewerCharacterId);
-    if (alreadyFocused || autoPresenceAttempt.current.has(key)) return;
+    const alreadyPresent = map.activeCharacterIds.includes(workspace.viewerCharacterId);
+    if (alreadyPresent || autoPresenceAttempt.current.has(key)) return;
     autoPresenceAttempt.current.add(key);
     combatAction("combat.ensureViewerCharacter", { mapId: map.id }).then((response) => {
       if (response.data.map?.id) queryClient.setQueryData(["combat", response.data.map.id], response.data);
@@ -1406,7 +1412,7 @@ export function CombatPage() {
   </div>;
   return <div className="page combat-page">
     {!map ? <section className="hero-panel"><div><p className="eyebrow">Nessuna mappa</p><h2>Crea il primo tavolo tattico</h2><p>L'editor salva immagine, orientamento, griglia e trasformazioni in un vero oggetto amministrabile.</p></div>{workspace.permissions.canManageMaps && <button className="button primary" onClick={() => setMapEditorMode("create")}>Apri il creator</button>}</section> : <>
-      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onSelect={(characterId) => act("combat.selectCharacter", { characterId })} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={setContextParticipant} onPairSelect={selectAttackPair} toolbar={mapToolbar} />
+      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={setContextParticipant} onPairSelect={selectAttackPair} toolbar={mapToolbar} />
       <div className="combat-stage-layout">
         <SelectedCharacterSidebar map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} controlledCharacterId={workspace.viewerCharacterId} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} onUpdateResource={(characterId, resource, current) => resource === "pa" ? setLocalActionPointValue(characterId, current) : act("combat.updateResource", { characterId, resource, current })} onSwitchPrimary={(characterId) => act("equipment.switchPrimaryWeapon", { characterId })} onRemoveQuiverItem={(characterId, slot) => act("combat.removeQuiverItem", { characterId, slot })} />
         <section className="combat-map-panel">
@@ -1447,10 +1453,19 @@ export function CombatPage() {
     }} />}
     {versionsOpen && map && <MapVersionsModal map={map} busy={mutation.isPending} onClose={() => setVersionsOpen(false)} onCreate={(label) => act("maps.createSnapshot", { label })} onRestore={(snapshotId) => act("maps.restoreSnapshot", { snapshotId })} onDuplicate={(name) => act("maps.duplicate", { name })} />}
     {openParticipant && <CharacterContextModal participant={openParticipant} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} onClose={() => setContextParticipant(null)} onSelect={async () => {
-      await mutation.mutateAsync({ action: "combat.selectCharacter", payload: { mapId: map?.id, characterId: openParticipant.character.id } });
+      if (map?.id) {
+        setMasterForegroundByMap((current) => ({ ...current, [map.id]: openParticipant.character.id }));
+      }
       setContextParticipant(null);
     }} onDetails={() => { navigate(`/character/${openParticipant.character.id}`); setContextParticipant(null); }} onTakeControl={async () => {
       await mutation.mutateAsync({ action: "combat.takeControl", payload: { mapId: map?.id, characterId: openParticipant.character.id } });
+      if (map?.id) {
+        setMasterForegroundByMap((current) => {
+          const next = { ...current };
+          delete next[map.id];
+          return next;
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: ["personaggi"] });
       setContextParticipant(null);
     }} />}

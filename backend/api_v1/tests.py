@@ -105,6 +105,34 @@ class CharacterWorkspaceApiTests(TestCase):
             },
         )
 
+    def test_master_can_create_a_special_resource_through_the_typed_action(self):
+        campaign = self.giocatore.active_campaign or self.character.campagna
+        self.giocatore.active_campaign = campaign
+        self.giocatore.save(update_fields=["active_campaign", "updated_at"])
+
+        response = self.command(
+            "campaign.specialResources.save",
+            {
+                "campaignId": campaign.id,
+                "values": {
+                    "character": self.character.nome,
+                    "name": "Dono API",
+                    "value": "2 disponibili",
+                    "notes": "Si rinnova all'alba.",
+                    "highlighted": True,
+                },
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = next(
+            row for row in response.json()["data"]["campaigns"]["campaigns"]
+            if row["id"] == campaign.id
+        )
+        created = next(row for row in payload["specialResources"]["resources"] if row["name"] == "Dono API")
+        self.assertEqual(created["value"], "2 disponibili")
+        self.assertTrue(created["highlighted"])
+
     def test_player_can_update_carried_and_shared_coins_through_typed_actions(self):
         carried = self.command(
             "character.updateCoins",

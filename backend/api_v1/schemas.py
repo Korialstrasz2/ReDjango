@@ -1397,6 +1397,29 @@ class CampaignNotesUpdatePayloadSchema(Schema):
     content: str
 
 
+class CampaignSpecialResourceSavePayloadSchema(Schema):
+    campaignId: int
+    resourceId: str | None = None
+    values: dict[str, Any]
+
+
+class CampaignSpecialResourceArchivePayloadSchema(Schema):
+    campaignId: int
+    resourceId: str
+    archived: bool = True
+
+
+class CampaignSpecialResourceReorderPayloadSchema(Schema):
+    campaignId: int
+    resourceIds: list[str]
+
+
+class CampaignSpecialResourceReviewPayloadSchema(Schema):
+    campaignId: int
+    proposalId: str
+    approve: bool
+
+
 class CampaignClockUpdatePayloadSchema(Schema):
     campaignId: int
     field: Literal["ora", "giorno"]
@@ -1936,6 +1959,26 @@ class CampaignNotesUpdateActionSchema(ActionBaseSchema):
     payload: CampaignNotesUpdatePayloadSchema
 
 
+class CampaignSpecialResourceSaveActionSchema(ActionBaseSchema):
+    action: Literal["campaign.specialResources.save"]
+    payload: CampaignSpecialResourceSavePayloadSchema
+
+
+class CampaignSpecialResourceArchiveActionSchema(ActionBaseSchema):
+    action: Literal["campaign.specialResources.archive"]
+    payload: CampaignSpecialResourceArchivePayloadSchema
+
+
+class CampaignSpecialResourceReorderActionSchema(ActionBaseSchema):
+    action: Literal["campaign.specialResources.reorder"]
+    payload: CampaignSpecialResourceReorderPayloadSchema
+
+
+class CampaignSpecialResourceReviewActionSchema(ActionBaseSchema):
+    action: Literal["campaign.specialResources.review"]
+    payload: CampaignSpecialResourceReviewPayloadSchema
+
+
 class CampaignClockUpdateActionSchema(ActionBaseSchema):
     action: Literal["campaign.clock.update"]
     payload: CampaignClockUpdatePayloadSchema
@@ -2285,6 +2328,10 @@ ActionEnvelopeSchema = Annotated[
     | NoteUpdateActionSchema
     | CampaignSelectActionSchema
     | CampaignNotesUpdateActionSchema
+    | CampaignSpecialResourceSaveActionSchema
+    | CampaignSpecialResourceArchiveActionSchema
+    | CampaignSpecialResourceReorderActionSchema
+    | CampaignSpecialResourceReviewActionSchema
     | CampaignClockUpdateActionSchema
     | CampaignWeatherRerollActionSchema
     | AlchemyBrewActionSchema

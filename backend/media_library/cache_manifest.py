@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import math
+from functools import lru_cache
 from pathlib import Path
+from urllib.parse import quote
 
+from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Q
 from PIL import UnidentifiedImageError
 
@@ -12,6 +16,14 @@ from backend.core.models import DatiCampagna, Giocatore
 
 from .models import AudioFile, DatiMappa, UploadedImage, VideoClip
 from .travel_tiles import ensure_travel_tiles, travel_tile_path
+
+
+STATIC_MEDIA_DIRECTORIES = ("images", "audio", "video", "fonts")
+STATIC_MEDIA_SUFFIXES = {
+    ".avif", ".flac", ".gif", ".ico", ".jpeg", ".jpg", ".m4a", ".mov",
+    ".mp3", ".mp4", ".oga", ".ogg", ".otf", ".png", ".svg", ".ttf",
+    ".wav", ".webm", ".webp", ".woff", ".woff2",
+}
 
 
 def _file_size(field) -> int:
@@ -38,14 +50,56 @@ def _revision(record, field, *, metadata_sha: bool = False) -> str:
     return hashlib.sha256(identity.encode("utf-8")).hexdigest()
 
 
-def _entry(*, url: str, revision: str, size: int, kind: str, label: str) -> dict:
+def _entry(*, url: str, revision: str, size: int, kind: str, label: str, cache_key: str | None = None) -> dict:
     return {
         "url": url,
+        "cacheKey": cache_key or url,
         "revision": revision,
         "size": max(0, int(size)),
         "kind": kind,
         "label": label,
     }
+
+
+@lru_cache(maxsize=4096)
+def _content_digest(path_string: str, size: int, modified_ns: int) -> str:
+    del size, modified_ns  # They intentionally form part of the cache key.
+    digest = hashlib.sha256()
+    with Path(path_string).open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _static_media_entries() -> list[dict]:
+    static_root = Path(settings.BASE_DIR) / "frontend" / "static" / "frontend"
+    entries: list[dict] = []
+    for directory_name in STATIC_MEDIA_DIRECTORIES:
+        directory = static_root / directory_name
+        if not directory.is_dir():
+            continue
+        for candidate in sorted(directory.rglob("*")):
+            if not candidate.is_file() or candidate.suffix.casefold() not in STATIC_MEDIA_SUFFIXES:
+                continue
+            stat = candidate.stat()
+            relative = candidate.relative_to(static_root).as_posix()
+            static_name = f"frontend/{relative}"
+            try:
+                static_url = staticfiles_storage.url(static_name)
+            except ValueError:
+                # Online startup runs collectstatic before serving requests. The
+                # fallback keeps management/tests diagnostic-friendly if the
+                # manifest has not been collected yet.
+                static_url = f"/static/{quote(static_name, safe='/')}"
+            entries.append(_entry(
+                url=static_url,
+                revision=_content_digest(str(candidate), stat.st_size, stat.st_mtime_ns),
+                size=stat.st_size,
+                kind="static_media",
+                label=f"Risorsa integrata · {relative}",
+                cache_key=f"static:frontend/{relative}",
+            ))
+    return entries
 
 
 def _tile_entries(travel_map: DatiMappa) -> list[dict]:
@@ -156,6 +210,9 @@ def media_cache_manifest(user, giocatore: Giocatore) -> dict:
         if travel_map.tipo == "globale":
             for entry in _tile_entries(travel_map):
                 add(entry)
+
+    for entry in _static_media_entries():
+        add(entry)
 
     entries = list(entries_by_url.values())
     return {

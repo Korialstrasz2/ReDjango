@@ -18,7 +18,7 @@ from .defaults import (
 )
 
 
-V2_GUIDE_DEFAULT_VERSION = "2026-08-02-tailscale-private-access-v6-media-cache-lifecycle"
+V2_GUIDE_DEFAULT_VERSION = "2026-08-02-tailscale-private-access-v7-portable-media"
 
 CHARACTER_VARIABLE_GUIDE_NAME = "Variabili del personaggio e alchimia"
 WEAPON_CATALOGUE_GUIDE_NAME = "Guida Armi"
@@ -1638,6 +1638,7 @@ V2_GUIDE_DEFAULTS = [
                     "Spegnere Tailscale non modifica il gioco: interrompe soltanto la strada privata. In futuro si potrà sostituire con Cloudflare, un VPS o Vercel senza creare una nuova modalità applicativa.",
                     "La Mappa Globale viene divisa in tasselli: il giocatore scarica soltanto la zona e il dettaglio che sta guardando, ma ingrandendo ritrova sempre le scritte alla risoluzione originale.",
                     "Impostazioni → Media locali è come uno zaino sul computer del giocatore: conserva in anticipo i media condivisi della campagna e li riusa senza riscaricarli.",
+                    "Il pacchetto ZIP è una valigia già pronta: l'Amministratore la esporta sul proprio PC, la consegna anche via chiavetta USB e il giocatore la importa senza consumare l'hotspot per riscaricare immagini, mappe, icone, musica e video.",
                 ],
             },
             {"type": "heading", "text": "Avvio rapido per l'Amministratore"},
@@ -1651,6 +1652,7 @@ V2_GUIDE_DEFAULTS = [
                     "Dalla pagina Machines di Tailscale condividi soltanto questo computer con gli indirizzi dei giocatori.",
                     "Crea un account ReDjango distinto per ogni giocatore e non condividere mai l'account amministratore.",
                     "Prima della prima sessione esegui prepare_travel_tiles per preparare una volta sola i tasselli delle mappe; altrimenti ReDjango li preparerà al primo accesso a Viaggio.",
+                    "In Impostazioni → Media locali usa Esporta pacchetto media ZIP. L'esportazione è visibile soltanto agli Admin e contiene la campagna attiva, incluse le risorse grafiche integrate ma mai i media a visibilità limitata.",
                     "Prima di partire copia fuori dal computer sia db.sqlite3 sia l'intera cartella media: i backup integrati non comprendono i file multimediali.",
                 ],
             },
@@ -1678,8 +1680,9 @@ V2_GUIDE_DEFAULTS = [
                     "Apri l'invito ricevuto dall'Amministratore e accetta la condivisione del computer ReDjango.",
                     "Apri nel browser l'indirizzo https://nome-computer.nome-rete.ts.net comunicato dall'Amministratore.",
                     "Accedi con il tuo nome utente e la tua password ReDjango; l'invito Tailscale non sostituisce il login del gioco.",
-                    "Apri Impostazioni → Media locali. Premi Mantieni su questo dispositivo, poi Scarica media campagna e lascia aperta la pagina fino al completamento.",
-                    "In seguito usa Aggiorna media locali: vengono scaricati soltanto i file nuovi o cambiati. Svuota cache media locale cancella esclusivamente il pacchetto ReDjango di quell'account e campagna.",
+                    "Apri Impostazioni → Media locali. Premi Mantieni su questo dispositivo, poi Scarica tutti i media e lascia aperta la pagina fino al completamento.",
+                    "Se l'Amministratore ti ha consegnato un ZIP, seleziona prima la campagna corretta, premi Importa pacchetto media ZIP e scegli il file. ReDjango controlla firma, campagna, dimensioni e integrità prima di attivarlo.",
+                    "In seguito usa Aggiorna tutti i media: vengono scaricati soltanto i file nuovi o cambiati. Svuota cache media locale cancella esclusivamente il pacchetto ReDjango di quell'account e campagna.",
                     "Se la pagina non si apre, verifica che Tailscale dica Connected, poi prova di nuovo senza VPN aziendali o filtri concorrenti.",
                     "Non inoltrare l'invito o le credenziali. Se perdi un dispositivo, avvisa l'Amministratore perché possa revocare subito la condivisione.",
                 ],
@@ -1708,6 +1711,10 @@ V2_GUIDE_DEFAULTS = [
                     "Le tile native sono artefatti rigenerabili sotto media/.derived/travel_tiles. Ogni URL contiene la revisione della sorgente; l'originale non viene ridimensionato né sovrascritto.",
                     "Il Service Worker vive a /service-worker.js, controlla soltanto richieste /media/ e salva una risposta soltanto quando X-ReDjango-Cacheability vale immutable. L'associazione client/utente/campagna è conservata anche se il browser riavvia il worker; le richieste Range di audio/video vengono ricostruite dalla copia completa locale.",
                     "La cache gestita è separata per utente e campagna e viene disattivata al logout. I media visibilita_limitata sono esclusi dal manifest e una risposta restricted-no-store viene rifiutata anche durante un download manuale.",
+                    "Il manifest comprende UploadedImage, miniature, AudioFile, VideoClip, tile delle mappe globali e le risorse sotto static/frontend/{images,audio,video,fonts}; JavaScript e CSS restano fuori dal pacchetto e seguono il normale ciclo di deploy.",
+                    "GET /api/media/cache-package/ è Admin-only e produce ZIP_STORED per evitare di ricomprimere WebP/audio/video. Il manifest iniziale è firmato HMAC-SHA256 con SECRET_KEY; cambiarla rende intenzionalmente non verificabili i vecchi pacchetti.",
+                    "POST /api/media/cache-package/verify/ è disponibile ai giocatori autenticati, richiede la campagna attiva corretta e ricontrolla ogni URL contro l'allow-list corrente: un file diventato a visibilità limitata invalida un vecchio ZIP.",
+                    "L'import legge un file alla volta, verifica SHA-256 e scrive in una cache di staging. Il puntatore alla cache attiva cambia soltanto dopo il conteggio completo; un ZIP troncato o alterato lascia intatta la cache precedente.",
                     "Cache Storage e navigator.storage.persist richiedono HTTPS o localhost. Il browser può rifiutare la persistenza o essere svuotato manualmente; Media locali mostra uso, quota e stato effettivo.",
                     "Tailscale Serve resta configurato in background anche dopo il riavvio del servizio. ReDjango deve comunque essere avviato e Windows non deve sospendere il computer.",
                     "Su Windows, Run unattended mantiene Tailscale connesso senza un utente attivo. Dopo un riavvio bisogna comunque rilanciare run_tailscale_plus_server.bat, finché ReDjango non dispone di un servizio di avvio automatico dedicato.",

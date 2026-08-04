@@ -15,6 +15,7 @@ const campaign = (overrides: Partial<CampaignData> = {}): CampaignData => ({
   currentHour: 9,
   daysSinceStart: 33,
   sharedNotes: "",
+  specialResources: { resources: [], proposals: [], canManage: false },
   ...overrides,
 });
 

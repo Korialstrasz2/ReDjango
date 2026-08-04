@@ -60,7 +60,11 @@ from backend.characters.services.forge import (
 from backend.characters.services.combat_buttons import create_combat_button, delete_combat_button, update_combat_button
 from backend.core.api import ApiError
 from backend.core.campaigns import (
+    archive_special_resource,
     reroll_campaign_weather,
+    reorder_special_resources,
+    review_special_resource_proposal,
+    save_special_resource,
     select_campaign,
     update_campaign_clock,
     update_shared_campaign_notes,
@@ -1312,6 +1316,49 @@ def actions(request: HttpRequest, command: ActionEnvelopeSchema):
                 )
             }
             message = "Note condivise salvate."
+        elif action == "campaign.specialResources.save":
+            campaigns, proposed = save_special_resource(
+                user,
+                giocatore,
+                payload["campaignId"],
+                payload.get("resourceId"),
+                payload["values"],
+            )
+            data = {"campaigns": campaigns}
+            message = "Proposta inviata al Master." if proposed else "Risorsa speciale salvata."
+        elif action == "campaign.specialResources.archive":
+            campaigns, proposed = archive_special_resource(
+                user,
+                giocatore,
+                payload["campaignId"],
+                payload["resourceId"],
+                payload.get("archived", True),
+            )
+            data = {"campaigns": campaigns}
+            message = "Proposta inviata al Master." if proposed else (
+                "Risorsa speciale archiviata." if payload.get("archived", True) else "Risorsa speciale ripristinata."
+            )
+        elif action == "campaign.specialResources.reorder":
+            data = {
+                "campaigns": reorder_special_resources(
+                    user,
+                    giocatore,
+                    payload["campaignId"],
+                    payload["resourceIds"],
+                )
+            }
+            message = "Risorse speciali riordinate."
+        elif action == "campaign.specialResources.review":
+            data = {
+                "campaigns": review_special_resource_proposal(
+                    user,
+                    giocatore,
+                    payload["campaignId"],
+                    payload["proposalId"],
+                    payload["approve"],
+                )
+            }
+            message = "Proposta approvata." if payload["approve"] else "Proposta rifiutata."
         elif action == "campaign.clock.update":
             campaigns, weather_reminder = update_campaign_clock(
                 user,

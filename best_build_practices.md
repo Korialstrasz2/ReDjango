@@ -752,6 +752,16 @@ Recommended source format:
 - Both actions target the campaign the player is effectively on, resolved by `selected_campaign_id` so the top bar and the actions behind it never disagree about which campaign is open.
 - Overlays opened from the quick-tools bar must be portalled to `document.body`. The bar blurs its backdrop, which would otherwise trap a fixed overlay inside it.
 
+## Campaign Special Resources Contract
+
+- Special resources are compact campaign reminders for charges, gifts, availability, counters, and manual rules. They are not inventory items, character effects, or free-text shared notes.
+- The Diario places **Risorse speciali** immediately after Condivise. Every card separates owner/group, stable resource name, prominent current state, and the longer rule or reminder text.
+- `DatiCampagna.risorse_speciali` is a small versioned aggregate containing ordered resources and an audit-bounded proposal queue. It must not return to the Elder fixed seven-row grid.
+- Master and administrators create, edit, highlight, reorder, archive, and restore directly. Players submit proposals; server-side role checks own that distinction and browser storage never decides who is a Master.
+- Every proposal snapshots its author, time, action, values, and the resource revision it was based on. Approval refuses a stale proposal instead of overwriting a newer Master edit.
+- Archived resources remain recoverable and sort outside the active collection. Search and character filters are presentation only and never change persisted order.
+- The Elder Sanguine import is additive and database-preserving: it runs only when the campaign's special-resource aggregate is empty and keeps the original historical day notes in the detail text.
+
 ## Keyboard Shortcut UX Contract
 
 - Persist personal shortcuts through `SettingDefinition` and `SettingOverride` keys under `shortcuts.*`; do not keep them only in browser storage.
@@ -800,9 +810,10 @@ ReDjango should stay light.
 - Uploaded media URLs are immutable because their storage names contain a UUID. Shared media uses a one-year private browser cache with validators; restricted images remain `private, no-store`.
 - A global travel map keeps its original upload untouched and is rendered from a derived 512 px WebP tile pyramid. Tile coordinates always map back to native image coordinates, so grid, effects and markers never depend on a preview resolution.
 - Derived tiles live below `media/.derived/travel_tiles`, are keyed by the source revision and may be regenerated with `prepare_travel_tiles`. They are not source data or a backup substitute.
-- The root-scoped Service Worker may cache only successful `/media/` responses explicitly marked `X-ReDjango-Cacheability: immutable`. It must never cache restricted responses, API payloads, HTML or authentication endpoints.
+- The root-scoped Service Worker may cache only successful `/media/` responses explicitly marked `X-ReDjango-Cacheability: immutable` plus allow-listed built-in media below `/static/frontend/{images,audio,video,fonts}/`. It must never cache restricted responses, API payloads, HTML, JavaScript, CSS or authentication endpoints.
 - Managed caches are partitioned by authenticated user and selected campaign, deactivated before logout, and exposed through the Italian Media locali settings panel. Cache Storage holds responses; `StorageManager.persist()` is a best-effort durability request, never a guarantee.
 - Campaign downloads use a server-authored manifest, deduplicate versioned URLs, update incrementally and include full cached responses for local audio/video range playback. Limited-visibility media is excluded at the selector and worker boundaries.
+- Portable media exports are Admin-only, campaign-bound ZIP_STORED archives with a HMAC-signed manifest and a SHA-256 digest for every entry. Player imports must be server-verified against the current campaign allow-list, written to a staging cache and activated only after every expected entry passes integrity checks.
 
 ### Market Management And Generation Profiles
 
@@ -832,6 +843,7 @@ ReDjango should stay light.
 - Reseeding may add a missing `combat_damage_rules` object but must never overwrite an administrator's saved table.
 - The combat workspace uses a compact combat-specific character projection. Do not replace it with the full character-sheet selector: owned-skill pricing and unlock analysis make that an N×M query path.
 - A successful combat mutation already returns the updated workspace. Put that response directly in the query cache; only remote SSE event IDs absent from the cache should trigger a refetch.
+- Combat focus is viewer-local: a player always focuses their active character, while a master starts on their active character and may override it only with the explicit `Metti in primo piano` action. Presence, movement, SSE refreshes, and another viewer's choices must never change that focus.
 - Combat SSE must run as an asynchronous iterator on the ASGI server used by the managed launcher. A waiting player must not reserve a synchronous request worker; reconnects prefer `Last-Event-ID` over the initial query cursor.
 - Character-sheet and character-mutation responses call `personaggio_detail(..., include_skills=False)`. Skill cards, calculated prices, prerequisites and unlock analysis belong exclusively to the dedicated Skills endpoints.
 - The character page loads item-editor configuration with `limit=0` and performs a bounded item query only after the user starts searching. Do not restore the eager full-catalog download to the sheet's critical path.

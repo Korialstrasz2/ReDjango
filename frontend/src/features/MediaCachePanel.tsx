@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -6,6 +6,7 @@ import {
   clearMediaCache,
   downloadMediaCache,
   getMediaCacheManifest,
+  importMediaCachePackage,
   mediaCacheSupported,
   mediaStorageStatus,
   requestPersistentMediaStorage,
@@ -17,6 +18,7 @@ import {
 type Props = {
   userId: number;
   campaignId: number | null;
+  canExportPackage: boolean;
   notify: (message: string, kind?: "success" | "error" | "info") => void;
 };
 
@@ -28,7 +30,7 @@ function bytes(value: number | null): string {
   return `${(value / 1024 ** 3).toFixed(2)} GB`;
 }
 
-export function MediaCachePanel({ userId, campaignId, notify }: Props) {
+export function MediaCachePanel({ userId, campaignId, canExportPackage, notify }: Props) {
   const supported = mediaCacheSupported();
   const manifest = useQuery({
     queryKey: ["media-cache-manifest", campaignId],
@@ -37,7 +39,8 @@ export function MediaCachePanel({ userId, campaignId, notify }: Props) {
   const [storage, setStorage] = useState<MediaStorageStatus | null>(null);
   const [progress, setProgress] = useState<MediaCacheProgress | null>(null);
   const [result, setResult] = useState<MediaCacheDownloadResult | null>(null);
-  const [busy, setBusy] = useState<"download" | "clear" | "persist" | null>(null);
+  const [busy, setBusy] = useState<"download" | "import" | "clear" | "persist" | null>(null);
+  const importInput = useRef<HTMLInputElement>(null);
 
   const refreshStorage = () => mediaStorageStatus().then(setStorage).catch(() => setStorage(null));
   useEffect(() => { void refreshStorage(); }, []);
@@ -58,6 +61,33 @@ export function MediaCachePanel({ userId, campaignId, notify }: Props) {
       await refreshStorage();
       if (completed.failed) notify(`${completed.failed} file non sono stati memorizzati. Puoi riprovare.`, "error");
       else notify("Media della campagna disponibili su questo dispositivo.");
+    } catch (error) {
+      notify((error as Error).message, "error");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const importPackage = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setBusy("import");
+    setProgress(null);
+    setResult(null);
+    try {
+      const imported = await importMediaCachePackage(file, setProgress);
+      setResult({
+        completed: imported.imported,
+        total: imported.imported,
+        completedBytes: imported.totalBytes,
+        totalBytes: imported.totalBytes,
+        downloaded: imported.imported,
+        skipped: 0,
+        failed: 0,
+      });
+      await refreshStorage();
+      notify(`Pacchetto di ${imported.campaignName} importato e verificato.`);
     } catch (error) {
       notify((error as Error).message, "error");
     } finally {
@@ -101,7 +131,7 @@ export function MediaCachePanel({ userId, campaignId, notify }: Props) {
 
   return <section className="panel media-cache-panel" data-component-type="panel" data-theme="gold" data-surface="media-cache-settings">
     <header><div><p className="eyebrow">Media sul dispositivo</p><h2>Archivio locale della campagna</h2></div><span>{manifest.data?.campaign?.name || "Nessuna campagna"}</span></header>
-    <p>Scarica una volta immagini, audio, video e tasselli delle mappe. Le visite successive useranno la copia locale finché il file non cambia o scegli di cancellarla.</p>
+    <p>Scarica una volta immagini, miniature, icone integrate, audio, video e tasselli delle mappe. Le visite successive useranno la copia locale finché il file non cambia o scegli di cancellarla.</p>
     {!supported && <p className="setting-inline-warning" role="alert">Questa funzione richiede HTTPS (oppure localhost) e un browser con Service Worker. La normale cache HTTP resta comunque disponibile.</p>}
     {manifest.isError && <p className="setting-inline-warning" role="alert">Impossibile preparare l'elenco dei media: {(manifest.error as Error).message}</p>}
     <div className="media-cache-stats">
@@ -110,16 +140,19 @@ export function MediaCachePanel({ userId, campaignId, notify }: Props) {
       <span><small>Protezione dallo sgombero</small><strong>{storage?.persisted === true ? "Attiva" : storage?.persisted === false ? "Non attiva" : "Non disponibile"}</strong><em>Il browser può sempre essere svuotato manualmente</em></span>
     </div>
     {progress && <div className="media-cache-progress" role="status">
-      <div><strong>{busy === "download" ? `Download ${percent}%` : "Ultimo aggiornamento"}</strong><span>{progress.completed}/{progress.total} · {bytes(progress.completedBytes)} / {bytes(progress.totalBytes)}</span></div>
+      <div><strong>{busy === "download" ? `Download ${percent}%` : busy === "import" ? `Importazione verificata ${percent}%` : "Ultimo aggiornamento"}</strong><span>{progress.completed}/{progress.total} · {bytes(progress.completedBytes)} / {bytes(progress.totalBytes)}</span></div>
       <progress max={Math.max(1, progress.totalBytes)} value={progress.completedBytes} />
       <small>{progress.currentLabel} · nuovi {progress.downloaded}, già presenti {progress.skipped}, errori {progress.failed}</small>
     </div>}
     {result && !result.failed && <p className="media-cache-result">Aggiornamento completato: {result.downloaded} nuovi, {result.skipped} già aggiornati.</p>}
     <div className="media-cache-actions">
-      <button type="button" className="button primary" disabled={!supported || !manifest.data || busy !== null} onClick={download}>{busy === "download" ? "Download…" : result ? "Aggiorna media locali" : "Scarica media campagna"}</button>
+      <button type="button" className="button primary" disabled={!supported || !manifest.data || busy !== null} onClick={download}>{busy === "download" ? "Download…" : result ? "Aggiorna tutti i media" : "Scarica tutti i media"}</button>
+      <button type="button" className="button secondary" disabled={!supported || busy !== null} onClick={() => importInput.current?.click()}>{busy === "import" ? "Importazione…" : "Importa pacchetto media ZIP"}</button>
+      <input ref={importInput} className="media-cache-import-input" type="file" accept=".zip,application/zip" onChange={importPackage} />
+      {canExportPackage && <button type="button" className="button secondary" disabled={!manifest.data || busy !== null} onClick={() => window.location.assign("/api/media/cache-package/")}>Esporta pacchetto media ZIP</button>}
       <button type="button" className="button secondary" disabled={!supported || busy !== null || storage?.persisted === true} onClick={persist}>{busy === "persist" ? "Richiesta…" : "Mantieni su questo dispositivo"}</button>
       <button type="button" className="button secondary" disabled={!supported || !manifest.data || busy !== null} onClick={clear}>{busy === "clear" ? "Pulizia…" : "Svuota cache media locale"}</button>
     </div>
-    <small>La pulizia riguarda soltanto i media ReDjango del tuo account e della campagna selezionata. I contenuti a visibilità limitata non entrano mai nel pacchetto locale.</small>
+    <small>Il ZIP è verificato prima dell'importazione e viene attivato soltanto se completo. La pulizia riguarda soltanto i media ReDjango del tuo account e della campagna selezionata. I contenuti a visibilità limitata non entrano mai nel pacchetto locale.</small>
   </section>;
 }

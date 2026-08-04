@@ -124,7 +124,7 @@ def _unlock_state(
         if structured_reasons and not bypass_prerequisites:
             reasons.extend(structured_reasons)
         if sum(xp[key] for key in allowed) < pricing["calculatedCost"]:
-            reasons.append("I PE disponibili nei gruppi consentiti non sono sufficienti.")
+            reasons.append("PE non sufficienti.")
     return {
         "owned": ownership is not None,
         "canUnlock": character is not None and ownership is None and not reasons,

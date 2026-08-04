@@ -137,7 +137,7 @@ def actions(request: HttpRequest):
             map_obj = move_participant(user, giocatore, payload)
             selected_map_id, message = map_obj.id, "Personaggio spostato mantenendo la sagoma."
         elif action == "combat.selectCharacter":
-            map_obj = set_active_character(payload)
+            map_obj = set_active_character(user, giocatore, payload)
             selected_map_id, message = map_obj.id, "Personaggio attivo aggiornato."
         elif action == "combat.deactivateParticipant":
             map_obj = deactivate_participant(user, giocatore, payload)

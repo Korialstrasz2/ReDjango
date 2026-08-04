@@ -3,6 +3,7 @@ const MEDIA_CACHE_PREFIX = `redjango-media-${CACHE_VERSION}-`;
 const META_CACHE_PREFIX = `redjango-media-meta-${CACHE_VERSION}-`;
 const CLIENT_SCOPE_CACHE = `redjango-media-client-scopes-${CACHE_VERSION}`;
 const META_REQUEST_PATH = "/__redjango_media_cache__/manifest";
+const ACTIVE_CACHE_REQUEST_PATH = "/__redjango_media_cache__/active-package";
 const clientScopes = new Map();
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -52,10 +53,24 @@ async function scopeForClient(clientId) {
   return persisted;
 }
 
-function isCacheableMediaRequest(request) {
+function isStaticMediaPath(pathname) {
+  return [
+    "/static/frontend/images/",
+    "/static/frontend/audio/",
+    "/static/frontend/video/",
+    "/static/frontend/fonts/",
+  ].some((prefix) => pathname.startsWith(prefix));
+}
+
+function isCacheableAssetUrl(value) {
+  const url = new URL(value, self.location.origin);
+  return url.origin === self.location.origin
+    && (url.pathname.startsWith("/media/") || isStaticMediaPath(url.pathname));
+}
+
+function isCacheableAssetRequest(request) {
   if (request.method !== "GET") return false;
-  const url = new URL(request.url);
-  return url.origin === self.location.origin && url.pathname.startsWith("/media/");
+  return isCacheableAssetUrl(request.url);
 }
 
 function requestedByteRange(header, size) {
@@ -77,7 +92,7 @@ function requestedByteRange(header, size) {
 }
 
 async function cachedRange(request, scope) {
-  const cache = await caches.open(cacheName(scope));
+  const cache = await caches.open(await activeCacheName(scope));
   const cached = await cache.match(request.url, { ignoreVary: true });
   if (!cached) return fetch(request);
   const buffer = await cached.arrayBuffer();
@@ -101,17 +116,23 @@ function isImmutableResponse(response) {
     && response.headers.get("X-ReDjango-Cacheability") === "immutable";
 }
 
+function isStorableResponse(response, url) {
+  if (response.status !== 200 || response.headers.has("Content-Range")) return false;
+  const pathname = new URL(url, self.location.origin).pathname;
+  return isStaticMediaPath(pathname) || isImmutableResponse(response);
+}
+
 async function cacheFirst(request, scope) {
-  const cache = await caches.open(cacheName(scope));
+  const cache = await caches.open(await activeCacheName(scope));
   const cached = await cache.match(request, { ignoreVary: true });
   if (cached) return cached;
   const response = await fetch(request);
-  if (isImmutableResponse(response)) await cache.put(request, response.clone());
+  if (isStorableResponse(response, request.url)) await cache.put(request, response.clone());
   return response;
 }
 
 self.addEventListener("fetch", (event) => {
-  if (!isCacheableMediaRequest(event.request)) return;
+  if (!isCacheableAssetRequest(event.request)) return;
   event.respondWith((async () => {
     const scope = await scopeForClient(event.clientId);
     if (!validScope(scope)) return fetch(event.request);
@@ -140,12 +161,42 @@ async function saveRevisions(scope, revisions) {
   }));
 }
 
+function validActiveCacheName(scope, name) {
+  return name === cacheName(scope) || name.startsWith(`${cacheName(scope)}-package-`);
+}
+
+async function activeCacheName(scope) {
+  const cache = await caches.open(metaCacheName(scope));
+  const response = await cache.match(ACTIVE_CACHE_REQUEST_PATH);
+  const candidate = response ? await response.text() : "";
+  return validActiveCacheName(scope, candidate) ? candidate : cacheName(scope);
+}
+
+async function saveActiveCacheName(scope, name) {
+  if (!validActiveCacheName(scope, name)) throw new Error("Nome cache pacchetto non valido");
+  const cache = await caches.open(metaCacheName(scope));
+  await cache.put(ACTIVE_CACHE_REQUEST_PATH, new Response(name));
+}
+
+function packageCacheName(scope, token) {
+  if (!/^[a-z0-9]{16,64}$/.test(token || "")) throw new Error("Identificatore importazione non valido");
+  return `${cacheName(scope)}-package-${token}`;
+}
+
+async function deleteScopeCaches(scope) {
+  const names = await caches.keys();
+  const mediaPrefix = `${cacheName(scope)}-package-`;
+  await Promise.all(names
+    .filter((name) => name === cacheName(scope) || name === metaCacheName(scope) || name.startsWith(mediaPrefix))
+    .map((name) => caches.delete(name)));
+}
+
 function post(port, payload) {
   if (port) port.postMessage(payload);
 }
 
 async function downloadEntries(scope, entries, port) {
-  const cache = await caches.open(cacheName(scope));
+  const cache = await caches.open(await activeCacheName(scope));
   const revisions = await loadRevisions(scope);
   const nextRevisions = { ...revisions };
   const totalBytes = entries.reduce((total, entry) => total + Math.max(0, Number(entry.size) || 0), 0);
@@ -157,7 +208,7 @@ async function downloadEntries(scope, entries, port) {
 
   for (const entry of entries) {
     const url = new URL(String(entry.url || ""), self.location.origin);
-    const valid = url.origin === self.location.origin && url.pathname.startsWith("/media/");
+    const valid = isCacheableAssetUrl(url.href);
     const request = valid ? new Request(url.href, { credentials: "same-origin" }) : null;
     const cached = request ? await cache.match(request, { ignoreVary: true }) : null;
     const unchanged = cached && revisions[url.pathname + url.search] === String(entry.revision || "");
@@ -167,7 +218,7 @@ async function downloadEntries(scope, entries, port) {
         skipped += 1;
       } else {
         const response = await fetch(request, { cache: "reload" });
-        if (!isImmutableResponse(response)) throw new Error(`Risposta non memorizzabile (${response.status})`);
+        if (!isStorableResponse(response, url.href)) throw new Error(`Risposta non memorizzabile (${response.status})`);
         await cache.put(request, response.clone());
         nextRevisions[url.pathname + url.search] = String(entry.revision || "");
         downloaded += 1;
@@ -216,14 +267,65 @@ self.addEventListener("message", (event) => {
       if (!validScope(scope)) throw new Error("Cache media non attiva per questo client");
       if (scope !== activeScope) throw new Error("La cache richiesta non appartiene alla sessione attiva");
       if (message.type === "clear") {
-        const deleted = await Promise.all([caches.delete(cacheName(scope)), caches.delete(metaCacheName(scope))]);
-        post(port, { type: "done", cleared: deleted.some(Boolean) });
+        await deleteScopeCaches(scope);
+        post(port, { type: "done", cleared: true });
         return;
       }
       if (message.type === "download") {
         const entries = Array.isArray(message.entries) ? message.entries : [];
         const result = await downloadEntries(scope, entries, port);
         post(port, { type: "done", ...result });
+        return;
+      }
+      if (message.type === "importBegin") {
+        const stagingName = packageCacheName(scope, String(message.token || ""));
+        await caches.delete(stagingName);
+        await caches.open(stagingName);
+        post(port, { type: "done" });
+        return;
+      }
+      if (message.type === "importEntry") {
+        const stagingName = packageCacheName(scope, String(message.token || ""));
+        if (!isCacheableAssetUrl(String(message.url || "")) || !(message.blob instanceof Blob)) {
+          throw new Error("Voce importata non valida");
+        }
+        const url = new URL(String(message.url), self.location.origin);
+        const cache = await caches.open(stagingName);
+        await cache.put(new Request(url.href, { credentials: "same-origin" }), new Response(message.blob, {
+          status: 200,
+          headers: {
+            "Content-Type": String(message.contentType || "application/octet-stream"),
+            "Content-Length": String(message.blob.size),
+            "Cache-Control": "private, max-age=31536000, immutable",
+            "X-ReDjango-Cacheability": "immutable",
+          },
+        }));
+        post(port, { type: "done" });
+        return;
+      }
+      if (message.type === "importAbort") {
+        await caches.delete(packageCacheName(scope, String(message.token || "")));
+        post(port, { type: "done" });
+        return;
+      }
+      if (message.type === "importCommit") {
+        const stagingName = packageCacheName(scope, String(message.token || ""));
+        const staging = await caches.open(stagingName);
+        const keys = await staging.keys();
+        const expectedCount = Number(message.expectedCount);
+        const revisions = message.revisions && typeof message.revisions === "object" ? message.revisions : null;
+        if (!Number.isInteger(expectedCount) || expectedCount < 0 || keys.length !== expectedCount || !revisions) {
+          throw new Error("Pacchetto incompleto: la cache attiva non è stata modificata");
+        }
+        const previousName = await activeCacheName(scope);
+        await saveRevisions(scope, revisions);
+        await saveActiveCacheName(scope, stagingName);
+        const names = await caches.keys();
+        await Promise.all(names
+          .filter((name) => validActiveCacheName(scope, name) && name !== stagingName)
+          .map((name) => caches.delete(name)));
+        if (previousName !== stagingName) await caches.delete(previousName);
+        post(port, { type: "done", imported: keys.length });
         return;
       }
       throw new Error("Comando cache sconosciuto");

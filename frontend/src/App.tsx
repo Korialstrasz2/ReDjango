@@ -597,11 +597,12 @@ function MediaAssetCard({ asset, busy, onOpen, onMove, onDelete, onLimitedVisibi
   onDelete: (asset: MediaAsset) => void;
   onLimitedVisibility: (asset: MediaAsset) => void;
 }) {
+  const shortTitle = asset.title.length > 20 ? `${asset.title.slice(0, 20)}…` : asset.title;
   return <figure className="media-asset-card">
     <button type="button" className="media-asset-open" onClick={() => onOpen(asset)} aria-label={`Apri ${asset.title}`}>
       <img src={asset.thumbnailUrl || asset.url} alt="" />
     </button>
-    <figcaption><strong>{asset.title}</strong><span>{(asset.sizeBytes / 1024).toFixed(0)} KB</span></figcaption>
+    <figcaption><strong title={asset.title}>{shortTitle}</strong><span>{(asset.sizeBytes / 1024).toFixed(0)} KB</span></figcaption>
     {(asset.canMove || asset.canDelete || asset.canSetLimitedVisibility) && <div className="media-asset-actions">
       {asset.canMove && <button type="button" disabled={busy} onClick={() => onMove(asset)}>Sposta</button>}
       {asset.canDelete && <button type="button" className="danger" disabled={busy} onClick={() => onDelete(asset)}>Elimina</button>}
@@ -946,7 +947,7 @@ function SettingsPage() {
     </nav>
     {activeTab && <div className="settings-tab-panel" role="tabpanel" id={`settings-panel-${activeTab.id}`} aria-labelledby={`settings-tab-${activeTab.id}`}>
       {activeTab.id === "profilo" && <PlayerSettingsPanel />}
-      {activeTab.id === "media" && <MediaCachePanel userId={bootstrap.user.id} campaignId={bootstrap.activeCampaignId} notify={notify} />}
+      {activeTab.id === "media" && <MediaCachePanel userId={bootstrap.user.id} campaignId={bootstrap.activeCampaignId} canExportPackage={settings.security.canManageAdminSettings} notify={notify} />}
       {activeTab.id === "sessione" && settings.security.canManageMasterSettings && <section className="panel campaign-settings-panel" data-component-type="panel" data-theme="gold"><div><p className="eyebrow">Sessione</p><h2>Campagna attiva</h2><p>Scegli la campagna mostrata nella postazione. Il cambio può deselezionare il personaggio attivo.</p></div><label><span>Campagna</span><select value={bootstrap.activeCampaignId ?? ""} disabled={campaignMutation.isPending || !bootstrap.campaigns.length} onChange={(event) => campaignMutation.mutate(Number(event.target.value))}>{bootstrap.campaigns.map((campaign) => <option key={campaign.id} value={campaign.id}>{campaign.name}</option>)}</select></label></section>}
       {activeTab.categories.length > 0 && <form onSubmit={(event) => { event.preventDefault(); saveSettings(); }}>
         <div className="settings-grid" data-columns={activeTab.categories.length === 1 ? "1" : "2"}>{activeTab.categories.map((category) => <section className="panel" key={category}><h2>{category}</h2>{groups[category].map((setting) => {
