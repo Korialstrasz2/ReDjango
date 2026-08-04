@@ -28,6 +28,7 @@ export default defineConfig({
       django("flush --noinput"),
       django("seed_minimum_data"),
       django("ensure_admin_login"),
+      django("ensure_master_ai_e2e"),
       django("runserver 127.0.0.1:8128 --noreload"),
     ].join(" && "),
     env: {
