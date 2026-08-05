@@ -162,12 +162,11 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   const unitCatalog = await api(page, "/api/ai/change-entities/");
   expect(unitCatalog.status).toBe(200);
   expect(unitCatalog.body.data.entities.some((entry: { type: string }) => entry.type === "unit")).toBe(true);
-  const firstUnit = page.locator(".unit-management-list button").first();
-  await expect(firstUnit).toBeVisible();
-  await firstUnit.click();
-  const activeUnit = page.locator(".unit-management-list button.active");
-  await expect(activeUnit).toBeVisible();
-  const selectedUnitLabel = (await activeUnit.locator("strong").textContent())?.trim() || "";
+  const fixtureName = "Bestia E2E Master AI";
+  const fixtureUnit = page.locator(".unit-management-list button").filter({ hasText: fixtureName });
+  await expect(fixtureUnit).toBeVisible();
+  await fixtureUnit.click();
+  await expect(page.locator(".unit-management-editor .eyebrow")).toContainText(/Unit #\d+/);
   const unitLauncher = page.getByRole("button", { name: "Master AI Unit" });
   await expect(unitLauncher).toBeVisible();
   await unitLauncher.click();
@@ -176,7 +175,7 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   expect(unitUrl.searchParams.get("entity")).toBe("unit");
   expect(unitUrl.searchParams.get("surface")).toBe("unit-management");
   expect(Number(unitUrl.searchParams.get("target"))).toBeGreaterThan(0);
-  await expect(page.locator(".master-ai-context-chip")).toContainText(selectedUnitLabel);
+  await expect(page.locator(".master-ai-context-chip")).toContainText(fixtureName);
   await expect(page.locator(".master-ai-chat textarea")).toHaveValue(/Rivedi la Unit/);
   expect(assistantPosts).toBe(0);
 });
