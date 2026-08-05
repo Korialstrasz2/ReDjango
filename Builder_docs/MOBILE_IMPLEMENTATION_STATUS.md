@@ -14,7 +14,7 @@ The public mobile experience remains incomplete and must not be treated as relea
 | B — Shared responsive primitives | In progress | Responsive hook, modal presentations, phone app/bottom navigation, More and Quick Tools sheets, full-screen ToolDrawer, Context Notes sheet, and phone management guard are implemented. Formal shell extraction, tablet navigation, and reusable high-risk workspace primitives remain pending. |
 | C — Lower-risk player pages | Verified checkpoint | Login, Dashboard, Lore, Guides, Media, Settings, and Market have phone/tablet layouts and responsive Playwright coverage. |
 | D — Stateful player pages | Verified checkpoint | Skills, Competencies, Creation, New Character, and Character have dedicated responsive layouts and route-specific Playwright coverage. Character includes real phone touch-drag activation coverage. |
-| E — High-risk workspaces/global tools | In progress | Quick Tools and ToolDrawer have a phone presentation foundation. Travel is a verified responsive checkpoint with map-first navigation, real touch pan/pinch coverage, marker placement, state-preserving controls, and protected desktop assertions. Combat, Journal internals, Dice internals, Audio internals, and the remaining tool workflows still require dedicated implementation. |
+| E — High-risk workspaces/global tools | In progress | Travel is verified. Combat has a verified first responsive checkpoint covering map-first navigation, phone panels, touch pinch/token movement arbitration, inspectors, tablet containment, and protected desktop assertions. Combat role variants and the remaining planner/manager workflows, plus Journal, Dice, Audio, and other Quick Tool internals, still require dedicated verification. |
 | F — Integrated full-route pass | Not started | Public activation remains blocked. |
 
 ## Implemented foundations
@@ -36,7 +36,7 @@ File: `frontend/playwright.config.ts`
 - canonical `authenticated` desktop project remains 1440 × 900;
 - additional projects cover 1920 × 1080 desktop, two phone portraits, phone landscape, tablet portrait, and tablet landscape;
 - shared diagnostics measure document and element overflow;
-- route suites currently cover baseline/lower-risk pages, Skills, Competencies, Creation, New Character, Character, and Travel.
+- route suites currently cover baseline/lower-risk pages, Skills, Competencies, Creation, New Character, Character, Travel, and Combat.
 
 ### Responsive modal foundation
 
@@ -161,6 +161,36 @@ Verified without changing the desktop Travel controller or declarations:
 
 Verified Travel checkpoint: commit `7f32e1f7e0179f17c84b32958867178beeb20114`, workflow run `31046782334`. Frontend and responsive E2E jobs completed successfully.
 
+### Combat verified first checkpoint
+
+Files:
+
+- `frontend/src/features/mobile/CombatMobileRuntime.tsx`
+- `frontend/src/features/mobile/CombatMobileAttackSync.tsx`
+- `frontend/src/styles/mobile-combat.css`
+- `frontend/src/styles/mobile-combat-fixes.css`
+- `frontend/tests/mobile-combat.spec.ts`
+- `frontend/playwright.config.ts`
+- `frontend/src/main.tsx`
+
+The existing `CombatPage.tsx`, `CombatMapCanvas.tsx`, command payloads, mutations, and desktop declarations remain unchanged. The phone runtime and later-loaded responsive styles provide:
+
+- map-first phone presentation with state-preserving Map, Character, Active Roster, and Attack panels;
+- tablet release of forced map minimum widths and a contained overlay for the attack console;
+- one-finger map pan and token drag left on the existing pointer controller;
+- two-finger pinch arbitration through the existing zoom path, including cancellation of a pending one-finger drag;
+- long-press token context support plus the existing roster-card tap recovery path;
+- touch-visible character resource controls, weapon details, roster cards, and attack controls;
+- a full-height phone hex inspector that overrides desktop drag coordinates without altering the desktop window;
+- attack drawer open/close synchronization, mounted draft preservation, unavailable-panel fallback, and modal-authoritative Escape handling;
+- Context Notes clearance above the local Combat navigation;
+- empty-state fallback when a map, selected character, or attack surface disappears;
+- real CDP pinch/token-drag checks, phone panel and inspector checks, tablet containment checks, and desktop workstation assertions.
+
+Verified Combat interaction/layout checkpoint: commit `f399e6d7574606b6c425ffacbe03c116ac28864f`, workflow run `31048258862`. Frontend and responsive E2E jobs completed successfully.
+
+This checkpoint uses the existing isolated admin E2E account. It does not yet satisfy the guide's complete Combat gate for independent player/master role fixtures, every planner/manager workflow, every destructive confirmation, all modal variants, font scales, or canonical screenshot comparison.
+
 ## Tests and continuous verification
 
 The branch workflow `.github/workflows/mobile-optimization-verification.yml` runs:
@@ -174,14 +204,13 @@ The branch workflow `.github/workflows/mobile-optimization-verification.yml` run
 
 ## Immediate next slice
 
-1. Implement Combat as a dedicated phone workspace:
-   - map-first presentation without the current forced desktop minimum width;
-   - touch pan, pinch, token movement, hex selection, and gesture arbitration;
-   - explicit navigation among map, active roster, selected character, attacks, inspectors, and planners while preserving mounted state;
-   - touch-visible resource controls and alternatives to hover/context-menu-only actions;
-   - player/master permission variants, empty states, modals, portrait, and landscape;
-   - phone/tablet and protected desktop Playwright coverage.
-2. Audit every Quick Tool internal workflow.
+1. Complete the Combat permission and workflow matrix as a separate checkpoint:
+   - seed independent player and master E2E identities without changing production authorization;
+   - verify player-controlled token movement, target selection, attack preparation, resource changes, and denied management controls;
+   - verify master map management, participant context actions, planners, confirmations, and map/version/import/editor modals;
+   - verify empty states, participant removal, attack-drawer transitions, portrait/landscape, font scales, and state preservation;
+   - add protected canonical desktop assertions for the same workflows.
+2. Audit every Quick Tool internal workflow after Combat reaches the complete gate.
 3. Run the integrated Stage F pass across roles, orientations, font scales, overlays, touch drag systems, and canonical desktop screenshots.
 
 ## Release block
