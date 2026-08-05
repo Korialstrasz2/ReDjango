@@ -37,7 +37,7 @@ createRoot(document.getElementById("app")!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <RootApplication />
-      </QueryClientProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </QueryClientProvider>
   </StrictMode>
 );
