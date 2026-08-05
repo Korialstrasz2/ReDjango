@@ -373,24 +373,6 @@ export function MasterAIPage({ notify }: Props) {
         <label><span>Agente</span><select value={agentId} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseAgent(Number(event.target.value))}>{proposerAgents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name} · {agent.effectiveProviderName || agent.providerName}</option>)}</select></label>
         <label><span>Chat</span><select value={conversationId || ""} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseConversation(event.target.value ? Number(event.target.value) : null)}><option value="">Nuova chat</option>{proposerConversations.map((conversation) => <option key={conversation.id} value={conversation.id}>{conversation.title} · {new Date(conversation.updatedAt).toLocaleString("it", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</option>)}</select></label>
         <button type="button" className="button primary master-ai-new-chat" disabled={Boolean(isWorking(activeRun))} onClick={startNewChat}>Nuova chat</button>
-        <label><span>Proposta</span><select value={changeSetId || ""} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseChangeSet(event.target.value || null)}><option value="">Nessuna proposta</option>{(recentSets.data?.changeSets => [...current, { id: bubbleId(), role: "user", text: message, tools: [] }]); setQuestion(""); ask.mutate(message);
-  };
-  const counts = changeSet?.operations.filter((operation) => operation.selected).reduce((result, operation) => ({ ...result, [operation.action]: result[operation.action] + 1 }), { create: 0, update: 0, archive: 0 }) || { create: 0, update: 0, archive: 0 };
-  const selectedCount = counts.create + counts.update + counts.archive;
-  const canApply = Boolean(changeSet?.canApply && changeSet.validation.token && !dirty && !conflict && !applySet.isPending);
-
-  if (workspace.isLoading) return <div className="page master-ai-page"><p className="empty-copy">Preparazione del Master AI…</p></div>;
-  if (workspace.isError) return <div className="page master-ai-page"><p className="form-error">{(workspace.error as Error).message}</p></div>;
-  if (!proposerAgents.length) return <div className="page master-ai-page"><header className="page-header"><div><p className="eyebrow">Revisione controllata</p><h1>Master AI</h1></div></header>
-    <section className="panel"><h2>Nessun agente proponente disponibile</h2><p>Configura un agente in modalità «Proposte di modifica», con ruolo minimo Master e almeno uno strumento di proposta.</p><Link className="button primary" to="/tools/ai">Apri Gestione AI</Link></section></div>;
-
-  return <div className="page master-ai-page">
-    <section className="panel master-ai-commandbar master-ai-statusbar" data-component-type="toolbar" data-theme="gold">
-      <header><div><p className="eyebrow">Revisione controllata</p><h1>Master AI</h1></div><p>L'AI prepara una bozza. Convalida e applicazione restano azioni umane separate.</p></header>
-      <div className="master-ai-controls">
-        <label><span>Agente</span><select value={agentId} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseAgent(Number(event.target.value))}>{proposerAgents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name} · {agent.effectiveProviderName || agent.providerName}</option>)}</select></label>
-        <label><span>Chat</span><select value={conversationId || ""} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseConversation(event.target.value ? Number(event.target.value) : null)}><option value="">Nuova chat</option>{proposerConversations.map((conversation) => <option key={conversation.id} value={conversation.id}>{conversation.title} · {new Date(conversation.updatedAt).toLocaleString("it", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</option>)}</select></label>
-        <button type="button" className="button primary master-ai-new-chat" disabled={Boolean(isWorking(activeRun))} onClick={startNewChat}>Nuova chat</button>
         <label><span>Proposta</span><select value={changeSetId || ""} disabled={Boolean(isWorking(activeRun))} onChange={(event) => chooseChangeSet(event.target.value || null)}><option value="">Nessuna proposta</option>{(recentSets.data?.changeSets || []).map((entry) => <option key={entry.id} value={entry.id}>{entry.title || entry.id} · {entry.status}</option>)}</select></label>
         <span className="master-ai-status-chip" data-state={changeSet?.status || "empty"}>{changeSet ? `${changeSet.status} · rev. ${changeSet.revision}` : conversationId ? "Chat senza proposta" : "Nuova chat"}</span>
         <Link className="button secondary" to="/tools/ai">Configura AI</Link>
