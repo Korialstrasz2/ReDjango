@@ -1,0 +1,110 @@
+name: Finalize Master AI responsive shell
+
+on:
+  push:
+    branches:
+      - agent/master-ai-shell-workspace
+    paths:
+      - ".github/workflows/finalize-master-ai-responsive-shell.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/master-ai-shell-workspace
+      - name: Add route marker and responsive shell constraints
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          app_path = Path("frontend/src/App.tsx")
+          app = app_path.read_text(encoding="utf-8")
+
+          state_anchor = '''  const screen = screenFromPath(location.pathname);
+  const background = settings.theme?.backgrounds?.[screen] || "";'''
+          state_replacement = '''  const screen = screenFromPath(location.pathname);
+  const isMasterAIWorkspace = location.pathname === "/tools/master-ai" || location.pathname.startsWith("/tools/master-ai/");
+  const background = settings.theme?.backgrounds?.[screen] || "";'''
+          if state_anchor not in app:
+              raise SystemExit("Shell state anchor not found")
+          app = app.replace(state_anchor, state_replacement, 1)
+
+          shell_anchor = '''    <div className="app-shell" data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>'''
+          shell_replacement = '''    <div className={`app-shell ${isMasterAIWorkspace ? "master-ai-app-shell" : ""}`} data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>'''
+          if shell_anchor not in app:
+              raise SystemExit("App shell anchor not found")
+          app = app.replace(shell_anchor, shell_replacement, 1)
+
+          workspace_anchor = '''      <main key={`${location.key}:${background}`} className={`workspace ${background ? "theme-reveal-surface" : ""}`} data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>'''
+          workspace_replacement = '''      <main key={`${location.key}:${background}`} className={`workspace ${isMasterAIWorkspace ? "master-ai-workspace" : ""} ${background ? "theme-reveal-surface" : ""}`} data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>'''
+          if workspace_anchor not in app:
+              raise SystemExit("Workspace anchor not found")
+          app = app.replace(workspace_anchor, workspace_replacement, 1)
+          app_path.write_text(app, encoding="utf-8")
+
+          Path("frontend/src/styles/master-ai-shell.css").write_text('''/* Master AI remains inside the shared app shell, but its workspace is allowed
+   to shrink below the desktop-only 1024px minimum used by the legacy pages. */
+.app-shell.master-ai-app-shell {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+.app-shell.master-ai-app-shell .workspace.master-ai-workspace,
+.app-shell.master-ai-app-shell .workspace-content,
+.app-shell.master-ai-app-shell .master-ai-page,
+.app-shell.master-ai-app-shell .master-ai-commandbar,
+.app-shell.master-ai-app-shell .master-ai-request-row,
+.app-shell.master-ai-app-shell .master-ai-chat,
+.app-shell.master-ai-app-shell .master-ai-operations,
+.app-shell.master-ai-app-shell .master-ai-proposal-detail {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-shell.master-ai-app-shell .workspace.master-ai-workspace {
+  width: auto;
+  overflow-x: clip;
+}
+
+.app-shell.master-ai-app-shell .quick-tools-bar {
+  min-width: 0;
+  max-width: calc(100vw - var(--sidebar-width));
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.app-shell.master-ai-app-shell .quick-tools-actions {
+  min-width: max-content;
+}
+
+@media (max-width: 720px) {
+  .app-shell.master-ai-app-shell .page {
+    padding-inline: 12px;
+  }
+
+  .app-shell.master-ai-app-shell .master-ai-commandbar,
+  .app-shell.master-ai-app-shell .master-ai-chat,
+  .app-shell.master-ai-app-shell .master-ai-operations,
+  .app-shell.master-ai-app-shell .master-ai-proposal-detail {
+    overflow: hidden;
+  }
+}
+''', encoding="utf-8")
+
+          Path(".github/workflows/finalize-master-ai-responsive-shell.yml").unlink()
+          PY
+      - name: Commit responsive shell fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Allow Master AI workspace to shrink in the app shell"
+          git push origin HEAD:agent/master-ai-shell-workspace
