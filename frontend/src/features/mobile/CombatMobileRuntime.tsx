@@ -109,6 +109,9 @@ export function CombatMobileRuntime() {
     if (!enabled) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      // Modal owns Escape while present. The Combat runtime only handles its
+      // non-modal panel navigation and the portalled hex workspace.
+      if (document.querySelector(".modal-backdrop")) return;
       const hexClose = document.querySelector<HTMLButtonElement>(".combat-hex-tool-window [aria-label='Chiudi strumenti esagono']");
       if (hexClose) {
         event.preventDefault();
