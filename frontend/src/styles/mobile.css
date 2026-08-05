@@ -1,0 +1,108 @@
+/* Mobile-only responsive foundations. Desktop declarations remain in app.css. */
+@media (max-width: 767px) {
+  :root {
+    --mobile-safe-top: env(safe-area-inset-top, 0px);
+    --mobile-safe-right: env(safe-area-inset-right, 0px);
+    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-safe-left: env(safe-area-inset-left, 0px);
+    --mobile-touch-target: 44px;
+  }
+
+  .auth-screen,
+  .loading-screen,
+  .restart-screen,
+  .fatal-error {
+    min-height: 100dvh;
+  }
+
+  .modal-backdrop {
+    inset: 0 !important;
+    left: 0 !important;
+    align-items: end;
+    justify-items: stretch;
+    padding: 0;
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"],
+  .rd-modal[data-responsive-presentation="fullscreen"] {
+    min-width: 0;
+    width: 100% !important;
+    max-width: none;
+    transform: none !important;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] {
+    max-height: min(92dvh, 100dvh);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] {
+    height: 100dvh !important;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .modal-header,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    min-height: var(--mobile-touch-target);
+    cursor: default;
+    user-select: text;
+    background: var(--theme-overlay-strong-surface);
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-header {
+    padding-top: calc(14px + var(--mobile-safe-top));
+    padding-right: calc(18px + var(--mobile-safe-right));
+    padding-left: calc(18px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .modal-body,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-body {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-body {
+    padding-right: calc(19px + var(--mobile-safe-right));
+    padding-left: calc(19px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .modal-footer,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    flex-wrap: wrap;
+    padding-bottom: calc(14px + var(--mobile-safe-bottom));
+    background: var(--theme-overlay-strong-surface);
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-footer {
+    padding-right: calc(18px + var(--mobile-safe-right));
+    padding-left: calc(18px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .icon-button,
+  .rd-modal[data-responsive-presentation="fullscreen"] .icon-button,
+  .rd-modal[data-responsive-presentation="sheet"] .modal-footer button,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-footer button {
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .rd-modal-resize-handle,
+  .rd-modal[data-responsive-presentation="fullscreen"] .rd-modal-resize-handle {
+    display: none !important;
+  }
+}
