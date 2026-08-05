@@ -19,6 +19,7 @@ from .models import AIChangeSet
 from .tool_context import AIToolExecutionContext
 
 
+UNIT_DISCOVERY_TYPE = "unit-config"
 UNIT_DISCOVERY_SECTIONS = (
     "contratto",
     "progressione",
@@ -43,7 +44,18 @@ def _change_set(user, context: AIToolExecutionContext | None) -> AIChangeSet:
 
 def list_editable_entities(user, giocatore, context: AIToolExecutionContext | None) -> dict[str, Any]:
     _change_set(user, context)
-    return {"entita": entity_catalog(user, giocatore)}
+    return {
+        "entita": entity_catalog(user, giocatore),
+        "scopertaUnit": {
+            "strumento": "cerca_record_gestibili",
+            "tipo": UNIT_DISCOVERY_TYPE,
+            "query": list(UNIT_DISCOVERY_SECTIONS),
+            "istruzione": (
+                "Prima di creare o modificare una Unit, richiama ogni sezione necessaria. "
+                "Il contratto non deve dipendere da campi o scelte eventualmente troncati nel catalogo generico."
+            ),
+        },
+    }
 
 
 def read_unit_authoring_configuration(
@@ -56,7 +68,7 @@ def read_unit_authoring_configuration(
 
     The generic entity catalogue can be large enough to require tool-result
     truncation. Unit authoring must not depend on a truncated dropdown schema,
-    so this tool exposes the live contract in small deterministic sections.
+    so this path exposes the live contract in small deterministic sections.
     """
 
     _change_set(user, context)
@@ -67,10 +79,11 @@ def read_unit_authoring_configuration(
         raise ApiError(
             "ai.unit_discovery_section_invalid",
             f"Sezione Unit non valida. Usa: {', '.join(UNIT_DISCOVERY_SECTIONS)}.",
-            "sezione",
+            "query",
         )
     configuration = unit_management_overview()["configuration"]
     common = {
+        "tipo": UNIT_DISCOVERY_TYPE,
         "sezione": section,
         "sezioniDisponibili": list(UNIT_DISCOVERY_SECTIONS),
         "fonte": "configurazione Unit live e servizi correnti",
@@ -195,10 +208,18 @@ def search_manageable_records(
     query: str = "",
     limite: int = 10,
 ) -> dict[str, Any]:
+    normalized_type = str(tipo or "").strip().lower()
+    if normalized_type == UNIT_DISCOVERY_TYPE:
+        return read_unit_authoring_configuration(
+            user,
+            giocatore,
+            context,
+            sezione=str(query or "contratto"),
+        )
     _change_set(user, context)
     return {
-        "tipo": str(tipo or "").strip().lower(),
-        "risultati": search_change_entities(user, giocatore, tipo, query, limite),
+        "tipo": normalized_type,
+        "risultati": search_change_entities(user, giocatore, normalized_type, query, limite),
     }
 
 
