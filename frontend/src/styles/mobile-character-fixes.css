@@ -1,0 +1,6 @@
+/* Character fixes discovered by the responsive browser matrix. */
+@media (max-width: 767px) {
+  .slot-item-picker {
+    z-index: 120 !important;
+  }
+}
