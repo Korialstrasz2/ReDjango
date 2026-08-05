@@ -18,6 +18,7 @@ const queryClient = new QueryClient({
   }
 });
 
+// Every routed page, including Master AI, is rendered by App so it inherits the same shell and providers.
 function RootApplication() {
   return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><App /></>;
 }
