@@ -138,7 +138,7 @@ test("Combat UI exposes role-appropriate map, token, and manager controls", asyn
 
   if (master) {
     await page.locator(".combat-new-map-trigger").click();
-    const editor = page.locator('[data-surface="combat-map-editor"]');
+    const editor = page.getByRole("dialog", { name: "Nuova mappa di combattimento" });
     await expect(editor).toBeVisible();
     if (isPhoneProject(testInfo)) await expect(editor).toHaveAttribute("data-responsive-presentation", "fullscreen");
     await closeTopModal(page);
