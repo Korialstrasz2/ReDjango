@@ -9,6 +9,7 @@ import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
 import "./styles/theme-reveal.css";
 import "./styles/master-ai.css";
+import "./styles/master-ai-shell.css";
 import "./styles/master-ai-launchers.css";
 
 const queryClient = new QueryClient({
