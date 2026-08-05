@@ -145,11 +145,9 @@ test("phone Combat attack and hex inspectors use contained state-preserving pane
   await attackTab.click();
   await expect(attackDrawer).toBeVisible();
 
-  // The original toolbar remains authoritative. Closing it while the preserved
-  // draft is hidden must return the local workspace to Map rather than leave an
-  // empty Attack panel.
-  await navigation.getByRole("tab", { name: /Mappa/ }).click();
-  await page.locator(".combat-attack-trigger").click();
+  // Close through the visible console control. The synchronization layer must
+  // return the local workspace to Map rather than leave an empty Attack panel.
+  await attackDrawer.locator(".combat-attack-drawer-toggle").click();
   await expect(attackDrawer).not.toHaveClass(/open/);
   await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
   await expect(page.locator(".combat-map-panel")).toBeVisible();
