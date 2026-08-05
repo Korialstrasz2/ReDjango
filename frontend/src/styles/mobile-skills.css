@@ -1,0 +1,537 @@
+/* Stateful Skills route. Desktop remains authoritative above 1200px. */
+@media (max-width: 1199px) {
+  .skills-page,
+  .skills-layout,
+  .skill-group-rail,
+  .skill-catalog,
+  .skill-family-nav,
+  .skill-catalog-toolbar,
+  .skill-search-workspace,
+  .skill-search-primary,
+  .skill-search-advanced,
+  .skill-card-grid,
+  .skill-card,
+  .skill-detail-card,
+  .skill-player-document,
+  .skill-management-document,
+  .skill-unlock-preview,
+  .skill-editor,
+  .skill-editor-section,
+  .skill-editor-grid,
+  .skill-operation-list,
+  .skill-operation-row,
+  .skill-cost-editor,
+  .spell-calculator,
+  .combat-button-editor,
+  .skill-analysis-cards,
+  .skill-analysis-columns,
+  .skill-character-action-list {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .skill-xp-ribbon {
+    grid-template-columns: repeat(7, minmax(108px, 1fr));
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .skill-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .skill-family-nav button[data-has-art="true"][aria-selected="true"] {
+    aspect-ratio: auto;
+  }
+
+  .skill-family-nav button[data-has-art="true"][aria-selected="true"]::before {
+    background: linear-gradient(90deg, var(--theme-overlay-strong-surface), transparent), var(--family-art) center / cover;
+    opacity: .32;
+  }
+
+  .skill-family-nav button[data-has-art="true"][aria-selected="true"] > span {
+    visibility: visible;
+  }
+
+  .skill-editor-grid,
+  .skill-prerequisite-picker,
+  .skill-operation-list,
+  .skill-cost-editor,
+  .combat-button-editor,
+  .combat-button-modifier-fields,
+  .combat-button-flags {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .skills-layout {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .skill-group-rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(155px, min(46vw, 205px));
+    grid-template-columns: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .skill-group-rail > header {
+    display: none;
+  }
+
+  .skill-group-rail > button {
+    min-width: 0;
+    min-height: 56px;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    scroll-snap-align: start;
+  }
+
+  .skill-family-nav {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(160px, min(58vw, 230px));
+    grid-template-columns: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .skill-family-nav button {
+    min-height: 58px;
+    scroll-snap-align: start;
+  }
+
+  .skill-catalog-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 132px;
+  }
+
+  .skill-catalog-toolbar .archive-toggle {
+    grid-column: auto;
+  }
+
+  .skill-search-primary,
+  .skill-search-advanced > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-search-workspace > header,
+  .skill-search-results-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .skill-document-facts,
+  .skill-management-facts,
+  .skill-spend-grid,
+  .spell-resource-options,
+  .skill-analysis-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skill-analysis-cards > div,
+  .skill-analysis-columns,
+  .skill-character-action-list > article,
+  .combat-button-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-character-action-config {
+    padding: 12px 0 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .skill-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-editor-grid label.wide,
+  .spell-formula-preview {
+    grid-column: auto;
+  }
+
+  .skill-operation-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skill-operation-row > button {
+    justify-self: end;
+  }
+
+  .skill-cost-editor {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .skills-page {
+    gap: 10px;
+  }
+
+  .skill-page-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .skill-page-header .button-row,
+  .skill-page-header .button {
+    width: 100%;
+  }
+
+  .skill-page-header .button {
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .skill-xp-ribbon {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(118px, 42vw);
+    grid-template-columns: none;
+    margin-bottom: 10px;
+    scroll-snap-type: x proximity;
+  }
+
+  .skill-xp-ribbon > *,
+  .skill-xp-ribbon > :first-child {
+    grid-column: auto;
+    min-height: 62px;
+    scroll-snap-align: start;
+  }
+
+  .skill-group-rail {
+    margin-inline: -1px;
+    grid-auto-columns: minmax(145px, 46vw);
+  }
+
+  .skill-group-rail > button {
+    min-height: 58px;
+    padding: 10px 12px;
+  }
+
+  .skill-family-nav {
+    grid-auto-columns: minmax(155px, 62vw);
+    padding: 8px;
+  }
+
+  .skill-family-nav button {
+    min-height: 56px;
+    padding: 8px 11px;
+  }
+
+  .skill-catalog-toolbar {
+    min-height: 118px;
+    padding: 17px 14px;
+  }
+
+  .skill-catalog-toolbar h2 {
+    font-size: clamp(1.4rem, 8vw, 1.9rem);
+  }
+
+  .skill-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px;
+  }
+
+  .skill-card {
+    min-height: 210px;
+    padding: 14px;
+  }
+
+  .skill-card[data-state="owned"] {
+    padding-top: 40px;
+  }
+
+  .skill-drag-handle {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: none;
+  }
+
+  .skill-empty-catalog {
+    min-height: 260px;
+    padding: 28px 16px;
+  }
+
+  .skill-search-workspace > header {
+    gap: 12px;
+    padding: 17px 14px;
+  }
+
+  .skill-search-workspace > header .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .skill-search-primary {
+    padding: 13px 14px;
+  }
+
+  .skill-search-advanced {
+    margin: 0 14px 14px;
+  }
+
+  .skill-search-advanced summary {
+    min-height: 48px;
+    padding: 13px;
+  }
+
+  .skill-search-results-heading {
+    padding-inline: 14px;
+  }
+
+  .skill-search-primary input,
+  .skill-search-primary select,
+  .skill-search-advanced input,
+  .skill-search-advanced select,
+  .skill-catalog-toolbar input,
+  .skill-catalog-toolbar select,
+  .skill-xp-editor input,
+  .skill-editor input,
+  .skill-editor select,
+  .skill-editor textarea,
+  .skill-unlock-preview input,
+  .skill-unlock-preview select,
+  .skill-unlock-preview textarea,
+  .spell-calculator input,
+  .combat-button-editor input,
+  .combat-button-editor select,
+  .combat-button-editor textarea {
+    min-height: 44px;
+    font-size: max(.84rem, 16px);
+  }
+
+  .skill-detail-heading {
+    min-height: 86px;
+    padding: 16px 14px;
+  }
+
+  .skill-seal {
+    width: 50px;
+    height: 50px;
+    flex-basis: 50px;
+    font-size: 1.35rem;
+  }
+
+  .skill-card-tabs {
+    scroll-snap-type: x proximity;
+  }
+
+  .skill-card-tabs button {
+    min-width: 50%;
+    min-height: 46px;
+    padding-inline: 14px;
+    scroll-snap-align: start;
+  }
+
+  .skill-player-document,
+  .skill-management-document {
+    padding: 16px 14px;
+  }
+
+  .skill-document-facts,
+  .skill-management-facts,
+  .skill-spend-grid,
+  .spell-resource-options,
+  .skill-analysis-detail,
+  .skill-analysis-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-rule-disclosure > summary {
+    min-height: 48px;
+  }
+
+  .skill-rule-body {
+    padding: 13px 14px 15px;
+  }
+
+  .skill-spell-document > header,
+  .spell-calculator > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .spell-calculator-inputs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .spell-calculator-inputs .button {
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .skill-unlock-preview {
+    gap: 12px;
+  }
+
+  .skill-unlock-preview > section,
+  .skill-blocked-reasons,
+  .skill-grant-note {
+    padding: 14px;
+  }
+
+  .skill-passive-confirmations label {
+    align-items: flex-start;
+  }
+
+  .skill-passive-confirmations input[type="checkbox"],
+  .combat-button-flags input[type="checkbox"],
+  .skill-editor-grid label.check-field input[type="checkbox"] {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+  }
+
+  .skill-editor {
+    gap: 11px;
+    padding: 10px;
+  }
+
+  .skill-editor-section > header {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .skill-editor-grid,
+  .skill-operation-list,
+  .skill-cost-editor {
+    padding-inline: 12px;
+  }
+
+  .skill-operation-row {
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: 10px;
+    border-bottom: 1px solid color-mix(in srgb, var(--line), transparent 35%);
+  }
+
+  .skill-operation-row > button {
+    width: 44px;
+    height: 44px;
+    justify-self: end;
+  }
+
+  .skill-cost-editor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .skill-editor-actions {
+    bottom: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin-inline: -10px;
+    padding: 10px;
+  }
+
+  .skill-editor-actions .button {
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .skill-example-picker {
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combat-button-editor {
+    gap: 12px;
+    padding: 10px;
+  }
+
+  .combat-button-modifier-fields,
+  .combat-button-flags {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combat-button-modifier-fields label,
+  .combat-button-flags label {
+    min-height: 52px;
+  }
+
+  .skill-analysis-cards {
+    padding: 14px;
+  }
+
+  .skill-analysis-cards > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-analysis-cards button {
+    min-height: 82px;
+    text-align: left;
+  }
+
+  .skill-character-action-list > article {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-reminder-sheet {
+    padding: 14px;
+  }
+
+  .rd-modal[data-surface^="skills"] .modal-footer,
+  .rd-modal[data-surface="skills-button-editor"] .modal-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .rd-modal[data-surface^="skills"] .modal-footer > *,
+  .rd-modal[data-surface="skills-button-editor"] .modal-footer > * {
+    width: 100%;
+  }
+
+  .rd-modal[data-surface^="skills"] .modal-footer .button,
+  .rd-modal[data-surface="skills-button-editor"] .modal-footer .button {
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .skill-detail-footer-copy {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .skill-detail-footer-warning {
+    max-width: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .skill-group-rail {
+    grid-auto-columns: minmax(136px, 58vw);
+  }
+
+  .skill-family-nav {
+    grid-auto-columns: minmax(145px, 72vw);
+  }
+
+  .skill-cost-editor,
+  .spell-resource-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .skill-card:hover,
+  .skill-xp-ribbon[role="button"]:hover,
+  .skill-action-belt button:hover {
+    transform: none;
+  }
+}
