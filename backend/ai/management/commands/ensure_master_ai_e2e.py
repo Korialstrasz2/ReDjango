@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from django.core.management.base import BaseCommand
 
-from backend.core.models import Giocatore
+from backend.core.models import Giocatore, Unit
 
 from backend.ai.models import AIAgentProfile, AIProvider
 
@@ -18,9 +18,11 @@ PROPOSAL_TOOLS = [
     "riassumi_proposta",
 ]
 
+E2E_UNIT_NAME = "Bestia E2E Master AI"
+
 
 class Command(BaseCommand):
-    help = "Crea un provider locale non contattabile e un agente proposer per i test Playwright."
+    help = "Crea provider, agente proposer e Unit deterministici per i test Playwright Master AI."
 
     def handle(self, *args, **options):
         provider, _created = AIProvider.objects.update_or_create(
@@ -60,4 +62,63 @@ class Command(BaseCommand):
                 "archived_at": None,
             },
         )
-        self.stdout.write(self.style.SUCCESS(f"Fixture Master AI pronta: provider={provider.id}, agent={agent.id}."))
+        unit, _created = Unit.objects.update_or_create(
+            nome=E2E_UNIT_NAME,
+            defaults={
+                "categoria": "Creature E2E",
+                "archetipo_descrizione": (
+                    "Creatura rapida con chassis deterministico, usata per verificare il launcher Unit di Master AI."
+                ),
+                "lore_description": "Fixture locale senza dipendenze da Skill, Item o accessori.",
+                "notes": "Fixture E2E. L'azione innata è un promemoria manuale.",
+                "generation_rules": {
+                    "kind": "creature",
+                    "coreKey": "",
+                    "coreShare": 0.5,
+                    "startingXp": 0,
+                    "xpPerLevel": {"base": 20, "growth": 1},
+                    "competenceXp": {"starting": 5, "base": 15, "growth": 0},
+                    "finalSpendingPasses": 4,
+                    "magicPolicy": "any",
+                    "allowedClassFamilies": [],
+                    "allowedReligionFamilies": [],
+                    "allowedRaces": [],
+                    "allowedSubraces": [],
+                    "allowHumanoidStatGrowth": False,
+                },
+                "archetipo_tags": {},
+                "profilo_competenze": {},
+                "skill_unlocks": [],
+                "equipment_profiles": {},
+                "skill_actions": [
+                    {
+                        "key": "e2e-master-ai-artiglio",
+                        "name": "Artiglio E2E",
+                        "description": "Il Master risolve manualmente bersaglio, tiro e danno.",
+                        "minLevel": 1,
+                        "maxLevel": 20,
+                        "costs": {"energia": 1, "pa": 2},
+                        "trigger": "Azione",
+                        "duration": "Istantanea",
+                        "icon": "runa",
+                    }
+                ],
+                "stat_profiles": {
+                    "baseModifiers": {},
+                    "perLevelModifiers": {},
+                    "milestones": [],
+                    "curves": [
+                        {"key": "pf", "profile": "custom", "level1": 12, "level20": 60},
+                        {"key": "pa", "profile": "custom", "level1": 7, "level20": 24},
+                    ],
+                },
+                "levels": [],
+                "metadata": {"sourceProject": "redjango", "authoring": "e2e-fixture"},
+                "archived_at": None,
+            },
+        )
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Fixture Master AI pronta: provider={provider.id}, agent={agent.id}, unit={unit.id}."
+            )
+        )
