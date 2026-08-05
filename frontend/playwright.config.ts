@@ -4,7 +4,7 @@ const runtimePlatform = (globalThis as typeof globalThis & { process?: { platfor
 const python = runtimePlatform.startsWith("win") ? "..\\venv\\Scripts\\python.exe" : "python";
 const django = (command: string) => `${python} ../manage.py ${command}`;
 const authenticatedState = ".playwright/auth.json";
-const mobileBaseline = /mobile-baseline\.spec\.ts/;
+const mobileMatrix = /mobile-(?:baseline|skills)\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./tests",
@@ -27,7 +27,7 @@ export default defineConfig({
     },
     {
       name: "desktop-1920",
-      testMatch: mobileBaseline,
+      testMatch: mobileMatrix,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
@@ -36,7 +36,7 @@ export default defineConfig({
     },
     {
       name: "phone-small-portrait",
-      testMatch: mobileBaseline,
+      testMatch: mobileMatrix,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
@@ -49,7 +49,7 @@ export default defineConfig({
     {
       // Exercises the 480–767px phone category rather than another narrow-phone width.
       name: "phone-large-portrait",
-      testMatch: mobileBaseline,
+      testMatch: mobileMatrix,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
@@ -62,7 +62,7 @@ export default defineConfig({
     {
       // Stays below the phone/tablet layout boundary even in landscape.
       name: "phone-landscape",
-      testMatch: mobileBaseline,
+      testMatch: mobileMatrix,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
@@ -74,7 +74,7 @@ export default defineConfig({
     },
     {
       name: "tablet-portrait",
-      testMatch: mobileBaseline,
+      testMatch: mobileMatrix,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
@@ -86,7 +86,7 @@ export default defineConfig({
     },
     {
       name: "tablet-landscape",
-      testMatch: mobileBaseline,
+      testMatch: mobileMatrix,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
