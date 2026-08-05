@@ -8,7 +8,16 @@ from backend.core.api import ApiError
 from .registry import get_change_handler
 
 ALLOWED_CONTEXT_KEYS = frozenset({"entityType", "targetId", "sourceId", "sourceSurface"})
-ALLOWED_SOURCE_SURFACES = frozenset({"item-management", "skill-management", "theme-management", "management-hub", "master-ai"})
+ALLOWED_SOURCE_SURFACES = frozenset(
+    {
+        "item-management",
+        "skill-management",
+        "theme-management",
+        "unit-management",
+        "management-hub",
+        "master-ai",
+    }
+)
 MAX_CONTEXT_BYTES = 4096
 
 
