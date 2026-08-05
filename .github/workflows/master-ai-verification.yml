@@ -23,7 +23,6 @@ on:
   push:
     branches:
       - agent/master-ai-proposal-system
-      - ai-master-unit
 
 permissions:
   contents: read
