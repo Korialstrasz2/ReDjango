@@ -1,5 +1,7 @@
 import { type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode, useEffect, useRef, useState } from "react";
 
+import { useResponsiveLayout } from "../../lib/responsive";
+
 type Props = {
   title: string;
   eyebrow: string;
@@ -17,8 +19,23 @@ type ResizeEdge = "top" | "right" | "bottom" | "left";
 const VIEWPORT_TOP = 35;
 const MIN_DRAWER_WIDTH = 360;
 const MIN_DRAWER_HEIGHT = 320;
+let mobileDrawerLockCount = 0;
+let bodyOverflowBeforeDrawerLock = "";
+
+function lockBodyForMobileDrawer(): () => void {
+  if (mobileDrawerLockCount === 0) {
+    bodyOverflowBeforeDrawerLock = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  mobileDrawerLockCount += 1;
+  return () => {
+    mobileDrawerLockCount = Math.max(0, mobileDrawerLockCount - 1);
+    if (mobileDrawerLockCount === 0) document.body.style.overflow = bodyOverflowBeforeDrawerLock;
+  };
+}
 
 export function ToolDrawer({ title, eyebrow, children, onClose, background = "", wide = false, compact = false, draggable = false, resizable = false }: Props) {
+  const { isPhone } = useResponsiveLayout();
   const closeRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -48,14 +65,33 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
   } | null>(null);
 
   useEffect(() => {
-    closeRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => event.key === "Escape" && onClose();
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const frame = window.requestAnimationFrame(() => closeRef.current?.focus({ preventScroll: true }));
+    if (!isPhone) return () => {
+      window.cancelAnimationFrame(frame);
+      previousFocus?.focus({ preventScroll: true });
+    };
+
+    drag.current = null;
+    resize.current = null;
+    setPosition({ x: 0, y: 0 });
+    setSize(null);
+    const unlock = lockBodyForMobileDrawer();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      unlock();
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [isPhone]);
+
   const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!draggable || (event.target as HTMLElement).closest("button")) return;
+    if (isPhone || !draggable || (event.target as HTMLElement).closest("button")) return;
     if (!drawerRef.current) return;
     const rect = drawerRef.current.getBoundingClientRect();
     drag.current = {
@@ -72,7 +108,7 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
   };
   const moveDrag = (event: ReactPointerEvent<HTMLElement>) => {
     const current = drag.current;
-    if (!current) return;
+    if (!current || isPhone) return;
     const deltaX = Math.min(window.innerWidth - current.right, Math.max(-current.left, event.clientX - current.startX));
     const deltaY = Math.min(window.innerHeight - current.bottom, Math.max(VIEWPORT_TOP - current.top, event.clientY - current.startY));
     setPosition({
@@ -83,7 +119,7 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
   const stopDrag = () => { drag.current = null; };
 
   const startResize = (edge: ResizeEdge, event: ReactPointerEvent<HTMLElement>) => {
-    if (!drawerRef.current) return;
+    if (isPhone || !drawerRef.current) return;
     const rect = drawerRef.current.getBoundingClientRect();
     resize.current = {
       edge,
@@ -104,7 +140,7 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
   };
   const moveResize = (event: ReactPointerEvent<HTMLElement>) => {
     const current = resize.current;
-    if (!current) return;
+    if (!current || isPhone) return;
     let width = current.width;
     let height = current.height;
     let x = current.positionX;
@@ -133,15 +169,20 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
   };
   const stopResize = () => { resize.current = null; };
 
+  const style = isPhone
+    ? { "--tool-background": background ? `url(${background})` : "none" }
+    : { "--tool-background": background ? `url(${background})` : "none", "--tool-x": `${position.x}px`, "--tool-y": `${position.y}px`, width: size?.width, height: size?.height };
+
   return <aside
     ref={drawerRef}
-    className={`tool-drawer ${background ? "theme-reveal-surface" : ""} ${wide ? "tool-drawer-wide" : ""} ${compact ? "tool-drawer-compact" : ""} ${draggable ? "tool-drawer-draggable" : ""}`}
+    className={`tool-drawer ${background ? "theme-reveal-surface" : ""} ${wide ? "tool-drawer-wide" : ""} ${compact ? "tool-drawer-compact" : ""} ${draggable && !isPhone ? "tool-drawer-draggable" : ""}`}
     role="dialog"
-    aria-modal="false"
+    aria-modal={isPhone}
     aria-label={title}
     data-component-type="modal"
     data-theme="parchment"
-    style={{ "--tool-background": background ? `url(${background})` : "none", "--tool-x": `${position.x}px`, "--tool-y": `${position.y}px`, width: size?.width, height: size?.height } as CSSProperties}
+    data-responsive-presentation={isPhone ? "fullscreen" : "dialog"}
+    style={style as CSSProperties}
   >
     <div className="tool-drawer-atmosphere" aria-hidden="true" />
     <header className="tool-drawer-header" onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag}>
@@ -149,7 +190,7 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
       <button ref={closeRef} className="icon-button" type="button" onClick={onClose} aria-label={`Chiudi ${title}`}>×</button>
     </header>
     <div className="tool-drawer-body">{children}</div>
-    {resizable && (["top", "right", "bottom", "left"] as const).map((edge) => <span
+    {resizable && !isPhone && (["top", "right", "bottom", "left"] as const).map((edge) => <span
       key={edge}
       className={`tool-drawer-resize-handle ${edge}`}
       data-resize-edge={edge}
