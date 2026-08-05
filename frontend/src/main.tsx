@@ -12,6 +12,7 @@ import "./styles/master-ai.css";
 import "./styles/master-ai-shell.css";
 import "./styles/master-ai-launchers.css";
 import "./styles/master-ai-unit.css";
+import "./styles/mobile.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
