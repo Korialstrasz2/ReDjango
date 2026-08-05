@@ -1,4 +1,5 @@
-import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -84,6 +85,7 @@ export function AITool({ notify }: Props) {
   const [size, setSize] = useState("");
   const [quality, setQuality] = useState("");
   const [generated, setGenerated] = useState<MediaAsset | null>(null);
+  const [proposalAlert, setProposalAlert] = useState(false);
 
   useEffect(() => {
     const node = transcriptRef.current;
@@ -111,6 +113,7 @@ export function AITool({ notify }: Props) {
       setBubbles(pendingMessage && !(lastBubble?.role === "user" && lastBubble.text === pendingMessage)
         ? [...recent.bubbles, { id: bubbleId(), role: "user", text: pendingMessage, tools: [] }]
         : recent.bubbles);
+      if (proposerAgentIds.has(recent.agentId || -1)) setProposalAlert(true);
     }
   }, [workspace.data]);
 
@@ -140,6 +143,7 @@ export function AITool({ notify }: Props) {
       } else {
         setBubbles((current) => [...current, { id: bubbleId(), role: "assistant", text: result.reply, tools: result.toolTrace }]);
       }
+      if (result.changeSet) setProposalAlert(true);
       setLastFailedMessage("");
       void workspace.refetch();
     } else if (activeRun.status === "completed" && activeRun.kind === "image") {
@@ -214,11 +218,25 @@ export function AITool({ notify }: Props) {
     setConversationId(null);
     setActiveProvider(null);
     setLastFailedMessage("");
+    setProposalAlert(false);
+  };
+
+  const closeProposalAlert = () => {
+    setProposalAlert(false);
+    if (agentId && proposerAgentIds.has(agentId)) {
+      reset();
+      setAgentId("");
+      notify("Conversazione di proposta chiusa: riparti dal workspace Master AI.", "info");
+    }
   };
 
   const openConversation = (id: number) => {
     const conversation = workspace.data?.conversations.find((entry) => entry.id === id);
     if (!conversation || isWorking(activeRun)) return;
+    if (proposerAgentIds.has(conversation.agentId || -1)) {
+      setProposalAlert(true);
+      return;
+    }
     setConversationId(conversation.id);
     setAgentId(conversation.agentId || "");
     setHistory(conversation.history);
@@ -237,7 +255,9 @@ export function AITool({ notify }: Props) {
   if (workspace.isError) return <p className="form-error">{(workspace.error as Error).message}</p>;
 
   const data = workspace.data!;
-  const selectedAgent = data.agents.find((entry) => entry.id === agentId) || data.agents[0] || null;
+  const proposerAgentIds = useMemo(() => new Set(data.agents.filter((agent) => agent.mode === "proposer" || agent.canProposeChanges).map((agent) => agent.id)), [data.agents]);
+  const readOnlyAgents = data.agents.filter((agent) => !(agent.mode === "proposer" || agent.canProposeChanges));
+  const selectedAgent = readOnlyAgents.find((entry) => entry.id === agentId) || readOnlyAgents[0] || null;
   const defaultProvider = data.chatProviders.find((entry) => entry.isDefault) || data.chatProviders[0] || null;
   const defaultImageProvider = data.imageProviders.find((entry) => entry.isDefault) || data.imageProviders[0] || null;
   const selectedImageProvider = data.imageProviders.find((entry) => entry.id === imageProviderId) || defaultImageProvider;
@@ -252,7 +272,7 @@ export function AITool({ notify }: Props) {
         ? `${defaultProvider.name}${defaultProvider.model ? ` · ${defaultProvider.model}` : ""}`
         : "non disponibile";
 
-  return <div className="ai-tool" data-component-type="panel" data-theme="parchment">
+  return <><div className="ai-tool" data-component-type="panel" data-theme="parchment">
     <nav className="ai-tabs" role="tablist" aria-label="Modalità assistente" data-component-type="tabset" data-theme="gold">
       <button type="button" role="tab" aria-selected={mode === "chat"} className={mode === "chat" ? "active" : ""} onClick={() => setMode("chat")}>Domande</button>
       <button type="button" role="tab" aria-selected={mode === "image"} className={mode === "image" ? "active" : ""} onClick={() => setMode("image")} disabled={!data.readiness.images || !data.canManage}>Immagini</button>
@@ -296,10 +316,10 @@ export function AITool({ notify }: Props) {
               <small className="muted-copy" title="Provider e modello risolti per questa conversazione">Provider: {providerLabel}</small>
               <label className="ai-provider-picker"><span className="sr-only">Agente</span><select value={agentId} disabled={Boolean(isWorking(activeRun))} onChange={(event) => { setAgentId(event.target.value ? Number(event.target.value) : ""); reset(); }}>
                 <option value="">Agente predefinito</option>
-                {data.agents.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}{entry.effectiveModel ? ` · ${entry.effectiveModel}` : ""}</option>)}
+                {readOnlyAgents.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}{entry.effectiveModel ? ` · ${entry.effectiveModel}` : ""}</option>)}
               </select></label>
               {lastFailedMessage && !ask.isPending && !isWorking(activeRun) && <button type="button" className="button secondary small" onClick={() => startQuestion(lastFailedMessage, false)}>Riprova</button>}
-              <button className="button primary small" disabled={ask.isPending || Boolean(isWorking(activeRun)) || !question.trim()}>{ask.isPending || isWorking(activeRun) ? "…" : "Chiedi"}</button>
+              <button className="button primary small" disabled={ask.isPending || Boolean(isWorking(activeRun)) || !question.trim() || proposalAlert}>{ask.isPending || isWorking(activeRun) ? "…" : "Chiedi"}</button>
             </div>
           </form>
         </div>
@@ -318,5 +338,20 @@ export function AITool({ notify }: Props) {
       {isWorking(activeRun) && activeRun?.kind === "image" ? <div className="button-row"><span>{activeRun.progress}</span><button type="button" className="button secondary" onClick={cancelRun} disabled={activeRun.cancelRequested}>Annulla</button></div> : <button type="button" className="button primary" disabled={draw.isPending || Boolean(isWorking(activeRun)) || !prompt.trim()} onClick={() => draw.mutate({ selectedSize, selectedQuality })}>{draw.isPending ? "Avvio…" : "Genera immagine"}</button>}
       {generated && <figure className="ai-image-result"><img src={generated.url} alt={generated.title} /><figcaption>{generated.title}</figcaption></figure>}
     </section>}
-  </div>;
+    {proposalAlert && createPortal(
+      <div className="master-ai-dialog-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProposalAlert(); }}>
+        <section className="master-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-proposal-alert-title">
+          <h2 id="ai-proposal-alert-title">Proposta creata, ma non revisionabile qui</h2>
+          <p>Impossibile creare proposte in questa interfaccia: questa chat non ha il pannello di revisione.</p>
+          <p>Rifai la tua domanda da <Link to="/tools/master-ai" onClick={closeProposalAlert}><strong>QUI</strong></Link>: la proposta già creata ti aspetta nel selettore «Proposta» del workspace Master AI.</p>
+          <footer>
+            <button type="button" className="button secondary" onClick={closeProposalAlert}>Chiudi</button>
+            <Link className="button primary" to="/tools/master-ai" onClick={closeProposalAlert}>Apri Master AI</Link>
+          </footer>
+        </section>
+      </div>,
+      document.body,
+    )}
+    </div>
+  </>;
 }

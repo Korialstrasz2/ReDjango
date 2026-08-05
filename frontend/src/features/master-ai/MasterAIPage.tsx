@@ -105,6 +105,7 @@ export function MasterAIPage({ notify }: Props) {
   const [confirm, setConfirm] = useState<"apply" | "discard" | null>(null);
   const handledRun = useRef("");
   const hydrated = useRef(false);
+  const changeSetPicked = useRef(false);
   const transcriptRef = useRef<HTMLDivElement>(null);
 
   const proposerAgents = useMemo(() => (workspace.data?.agents || []).filter((agent) => agent.mode === "proposer" || agent.canProposeChanges), [workspace.data]);
@@ -163,8 +164,20 @@ export function MasterAIPage({ notify }: Props) {
   const chooseChangeSet = (nextId: string | null) => {
     if (nextId === changeSetId) return;
     if (dirty && !window.confirm("Scartare le modifiche locali non salvate e cambiare proposta?")) return;
+    changeSetPicked.current = true;
     setChangeSetId(nextId); setSelectedOperationId(null); setConflict("");
   };
+
+  // Le proposte già esistenti non devono restare nascoste: alla prima apertura
+  // si seleziona la bozza più recente (o quella legata alla conversazione
+  // ripristinata) finché l'utente non ne sceglie esplicitamente una.
+  useEffect(() => {
+    if (changeSetPicked.current || changeSetId) return;
+    const sets = recentSets.data?.changeSets;
+    if (!sets?.length) return;
+    const linked = conversationId ? sets.find((entry) => entry.conversationId === conversationId) : undefined;
+    setChangeSetId((linked || sets[0]).id);
+  }, [changeSetId, conversationId, recentSets.data]);
 
   useEffect(() => {
     if (!activeRun || !isWorking(activeRun)) return;

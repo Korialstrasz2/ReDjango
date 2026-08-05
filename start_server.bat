@@ -4,7 +4,10 @@ setlocal enableextensions enabledelayedexpansion
 cd /d "%~dp0"
 
 set "PYTHON=python"
+rem The launcher used decides the access mode: no argument means locked.
+rem This overrides any mode persisted by a previous online/LAN start.
 set "REQUESTED_MODE=%~1"
+if not defined REQUESTED_MODE set "REQUESTED_MODE=locked"
 if /I "%REQUESTED_MODE%"=="local" set "REQUESTED_MODE=locked"
 if defined REQUESTED_MODE if /I not "%REQUESTED_MODE%"=="locked" if /I not "%REQUESTED_MODE%"=="lan" if /I not "%REQUESTED_MODE%"=="online" (
     echo Modalita non valida: %REQUESTED_MODE%

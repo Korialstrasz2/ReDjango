@@ -547,6 +547,9 @@ export type AIAgentSummary = {
   routingMode: "off" | "auto";
   isEnabled: boolean;
   isDefault: boolean;
+  /** Modalità dell'agente («read_only» o «proposer»), quando esposta dal backend. */
+  mode?: "read_only" | "proposer";
+  canProposeChanges?: boolean;
 };
 
 export type AIManagedAgent = AIAgentSummary & {
@@ -685,6 +688,8 @@ export type AIChatResult = {
   runId: string;
   provider: { id: number; name: string; model: string };
   agent: { id: number; name: string };
+  /** Presente quando l'esecuzione ha prodotto una proposta revisionabile. */
+  changeSet?: { id: string } | null;
 };
 
 export type AIConversationBubble = {
