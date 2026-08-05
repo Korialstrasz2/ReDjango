@@ -86,6 +86,10 @@ export function AITool({ notify }: Props) {
   const [quality, setQuality] = useState("");
   const [generated, setGenerated] = useState<MediaAsset | null>(null);
   const [proposalAlert, setProposalAlert] = useState(false);
+  const proposerAgentIds = useMemo(
+    () => new Set((workspace.data?.agents ?? []).filter((agent) => agent.mode === "proposer" || agent.canProposeChanges).map((agent) => agent.id)),
+    [workspace.data?.agents],
+  );
 
   useEffect(() => {
     const node = transcriptRef.current;
@@ -255,7 +259,6 @@ export function AITool({ notify }: Props) {
   if (workspace.isError) return <p className="form-error">{(workspace.error as Error).message}</p>;
 
   const data = workspace.data!;
-  const proposerAgentIds = useMemo(() => new Set(data.agents.filter((agent) => agent.mode === "proposer" || agent.canProposeChanges).map((agent) => agent.id)), [data.agents]);
   const readOnlyAgents = data.agents.filter((agent) => !(agent.mode === "proposer" || agent.canProposeChanges));
   const selectedAgent = readOnlyAgents.find((entry) => entry.id === agentId) || readOnlyAgents[0] || null;
   const defaultProvider = data.chatProviders.find((entry) => entry.isDefault) || data.chatProviders[0] || null;
