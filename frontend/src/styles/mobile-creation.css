@@ -1,0 +1,424 @@
+/* Responsive Creation workbenches. Desktop rules in app.css remain authoritative. */
+@media (max-width: 1199px) {
+  .creation-page,
+  .alchemy-workspace,
+  .forge-workspace,
+  .enchant-workspace,
+  .crafting-bench,
+  .alchemy-stock-column,
+  .enchant-left-column {
+    min-width: 0;
+  }
+
+  .alchemy-workspace,
+  .forge-workspace,
+  .enchant-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .alchemy-bench-panel,
+  .alchemy-reference-panel,
+  .forge-bench-panel,
+  .enchant-bench-panel {
+    position: static;
+    grid-column: auto;
+  }
+
+  .alchemy-stock-matrix,
+  .forge-ladder,
+  .forge-blueprint-list,
+  .forge-instance-list,
+  .enchant-target-list,
+  .enchant-card-grid {
+    min-width: 0;
+  }
+
+  .alchemy-stock-matrix {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .alchemy-matrix-head,
+  .alchemy-stock-row {
+    min-width: 500px;
+  }
+
+  .alchemy-reference-panel details[open] {
+    min-width: 0;
+  }
+
+  .alchemy-catalog {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .alchemy-thresholds {
+    grid-template-columns: repeat(10, minmax(54px, 1fr));
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+}
+
+@media (max-width: 767px) {
+  .creation-page {
+    gap: 12px;
+  }
+
+  .creation-page > .page-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .creation-page > .page-header .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .creation-tabs,
+  .crafting-subtabs {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: thin;
+  }
+
+  .creation-tabs {
+    gap: 7px;
+    margin: -2px 0 2px;
+    padding-bottom: 3px;
+  }
+
+  .creation-tabs button {
+    min-width: 142px;
+    min-height: 52px;
+    flex: 0 0 auto;
+    padding: 8px 11px;
+    scroll-snap-align: start;
+  }
+
+  .crafting-bench {
+    display: grid;
+    gap: 12px;
+  }
+
+  .crafting-subtabs {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding-bottom: 3px;
+  }
+
+  .crafting-subtabs button {
+    min-width: max-content;
+    min-height: 44px;
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    scroll-snap-align: start;
+  }
+
+  .creation-page .panel {
+    min-width: 0;
+  }
+
+  .alchemy-stock-column,
+  .enchant-left-column {
+    gap: 12px;
+  }
+
+  .alchemy-set-bar {
+    padding: 13px 14px;
+  }
+
+  .alchemy-set-bar label {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .alchemy-set-bar select {
+    min-height: 44px;
+    font-size: max(.86rem, 16px);
+  }
+
+  .alchemy-set-bar .alchemy-inline-hint {
+    margin-left: 0;
+  }
+
+  .alchemy-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 13px;
+  }
+
+  .alchemy-capacity {
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    justify-items: start;
+    gap: 8px;
+  }
+
+  .alchemy-stock-panel,
+  .alchemy-bench-panel,
+  .alchemy-reference-panel,
+  .forge-materials-panel,
+  .forge-bench-panel,
+  .forge-instance-panel,
+  .enchant-gem-panel,
+  .enchant-target-panel,
+  .enchant-bench-panel {
+    padding: 15px;
+  }
+
+  .alchemy-stock-matrix {
+    margin-inline: -2px;
+    padding-bottom: 5px;
+  }
+
+  .alchemy-matrix-head,
+  .alchemy-stock-row {
+    grid-template-columns: 84px repeat(4, minmax(76px, 1fr));
+    min-width: 430px;
+  }
+
+  .alchemy-stock-row > button,
+  .forge-material,
+  .forge-blueprint,
+  .forge-instance,
+  .forge-improvement,
+  .enchant-gem,
+  .enchant-target,
+  .enchant-card {
+    min-height: 44px;
+  }
+
+  .alchemy-extraction {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .alchemy-extraction .button {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .alchemy-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .alchemy-slot {
+    min-height: 78px;
+  }
+
+  .alchemy-color-choice > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .alchemy-color-choice button {
+    min-height: 44px;
+  }
+
+  .alchemy-brew-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .alchemy-brew-form input,
+  .alchemy-brew-form select,
+  .enchant-kind-picker input,
+  .enchant-kind-picker select {
+    min-height: 44px;
+    font-size: max(.86rem, 16px);
+  }
+
+  .alchemy-formula-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .alchemy-formula-card > span {
+    display: none;
+  }
+
+  .alchemy-formula-card > div {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid color-mix(in srgb, var(--line), transparent 45%);
+  }
+
+  .alchemy-formula-card > div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .alchemy-formula-card .alchemy-potency {
+    justify-items: stretch;
+  }
+
+  .alchemy-formula-card .alchemy-potency small {
+    grid-column: 1 / -1;
+  }
+
+  .alchemy-brew-button {
+    min-height: 48px;
+  }
+
+  .alchemy-thresholds {
+    grid-template-columns: repeat(10, 58px);
+    padding-bottom: 5px;
+  }
+
+  .alchemy-reference-panel summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .forge-ladder {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 4px;
+  }
+
+  .forge-ladder-row {
+    grid-template-columns: 30px minmax(350px, 1fr);
+    min-width: 392px;
+  }
+
+  .forge-ladder-row > div {
+    min-width: 0;
+  }
+
+  .forge-filter-row {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .forge-filter-row button {
+    min-height: 40px;
+    flex: 0 0 auto;
+  }
+
+  .forge-blueprint-list {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .forge-blueprint,
+  .forge-instance {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 10px 11px;
+  }
+
+  .forge-instance-list,
+  .enchant-target-list {
+    max-height: min(48dvh, 420px);
+    overflow-y: auto;
+    overscroll-behavior-block: contain;
+  }
+
+  .forge-improvement-grid,
+  .enchant-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .forge-budget {
+    min-width: 0;
+  }
+
+  .forge-budget-bar {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .forge-fatigue-toggle {
+    align-items: flex-start;
+    min-height: 44px;
+  }
+
+  .forge-fatigue-toggle input {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+  }
+
+  .enchant-gem-grid {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  }
+
+  .enchant-gem {
+    min-width: 0;
+  }
+
+  .enchant-target-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .enchant-formula {
+    margin-block: 12px;
+  }
+
+  .enchant-card footer {
+    flex-wrap: wrap;
+  }
+
+  .enchant-card footer .button {
+    min-height: 40px;
+    flex: 1 1 130px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .creation-tabs button {
+    min-width: 132px;
+  }
+
+  .alchemy-stock-panel,
+  .alchemy-bench-panel,
+  .alchemy-reference-panel,
+  .forge-materials-panel,
+  .forge-bench-panel,
+  .forge-instance-panel,
+  .enchant-gem-panel,
+  .enchant-target-panel,
+  .enchant-bench-panel {
+    padding: 13px;
+  }
+
+  .alchemy-slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) and (max-height: 520px) {
+  .creation-page > .page-header {
+    display: none;
+  }
+
+  .creation-tabs {
+    margin-top: 0;
+  }
+
+  .alchemy-slot {
+    min-height: 64px;
+  }
+
+  .forge-instance-list,
+  .enchant-target-list {
+    max-height: 62dvh;
+  }
+}
