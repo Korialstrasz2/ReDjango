@@ -1,0 +1,259 @@
+/* Lore keeps its desktop rail and gallery above tablet widths. */
+@media (max-width: 1199px) {
+  .lore-page,
+  .lore-section,
+  .lore-layout,
+  .lore-sidebar,
+  .lore-timeline-section,
+  .lore-timeline-inspector {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .lore-page {
+    padding-bottom: 24px;
+  }
+
+  .lore-header {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .lore-header > div:first-child {
+    min-width: 0;
+  }
+
+  .lore-header h1 {
+    font-size: clamp(1.75rem, 9vw, 2.35rem);
+  }
+
+  .lore-tabs {
+    width: calc(100vw - 28px - var(--mobile-safe-left) - var(--mobile-safe-right));
+    padding-bottom: 3px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+  }
+
+  .lore-tabs button {
+    min-height: 44px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .lore-section {
+    padding: 14px;
+  }
+
+  .lore-section-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lore-section-header .lore-actions,
+  .lore-actions {
+    width: 100%;
+  }
+
+  .lore-actions button,
+  .lore-card-actions button,
+  .lore-primary-button,
+  .lore-link-button {
+    min-height: 44px;
+  }
+
+  .lore-faction-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lore-faction-card {
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .lore-faction-card > header {
+    align-items: flex-start;
+  }
+
+  .lore-faction-name {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .lore-card-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lore-card-actions button:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .lore-sidebar {
+    gap: 14px;
+    padding: 14px;
+    overflow: visible;
+  }
+
+  .lore-sidebar-tabs button {
+    min-height: 44px;
+  }
+
+  .lore-form,
+  .lore-sidebar-form {
+    min-width: 0;
+  }
+
+  .lore-form label,
+  .lore-sidebar-form label,
+  .lore-filters label {
+    min-width: 0;
+  }
+
+  .lore-form input,
+  .lore-form select,
+  .lore-form textarea,
+  .lore-sidebar-form input,
+  .lore-sidebar-form select,
+  .lore-sidebar-form textarea,
+  .lore-filters input,
+  .lore-filters select,
+  .lore-grid input {
+    min-height: 44px;
+    max-width: 100%;
+    font-size: max(.85rem, 16px);
+  }
+
+  .lore-form-row,
+  .lore-entry-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lore-entry-row .danger {
+    width: 44px;
+    justify-self: end;
+  }
+
+  .lore-event header,
+  .lore-effect-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .lore-effect-change {
+    white-space: normal;
+  }
+
+  .lore-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lore-npc-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 10px;
+  }
+
+  .lore-npc-tile {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+  }
+
+  .lore-npc-tile > img,
+  .lore-npc-tile-placeholder {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+  }
+
+  .lore-npc-tile-text {
+    min-height: 76px;
+  }
+
+  .lore-npc-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lore-npc-detail-portrait {
+    width: min(100%, 320px);
+    max-height: 46dvh;
+    justify-self: center;
+  }
+
+  .lore-timeline-toolbar {
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .lore-timeline-toolbar label {
+    grid-column: 1 / -1;
+  }
+
+  .lore-timeline-toolbar input {
+    min-height: 44px;
+    font-size: max(.85rem, 16px);
+  }
+
+  .lore-timeline-navigation button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .lore-history-rail {
+    margin-inline: -14px;
+    overflow: hidden;
+  }
+
+  .lore-history-events {
+    padding-inline: 14px;
+    scroll-padding-inline: 14px;
+    overscroll-behavior-x: contain;
+  }
+
+  .lore-history-events button {
+    width: min(72vw, 240px);
+    min-height: 44px;
+  }
+
+  .lore-timeline-inspector {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lore-timeline-inspector-image {
+    width: 100%;
+    max-height: 42dvh;
+    object-fit: cover;
+  }
+
+  .lore-timeline-inspector-body > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lore-grid-scroll {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .lore-grid th,
+  .lore-grid td {
+    min-width: 104px;
+  }
+}
+
+@media (max-width: 420px) {
+  .lore-npc-gallery,
+  .lore-card-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lore-card-actions button:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
