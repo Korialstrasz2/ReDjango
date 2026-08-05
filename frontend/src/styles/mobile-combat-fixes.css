@@ -1,0 +1,7 @@
+/* Cross-feature phone integration for Combat. */
+@media (max-width: 767px) {
+  html[data-mobile-combat-panel] .mobile-context-note-trigger {
+    z-index: 87;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 74px);
+  }
+}
