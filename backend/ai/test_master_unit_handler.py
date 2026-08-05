@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -16,6 +17,8 @@ from .changes.services import (
     validate_change_set,
 )
 from .models import AIChangeSet
+from .proposal_tools import list_editable_entities, search_manageable_records
+from .tool_context import AIToolExecutionContext
 
 
 class MasterAIUnitHandlerTests(TestCase):
@@ -108,6 +111,46 @@ class MasterAIUnitHandlerTests(TestCase):
         self.assertTrue(configuration["equipmentSlots"])
         self.assertTrue(configuration["statCurveVariables"])
         self.assertTrue(by_name["auditPreview"]["readOnly"])
+
+    def test_unit_discovery_uses_bounded_sections_through_existing_search_tool(self):
+        change_set = self.create_set()
+        context = AIToolExecutionContext(change_set=change_set)
+        catalog = list_editable_entities(self.master_user, self.master, context)
+        self.assertEqual(catalog["scopertaUnit"]["tipo"], "unit-config")
+        self.assertIn("progressione", catalog["scopertaUnit"]["query"])
+
+        contract = search_manageable_records(
+            self.master_user,
+            self.master,
+            context,
+            tipo="unit-config",
+            query="contratto",
+        )
+        self.assertEqual(contract["sezione"], "contratto")
+        self.assertEqual({entry["value"] for entry in contract["contratti"]}, {"creature", "humanoid"})
+        self.assertIn(20, contract["verifica"]["livelliNominati"])
+        self.assertLess(len(json.dumps(contract, ensure_ascii=False)), 24_000)
+
+        progression = search_manageable_records(
+            self.master_user,
+            self.master,
+            context,
+            tipo="unit-config",
+            query="progressione",
+        )
+        self.assertTrue(progression["cores"])
+        self.assertTrue(progression["tags"])
+        self.assertLess(len(json.dumps(progression, ensure_ascii=False)), 24_000)
+
+        with self.assertRaises(ApiError) as captured:
+            search_manageable_records(
+                self.master_user,
+                self.master,
+                context,
+                tipo="unit-config",
+                query="sezione-inventata",
+            )
+        self.assertEqual(captured.exception.code, "ai.unit_discovery_section_invalid")
 
     def test_player_cannot_access_unit_handler(self):
         with self.assertRaises(ApiError) as captured:
