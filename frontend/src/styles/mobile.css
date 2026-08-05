@@ -163,6 +163,69 @@
     white-space: nowrap;
   }
 
+  html[data-mobile-management-blocked="true"] .workspace-content {
+    visibility: hidden;
+  }
+
+  .mobile-unsupported-management {
+    position: fixed;
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+    right: 0;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom));
+    left: 0;
+    z-index: 55;
+    display: grid;
+    place-items: center;
+    overflow: auto;
+    padding: 24px max(18px, var(--mobile-safe-right)) 24px max(18px, var(--mobile-safe-left));
+    background: linear-gradient(var(--theme-background-veil), var(--theme-background-veil)), var(--background);
+  }
+
+  .mobile-unsupported-management > div {
+    width: min(520px, 100%);
+    padding: 24px;
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 48%);
+    border-radius: 12px;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 22px 60px #0007;
+    text-align: center;
+  }
+
+  .mobile-unsupported-management > div > span {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 15px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 1.35rem;
+  }
+
+  .mobile-unsupported-management h1 {
+    margin: 5px 0 12px;
+    font-size: clamp(1.55rem, 7vw, 2.2rem);
+  }
+
+  .mobile-unsupported-management p:not(.eyebrow) {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .mobile-unsupported-management > div > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 20px;
+  }
+
+  .mobile-unsupported-management .button {
+    min-height: var(--mobile-touch-target);
+  }
+
   .mobile-navigation-sheet {
     display: grid;
     gap: 18px;
