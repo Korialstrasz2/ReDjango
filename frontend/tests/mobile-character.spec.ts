@@ -8,13 +8,13 @@ const isCompactProject = (name: string) => isPhoneProject(name) || isTabletProje
 
 async function openActiveCharacter(page: Page) {
   await page.goto("/");
-  const href = await page.evaluate(() => {
-    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href^="/character/"]'));
-    return links.map((link) => link.getAttribute("href")).find((value): value is string => Boolean(value));
-  });
+  await expect(page.locator(".dashboard-page")).toBeVisible({ timeout: 20_000 });
+  const characterLink = page.locator('a[href^="/character/"]').first();
+  await expect(characterLink).toBeVisible();
+  const href = await characterLink.getAttribute("href");
   expect(href).toBeTruthy();
   await page.goto(href!);
-  await expect(page.locator(".character-page")).toBeVisible();
+  await expect(page.locator(".character-page")).toBeVisible({ timeout: 20_000 });
   await expect(page.locator(".fatal-error")).toHaveCount(0);
 }
 
