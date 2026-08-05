@@ -80,9 +80,39 @@ is removed before the domain save service is called.
 
 ## Discovery contract
 
+The generic entity catalogue contains field schemas for every manageable entity and
+can exceed the AI runtime's 24,000-character result budget. Unit authoring therefore
+does not depend on receiving the complete generic schema.
+
+`elenca_entita_modificabili` returns a stable `scopertaUnit` instruction. The proposer
+then calls the already-authorized generic search tool with:
+
+```json
+{
+  "tipo": "unit-config",
+  "query": "contratto"
+}
+```
+
+Available bounded sections are:
+
+```text
+contratto
+progressione
+razze_competenze
+equipaggiamento
+statistiche_creature
+```
+
+Each section is generated from live configuration and current services. The equipment
+section also exposes the complete active `AccessoryProfile.rules`, not only profile
+labels and descriptions. Each response is kept below the normal tool-result budget.
+This path remains available to existing proposer agents because it reuses
+`cerca_record_gestibili`; no newly selected tool permission is required.
+
 The proposer must:
 
-1. list the Unit entity to obtain live Unit configuration embedded in the server field schema;
+1. read the `contratto` section and every mechanical section needed by the requested Unit;
 2. search and read at least five mechanically comparable Units;
 3. search and read every selected Skill through the Skill handler;
 4. search and read every selected Item through the Item handler;
@@ -152,10 +182,15 @@ entityType: unit
 sourceSurface: unit-management
 ```
 
-The Unit management page receives a portal-based `Master AI Unit` launcher. It supplies
-a safe Unit scope, the currently displayed record label when available and a prompt
-that requires comparable-Unit and dependency discovery. The label and prompt are hints,
-not authorization; the agent must still search and read the record through the handler.
+The Unit management page receives a portal-based `Master AI Unit` launcher. For a
+selected saved Unit it supplies the exact target ID, so normal timestamp/digest stale
+protection applies. For a new unsaved Unit it supplies Unit scope without a target.
+The portal keeps a stable DOM node while the management page updates, avoiding click
+races during asynchronous detail rendering.
+
+The current label and prefilled prompt are hints, not authorization; the agent must
+still search and read the record through the handler. Opening the launcher never sends
+the prompt automatically.
 
 ## Security properties
 
@@ -168,6 +203,7 @@ not authorization; the agent must still search and read the record through the h
 - Update/archive retains timestamp and canonical snapshot stale checks.
 - Apply remains atomic across every selected proposal operation.
 - Unit previews and temporary records are rolled back.
+- Unit discovery is owner/change-set scoped and rechecks Unit permissions.
 
 ## Tests
 
@@ -180,12 +216,22 @@ backend/ai/test_master_unit_handler.py
 They cover:
 
 - explicit registry and server configuration;
+- bounded `unit-config` discovery and result-size limits;
 - Master-only access;
 - create, validate and apply lifecycle;
 - real rollback preview execution;
 - absence of leaked preview characters;
 - read-only audit data;
 - Unit soft archive behavior.
+
+Frontend and browser coverage includes:
+
+- specialized Unit proposal rendering and edits;
+- Unit launch-context parsing;
+- deterministic active Unit fixture;
+- selected-Unit target ID and context label;
+- stable portal click behavior;
+- no automatic prompt submission.
 
 Run:
 
