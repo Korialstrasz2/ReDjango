@@ -15,7 +15,7 @@ test("phone Travel is map-first and opens controls without remounting the worksp
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only Travel workspace contract");
   await openTravel(page);
 
-  const toolbar = page.getByRole("group", { name: "Controlli rapidi della mappa" });
+  const toolbar = page.locator(".travel-mobile-toolbar");
   await expect(toolbar).toBeVisible();
   const sidebar = page.locator(".travel-sidebar");
   await expect(sidebar).toBeHidden();
@@ -85,7 +85,7 @@ test("phone Travel converts marker palette taps into explicit placement mode", a
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only marker placement contract");
   await openTravel(page);
 
-  await page.getByRole("group", { name: "Controlli rapidi della mappa" }).getByRole("button", { name: "Controlli" }).click();
+  await page.locator(".travel-mobile-toolbar").getByRole("button", { name: "Controlli" }).click();
   const paletteButton = page.locator(".travel-marker-choice > button").first();
   await expect(paletteButton).toBeVisible();
   await paletteButton.click();
