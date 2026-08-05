@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 import { measureDocumentOverflow } from "./helpers/layout";
 
 const isPhoneProject = (name: string) => name.startsWith("phone-");
+const isTabletProject = (name: string) => name.startsWith("tablet-");
+const isCompactProject = (name: string) => isPhoneProject(name) || isTabletProject(name);
 
 test("captures the authenticated shell baseline for the configured viewport", async ({ page }, testInfo) => {
   await page.goto("/");
@@ -35,6 +37,57 @@ test("captures the authenticated shell baseline for the configured viewport", as
   });
 });
 
+test("phone login remains usable without viewport overflow or input zoom", async ({ context, page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only login contract");
+  await context.clearCookies();
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/login\/\?next=\//);
+  const card = page.locator(".auth-card");
+  await expect(card).toBeVisible();
+  await expect(page.getByLabel("Nome utente")).toBeVisible();
+  await expect(page.getByLabel("Password")).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const cardElement = document.querySelector<HTMLElement>(".auth-card")!;
+    const username = document.querySelector<HTMLInputElement>("input[autocomplete='username']")!;
+    const submit = document.querySelector<HTMLButtonElement>(".auth-card form button")!;
+    const rect = cardElement.getBoundingClientRect();
+    return {
+      cardLeft: rect.left,
+      cardRight: rect.right,
+      viewportWidth: document.documentElement.clientWidth,
+      inputFontSize: Number.parseFloat(getComputedStyle(username).fontSize),
+      submitHeight: submit.getBoundingClientRect().height,
+    };
+  });
+
+  expect(metrics.cardLeft).toBeGreaterThanOrEqual(0);
+  expect(metrics.cardRight).toBeLessThanOrEqual(metrics.viewportWidth + 1);
+  expect(metrics.inputFontSize).toBeGreaterThanOrEqual(16);
+  expect(metrics.submitHeight).toBeGreaterThanOrEqual(44);
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
+test("compact dashboard uses a single readable selection column", async ({ page }, testInfo) => {
+  test.skip(!isCompactProject(testInfo.project.name), "Phone and tablet dashboard contract");
+  await page.goto("/");
+
+  const selection = page.locator(".dashboard-character-selection");
+  await expect(selection).toBeVisible();
+  const columns = await selection.evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+  expect(columns).toHaveLength(1);
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+
+  if (isPhoneProject(testInfo.project.name)) {
+    const shortcuts = page.locator(".dashboard-shortcuts .button");
+    const shortcutCount = await shortcuts.count();
+    for (let index = 0; index < shortcutCount; index += 1) {
+      expect((await shortcuts.nth(index).boundingBox())?.height || 0).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
+
 test("phone shell exposes secondary destinations and quick tools", async ({ page }, testInfo) => {
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only shell contract");
   await page.goto("/");
@@ -57,6 +110,25 @@ test("phone shell exposes secondary destinations and quick tools", async ({ page
   await expect(toolsDialog.getByRole("button", { name: /Diario/ })).toBeVisible();
   await expect(toolsDialog.getByRole("button", { name: /Dadi/ })).toBeVisible();
   await expect(toolsDialog.getByRole("button", { name: /Audio/ })).toBeVisible();
+});
+
+test("phone context notes use a visible trigger and autosaving editor sheet", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only context notes contract");
+  await page.goto("/competencies");
+
+  const trigger = page.getByRole("button", { name: "Note della pagina: Competenze" });
+  await expect(trigger).toBeVisible();
+  const triggerBox = await trigger.boundingBox();
+  const navigationBox = await page.locator(".mobile-bottom-navigation").boundingBox();
+  expect(triggerBox?.y || 0).toBeLessThan(navigationBox?.y || Number.POSITIVE_INFINITY);
+
+  await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "Note Competenze" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByLabel("Note Competenze")).toBeVisible();
+  await expect(dialog.getByText(/Salvataggio automatico|Salvato|Da salvare/)).toBeVisible();
+  await dialog.getByRole("button", { name: "Chiudi" }).click();
+  await expect(dialog).toHaveCount(0);
 });
 
 test("phone management URLs preserve the address and show the intentional limitation", async ({ page }, testInfo) => {
