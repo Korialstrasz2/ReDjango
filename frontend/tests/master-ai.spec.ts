@@ -162,6 +162,7 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   const unitCatalog = await api(page, "/api/ai/change-entities/");
   expect(unitCatalog.status).toBe(200);
   expect(unitCatalog.body.data.entities.some((entry: { type: string }) => entry.type === "unit")).toBe(true);
+  const selectedUnitLabel = (await page.locator(".unit-management-list button.active strong").textContent())?.trim() || "";
   const unitLauncher = page.getByRole("button", { name: "Master AI Unit" });
   await expect(unitLauncher).toBeVisible();
   await unitLauncher.click();
@@ -169,8 +170,8 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   const unitUrl = new URL(page.url());
   expect(unitUrl.searchParams.get("entity")).toBe("unit");
   expect(unitUrl.searchParams.get("surface")).toBe("unit-management");
-  expect(unitUrl.searchParams.get("target")).toBeNull();
-  await expect(page.locator(".master-ai-context-chip")).toContainText(/unit/i);
-  await expect(page.locator(".master-ai-chat textarea")).toHaveValue(/Unit completa/);
+  expect(Number(unitUrl.searchParams.get("target"))).toBeGreaterThan(0);
+  await expect(page.locator(".master-ai-context-chip")).toContainText(selectedUnitLabel);
+  await expect(page.locator(".master-ai-chat textarea")).toHaveValue(/Rivedi la Unit/);
   expect(assistantPosts).toBe(0);
 });
