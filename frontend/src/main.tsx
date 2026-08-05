@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 import { MasterAILauncherRuntime } from "./features/master-ai/launchers";
+import { TravelMobileRuntime } from "./features/mobile/TravelMobileRuntime";
 import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
 import "./styles/theme-reveal.css";
@@ -33,7 +34,7 @@ const queryClient = new QueryClient({
 
 // App owns every routed page, including Master AI, so navigation, layout, and shared providers remain consistent.
 function RootApplication() {
-  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><App /></>;
+  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><TravelMobileRuntime /><App /></>;
 }
 
 createRoot(document.getElementById("app")!).render(
