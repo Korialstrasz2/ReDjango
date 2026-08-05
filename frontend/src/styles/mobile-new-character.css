@@ -1,0 +1,222 @@
+/* Responsive New Character flow. Draft and validation state remain React-owned. */
+@media (max-width: 1199px) {
+  .new-pg-page,
+  .new-pg-step,
+  .new-pg-choice-layout,
+  .new-pg-choice-layout > div,
+  .new-pg-detail {
+    min-width: 0;
+  }
+
+  .new-pg-choice-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .new-pg-detail {
+    position: static;
+  }
+}
+
+@media (max-width: 767px) {
+  .new-pg-page {
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+
+  .new-pg-page > .page-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .new-pg-page > .page-header .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .new-pg-tabs {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    gap: 7px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 4px;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: thin;
+  }
+
+  .new-pg-tabs button {
+    min-width: 154px;
+    min-height: 52px;
+    flex: 0 0 auto;
+    padding: 8px 11px;
+    scroll-snap-align: start;
+  }
+
+  .new-pg-step {
+    scroll-margin-top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top) + 10px);
+    gap: 13px;
+    padding: 16px;
+  }
+
+  .new-pg-step > header {
+    gap: 5px;
+    padding-bottom: 11px;
+  }
+
+  .new-pg-step > header h2 {
+    font-size: clamp(1.3rem, 7vw, 1.7rem);
+  }
+
+  .new-pg-step > header p:last-child {
+    font-size: .72rem;
+    line-height: 1.55;
+  }
+
+  .new-pg-step .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .new-pg-step label {
+    min-width: 0;
+  }
+
+  .new-pg-step input,
+  .new-pg-step select,
+  .new-pg-step textarea {
+    min-height: 46px;
+    font-size: max(.9rem, 16px);
+  }
+
+  .new-pg-step textarea {
+    min-height: 112px;
+    resize: vertical;
+  }
+
+  .new-pg-choice-layout {
+    gap: 12px;
+  }
+
+  .new-pg-race-grid,
+  .new-pg-characteristic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .new-pg-race-grid button,
+  .new-pg-characteristic-grid button {
+    min-width: 0;
+    min-height: 48px;
+    padding: 9px 10px;
+  }
+
+  .new-pg-race-grid button strong,
+  .new-pg-race-grid button small,
+  .new-pg-characteristic-grid button {
+    overflow-wrap: anywhere;
+  }
+
+  .new-pg-subrace {
+    max-width: none;
+  }
+
+  .new-pg-subrace select {
+    width: 100%;
+  }
+
+  .new-pg-detail {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .new-pg-detail h4 {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .new-pg-automation {
+    white-space: normal;
+  }
+
+  .new-pg-bonus-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .new-pg-summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .new-pg-summary > div {
+    min-width: 0;
+  }
+
+  .new-pg-summary dd {
+    overflow-wrap: anywhere;
+  }
+
+  .new-pg-step .callout {
+    padding: 13px;
+  }
+
+  .new-pg-page > .form-error {
+    scroll-margin-bottom: 104px;
+    margin: 0;
+  }
+
+  .new-pg-actions {
+    position: sticky;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 8px);
+    z-index: 24;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid color-mix(in srgb, var(--line), transparent 10%);
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--panel-strong), transparent 4%);
+    box-shadow: 0 12px 30px #0009;
+    backdrop-filter: blur(12px);
+  }
+
+  .new-pg-actions .button {
+    min-width: 0;
+    min-height: 48px;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .new-pg-tabs button {
+    min-width: 142px;
+  }
+
+  .new-pg-race-grid,
+  .new-pg-characteristic-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .new-pg-step {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 520px) {
+  .new-pg-page > .page-header {
+    display: none;
+  }
+
+  .new-pg-actions {
+    position: static;
+  }
+
+  .new-pg-step textarea {
+    min-height: 88px;
+  }
+}
