@@ -138,14 +138,24 @@ test("phone Combat attack and hex inspectors use contained state-preserving pane
   const attackTab = navigation.getByRole("tab", { name: /Attacco/ });
   await attackTab.click();
   await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "attack");
-  const attack = page.locator(".combat-attack-drawer.open");
-  await expect(attack).toBeVisible();
-  await navigation.getByRole("tab", { name: /Mappa/ }).click();
-  await expect(attack).toBeHidden();
-  await attackTab.click();
-  await expect(attack).toBeVisible();
+  const attackDrawer = page.locator(".combat-attack-drawer");
+  await expect(attackDrawer).toHaveClass(/open/);
+  await expect(attackDrawer).toBeVisible();
 
   await navigation.getByRole("tab", { name: /Mappa/ }).click();
+  await expect(attackDrawer).toBeHidden();
+  await attackTab.click();
+  await expect(attackDrawer).toBeVisible();
+
+  // The original toolbar remains authoritative. Closing it while the preserved
+  // draft is hidden must return the local workspace to Map rather than leave an
+  // empty Attack panel.
+  await navigation.getByRole("tab", { name: /Mappa/ }).click();
+  await page.locator(".combat-attack-trigger").click();
+  await expect(attackDrawer).not.toHaveClass(/open/);
+  await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
+  await expect(page.locator(".combat-map-panel")).toBeVisible();
+
   const hexLauncher = page.locator(".combat-hex-tool-launcher");
   await expect(hexLauncher).toBeVisible();
   await hexLauncher.click();
