@@ -118,12 +118,20 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   expect(Number(contextualUrl.searchParams.get("source"))).toBeGreaterThan(0);
   expect(contextualUrl.searchParams.get("surface")).toBe("item-management");
   await expect(page.getByRole("heading", { name: "Master AI" })).toBeVisible();
+  await expect(page.locator(".side-nav")).toBeVisible();
+  await expect(page.locator(".quick-tools-bar")).toBeVisible();
+  await expect(page.locator(".master-ai-commandbar")).toBeVisible();
   await expect(page.locator(".master-ai-context-chip")).toContainText(appliedName);
   await expect(page.locator(".master-ai-chat textarea")).toHaveValue(new RegExp(`simile a .*${appliedName}`));
+  await expect(page.getByRole("button", { name: "Nuova chat" })).toBeVisible();
   expect(assistantPosts).toBe(0);
 
+  await page.getByRole("button", { name: "Nuova chat" }).click();
+  await expect(page.locator(".master-ai-chat-empty")).toContainText("Nuova chat");
+  await expect(page.locator(".master-ai-chat textarea")).toHaveValue("");
+
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".master-ai-layout")).toBeVisible();
+  await expect(page.locator(".master-ai-request-row")).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(2);
 
