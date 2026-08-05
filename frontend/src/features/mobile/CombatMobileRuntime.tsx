@@ -141,14 +141,16 @@ export function CombatMobileRuntime() {
   useEffect(() => {
     if (!enabled) return;
     let activeStage: HTMLElement | null = null;
+    let activeMap: SVGSVGElement | null = null;
     let detach = () => undefined;
 
     const attach = () => {
       const stage = document.querySelector<HTMLElement>(".combat-map-stage");
       const map = stage?.querySelector<SVGSVGElement>("svg") || null;
-      if (stage === activeStage) return;
+      if (stage === activeStage && map === activeMap) return;
       detach();
       activeStage = stage;
+      activeMap = map;
       if (!stage || !map) return;
 
       const pointers = new Map<number, Point>();
