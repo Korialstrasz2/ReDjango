@@ -11,6 +11,41 @@
 }
 
 @media (max-width: 767px) {
+  /* Details, authoring, and the reaction table need the complete phone canvas.
+     History remains the ordinary sheet presentation. */
+  .rd-modal[data-surface="lore-npc"],
+  .rd-modal[data-surface="lore-faction-editor"],
+  .rd-modal[data-surface="lore-npc-editor"],
+  .rd-modal[data-surface="lore-reactions"],
+  .rd-modal[data-surface="lore-timeline-event"] {
+    width: 100% !important;
+    height: 100dvh !important;
+    max-width: none;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .rd-modal[data-surface="lore-npc"] .modal-header,
+  .rd-modal[data-surface="lore-faction-editor"] .modal-header,
+  .rd-modal[data-surface="lore-npc-editor"] .modal-header,
+  .rd-modal[data-surface="lore-reactions"] .modal-header,
+  .rd-modal[data-surface="lore-timeline-event"] .modal-header {
+    padding-top: calc(14px + var(--mobile-safe-top));
+    padding-right: calc(18px + var(--mobile-safe-right));
+    padding-left: calc(18px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-surface="lore-npc"] .modal-body,
+  .rd-modal[data-surface="lore-faction-editor"] .modal-body,
+  .rd-modal[data-surface="lore-npc-editor"] .modal-body,
+  .rd-modal[data-surface="lore-reactions"] .modal-body,
+  .rd-modal[data-surface="lore-timeline-event"] .modal-body {
+    padding-right: calc(16px + var(--mobile-safe-right));
+    padding-bottom: calc(20px + var(--mobile-safe-bottom));
+    padding-left: calc(16px + var(--mobile-safe-left));
+  }
+
   .lore-page {
     padding-bottom: 24px;
   }
