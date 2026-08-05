@@ -154,8 +154,23 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   });
   expect(layout.overflow, JSON.stringify(layout, null, 2)).toBeLessThanOrEqual(2);
 
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/tools/themes");
   await expect(page.getByRole("button", { name: "AI Assist" })).toBeVisible();
+
   await page.goto("/tools/units");
-  await expect(page.getByRole("button", { name: "AI Assist" })).toHaveCount(0);
+  const unitCatalog = await api(page, "/api/ai/change-entities/");
+  expect(unitCatalog.status).toBe(200);
+  expect(unitCatalog.body.data.entities.some((entry: { type: string }) => entry.type === "unit")).toBe(true);
+  const unitLauncher = page.getByRole("button", { name: "Master AI Unit" });
+  await expect(unitLauncher).toBeVisible();
+  await unitLauncher.click();
+  await expect(page).toHaveURL(/\/tools\/master-ai\?/);
+  const unitUrl = new URL(page.url());
+  expect(unitUrl.searchParams.get("entity")).toBe("unit");
+  expect(unitUrl.searchParams.get("surface")).toBe("unit-management");
+  expect(unitUrl.searchParams.get("target")).toBeNull();
+  await expect(page.locator(".master-ai-context-chip")).toContainText("unit");
+  await expect(page.locator(".master-ai-chat textarea")).toHaveValue(/Unit completa/);
+  expect(assistantPosts).toBe(0);
 });
