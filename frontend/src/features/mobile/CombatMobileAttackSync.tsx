@@ -16,11 +16,9 @@ export function CombatMobileAttackSync() {
       const open = Boolean(document.querySelector(".combat-attack-drawer.open"));
       if (open === previousOpen) return;
       previousOpen = open;
-      if (open) {
-        document.querySelector<HTMLButtonElement>("[data-combat-mobile-panel='attack']")?.click();
-      } else if (document.documentElement.dataset.mobileCombatPanel === "attack") {
-        document.querySelector<HTMLButtonElement>("[data-combat-mobile-panel='map']")?.click();
-      }
+      document.querySelector<HTMLButtonElement>(
+        open ? "[data-combat-mobile-panel='attack']" : "[data-combat-mobile-panel='map']",
+      )?.click();
     };
 
     const observer = new MutationObserver(synchronize);
