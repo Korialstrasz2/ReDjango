@@ -14,7 +14,7 @@ The public mobile experience remains incomplete and must not be treated as relea
 | B — Shared responsive primitives | In progress | Responsive hook, modal presentations, phone app/bottom navigation, More and Quick Tools sheets, full-screen ToolDrawer, Context Notes sheet, and phone management guard are implemented. Formal shell extraction, tablet navigation, and reusable high-risk workspace primitives remain pending. |
 | C — Lower-risk player pages | Verified checkpoint | Login, Dashboard, Lore, Guides, Media, Settings, and Market have phone/tablet layouts and responsive Playwright coverage. |
 | D — Stateful player pages | Verified checkpoint | Skills, Competencies, Creation, New Character, and Character have dedicated responsive layouts and route-specific Playwright coverage. Character includes real phone touch-drag activation coverage. |
-| E — High-risk workspaces/global tools | In progress | Quick Tools and ToolDrawer have a phone presentation foundation. Travel now has an isolated map-first phone/tablet layout checkpoint; native pointer pan/zoom arbitration, explicit workspace navigation, marker touch drag, and route-specific verification remain pending. Combat, Journal internals, Dice internals, Audio internals, and the remaining tool workflows still require dedicated implementation. |
+| E — High-risk workspaces/global tools | In progress | Quick Tools and ToolDrawer have a phone presentation foundation. Travel is a verified responsive checkpoint with map-first navigation, real touch pan/pinch coverage, marker placement, state-preserving controls, and protected desktop assertions. Combat, Journal internals, Dice internals, Audio internals, and the remaining tool workflows still require dedicated implementation. |
 | F — Integrated full-route pass | Not started | Public activation remains blocked. |
 
 ## Implemented foundations
@@ -36,7 +36,7 @@ File: `frontend/playwright.config.ts`
 - canonical `authenticated` desktop project remains 1440 × 900;
 - additional projects cover 1920 × 1080 desktop, two phone portraits, phone landscape, tablet portrait, and tablet landscape;
 - shared diagnostics measure document and element overflow;
-- route suites currently cover baseline/lower-risk pages, Skills, Competencies, Creation, New Character, and Character.
+- route suites currently cover baseline/lower-risk pages, Skills, Competencies, Creation, New Character, Character, and Travel.
 
 ### Responsive modal foundation
 
@@ -138,24 +138,28 @@ Verified behavior includes:
 - real phone touch-event activation of the existing item drag system;
 - desktop Character assertions for sticky HUD, multi-column inventory, and vertical effect rail.
 
-### Travel layout checkpoint
+### Travel verified checkpoint
 
 Files:
 
+- `frontend/src/features/mobile/TravelMobileRuntime.tsx`
 - `frontend/src/styles/mobile-travel.css`
+- `frontend/tests/mobile-travel.spec.ts`
+- `frontend/playwright.config.ts`
 - `frontend/src/main.tsx`
 
-Implemented without changing the desktop Travel declarations:
+Verified without changing the desktop Travel controller or declarations:
 
-- map-first phone ordering while retaining the existing shared Travel DOM and state;
-- phone canvas height based on `dvh`, including a dedicated landscape calculation;
-- contained guide overlay with independent scrolling;
-- single-column grid controls and larger form/touch targets;
-- responsive quality controls, marker palette, active-marker list, and footer actions;
-- coarse-pointer hover neutralization while preserving the selected-marker state;
-- tablet width containment without changing the desktop two-column contract.
+- map-first phone workspace with a state-preserving full-height controls surface;
+- one-finger touch pan, tap selection, double-tap marker editing, and two-finger pinch arbitration;
+- explicit zoom and marker-centering controls;
+- marker palette taps converted into an explicit map-placement mode while the existing drop/save path remains authoritative;
+- safe-area and dynamic-viewport handling in portrait and landscape;
+- loading, empty, permission-derived, guide, quality, grid, effect, marker, and active-marker states remain in the shared Travel tree;
+- phone focus trapping, Escape/Back behavior, inert map state, and body-scroll locking while controls are open;
+- real CDP touch sequences and protected desktop two-column assertions in the responsive Playwright matrix.
 
-This checkpoint is not Travel completion. The current canvas remains mouse-event driven. Native pointer handling, pan/select arbitration, explicit zoom/center controls, a dedicated Back/panel workspace contract, touch marker drag, route-specific Playwright tests, and desktop screenshot verification are still required before Travel can pass Stage E.
+Verified Travel checkpoint: commit `7f32e1f7e0179f17c84b32958867178beeb20114`, workflow run `31046782334`. Frontend and responsive E2E jobs completed successfully.
 
 ## Tests and continuous verification
 
@@ -168,25 +172,17 @@ The branch workflow `.github/workflows/mobile-optimization-verification.yml` run
 - Django system checks;
 - the responsive Chromium Playwright matrix.
 
-Latest verified Character checkpoint before the Travel layout work: commit `2b2e3db9b43014ea950de75dae86a71aa8b4bdb3`. Both workflow jobs completed successfully.
-
 ## Immediate next slice
 
-1. Continue Travel from the layout checkpoint:
-   - native pointer events for one-finger pan and tap selection;
-   - explicit zoom and center controls;
-   - dedicated Back and panel navigation with state preservation;
-   - marker touch drag while retaining the existing tap recovery path;
-   - player/master empty, loading, and permission states;
+1. Implement Combat as a dedicated phone workspace:
+   - map-first presentation without the current forced desktop minimum width;
+   - touch pan, pinch, token movement, hex selection, and gesture arbitration;
+   - explicit navigation among map, active roster, selected character, attacks, inspectors, and planners while preserving mounted state;
+   - touch-visible resource controls and alternatives to hover/context-menu-only actions;
+   - player/master permission variants, empty states, modals, portrait, and landscape;
    - phone/tablet and protected desktop Playwright coverage.
-2. Implement Combat only after Travel returns to a green checkpoint:
-   - map/token gestures;
-   - action and target selection;
-   - inspectors and panels;
-   - phone navigation and state preservation;
-   - player/master variants.
-3. Audit every Quick Tool internal workflow.
-4. Run the integrated Stage F pass across roles, orientations, font scales, overlays, touch drag systems, and canonical desktop screenshots.
+2. Audit every Quick Tool internal workflow.
+3. Run the integrated Stage F pass across roles, orientations, font scales, overlays, touch drag systems, and canonical desktop screenshots.
 
 ## Release block
 
