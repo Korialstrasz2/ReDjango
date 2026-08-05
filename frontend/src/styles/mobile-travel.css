@@ -16,6 +16,7 @@
     max-width: 100%;
     padding-right: max(10px, var(--mobile-safe-right));
     padding-left: max(10px, var(--mobile-safe-left));
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 76px);
   }
 
   .travel-page > .page-header {
@@ -39,12 +40,10 @@
     gap: 12px;
   }
 
-  /* The map is the first phone surface. The existing desktop sidebar remains
-     unchanged in the DOM and becomes the secondary controls/markers surface. */
   .travel-canvas-panel {
     order: -1;
-    min-height: clamp(430px, 62dvh, 680px);
-    height: clamp(430px, 62dvh, 680px);
+    min-height: clamp(430px, 68dvh, 720px);
+    height: clamp(430px, 68dvh, 720px);
     border-radius: 8px;
   }
 
@@ -78,10 +77,29 @@
     overscroll-behavior: contain;
   }
 
+  /* Phone Travel is map-first. The original sidebar remains mounted, preserving
+     React state, and becomes a full-height controls surface only when requested. */
   .travel-sidebar {
+    display: none;
     max-height: none;
     overflow: visible;
-    border-radius: 8px;
+    border-radius: 0;
+  }
+
+  html[data-mobile-travel-controls-open="true"] .travel-sidebar {
+    position: fixed;
+    z-index: 93;
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top) + 56px);
+    right: 0;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom));
+    left: 0;
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: none;
+    padding-bottom: calc(18px + var(--mobile-safe-bottom));
   }
 
   .travel-sidebar > section,
@@ -186,6 +204,109 @@
     padding: 24px;
   }
 
+  .travel-mobile-toolbar {
+    position: fixed;
+    z-index: 86;
+    right: calc(10px + var(--mobile-safe-right));
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 10px);
+    left: calc(10px + var(--mobile-safe-left));
+    display: grid;
+    grid-template-columns: var(--mobile-touch-target) var(--mobile-touch-target) var(--mobile-touch-target) minmax(0, 1fr);
+    gap: 7px;
+    padding: 7px;
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 42%);
+    border-radius: 12px;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 12px 32px #0008;
+    backdrop-filter: blur(14px);
+  }
+
+  .travel-mobile-toolbar button,
+  .travel-mobile-placement button,
+  .travel-mobile-controls-bar button {
+    min-height: var(--mobile-touch-target);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--theme-overlay-surface);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .travel-mobile-toolbar button:last-child {
+    padding-inline: 12px;
+    border-color: color-mix(in srgb, var(--gold), transparent 36%);
+    color: var(--gold);
+    font-weight: 800;
+  }
+
+  .travel-mobile-toolbar button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+
+  .travel-mobile-placement {
+    position: fixed;
+    z-index: 88;
+    right: calc(10px + var(--mobile-safe-right));
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 74px);
+    left: calc(10px + var(--mobile-safe-left));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 9px 9px 13px;
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 10px 28px #0008;
+    font-size: .76rem;
+  }
+
+  .travel-mobile-placement button {
+    padding-inline: 12px;
+  }
+
+  .travel-mobile-controls-bar {
+    position: fixed;
+    z-index: 94;
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+    right: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: minmax(92px, auto) minmax(0, 1fr) var(--mobile-touch-target);
+    align-items: center;
+    gap: 10px;
+    min-height: 56px;
+    padding: 6px calc(10px + var(--mobile-safe-right)) 6px calc(10px + var(--mobile-safe-left));
+    border-bottom: 1px solid var(--line);
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 8px 24px #0006;
+  }
+
+  .travel-mobile-controls-bar button {
+    padding-inline: 12px;
+  }
+
+  .travel-mobile-controls-bar strong {
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .travel-mobile-controls-bar > span {
+    display: grid;
+    place-items: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+  }
+
+  html[data-mobile-travel-controls-open="true"] .travel-mobile-toolbar,
+  html[data-mobile-travel-controls-open="true"] .travel-mobile-placement {
+    display: none;
+  }
+
   .modal-surface[data-surface="travel-marker"] input {
     min-height: 48px;
     font-size: max(1rem, 16px);
@@ -193,9 +314,22 @@
 }
 
 @media (max-width: 767px) and (orientation: landscape) {
+  .travel-page {
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 68px);
+  }
+
+  .travel-page > .page-header {
+    display: none;
+  }
+
   .travel-canvas-panel {
-    min-height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 34px);
-    height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 34px);
+    min-height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 20px);
+    height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 20px);
+  }
+
+  .travel-guide.open {
+    max-height: 58%;
+    overflow-y: auto;
   }
 }
 
