@@ -43,14 +43,11 @@ test("phone Combat is map-first and preserves mounted panel state", async ({ pag
   await expect(page.locator(".combat-map-panel")).toBeVisible();
   await expect(page.locator(".combat-map-stage svg")).toHaveAttribute("data-mobile-combat-touch-ready", "true");
 
-  const noteTrigger = page.locator(".mobile-context-note-trigger");
-  if (await noteTrigger.count()) {
-    const noteBox = await noteTrigger.boundingBox();
-    const navigationBox = await navigation.boundingBox();
-    expect(noteBox).toBeTruthy();
-    expect(navigationBox).toBeTruthy();
-    expect(noteBox!.y + noteBox!.height).toBeLessThanOrEqual(navigationBox!.y - 4);
-  }
+  const originalNoteTrigger = page.locator(".mobile-context-note-trigger");
+  if (await originalNoteTrigger.count()) await expect(originalNoteTrigger).toBeHidden();
+  const notesButton = page.getByRole("button", { name: "Apri note del combattimento" });
+  await expect(notesButton).toBeVisible();
+  expect((await notesButton.boundingBox())?.height || 0).toBeGreaterThanOrEqual(44);
 
   const characterTab = navigation.getByRole("tab", { name: /Scheda/ });
   if (await characterTab.isEnabled()) {
@@ -91,6 +88,7 @@ test("phone Combat arbitrates real pinch without replacing one-finger token drag
   await expect(map).toHaveAttribute("data-mobile-combat-touch-ready", "true");
   const box = await map.boundingBox();
   expect(box).toBeTruthy();
+  expect(box!.height).toBeGreaterThanOrEqual(testInfo.project.name === "phone-landscape" ? 100 : 180);
   const x = box!.x + box!.width * .5;
   const y = box!.y + box!.height * .5;
   const session = await context.newCDPSession(page);
