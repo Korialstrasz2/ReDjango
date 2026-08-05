@@ -166,7 +166,7 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   const fixtureUnit = page.locator(".unit-management-list button").filter({ hasText: fixtureName });
   await expect(fixtureUnit).toBeVisible();
   await fixtureUnit.click();
-  await expect(page.locator(".unit-management-editor .eyebrow")).toContainText(/Unit #\d+/);
+  await expect(page.getByText(/^Unit #\d+$/)).toBeVisible();
   const unitLauncher = page.getByRole("button", { name: "Master AI Unit" });
   await expect(unitLauncher).toBeVisible();
   await unitLauncher.click();
