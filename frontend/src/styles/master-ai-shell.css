@@ -1,7 +1,29 @@
-/* Master AI uses the standard application shell. Keep the shared fixed tool bar
-   inside the narrow workspace column instead of letting its action row widen the
-   whole document on phones and compact windows. */
-body:has(.master-ai-page) .quick-tools-bar {
+/* Master AI remains inside the shared app shell, but its workspace is allowed
+   to shrink below the desktop-only 1024px minimum used by the legacy pages. */
+.app-shell.master-ai-app-shell {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+.app-shell.master-ai-app-shell .workspace.master-ai-workspace,
+.app-shell.master-ai-app-shell .workspace-content,
+.app-shell.master-ai-app-shell .master-ai-page,
+.app-shell.master-ai-app-shell .master-ai-commandbar,
+.app-shell.master-ai-app-shell .master-ai-request-row,
+.app-shell.master-ai-app-shell .master-ai-chat,
+.app-shell.master-ai-app-shell .master-ai-operations,
+.app-shell.master-ai-app-shell .master-ai-proposal-detail {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-shell.master-ai-app-shell .workspace.master-ai-workspace {
+  width: auto;
+  overflow-x: clip;
+}
+
+.app-shell.master-ai-app-shell .quick-tools-bar {
   min-width: 0;
   max-width: calc(100vw - var(--sidebar-width));
   overflow-x: auto;
@@ -10,32 +32,19 @@ body:has(.master-ai-page) .quick-tools-bar {
   scrollbar-width: thin;
 }
 
-body:has(.master-ai-page) .quick-tools-actions {
+.app-shell.master-ai-app-shell .quick-tools-actions {
   min-width: max-content;
 }
 
-body:has(.master-ai-page) .app-shell,
-body:has(.master-ai-page) .workspace,
-body:has(.master-ai-page) .workspace-content,
-body:has(.master-ai-page) .master-ai-page,
-body:has(.master-ai-page) .master-ai-commandbar,
-body:has(.master-ai-page) .master-ai-request-row,
-body:has(.master-ai-page) .master-ai-chat,
-body:has(.master-ai-page) .master-ai-operations,
-body:has(.master-ai-page) .master-ai-proposal-detail {
-  min-width: 0;
-}
-
 @media (max-width: 720px) {
-  body:has(.master-ai-page) .page {
+  .app-shell.master-ai-app-shell .page {
     padding-inline: 12px;
   }
 
-  body:has(.master-ai-page) .master-ai-commandbar,
-  body:has(.master-ai-page) .master-ai-chat,
-  body:has(.master-ai-page) .master-ai-operations,
-  body:has(.master-ai-page) .master-ai-proposal-detail {
-    max-width: 100%;
+  .app-shell.master-ai-app-shell .master-ai-commandbar,
+  .app-shell.master-ai-app-shell .master-ai-chat,
+  .app-shell.master-ai-app-shell .master-ai-operations,
+  .app-shell.master-ai-app-shell .master-ai-proposal-detail {
     overflow: hidden;
   }
 }

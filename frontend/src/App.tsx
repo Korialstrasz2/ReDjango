@@ -223,6 +223,7 @@ function Shell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const screen = screenFromPath(location.pathname);
+  const isMasterAIWorkspace = location.pathname === "/tools/master-ai" || location.pathname.startsWith("/tools/master-ai/");
   const background = settings.theme?.backgrounds?.[screen] || "";
   const characterPath = personaggi.giocatore.activePersonaggioId ? `/character/${personaggi.giocatore.activePersonaggioId}` : "/characters";
   const links: Array<[string, string, string, PageShortcutTarget?]> = [
@@ -311,7 +312,7 @@ function Shell({ children }: { children: ReactNode }) {
     };
   }, [characterPath, navigate, settings.ui]);
   return (
-    <div className="app-shell" data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>
+    <div className={`app-shell ${isMasterAIWorkspace ? "master-ai-app-shell" : ""}`} data-component-type="app-shell" data-theme={settings.theme?.slug || "default"}>
       <aside className="side-nav" data-component-type="nav" data-theme="dark">
         {/* Il ritratto apre la scheda del personaggio; il nome resta la via per la Sala principale. */}
         <div className="brand-block">
@@ -355,7 +356,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>}
       </aside>
       <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} notify={notify} />
-      <main key={`${location.key}:${background}`} className={`workspace ${background ? "theme-reveal-surface" : ""}`} data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
+      <main key={`${location.key}:${background}`} className={`workspace ${isMasterAIWorkspace ? "master-ai-workspace" : ""} ${background ? "theme-reveal-surface" : ""}`} data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
         <div className="workspace-background" aria-hidden="true" />
         <div className="workspace-content">{children}</div>
       </main>
