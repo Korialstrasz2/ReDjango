@@ -10,14 +10,14 @@ The public mobile experience remains incomplete and must not be treated as relea
 
 | Stage | Status | Notes |
 | --- | --- | --- |
-| A — Baseline and test harness | In progress | Current routes and core overlays inventoried; viewport projects and overflow diagnostics added. Desktop screenshots and full route/overlay matrix remain pending. |
-| B — Shared responsive primitives | Started | `useResponsiveLayout` and the first responsive `Modal` presentation are implemented. Shell, navigation, sheets, full-screen workspace, and phone management guard remain pending. |
+| A — Baseline and test harness | In progress | Current routes and core overlays inventoried; viewport projects, overflow diagnostics, phone-shell assertions, and management-guard assertions added. Desktop screenshots and the full route/overlay matrix remain pending. |
+| B — Shared responsive primitives | In progress | Responsive layout hook, modal presentations, phone app bar, bottom navigation, More sheet, quick-tools sheet, full-screen phone tool drawers, and a shell-level phone management guard are implemented. Formal desktop shell extraction, tablet navigation, contextual-note sheet, and reusable full-screen workspace remain pending. |
 | C — Lower-risk player pages | Not started | Login, Dashboard, Lore, Guides, Media, Settings, Market. |
 | D — Stateful player pages | Not started | Skills, Competencies, Creation, New Character, Character. |
-| E — High-risk workspaces/global tools | Not started | Travel, Combat, Quick Tools, Journal, Dice, Audio, Context Notes. |
+| E — High-risk workspaces/global tools | Started | Quick Tools and ToolDrawer have a phone presentation foundation. Travel, Combat, Journal internals, Dice internals, Audio layout, and Context Notes still require dedicated audits. |
 | F — Integrated full-route pass | Not started | Public activation remains blocked. |
 
-## Implemented in the initial slice
+## Implemented foundations
 
 ### Responsive layout contract
 
@@ -65,6 +65,60 @@ Phone behavior now provides:
 
 This is a foundation only. Every modal call site still requires explicit classification and state-loss review.
 
+### Phone shell navigation
+
+Files:
+
+- `frontend/src/features/mobile/MobileNavigation.tsx`
+- `frontend/src/features/quick-tools/QuickTools.tsx`
+- `frontend/src/styles/mobile.css`
+
+Implemented:
+
+- fixed safe-area-aware app bar;
+- persistent five-position bottom navigation: Home, active character, Skills, Combat, and More;
+- active-route indication and real React Router links;
+- full-screen More sheet for the remaining player destinations;
+- quick-tools sheet reachable from the app bar;
+- phone workspace offsets that keep content clear of both fixed bars;
+- mobile touch targets scoped to the phone presentation.
+
+Navigation ordering and role filtering are currently derived from the already-rendered desktop sidebar links. This deliberately avoids duplicating route and permission declarations during the first additive slice. A formal shared navigation-data extraction from `App.tsx` is still required before the shell architecture can be considered final.
+
+### Phone management limitation
+
+Direct `/tools` URLs on a phone now:
+
+- preserve the requested URL;
+- preserve the existing permission wrappers;
+- hide the compressed management presentation;
+- show an explicit tablet/desktop-required screen;
+- provide Back and Return to Home actions.
+
+This is implemented at the phone shell layer. The underlying route component is still mounted by the current centralized `App.tsx`; moving the limitation into the route guard remains a later shell-extraction task.
+
+### Quick Tools and ToolDrawer phone presentation
+
+Files:
+
+- `frontend/src/features/quick-tools/QuickTools.tsx`
+- `frontend/src/features/quick-tools/ToolDrawer.tsx`
+
+Phone behavior now provides:
+
+- one quick-tools chooser instead of compressing the desktop toolbar;
+- full-screen drawers for Journal, Dice, AI, Audio, Theft, and Names;
+- drag and resize disabled on phones;
+- desktop position and size cleared when entering phone presentation;
+- body scroll locking, close-button focus, focus restoration, Escape support, safe areas, and dynamic viewport height.
+
+The internal content of each tool is not yet classified as mobile-complete. Audio mini-player persistence, dense Dice layouts, Journal navigation, and AI forms require separate passes.
+
+## Tests added or extended
+
+- `frontend/src/features/mobile/MobileNavigation.test.tsx` verifies navigation extraction and active-route matching.
+- `frontend/tests/mobile-baseline.spec.ts` now checks phone app/bottom bars, More destinations, quick-tools access, desktop/sidebar preservation in non-phone projects, and the direct management-URL limitation.
+
 ## Validation state
 
 Validation available from the connector-backed environment:
@@ -73,7 +127,7 @@ Validation available from the connector-backed environment:
 - base commit recorded;
 - branch creation confirmed;
 - changed files re-fetched from `mobile-optimized` after writes;
-- existing main commit exposes no combined status checks through the connector.
+- branch comparisons can be inspected through the GitHub connector.
 
 Not yet executed:
 
@@ -84,16 +138,16 @@ Not yet executed:
 - `npm run test:e2e`;
 - desktop screenshot capture.
 
-The execution environment used for this initial slice cannot clone the repository or install its dependency tree, so those checks must run through the repository's normal local/CI environment before the slice is considered verified. Test failures must be fixed; desktop snapshots or assertions must not be weakened.
+The execution environment used for these slices cannot clone the repository or install its dependency tree. The checks must run through the repository's normal local or CI environment before the work is considered verified. Test failures must be fixed; desktop snapshots or assertions must not be weakened.
 
 ## Immediate next slice
 
-1. Run the complete existing frontend checks and capture the 1440 × 900 desktop baseline.
-2. Finish the modal call-site inventory and assign `dialog`, `sheet`, or `fullscreen` behavior where `auto` is not sufficient.
-3. Extract shared navigation data without changing the desktop `Shell` markup.
-4. Add `PhoneShell`, `MobileAppBar`, `MobileBottomNavigation`, and `MoreNavigationSheet` behind width-based presentation selection.
-5. Add the intentional phone-only management-route limitation screen.
-6. Implement Login and Dashboard as the first visible player routes, then run desktop/mobile screenshot comparison.
+1. Run the complete existing frontend checks and capture the 1440 × 900 desktop baseline in an environment with the repository dependencies.
+2. Implement phone-safe Login and Dashboard layouts without changing their desktop presentation.
+3. Add a visible mobile Context Notes trigger and sheet.
+4. Classify the first lower-risk modal call sites rather than relying only on `responsiveMode="auto"`.
+5. Extract shared shell/navigation data from `App.tsx` when a safe full-file refactor and validation environment are available.
+6. Begin the lower-risk route sequence: Lore, Guides, Media, Settings, then Market.
 
 ## Release block
 
