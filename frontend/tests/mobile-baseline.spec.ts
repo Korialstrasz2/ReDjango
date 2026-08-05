@@ -131,6 +131,35 @@ test("phone context notes use a visible trigger and autosaving editor sheet", as
   await expect(dialog).toHaveCount(0);
 });
 
+test("phone Lore exposes readable tabs, cards, details, and timeline", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only Lore contract");
+  await page.goto("/lore");
+
+  const tabs = page.getByRole("tablist", { name: "Sezioni del lore" });
+  await expect(tabs.getByRole("tab")).toHaveCount(3);
+  await expect(page.locator(".lore-faction-grid")).toBeVisible();
+  const factionColumns = await page.locator(".lore-faction-grid").evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+  expect(factionColumns).toHaveLength(1);
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+
+  await tabs.getByRole("tab", { name: "Personaggi" }).click();
+  const firstNpc = page.locator(".lore-npc-tile").first();
+  await expect(firstNpc).toBeVisible();
+  await firstNpc.click();
+  const npcDialog = page.getByRole("dialog").filter({ has: page.locator(".lore-npc-detail") });
+  await expect(npcDialog).toBeVisible();
+  const dialogBox = await npcDialog.boundingBox();
+  expect(dialogBox?.height || 0).toBeGreaterThanOrEqual((page.viewportSize()?.height || 0) - 2);
+  await npcDialog.getByRole("button", { name: "Chiudi" }).click();
+
+  await tabs.getByRole("tab", { name: "Timeline" }).click();
+  const timeline = page.getByRole("tabpanel", { name: "Timeline" });
+  await expect(timeline.getByRole("searchbox", { name: "Cerca nella cronologia" })).toBeVisible();
+  await expect(timeline.locator(".lore-history-events button").first()).toBeVisible();
+  await expect(timeline.locator(".lore-timeline-inspector")).toBeVisible();
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
 test("phone management URLs preserve the address and show the intentional limitation", async ({ page }, testInfo) => {
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only management guard");
   await page.goto("/tools");
