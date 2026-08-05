@@ -94,7 +94,7 @@ function AIModalMasterAIButton() {
   );
 }
 
-function UnitManagementMasterAIButton({ revision }: { revision: number }) {
+function UnitManagementMasterAIButton() {
   const navigate = useNavigate();
   const host = document.querySelector<HTMLElement>(".unit-management-page .page-header .button-row");
   const active = document.querySelector<HTMLElement>(".unit-management-list button.active");
@@ -106,7 +106,7 @@ function UnitManagementMasterAIButton({ revision }: { revision: number }) {
     ? `Rivedi la Unit «${label}». Cerca e leggi il record, confronta almeno cinque Unit meccanicamente simili, ispeziona ogni Skill e oggetto dipendente, poi proponi una modifica completa conforme al contratto Unit e all'audit di generazione.`
     : "Crea una nuova Unit completa. Leggi la configurazione live, confronta almeno cinque Unit meccanicamente simili, ispeziona Skill e oggetti dipendenti, quindi proponi un DTO completo conforme al contratto Unit e all'audit di generazione.";
   return createPortal(
-    <button key={`${revision}-${targetId || "new"}`} type="button" className="button secondary master-ai-assist-button" onClick={() => navigate(buildMasterAIUrl({
+    <button type="button" className="button secondary master-ai-assist-button" onClick={() => navigate(buildMasterAIUrl({
       entityType: "unit",
       sourceSurface: "unit-management",
       targetId,
@@ -124,6 +124,6 @@ export function MasterAILauncherRuntime() {
   if (location.pathname === "/tools/master-ai") return <WorkspaceContextPortal search={location.search} revision={revision} />;
   return <>
     <AIModalMasterAIButton />
-    {location.pathname === "/tools/units" && <UnitManagementMasterAIButton revision={revision} />}
+    {location.pathname === "/tools/units" && <UnitManagementMasterAIButton />}
   </>;
 }
