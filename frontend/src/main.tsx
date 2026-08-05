@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
   }
 });
 
-// App owns every routed page, including Master AI, so shell layout and shared providers stay consistent.
+// App owns every routed page, including Master AI, so navigation, layout, and shared providers remain consistent.
 function RootApplication() {
   return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><App /></>;
 }
