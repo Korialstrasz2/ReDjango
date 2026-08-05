@@ -82,9 +82,21 @@ function WorkspaceContextPortal({ search, revision }: { search: string; revision
   );
 }
 
+function AIModalMasterAIButton() {
+  const navigate = useNavigate();
+  const managementLink = document.querySelector<HTMLElement>(".ai-tool .ai-tabs .ai-tabs-link");
+  const host = managementLink?.parentElement;
+  if (!host) return null;
+  return createPortal(
+    <button type="button" className="button primary small master-ai-modal-launcher" onClick={() => navigate("/tools/master-ai")}>Master AI</button>,
+    host,
+    "master-ai-modal-launcher",
+  );
+}
+
 export function MasterAILauncherRuntime() {
   const location = useLocation();
   const revision = useDomRevision(location.pathname);
-  if (location.pathname !== "/tools/master-ai") return null;
-  return <WorkspaceContextPortal search={location.search} revision={revision} />;
+  if (location.pathname === "/tools/master-ai") return <WorkspaceContextPortal search={location.search} revision={revision} />;
+  return <AIModalMasterAIButton />;
 }
