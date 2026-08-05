@@ -1,0 +1,41 @@
+/* Master AI uses the standard application shell. Keep the shared fixed tool bar
+   inside the narrow workspace column instead of letting its action row widen the
+   whole document on phones and compact windows. */
+body:has(.master-ai-page) .quick-tools-bar {
+  min-width: 0;
+  max-width: calc(100vw - var(--sidebar-width));
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+body:has(.master-ai-page) .quick-tools-actions {
+  min-width: max-content;
+}
+
+body:has(.master-ai-page) .app-shell,
+body:has(.master-ai-page) .workspace,
+body:has(.master-ai-page) .workspace-content,
+body:has(.master-ai-page) .master-ai-page,
+body:has(.master-ai-page) .master-ai-commandbar,
+body:has(.master-ai-page) .master-ai-request-row,
+body:has(.master-ai-page) .master-ai-chat,
+body:has(.master-ai-page) .master-ai-operations,
+body:has(.master-ai-page) .master-ai-proposal-detail {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  body:has(.master-ai-page) .page {
+    padding-inline: 12px;
+  }
+
+  body:has(.master-ai-page) .master-ai-commandbar,
+  body:has(.master-ai-page) .master-ai-chat,
+  body:has(.master-ai-page) .master-ai-operations,
+  body:has(.master-ai-page) .master-ai-proposal-detail {
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
