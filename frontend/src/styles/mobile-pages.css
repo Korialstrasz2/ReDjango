@@ -1,5 +1,20 @@
 /* Lower-risk responsive route work. Desktop rules remain authoritative above 1200px. */
 @media (max-width: 1199px) {
+  /* Desktop intentionally has a 1180px floor. Responsive layouts must release
+     that contract instead of clipping real overflow. */
+  body {
+    min-width: 0;
+  }
+
+  html,
+  body,
+  #app,
+  .app-shell,
+  .workspace,
+  .workspace-content {
+    max-width: 100%;
+  }
+
   .dashboard-character-selection {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -21,6 +36,20 @@
 }
 
 @media (max-width: 767px) {
+  /* Establish one chrome stacking context above route content but below modal
+     portals. Pointer events pass through the empty full-screen wrapper. */
+  .mobile-shell-chrome {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+  }
+
+  .mobile-shell-chrome .mobile-app-bar,
+  .mobile-shell-chrome .mobile-bottom-navigation {
+    pointer-events: auto;
+  }
+
   /* Login */
   .auth-screen {
     place-items: center;
@@ -172,7 +201,7 @@
     position: fixed;
     right: calc(12px + var(--mobile-safe-right));
     bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 12px);
-    z-index: 55;
+    z-index: 85;
     display: grid;
     grid-template-columns: 28px minmax(0, auto);
     align-items: center;
