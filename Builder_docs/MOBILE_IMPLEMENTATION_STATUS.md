@@ -10,11 +10,11 @@ The public mobile experience remains incomplete and must not be treated as relea
 
 | Stage | Status | Notes |
 | --- | --- | --- |
-| A — Baseline and test harness | In progress | Current routes and core overlays inventoried; viewport projects, overflow diagnostics, phone-shell assertions, and management-guard assertions added. Desktop screenshots and the full route/overlay matrix remain pending. |
-| B — Shared responsive primitives | In progress | Responsive layout hook, modal presentations, phone app bar, bottom navigation, More sheet, quick-tools sheet, full-screen phone tool drawers, and a shell-level phone management guard are implemented. Formal desktop shell extraction, tablet navigation, contextual-note sheet, and reusable full-screen workspace remain pending. |
-| C — Lower-risk player pages | Not started | Login, Dashboard, Lore, Guides, Media, Settings, Market. |
-| D — Stateful player pages | Not started | Skills, Competencies, Creation, New Character, Character. |
-| E — High-risk workspaces/global tools | Started | Quick Tools and ToolDrawer have a phone presentation foundation. Travel, Combat, Journal internals, Dice internals, Audio layout, and Context Notes still require dedicated audits. |
+| A — Baseline and test harness | In progress | Viewport projects, overflow diagnostics, authenticated shell assertions, route-specific phone/tablet checks, and a branch verification workflow are running. Canonical desktop screenshot coverage and the full route/overlay matrix remain pending. |
+| B — Shared responsive primitives | In progress | Responsive layout hook, modal presentations, phone app bar, bottom navigation, More sheet, quick-tools sheet, full-screen phone tool drawers, visible Context Notes sheet, and a shell-level phone management guard are implemented. Formal desktop shell extraction, tablet navigation, and reusable full-screen workspace primitives remain pending. |
+| C — Lower-risk player pages | Verified checkpoint | Login, Dashboard, Lore, Guides, Media, Settings, and Market have responsive phone/tablet layouts and route-specific Playwright coverage. The current branch head passed unit tests, TypeScript, production build, Django checks, and the responsive browser matrix. Integrated role, font-scale, and cross-route regression coverage remains part of Stage F. |
+| D — Stateful player pages | Started | Skills is the next dedicated slice, followed by Competencies, Creation, New Character, and Character. |
+| E — High-risk workspaces/global tools | Started | Quick Tools and ToolDrawer have a phone presentation foundation. Travel, Combat, Journal internals, Dice internals, Audio layout, and other tool internals still require dedicated audits. |
 | F — Integrated full-route pass | Not started | Public activation remains blocked. |
 
 ## Implemented foundations
@@ -34,9 +34,9 @@ File: `frontend/src/lib/responsive.ts`
 File: `frontend/playwright.config.ts`
 
 - canonical `authenticated` desktop project remains at 1440 × 900 and retains its existing suite;
-- baseline-only projects added for 1920 × 1080 desktop, small/large portrait phones, phone landscape, tablet portrait, and tablet landscape;
-- new projects currently run only `mobile-baseline.spec.ts` so incomplete page support does not duplicate the entire existing suite prematurely;
-- baseline diagnostics attach viewport, touch/capability, and horizontal-overflow data.
+- baseline-only projects cover 1920 × 1080 desktop, small/large portrait phones, phone landscape, tablet portrait, and tablet landscape;
+- shared diagnostics attach viewport, touch/capability, and horizontal-overflow data;
+- the mobile baseline now covers the shell, Login, Dashboard, Context Notes, Lore, Guides, Media, Settings, Market, and the phone management limitation.
 
 ### Responsive modal foundation
 
@@ -63,7 +63,7 @@ Phone behavior now provides:
 - sticky header/footer, safe-area padding, dynamic viewport height, touch-sized close/footer controls;
 - `closeOnBackdrop` escape hatch for destructive or dirty forms.
 
-This is a foundation only. Every modal call site still requires explicit classification and state-loss review.
+Every modal call site still requires classification and state-loss review before final release.
 
 ### Phone shell navigation
 
@@ -78,24 +78,24 @@ Implemented:
 - fixed safe-area-aware app bar;
 - persistent five-position bottom navigation: Home, active character, Skills, Combat, and More;
 - active-route indication and real React Router links;
-- full-screen More sheet for the remaining player destinations;
+- full-screen More sheet for remaining player destinations;
 - quick-tools sheet reachable from the app bar;
 - phone workspace offsets that keep content clear of both fixed bars;
 - mobile touch targets scoped to the phone presentation.
 
-Navigation ordering and role filtering are currently derived from the already-rendered desktop sidebar links. This deliberately avoids duplicating route and permission declarations during the first additive slice. A formal shared navigation-data extraction from `App.tsx` is still required before the shell architecture can be considered final.
+Navigation ordering and role filtering are currently derived from the rendered desktop sidebar links. Formal shared navigation-data extraction from `App.tsx` remains pending.
 
 ### Phone management limitation
 
 Direct `/tools` URLs on a phone now:
 
 - preserve the requested URL;
-- preserve the existing permission wrappers;
+- preserve existing permission wrappers;
 - hide the compressed management presentation;
 - show an explicit tablet/desktop-required screen;
 - provide Back and Return to Home actions.
 
-This is implemented at the phone shell layer. The underlying route component is still mounted by the current centralized `App.tsx`; moving the limitation into the route guard remains a later shell-extraction task.
+Moving the limitation into route guards remains a later shell-extraction task.
 
 ### Quick Tools and ToolDrawer phone presentation
 
@@ -112,43 +112,53 @@ Phone behavior now provides:
 - desktop position and size cleared when entering phone presentation;
 - body scroll locking, close-button focus, focus restoration, Escape support, safe areas, and dynamic viewport height.
 
-The internal content of each tool is not yet classified as mobile-complete. Audio mini-player persistence, dense Dice layouts, Journal navigation, and AI forms require separate passes.
+The internal content of each tool is not yet classified as mobile-complete.
 
-## Tests added or extended
+### Lower-risk route checkpoint
 
-- `frontend/src/features/mobile/MobileNavigation.test.tsx` verifies navigation extraction and active-route matching.
-- `frontend/tests/mobile-baseline.spec.ts` now checks phone app/bottom bars, More destinations, quick-tools access, desktop/sidebar preservation in non-phone projects, and the direct management-URL limitation.
+Files include:
 
-## Validation state
+- `frontend/src/styles/mobile-pages.css`
+- `frontend/src/styles/mobile-lore.css`
+- `frontend/src/styles/mobile-reference-pages.css`
+- `frontend/tests/mobile-baseline.spec.ts`
 
-Validation available from the connector-backed environment:
+Implemented and matrix-verified:
 
-- repository and write permission confirmed;
-- base commit recorded;
-- branch creation confirmed;
-- changed files re-fetched from `mobile-optimized` after writes;
-- branch comparisons can be inspected through the GitHub connector.
+- phone-safe Login controls and short-landscape scrolling;
+- Dashboard single-column selection and touch-sized actions;
+- visible phone Context Notes trigger using the existing autosave editor;
+- Lore tabs, cards, forms, NPC details, Timeline, and empty states;
+- Guides horizontal index, readable documents, variable references, tables, and code overflow;
+- Media browse-first layout, filters, upload form, cards, actions, and full-screen preview;
+- Settings horizontal tabs, stacked controls, profile/media panels, and save bar above phone navigation;
+- Market progressive single-column navigation, catalog, cart, touch controls, and full-screen item/editor modals.
 
-Not yet executed:
+## Tests and continuous verification
 
-- `npm ci`;
-- `npm run typecheck`;
-- `npm test`;
-- `npm run build`;
-- `npm run test:e2e`;
-- desktop screenshot capture.
+The branch workflow `.github/workflows/mobile-optimization-verification.yml` runs:
 
-The execution environment used for these slices cannot clone the repository or install its dependency tree. The checks must run through the repository's normal local or CI environment before the work is considered verified. Test failures must be fixed; desktop snapshots or assertions must not be weakened.
+- frontend unit tests;
+- TypeScript validation;
+- production build;
+- Django migration consistency;
+- Django system checks;
+- the responsive Chromium Playwright matrix.
+
+Latest verified route checkpoint: commit `0daa4cbc4c3ee26001959dae021f38ebacd7aeec`. Both workflow jobs completed successfully.
 
 ## Immediate next slice
 
-1. Run the complete existing frontend checks and capture the 1440 × 900 desktop baseline in an environment with the repository dependencies.
-2. Implement phone-safe Login and Dashboard layouts without changing their desktop presentation.
-3. Add a visible mobile Context Notes trigger and sheet.
-4. Classify the first lower-risk modal call sites rather than relying only on `responsiveMode="auto"`.
-5. Extract shared shell/navigation data from `App.tsx` when a safe full-file refactor and validation environment are available.
-6. Begin the lower-risk route sequence: Lore, Guides, Media, Settings, then Market.
+1. Audit and implement Skills as a dedicated stateful route:
+   - group rail and family navigation;
+   - XP ribbon and editor;
+   - search and catalog cards;
+   - touch-safe ordering controls;
+   - detail, unlock, reminder, spell calculator, creation, and management flows.
+2. Add populated and empty Skills assertions to the responsive matrix.
+3. Continue with Competencies, Creation, New Character, and Character only after Skills returns to a green branch checkpoint.
+4. Preserve the existing desktop contract and do not merge to `main` until the full release gate is satisfied.
 
 ## Release block
 
-Mobile public activation remains blocked until every player-facing route, modal, hover-only action, required touch drag system, Combat, Travel, navigation path, and role variant passes the guide's mobile completeness and desktop non-regression gates.
+Mobile public activation remains blocked until every player-facing route, modal, hover-only action, required touch drag system, Combat, Travel, navigation path, role variant, orientation, and desktop non-regression check passes the guide's completeness gate.
