@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { Modal } from "../../components/Modal";
 
@@ -68,9 +68,11 @@ function sameNavigation(left: ShellNavigationItem[], right: ShellNavigationItem[
 
 export function MobileNavigation({ characterName, campaignName, canManageGameData, activeTool, onSelectTool }: Props) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [navigation, setNavigation] = useState<ShellNavigationItem[]>([]);
   const [moreOpen, setMoreOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const managementBlocked = location.pathname === "/tools" || location.pathname.startsWith("/tools/");
 
   useLayoutEffect(() => {
     const sync = () => {
@@ -93,6 +95,12 @@ export function MobileNavigation({ characterName, campaignName, canManageGameDat
     setToolsOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (managementBlocked) document.documentElement.dataset.mobileManagementBlocked = "true";
+    else delete document.documentElement.dataset.mobileManagementBlocked;
+    return () => { delete document.documentElement.dataset.mobileManagementBlocked; };
+  }, [managementBlocked]);
+
   const playerLinks = useMemo(() => navigation.filter((item) => !item.management), [navigation]);
   const home = playerLinks.find((item) => item.href === "/");
   const character = playerLinks.find((item) => item.href === "/characters" || item.href.startsWith("/character/"));
@@ -104,12 +112,17 @@ export function MobileNavigation({ characterName, campaignName, canManageGameDat
   const current = playerLinks.find((item) => isMobileNavigationActive(location.pathname, item.href));
   const managementAvailable = canManageGameData || navigation.some((item) => item.management);
 
+  const goBackFromManagement = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/", { replace: true });
+  };
+
   return <div className="mobile-shell-chrome" data-component-type="mobile-shell" data-theme="dark">
     <header className="mobile-app-bar">
       <Link className="mobile-app-brand" to="/" aria-label="Sala principale">RD</Link>
       <div className="mobile-app-context">
         <small>{campaignName || "ReDjango"}</small>
-        <strong>{current?.label || characterName || "Sala principale"}</strong>
+        <strong>{managementBlocked ? "Gestione" : current?.label || characterName || "Sala principale"}</strong>
       </div>
       <button
         type="button"
@@ -140,6 +153,19 @@ export function MobileNavigation({ characterName, campaignName, canManageGameDat
         <strong>Altro</strong>
       </button>
     </nav>
+
+    {managementBlocked && <main className="mobile-unsupported-management" aria-labelledby="mobile-management-title">
+      <div>
+        <span aria-hidden="true">▣</span>
+        <p className="eyebrow">Layout non supportato su telefono</p>
+        <h1 id="mobile-management-title">Gestione richiede un tablet o un computer</h1>
+        <p>Questo indirizzo è stato conservato, ma la postazione di gestione non viene compressa dentro lo schermo del telefono.</p>
+        <div>
+          <button type="button" className="button secondary" onClick={goBackFromManagement}>Indietro</button>
+          <Link className="button primary" to="/">Torna alla Home</Link>
+        </div>
+      </div>
+    </main>}
 
     {moreOpen && <Modal title="Navigazione" onClose={() => setMoreOpen(false)} responsiveMode="fullscreen" closeOnBackdrop={false}>
       <div className="mobile-navigation-sheet">
