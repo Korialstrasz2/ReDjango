@@ -76,6 +76,16 @@ export function CombatMobileRuntime() {
 
   useEffect(() => {
     if (!enabled || !workspaceAvailable) {
+      setPanel("map");
+      return;
+    }
+    if ((panel === "character" && !characterAvailable)
+      || (panel === "roster" && !rosterAvailable)
+      || (panel === "attack" && !attackAvailable)) setPanel("map");
+  }, [attackAvailable, characterAvailable, enabled, panel, rosterAvailable, workspaceAvailable]);
+
+  useEffect(() => {
+    if (!enabled || !workspaceAvailable) {
       delete document.documentElement.dataset.mobileCombatPanel;
       return;
     }
