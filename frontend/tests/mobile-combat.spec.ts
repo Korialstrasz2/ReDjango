@@ -43,6 +43,15 @@ test("phone Combat is map-first and preserves mounted panel state", async ({ pag
   await expect(page.locator(".combat-map-panel")).toBeVisible();
   await expect(page.locator(".combat-map-stage svg")).toHaveAttribute("data-mobile-combat-touch-ready", "true");
 
+  const noteTrigger = page.locator(".mobile-context-note-trigger");
+  if (await noteTrigger.count()) {
+    const noteBox = await noteTrigger.boundingBox();
+    const navigationBox = await navigation.boundingBox();
+    expect(noteBox).toBeTruthy();
+    expect(navigationBox).toBeTruthy();
+    expect(noteBox!.y + noteBox!.height).toBeLessThanOrEqual(navigationBox!.y - 4);
+  }
+
   const characterTab = navigation.getByRole("tab", { name: /Scheda/ });
   if (await characterTab.isEnabled()) {
     await characterTab.click();
@@ -60,6 +69,15 @@ test("phone Combat is map-first and preserves mounted panel state", async ({ pag
   await navigation.getByRole("tab", { name: /Attivi/ }).click();
   await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "roster");
   await expect(page.locator(".combat-active-strip")).toBeVisible();
+  const rosterCard = page.locator(".combat-active-roster > div > button:first-child").first();
+  if (await rosterCard.count()) {
+    await rosterCard.click();
+    const context = page.getByRole("dialog").last();
+    await expect(context).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(context).toBeHidden();
+  }
+
   await navigation.getByRole("tab", { name: /Mappa/ }).click();
   await expect(page.locator(".combat-map-panel")).toBeVisible();
   expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
