@@ -140,15 +140,16 @@ export function CombatMobileRuntime() {
 
   useEffect(() => {
     if (!enabled) return;
-    let activeMap: SVGSVGElement | null = null;
+    let activeStage: HTMLElement | null = null;
     let detach = () => undefined;
 
     const attach = () => {
-      const map = document.querySelector<SVGSVGElement>(".combat-map-stage svg");
-      if (map === activeMap) return;
+      const stage = document.querySelector<HTMLElement>(".combat-map-stage");
+      const map = stage?.querySelector<SVGSVGElement>("svg") || null;
+      if (stage === activeStage) return;
       detach();
-      activeMap = map;
-      if (!map) return;
+      activeStage = stage;
+      if (!stage || !map) return;
 
       const pointers = new Map<number, Point>();
       let pinching = false;
@@ -267,18 +268,18 @@ export function CombatMobileRuntime() {
         if ((event.target as Element | null)?.closest(".combat-token")) event.preventDefault();
       };
 
-      map.addEventListener("pointerdown", onPointerDown, true);
-      map.addEventListener("pointermove", onPointerMove, true);
-      map.addEventListener("pointerup", finishPointer, true);
-      map.addEventListener("pointercancel", finishPointer, true);
-      map.addEventListener("contextmenu", onContextMenu);
+      stage.addEventListener("pointerdown", onPointerDown, true);
+      stage.addEventListener("pointermove", onPointerMove, true);
+      stage.addEventListener("pointerup", finishPointer, true);
+      stage.addEventListener("pointercancel", finishPointer, true);
+      stage.addEventListener("contextmenu", onContextMenu);
 
       detach = () => {
-        map.removeEventListener("pointerdown", onPointerDown, true);
-        map.removeEventListener("pointermove", onPointerMove, true);
-        map.removeEventListener("pointerup", finishPointer, true);
-        map.removeEventListener("pointercancel", finishPointer, true);
-        map.removeEventListener("contextmenu", onContextMenu);
+        stage.removeEventListener("pointerdown", onPointerDown, true);
+        stage.removeEventListener("pointermove", onPointerMove, true);
+        stage.removeEventListener("pointerup", finishPointer, true);
+        stage.removeEventListener("pointercancel", finishPointer, true);
+        stage.removeEventListener("contextmenu", onContextMenu);
         delete map.dataset.mobileCombatTouchReady;
         reset();
       };
