@@ -1,5 +1,9 @@
 /* Master AI remains inside the shared app shell, but its workspace is allowed
    to shrink below the desktop-only 1024px minimum used by the legacy pages. */
+body:has(.app-shell.master-ai-app-shell) {
+  min-width: 0;
+}
+
 .app-shell.master-ai-app-shell {
   width: 100%;
   max-width: 100vw;
