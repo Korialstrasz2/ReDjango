@@ -1,0 +1,101 @@
+name: Mobile optimization verification
+
+on:
+  push:
+    branches:
+      - mobile-optimized
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "redjango/**"
+      - "manage.py"
+      - "requirements.txt"
+      - "Builder_docs/MOBILE_*.md"
+      - ".github/workflows/mobile-optimization-verification.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "redjango/**"
+      - "manage.py"
+      - "requirements.txt"
+      - "Builder_docs/MOBILE_*.md"
+      - ".github/workflows/mobile-optimization-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-optimization-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Production build
+        run: npm run build
+
+  responsive-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend dependencies
+        working-directory: .
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Check Django configuration
+        working-directory: .
+        env:
+          DJANGO_SETTINGS_MODULE: redjango.settings
+          REDJANGO_DEBUG: "0"
+        run: |
+          python manage.py makemigrations --check --dry-run
+          python manage.py check
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build frontend assets
+        run: npm run build
+      - name: Responsive viewport matrix
+        run: npx playwright test tests/mobile-baseline.spec.ts
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-playwright-report-${{ github.run_attempt }}
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+          retention-days: 14
