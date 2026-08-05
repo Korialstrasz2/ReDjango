@@ -22,6 +22,7 @@ import "./styles/mobile-creation.css";
 import "./styles/mobile-new-character.css";
 import "./styles/mobile-character.css";
 import "./styles/mobile-character-fixes.css";
+import "./styles/mobile-travel.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
