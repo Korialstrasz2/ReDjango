@@ -162,7 +162,12 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   const unitCatalog = await api(page, "/api/ai/change-entities/");
   expect(unitCatalog.status).toBe(200);
   expect(unitCatalog.body.data.entities.some((entry: { type: string }) => entry.type === "unit")).toBe(true);
-  const selectedUnitLabel = (await page.locator(".unit-management-list button.active strong").textContent())?.trim() || "";
+  const firstUnit = page.locator(".unit-management-list button").first();
+  await expect(firstUnit).toBeVisible();
+  await firstUnit.click();
+  const activeUnit = page.locator(".unit-management-list button.active");
+  await expect(activeUnit).toBeVisible();
+  const selectedUnitLabel = (await activeUnit.locator("strong").textContent())?.trim() || "";
   const unitLauncher = page.getByRole("button", { name: "Master AI Unit" });
   await expect(unitLauncher).toBeVisible();
   await unitLauncher.click();
