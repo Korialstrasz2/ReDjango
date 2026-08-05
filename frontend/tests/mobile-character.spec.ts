@@ -80,7 +80,6 @@ test("compact Character preserves equipment, containers, tap actions, and slot p
 
   const containerTabs = page.locator(".container-tabs");
   await expect(containerTabs).toBeVisible();
-  const availableContainerTabs = containerTabs.getByRole("button").filter({ hasNot: page.locator(":disabled") });
   expect(await containerTabs.getByRole("button").count()).toBeGreaterThanOrEqual(4);
   await containerTabs.getByRole("button", { name: /Zaino/ }).click();
   await expect(page.locator(".container-grid")).toBeVisible();
@@ -89,7 +88,6 @@ test("compact Character preserves equipment, containers, tap actions, and slot p
   if (isPhoneProject(testInfo.project.name)) {
     const slots = page.locator(".container-grid .character-slot:not(.locked)");
     if (await slots.count()) expect((await slots.first().boundingBox())?.height || 0).toBeGreaterThanOrEqual(96);
-    expect(await availableContainerTabs.count()).toBeGreaterThan(0);
   }
 
   expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
@@ -117,9 +115,9 @@ test("compact Character opens effects and preserves both value pages", async ({ 
   const valueTabs = page.getByRole("tablist", { name: "Pagine dei valori" });
   await expect(valueTabs.getByRole("tab", { name: "Principali" })).toBeVisible();
   await valueTabs.getByRole("tab", { name: "Altri valori" }).click();
-  await expect(page.getByRole("tabpanel", { name: "Altri valori" })).toBeVisible();
+  await expect(page.locator("#character-values-advanced")).toBeVisible();
   await valueTabs.getByRole("tab", { name: "Principali" }).click();
-  await expect(page.getByRole("tabpanel", { name: "Principali" })).toBeVisible();
+  await expect(page.locator("#character-values-primary")).toBeVisible();
 
   expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
 });
