@@ -18,6 +18,7 @@ import "./styles/mobile-lore.css";
 import "./styles/mobile-reference-pages.css";
 import "./styles/mobile-skills.css";
 import "./styles/mobile-competencies.css";
+import "./styles/mobile-creation.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +37,7 @@ createRoot(document.getElementById("app")!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <RootApplication />
-      </BrowserRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   </StrictMode>
 );
