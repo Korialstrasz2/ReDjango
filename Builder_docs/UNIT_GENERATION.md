@@ -6,12 +6,20 @@ equipaggiamento in tutto il catalogo quando un pool non produce risultati.
 
 ## Tipi di Unit
 
+Per authoring API e LLM, il contratto operativo completo è
+`Builder_docs/UNIT_AUTHORING_GUIDE_FOR_LLM.md`. Questo documento descrive il
+generatore; non sostituisce il DTO di Gestione Unit, le query al catalogo o la
+procedura obbligatoria di anteprima.
+
 `Unit.generation_rules.kind` è obbligatorio:
 
-- `animal`: niente `SkillPersonaggio`, `Equip`, zaino o faretra; può avere
-  abilità innate biologiche;
-- `creature`: come `animal`, con abilità innate anche soprannaturali;
+- `creature`: animali, mostri, costrutti, non-morti ed esseri soprannaturali;
+  niente `SkillPersonaggio`, `Equip`, zaino o faretra; può avere abilità innate
+  biologiche o soprannaturali;
 - `humanoid`: usa Skill, PE, perk ed equipaggiamento.
+
+`animal` è soltanto un alias legacy in ingresso e viene normalizzato in
+`creature`; le nuove Unit devono salvare solo `creature` o `humanoid`.
 
 Le azioni innate vivono in `Unit.skill_actions` e vengono copiate in
 `Personaggio.abilita.known`. Non sono Skill e quindi possono rappresentare
@@ -32,15 +40,13 @@ Esempio non umanoide:
         "key": "pf",
         "profile": "high",
         "level1": 25,
-        "level20": 150,
-        "curve": "exponential"
+        "level20": 150
       },
       {
         "key": "res_fuoco",
         "profile": "custom",
         "level1": 2,
-        "level20": 5,
-        "curve": "hi_hi"
+        "level20": 5
       }
     ]
   },
@@ -62,10 +68,10 @@ Esempio non umanoide:
 }
 ```
 
-`animal` e `creature` rifiutano configurazioni che contengono
+`creature` rifiuta configurazioni che contengono
 `skill_unlocks`, pool di equipaggiamento o progressione Competenze. Solo
 gli Umanoidi usano il catalogo Skill e non accettano `skill_actions`.
-Animali e Creature possono invece usare `skill_actions` come abilità innate,
+Le Creature possono invece usare `skill_actions` come abilità innate,
 senza prezzi, PE, prerequisiti o record `SkillPersonaggio`. In questo modo una configurazione errata
 non può trasformare silenziosamente uno skeever in un guerriero o assegnare
 un Soffio a un umanoide.
@@ -132,8 +138,7 @@ Creature senza equipaggiamento e senza Skill restano invece nel contratto
 Gli Xivilai usano `allowedRaces: ["Xivilai"]`: sono Daedra umanoidi distinti
 dai Dremora e non possiedono ranghi-sottorazza.
 
-Un Core di campagna può essere definito direttamente sulla Unit senza cambiare
-il database:
+Il generatore interno conserva compatibilità con un `coreProfile` diretto:
 
 ```json
 {
@@ -146,6 +151,10 @@ il database:
   }
 }
 ```
+
+La Gestione Unit pubblica accetta però soltanto i cinque `coreKey` standard e
+non espone/salva `coreProfile`; un LLM non deve usare questo payload senza una
+modifica esplicita del contratto di authoring.
 
 Una singola Skill può anche dichiarare appartenenze Core esplicite dentro i
 tag profilo:
@@ -193,11 +202,18 @@ un archetipo si possono aggiungere entry con `perkTier: "minor"` o
 
 ## Statistiche
 
-Per Animali e Creature, `stat_profiles.curves` assegna a ogni variabile un
-valore finale esatto al livello 1 e al livello 20. Il livello intermedio è
-calcolato con una curva scelta per quella specifica variabile:
-`linear`, `quadratic`, `exponential`, `logarithmic` oppure `hi_hi` (raggiunge
-il massimo al livello 15). Gli estremi restano sempre esatti.
+Per Creature, `stat_profiles.curves` assegna a ogni variabile un valore finale
+esatto al livello 1 e al livello 20. Il generatore corrente interpola sempre in
+modo lineare e arrotonda:
+
+```text
+round(level1 + (level20 - level1) * (level - 1) / 19)
+```
+
+Il campo `profile` serve a scegliere/ricordare un preset nell'editor; non
+cambia la formula dopo che gli estremi sono stati salvati. Le forme
+`quadratic`, `exponential`, `logarithmic` e `hi_hi` non sono contratti
+supportati dall'authoring corrente e non devono essere inviate da nuove Unit.
 
 L'editor offre i profili `very_low`, `low`, `medium`, `high` e `very_high`
 come valori iniziali riutilizzabili, più `custom`. Per esempio i profili PF
@@ -214,15 +230,13 @@ Esempio:
       "key": "pf",
       "profile": "low",
       "level1": 14,
-      "level20": 75,
-      "curve": "exponential"
+      "level20": 75
     },
     {
       "key": "pa",
       "profile": "high",
       "level1": 9,
-      "level20": 32,
-      "curve": "linear"
+      "level20": 32
     }
   ]
 }
@@ -266,17 +280,26 @@ oggetti fuori pool.
     }
   ],
   "accessoryCountByLevel": [
-    {"minLevel": 1, "maxLevel": 1, "minCount": 2, "maxCount": 4},
-    {"minLevel": 4, "maxLevel": 5, "minCount": 5, "maxCount": 7},
-    {"minLevel": 10, "maxLevel": 12, "minCount": 8, "maxCount": 10}
+    {"minLevel": 1, "maxLevel": 3, "minCount": 1, "maxCount": 2},
+    {"minLevel": 4, "maxLevel": 7, "minCount": 1, "maxCount": 2},
+    {"minLevel": 8, "maxLevel": 12, "minCount": 1, "maxCount": 2},
+    {"minLevel": 13, "maxLevel": 16, "minCount": 1, "maxCount": 2},
+    {"minLevel": 17, "maxLevel": 20, "minCount": 1, "maxCount": 2}
   ]
 }
 ```
 
 I gruppi permettono più varietà controllata per orecchini, anelli e accessori:
-variano quantità, slot e possibilità di restare vuoti. La curva globale
-sceglie il totale per livello dopo aver garantito i `minCount` dei gruppi;
-`chance` rende facoltativa una singola opzione.
+variano quantità, slot e possibilità di restare vuoti. Senza curva globale,
+`emptyChance` può azzerare un gruppo; con `accessoryCountByLevel`, il
+generatore soddisfa prima tutti i `minCount` e ignora `emptyChance`, poi riempie
+fino al totale della curva. `chance` rende facoltativa una singola opzione.
+
+Quando è presente `accessoryCountByLevel`, le fasce devono coprire una sola
+volta tutti i livelli 1–20, senza vuoti o sovrapposizioni, e i loro minimi e
+massimi devono rispettare la capacità dei gruppi. Il totale limita solo i gruppi
+espliciti: un `AccessoryProfile` condiviso viene applicato dopo e può aggiungere
+altri accessori.
 
 Armi e armature non usano una gerarchia unica. Il percorso leggero è
 legno/pelle → chitina → elfico → ossa → dreugh → vetro → adamantio; quello
@@ -325,8 +348,9 @@ attivo sia per la mappa sia per la sessione e può essere aperto nella scheda
 completa per modificare equipaggiamento e altri dati.
 
 Per creare nuovi blueprint seguire
-`Builder_docs/UNIT_AUTHORING_GUIDE_FOR_LLM.md`, che contiene schema, esempi,
-criteri di varietà e checklist di verifica per LLM.
+`Builder_docs/UNIT_AUTHORING_GUIDE_FOR_LLM.md`, che contiene DTO reale,
+procedure di query del catalogo, schema, vincoli, limiti del generatore, esempi
+e checklist di verifica per LLM.
 
 Il seed conserva gli ID sorgente in `Unit.metadata` e aggiorna soltanto record
 ancora posseduti dal seed quando cambia `seed_version`; le modifiche autoriali
