@@ -5,8 +5,8 @@ import { useResponsiveLayout } from "../../lib/responsive";
 
 type Point = { x: number; y: number };
 type MarkerPlacement = { type: string; label: string };
-
 type SyntheticEvent = Event & { __redjangoTravelSynthetic?: boolean };
+type MarkerTransfer = { getData: (format: string) => string };
 
 const MARKER_SHAPES: Record<string, string> = {
   Cerchio: "circle",
@@ -57,34 +57,27 @@ function dispatchWheel(canvas: HTMLCanvasElement, deltaY: number) {
   canvas.dispatchEvent(event);
 }
 
-function dispatchMarkerDrop(canvas: HTMLCanvasElement, point: Point, markerType: string) {
-  let dataTransfer: DataTransfer | { getData: (format: string) => string };
-  try {
-    const transfer = new DataTransfer();
-    transfer.setData("application/x-redjango-travel-marker", markerType);
-    dataTransfer = transfer;
-  } catch {
-    dataTransfer = {
-      getData: (format: string) => format === "application/x-redjango-travel-marker" ? markerType : "",
-    };
+function markerTransfer(markerType: string): MarkerTransfer | DataTransfer {
+  if (typeof DataTransfer !== "undefined") {
+    try {
+      const transfer = new DataTransfer();
+      transfer.setData("application/x-redjango-travel-marker", markerType);
+      return transfer;
+    } catch {
+      // Safari may expose DataTransfer without allowing direct construction.
+    }
   }
+  return {
+    getData: (format: string) => format === "application/x-redjango-travel-marker" ? markerType : "",
+  };
+}
 
-  let event: Event;
-  try {
-    event = new DragEvent("drop", {
-      bubbles: true,
-      cancelable: true,
-      clientX: point.x,
-      clientY: point.y,
-      dataTransfer: dataTransfer instanceof DataTransfer ? dataTransfer : undefined,
-    });
-  } catch {
-    event = new Event("drop", { bubbles: true, cancelable: true });
-  }
+function dispatchMarkerDrop(canvas: HTMLCanvasElement, point: Point, markerType: string) {
+  const event = new Event("drop", { bubbles: true, cancelable: true });
   Object.defineProperties(event, {
     clientX: { value: point.x },
     clientY: { value: point.y },
-    dataTransfer: { value: dataTransfer },
+    dataTransfer: { value: markerTransfer(markerType) },
   });
   markSynthetic(event);
   canvas.dispatchEvent(event);
@@ -103,6 +96,7 @@ export function TravelMobileRuntime() {
   const [controlsOpen, setControlsOpen] = useState(false);
   const [markerPlacement, setMarkerPlacement] = useState<MarkerPlacement | null>(null);
   const [canvasAvailable, setCanvasAvailable] = useState(false);
+  const [sidebarAvailable, setSidebarAvailable] = useState(false);
   const [hasMarkers, setHasMarkers] = useState(false);
   const controlsTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -116,6 +110,7 @@ export function TravelMobileRuntime() {
     if (!enabled) return;
     const sync = () => {
       setCanvasAvailable(Boolean(document.querySelector(".travel-canvas")));
+      setSidebarAvailable(Boolean(document.querySelector(".travel-sidebar")));
       setHasMarkers(Boolean(document.querySelector(".travel-active-markers > button")));
     };
     sync();
@@ -130,30 +125,30 @@ export function TravelMobileRuntime() {
     const page = document.querySelector<HTMLElement>(".travel-page");
     const sidebar = document.querySelector<HTMLElement>(".travel-sidebar");
     const canvasPanel = document.querySelector<HTMLElement>(".travel-canvas-panel");
-    if (controlsOpen) {
+    if (controlsOpen && sidebar) {
       root.dataset.mobileTravelControlsOpen = "true";
       page?.setAttribute("data-mobile-controls-open", "true");
-      sidebar?.setAttribute("role", "dialog");
-      sidebar?.setAttribute("aria-modal", "true");
-      sidebar?.setAttribute("aria-label", "Controlli viaggio");
+      sidebar.setAttribute("role", "dialog");
+      sidebar.setAttribute("aria-modal", "true");
+      sidebar.setAttribute("aria-label", "Controlli viaggio");
       canvasPanel?.setAttribute("inert", "");
       const previousOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-      window.setTimeout(() => visibleControls()[1]?.focus(), 0);
+      window.setTimeout(() => sidebar.querySelector<HTMLElement>("button, input, select, summary, [tabindex]")?.focus(), 0);
       return () => {
         document.body.style.overflow = previousOverflow;
         delete root.dataset.mobileTravelControlsOpen;
         page?.removeAttribute("data-mobile-controls-open");
-        sidebar?.removeAttribute("role");
-        sidebar?.removeAttribute("aria-modal");
-        sidebar?.removeAttribute("aria-label");
+        sidebar.removeAttribute("role");
+        sidebar.removeAttribute("aria-modal");
+        sidebar.removeAttribute("aria-label");
         canvasPanel?.removeAttribute("inert");
       };
     }
     delete root.dataset.mobileTravelControlsOpen;
     page?.removeAttribute("data-mobile-controls-open");
     return undefined;
-  }, [controlsOpen, enabled]);
+  }, [controlsOpen, enabled, sidebarAvailable]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -367,7 +362,7 @@ export function TravelMobileRuntime() {
   };
 
   return <>
-    <div className="travel-mobile-toolbar" aria-label="Controlli rapidi della mappa">
+    <div className="travel-mobile-toolbar" role="group" aria-label="Controlli rapidi della mappa">
       <button type="button" disabled={!canvasAvailable} aria-label="Riduci zoom mappa" onClick={() => {
         const canvas = document.querySelector<HTMLCanvasElement>(".travel-canvas");
         if (canvas) dispatchWheel(canvas, 1);
@@ -377,7 +372,7 @@ export function TravelMobileRuntime() {
         if (canvas) dispatchWheel(canvas, -1);
       }}>+</button>
       <button type="button" disabled={!hasMarkers} aria-label="Centra un'icona attiva" onClick={centerMarker}>⌖</button>
-      <button ref={controlsTriggerRef} type="button" aria-expanded={controlsOpen} onClick={() => setControlsOpen(true)}>Controlli</button>
+      <button ref={controlsTriggerRef} type="button" disabled={!sidebarAvailable} aria-expanded={controlsOpen} onClick={() => setControlsOpen(true)}>Controlli</button>
     </div>
 
     {markerPlacement && <div className="travel-mobile-placement" role="status">
