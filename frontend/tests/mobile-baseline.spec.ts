@@ -176,6 +176,119 @@ test("phone Lore keeps empty and populated route states readable", async ({ page
   expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
 });
 
+test("compact Guides keep the index and reader usable", async ({ page }, testInfo) => {
+  test.skip(!isCompactProject(testInfo.project.name), "Phone and tablet Guides contract");
+  await page.goto("/guides");
+
+  const layout = page.locator(".guide-layout");
+  const index = page.locator(".guide-index");
+  const reader = page.locator(".guide-reader");
+  await expect(layout).toBeVisible();
+  await expect(index.locator("button").first()).toBeVisible();
+  await expect(reader).toBeVisible();
+
+  const columns = await layout.evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+  if ((page.viewportSize()?.width || 0) <= 900) expect(columns).toHaveLength(1);
+  else expect(columns.length).toBeGreaterThanOrEqual(2);
+  expect((await index.locator("button").first().boundingBox())?.height || 0).toBeGreaterThanOrEqual(44);
+
+  const variableReference = reader.locator(".variable-reference");
+  if (await variableReference.count()) {
+    const variableColumns = await variableReference.first().evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+    if (isPhoneProject(testInfo.project.name)) expect(variableColumns).toHaveLength(1);
+  }
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
+test("compact Media prioritizes browsing and keeps actions touchable", async ({ page }, testInfo) => {
+  test.skip(!isCompactProject(testInfo.project.name), "Phone and tablet Media contract");
+  await page.goto("/media");
+
+  const layout = page.locator(".media-library-layout");
+  const browser = page.locator(".media-browser");
+  const upload = page.locator(".media-upload-panel");
+  await expect(layout).toBeVisible();
+  await expect(browser).toBeVisible();
+  await expect(upload).toBeVisible();
+
+  const columns = await layout.evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+  if ((page.viewportSize()?.width || 0) <= 900) {
+    expect(columns).toHaveLength(1);
+    const browserBox = await browser.boundingBox();
+    const uploadBox = await upload.boundingBox();
+    expect(browserBox?.y || 0).toBeLessThan(uploadBox?.y || Number.POSITIVE_INFINITY);
+  }
+
+  if (isPhoneProject(testInfo.project.name)) {
+    const search = page.locator(".media-browser-toolbar input[type='search']");
+    await expect(search).toBeVisible();
+    expect(await search.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
+  }
+
+  const cards = page.locator(".media-asset-card");
+  if (await cards.count()) {
+    await cards.first().locator(".media-asset-open").click();
+    const dialog = page.locator(".media-preview-modal");
+    await expect(dialog).toBeVisible();
+    if (isPhoneProject(testInfo.project.name)) await expect(dialog).toHaveAttribute("data-responsive-presentation", "fullscreen");
+    await dialog.getByRole("button", { name: "Chiudi" }).click();
+  } else {
+    await expect(page.getByText("Nessuna immagine trovata")).toBeVisible();
+  }
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
+test("compact Settings expose scrollable tabs and full-width controls", async ({ page }, testInfo) => {
+  test.skip(!isCompactProject(testInfo.project.name), "Phone and tablet Settings contract");
+  await page.goto("/settings");
+
+  const tabs = page.getByRole("tablist", { name: "Sezioni delle impostazioni" });
+  await expect(tabs).toBeVisible();
+  await expect(tabs.getByRole("tab", { name: "Profilo" })).toBeVisible();
+  await expect(page.locator(".player-settings-panel")).toBeVisible();
+
+  const appearanceTab = tabs.getByRole("tab", { name: "Aspetto" });
+  if (await appearanceTab.count()) {
+    await appearanceTab.click();
+    const settingRow = page.locator(".setting-row").first();
+    await expect(settingRow).toBeVisible();
+    if (isPhoneProject(testInfo.project.name)) {
+      const columns = await settingRow.evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+      expect(columns).toHaveLength(1);
+      const control = settingRow.locator("input:not([type='checkbox']), select").first();
+      if (await control.count()) expect(await control.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
+    }
+  }
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
+test("compact Market collapses navigation, catalogue, and purchase flow safely", async ({ page }, testInfo) => {
+  test.skip(!isCompactProject(testInfo.project.name), "Phone and tablet Market contract");
+  await page.goto("/market");
+
+  const layout = page.locator(".market-layout");
+  await expect(layout).toBeVisible();
+  await expect(page.locator(".market-world-nav")).toBeVisible();
+  await expect(page.locator(".market-catalog")).toBeVisible();
+  await expect(page.locator(".market-purchase-sidebar")).toBeVisible();
+
+  const columns = await layout.evaluate((element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).filter(Boolean));
+  if ((page.viewportSize()?.width || 0) <= 900) expect(columns).toHaveLength(1);
+  expect((await page.locator(".market-nav-heading").first().boundingBox())?.height || 0).toBeGreaterThanOrEqual(44);
+
+  const stockCards = page.locator(".market-item-card");
+  if (await stockCards.count()) {
+    await stockCards.first().click();
+    const itemDialog = page.locator(".market-item-modal");
+    await expect(itemDialog).toBeVisible();
+    if (isPhoneProject(testInfo.project.name)) await expect(itemDialog).toHaveAttribute("data-responsive-presentation", "fullscreen");
+    await itemDialog.getByRole("button", { name: "Chiudi" }).click();
+  } else {
+    await expect(page.locator(".market-empty").first()).toBeVisible();
+  }
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
 test("phone management URLs preserve the address and show the intentional limitation", async ({ page }, testInfo) => {
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only management guard");
   await page.goto("/tools");
