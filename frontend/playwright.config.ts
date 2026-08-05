@@ -3,6 +3,8 @@ import { defineConfig } from "@playwright/test";
 const runtimePlatform = (globalThis as typeof globalThis & { process?: { platform?: string } }).process?.platform || "";
 const python = runtimePlatform.startsWith("win") ? "..\\venv\\Scripts\\python.exe" : "python";
 const django = (command: string) => `${python} ../manage.py ${command}`;
+const authenticatedState = ".playwright/auth.json";
+const mobileBaseline = /mobile-baseline\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./tests",
@@ -17,10 +19,80 @@ export default defineConfig({
       testMatch: /auth\.setup\.ts/,
     },
     {
+      // Canonical desktop project: keep its viewport and test coverage unchanged.
       name: "authenticated",
       testIgnore: /auth\.setup\.ts/,
       dependencies: ["setup"],
-      use: { storageState: ".playwright/auth.json" },
+      use: { storageState: authenticatedState },
+    },
+    {
+      name: "desktop-1920",
+      testMatch: mobileBaseline,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: "phone-small-portrait",
+      testMatch: mobileBaseline,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 360, height: 740 },
+        deviceScaleFactor: 3,
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
+    {
+      name: "phone-large-portrait",
+      testMatch: mobileBaseline,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 430, height: 932 },
+        deviceScaleFactor: 3,
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
+    {
+      name: "phone-landscape",
+      testMatch: mobileBaseline,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 844, height: 390 },
+        deviceScaleFactor: 3,
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
+    {
+      name: "tablet-portrait",
+      testMatch: mobileBaseline,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 820, height: 1180 },
+        deviceScaleFactor: 2,
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
+    {
+      name: "tablet-landscape",
+      testMatch: mobileBaseline,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 1180, height: 820 },
+        deviceScaleFactor: 2,
+        hasTouch: true,
+        isMobile: true,
+      },
     },
   ],
   webServer: {
