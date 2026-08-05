@@ -19,6 +19,7 @@ import "./styles/mobile-reference-pages.css";
 import "./styles/mobile-skills.css";
 import "./styles/mobile-competencies.css";
 import "./styles/mobile-creation.css";
+import "./styles/mobile-new-character.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
