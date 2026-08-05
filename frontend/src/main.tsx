@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 import { MasterAILauncherRuntime } from "./features/master-ai/launchers";
+import { CombatMobileRuntime } from "./features/mobile/CombatMobileRuntime";
 import { TravelMobileRuntime } from "./features/mobile/TravelMobileRuntime";
 import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
@@ -24,6 +25,7 @@ import "./styles/mobile-new-character.css";
 import "./styles/mobile-character.css";
 import "./styles/mobile-character-fixes.css";
 import "./styles/mobile-travel.css";
+import "./styles/mobile-combat.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +36,7 @@ const queryClient = new QueryClient({
 
 // App owns every routed page, including Master AI, so navigation, layout, and shared providers remain consistent.
 function RootApplication() {
-  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><TravelMobileRuntime /><App /></>;
+  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><TravelMobileRuntime /><CombatMobileRuntime /><App /></>;
 }
 
 createRoot(document.getElementById("app")!).render(
