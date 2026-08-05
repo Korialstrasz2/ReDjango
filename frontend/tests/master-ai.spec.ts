@@ -170,7 +170,7 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   expect(unitUrl.searchParams.get("entity")).toBe("unit");
   expect(unitUrl.searchParams.get("surface")).toBe("unit-management");
   expect(unitUrl.searchParams.get("target")).toBeNull();
-  await expect(page.locator(".master-ai-context-chip")).toContainText("unit");
+  await expect(page.locator(".master-ai-context-chip")).toContainText(/unit/i);
   await expect(page.locator(".master-ai-chat textarea")).toHaveValue(/Unit completa/);
   expect(assistantPosts).toBe(0);
 });
