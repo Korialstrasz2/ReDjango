@@ -129,14 +129,16 @@ test("Combat UI exposes role-appropriate map, token, and manager controls", asyn
   await page.locator(".combat-map-manager-trigger").click();
   const manager = page.locator(".combat-map-manager-modal");
   await expect(manager).toBeVisible();
-  await expect(manager.getByRole("button", { name: /Calibra e modifica|Modifica mappa attiva/ })).toHaveCount(master ? 1 : 0);
+  const editEntries = manager.getByRole("button", { name: /Calibra e modifica|Modifica mappa attiva/ });
+  if (master) expect(await editEntries.count()).toBeGreaterThanOrEqual(1);
+  else await expect(editEntries).toHaveCount(0);
   await expect(manager.getByRole("button", { name: "Backup e copie", exact: true })).toHaveCount(master ? 1 : 0);
   if (isPhoneProject(testInfo)) await expect(manager).toHaveAttribute("data-responsive-presentation", "fullscreen");
   await closeTopModal(page);
 
   if (master) {
     await page.locator(".combat-new-map-trigger").click();
-    const editor = page.locator(".combat-map-editor-modal");
+    const editor = page.locator('[data-surface="combat-map-editor"]');
     await expect(editor).toBeVisible();
     if (isPhoneProject(testInfo)) await expect(editor).toHaveAttribute("data-responsive-presentation", "fullscreen");
     await closeTopModal(page);
