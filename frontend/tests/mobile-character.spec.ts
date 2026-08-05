@@ -9,7 +9,7 @@ const isCompactProject = (name: string) => isPhoneProject(name) || isTabletProje
 async function openActiveCharacter(page: Page) {
   await page.goto("/");
   await expect(page.locator(".dashboard-page")).toBeVisible({ timeout: 20_000 });
-  const characterLink = page.locator('a[href^="/character/"]').first();
+  const characterLink = page.locator('.dashboard-shortcuts a[href^="/character/"]').first();
   await expect(characterLink).toBeVisible();
   const href = await characterLink.getAttribute("href");
   expect(href).toBeTruthy();
