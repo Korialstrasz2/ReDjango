@@ -1,5 +1,5 @@
-export type MasterAIEntityType = "item" | "skill" | "spell" | "theme";
-export type MasterAISourceSurface = "item-management" | "skill-management" | "theme-management" | "management-hub" | "master-ai";
+export type MasterAIEntityType = "item" | "skill" | "spell" | "theme" | "unit";
+export type MasterAISourceSurface = "item-management" | "skill-management" | "theme-management" | "unit-management" | "management-hub" | "master-ai";
 
 export type MasterAILaunchContext = {
   entityType: MasterAIEntityType;
@@ -13,11 +13,12 @@ export type MasterAILaunchRequest = MasterAILaunchContext & {
   recordLabel?: string;
 };
 
-const ENTITY_TYPES = new Set<MasterAIEntityType>(["item", "skill", "spell", "theme"]);
+const ENTITY_TYPES = new Set<MasterAIEntityType>(["item", "skill", "spell", "theme", "unit"]);
 const SOURCE_SURFACES = new Set<MasterAISourceSurface>([
   "item-management",
   "skill-management",
   "theme-management",
+  "unit-management",
   "management-hub",
   "master-ai",
 ]);
