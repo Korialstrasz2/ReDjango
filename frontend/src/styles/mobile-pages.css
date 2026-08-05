@@ -1,0 +1,285 @@
+/* Lower-risk responsive route work. Desktop rules remain authoritative above 1200px. */
+@media (max-width: 1199px) {
+  .dashboard-character-selection {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-active-character {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dashboard-shortcuts {
+    justify-content: flex-start;
+  }
+
+  .dashboard-character-selection > *,
+  .dashboard-character-selection .list-panel,
+  .dashboard-character-selection .character-preview {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Login */
+  .auth-screen {
+    place-items: center;
+    padding: calc(16px + var(--mobile-safe-top)) calc(14px + var(--mobile-safe-right)) calc(16px + var(--mobile-safe-bottom)) calc(14px + var(--mobile-safe-left));
+  }
+
+  .auth-card {
+    width: min(100%, 430px);
+    padding: 22px 18px;
+    border-radius: 10px;
+    box-shadow: 0 18px 50px rgb(0 0 0 / .34);
+  }
+
+  .auth-card > header {
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 15px;
+  }
+
+  .auth-card .brand-rune {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+  }
+
+  .auth-card h1 {
+    font-size: clamp(2rem, 12vw, 2.7rem);
+  }
+
+  .auth-card form {
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .auth-card form input {
+    min-height: 48px;
+    padding: 10px 12px;
+    font-size: max(1rem, 16px);
+  }
+
+  .auth-card form .button {
+    min-height: 48px;
+  }
+
+  .auth-card > footer {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .auth-card > footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Dashboard */
+  .dashboard-page {
+    gap: 12px;
+  }
+
+  .dashboard-page .page-header {
+    align-items: center;
+    min-height: 64px;
+  }
+
+  .dashboard-page .page-header h1 {
+    max-width: calc(100vw - 132px);
+    overflow: hidden;
+    font-size: clamp(1.65rem, 8vw, 2.15rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-logout {
+    min-width: 76px;
+    min-height: 44px;
+  }
+
+  .dashboard-active-character {
+    gap: 17px;
+    padding: 20px 18px;
+  }
+
+  .dashboard-active-character h2 {
+    font-size: clamp(1.45rem, 8vw, 2rem);
+  }
+
+  .dashboard-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .dashboard-shortcuts .button {
+    min-width: 0;
+    min-height: 44px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .dashboard-character-selection {
+    gap: 12px;
+  }
+
+  .dashboard-character-selection .panel {
+    padding: 16px;
+  }
+
+  .dashboard-character-selection .list-panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dashboard-character-selection .list-panel-heading .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .dashboard-character-selection .character-list button {
+    min-height: 58px;
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .dashboard-character-selection .character-list button strong,
+  .dashboard-character-selection .character-list button span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dashboard-character-selection .character-preview .stat-chip-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-character-selection .button-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-character-selection .button-row .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  /* Context notes are portalled out of the hidden desktop sidebar. */
+  .mobile-context-note-trigger {
+    position: fixed;
+    right: calc(12px + var(--mobile-safe-right));
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 12px);
+    z-index: 55;
+    display: grid;
+    grid-template-columns: 28px minmax(0, auto);
+    align-items: center;
+    gap: 7px;
+    min-height: 48px;
+    max-width: min(190px, calc(100vw - 24px - var(--mobile-safe-left) - var(--mobile-safe-right)));
+    padding: 7px 12px 7px 9px;
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 34%);
+    border-radius: 24px;
+    background: var(--theme-overlay-strong-surface);
+    color: var(--text);
+    box-shadow: 0 10px 28px #0008;
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+  }
+
+  .mobile-context-note-trigger > span {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--gold), transparent 84%);
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  .mobile-context-note-trigger strong {
+    overflow: hidden;
+    font: 700 .72rem var(--font-display);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-context-note-modal[data-responsive-presentation="sheet"] {
+    max-height: min(88dvh, 100dvh);
+  }
+
+  .mobile-context-note-sheet {
+    display: grid;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .mobile-context-note-sheet > header {
+    padding: 0 4px 9px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-context-note-sheet > header p {
+    margin: 0;
+  }
+
+  .mobile-context-note-sheet > header p:last-child {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: .74rem;
+    line-height: 1.5;
+  }
+
+  .mobile-context-note-sheet .note-editor-minimal-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    padding-inline: 2px;
+    font-size: .68rem;
+  }
+
+  .mobile-context-note-sheet .note-section-editor.minimal textarea {
+    min-height: min(48dvh, 420px);
+    padding: 14px;
+    resize: none;
+    font-size: max(.9rem, 16px);
+    line-height: 1.65;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-shortcuts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mobile-context-note-trigger {
+    grid-template-columns: 28px;
+    width: 48px;
+    padding: 9px;
+  }
+
+  .mobile-context-note-trigger strong {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 520px) {
+  .auth-screen {
+    place-items: start center;
+    overflow-y: auto;
+  }
+
+  .auth-card {
+    margin-block: 8px;
+  }
+}
