@@ -1,0 +1,61 @@
+name: Diagnose Master AI overflow
+
+on:
+  push:
+    branches:
+      - agent/master-ai-shell-workspace
+    paths:
+      - ".github/workflows/diagnose-master-ai-overflow.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/master-ai-shell-workspace
+      - name: Add overflow diagnostics
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("frontend/tests/master-ai.spec.ts")
+          text = path.read_text(encoding="utf-8")
+          old = '''  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(2);'''
+          new = '''  const layout = await page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth;
+    const overflow = document.documentElement.scrollWidth - viewportWidth;
+    const offenders = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          selector: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${element.className && typeof element.className === "string" ? `.${element.className.trim().replace(/\\s+/g, ".")}` : ""}`,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+        };
+      })
+      .filter((entry) => entry.right > viewportWidth + 2 || entry.left < -2 || entry.scrollWidth > entry.clientWidth + 2)
+      .sort((left, right) => Math.max(right.right - viewportWidth, right.scrollWidth - right.clientWidth) - Math.max(left.right - viewportWidth, left.scrollWidth - left.clientWidth))
+      .slice(0, 15);
+    return { overflow, viewportWidth, documentWidth: document.documentElement.scrollWidth, offenders };
+  });
+  expect(layout.overflow, JSON.stringify(layout, null, 2)).toBeLessThanOrEqual(2);'''
+          if old not in text:
+              raise SystemExit("Overflow assertion anchor not found")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          Path(".github/workflows/diagnose-master-ai-overflow.yml").unlink()
+          PY
+      - name: Commit diagnostics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Report Master AI overflow offenders"
+          git push origin HEAD:agent/master-ai-shell-workspace
