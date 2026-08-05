@@ -4,7 +4,7 @@ const runtimePlatform = (globalThis as typeof globalThis & { process?: { platfor
 const python = runtimePlatform.startsWith("win") ? "..\\venv\\Scripts\\python.exe" : "python";
 const django = (command: string) => `${python} ../manage.py ${command}`;
 const authenticatedState = ".playwright/auth.json";
-const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character)\.spec\.ts/;
+const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character|character)\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./tests",
