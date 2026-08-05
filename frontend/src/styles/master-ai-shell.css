@@ -1,0 +1,54 @@
+/* Master AI remains inside the shared app shell, but its workspace is allowed
+   to shrink below the desktop-only 1024px minimum used by the legacy pages. */
+body:has(.app-shell.master-ai-app-shell) {
+  min-width: 0;
+}
+
+.app-shell.master-ai-app-shell {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+.app-shell.master-ai-app-shell .workspace.master-ai-workspace,
+.app-shell.master-ai-app-shell .workspace-content,
+.app-shell.master-ai-app-shell .master-ai-page,
+.app-shell.master-ai-app-shell .master-ai-commandbar,
+.app-shell.master-ai-app-shell .master-ai-request-row,
+.app-shell.master-ai-app-shell .master-ai-chat,
+.app-shell.master-ai-app-shell .master-ai-operations,
+.app-shell.master-ai-app-shell .master-ai-proposal-detail {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-shell.master-ai-app-shell .workspace.master-ai-workspace {
+  width: auto;
+  overflow-x: clip;
+}
+
+.app-shell.master-ai-app-shell .quick-tools-bar {
+  min-width: 0;
+  max-width: calc(100vw - var(--sidebar-width));
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.app-shell.master-ai-app-shell .quick-tools-actions {
+  min-width: max-content;
+}
+
+@media (max-width: 720px) {
+  .app-shell.master-ai-app-shell .page {
+    padding-inline: 12px;
+  }
+
+  .app-shell.master-ai-app-shell .master-ai-commandbar,
+  .app-shell.master-ai-app-shell .master-ai-chat,
+  .app-shell.master-ai-app-shell .master-ai-operations,
+  .app-shell.master-ai-app-shell .master-ai-proposal-detail {
+    overflow: hidden;
+  }
+}

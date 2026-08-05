@@ -118,14 +118,41 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   expect(Number(contextualUrl.searchParams.get("source"))).toBeGreaterThan(0);
   expect(contextualUrl.searchParams.get("surface")).toBe("item-management");
   await expect(page.getByRole("heading", { name: "Master AI" })).toBeVisible();
+  await expect(page.locator(".side-nav")).toBeVisible();
+  await expect(page.locator(".quick-tools-bar")).toBeVisible();
+  await expect(page.locator(".master-ai-commandbar")).toBeVisible();
   await expect(page.locator(".master-ai-context-chip")).toContainText(appliedName);
   await expect(page.locator(".master-ai-chat textarea")).toHaveValue(new RegExp(`simile a .*${appliedName}`));
+  await expect(page.getByRole("button", { name: "Nuova chat" })).toBeVisible();
   expect(assistantPosts).toBe(0);
 
+  await page.getByRole("button", { name: "Nuova chat" }).click();
+  await expect(page.locator(".master-ai-chat-empty")).toContainText("Nuova chat");
+  await expect(page.locator(".master-ai-chat textarea")).toHaveValue("");
+
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".master-ai-layout")).toBeVisible();
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  expect(overflow).toBeLessThanOrEqual(2);
+  await expect(page.locator(".master-ai-request-row")).toBeVisible();
+  const layout = await page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth;
+    const overflow = document.documentElement.scrollWidth - viewportWidth;
+    const offenders = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          selector: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${element.className && typeof element.className === "string" ? `.${element.className.trim().replace(/\s+/g, ".")}` : ""}`,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+        };
+      })
+      .filter((entry) => entry.right > viewportWidth + 2 || entry.left < -2 || entry.scrollWidth > entry.clientWidth + 2)
+      .sort((left, right) => Math.max(right.right - viewportWidth, right.scrollWidth - right.clientWidth) - Math.max(left.right - viewportWidth, left.scrollWidth - left.clientWidth))
+      .slice(0, 15);
+    return { overflow, viewportWidth, documentWidth: document.documentElement.scrollWidth, offenders };
+  });
+  expect(layout.overflow, JSON.stringify(layout, null, 2)).toBeLessThanOrEqual(2);
 
   await page.goto("/tools/themes");
   await expect(page.getByRole("button", { name: "AI Assist" })).toBeVisible();
