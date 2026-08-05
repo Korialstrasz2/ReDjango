@@ -26,6 +26,7 @@ import "./styles/mobile-character.css";
 import "./styles/mobile-character-fixes.css";
 import "./styles/mobile-travel.css";
 import "./styles/mobile-combat.css";
+import "./styles/mobile-combat-fixes.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
