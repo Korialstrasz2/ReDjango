@@ -126,7 +126,7 @@ test("phone Character modals use mobile presentations without saving", async ({ 
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only Character modal contract");
   await openActiveCharacter(page);
 
-  await page.locator(".character-hud").getByRole("button", { name: "Modifica" }).click();
+  await page.locator(".character-hud").getByRole("button", { name: "Modifica", exact: true }).click();
   const overview = page.getByRole("dialog", { name: "Modifica panoramica" });
   await expect(overview).toBeVisible();
   await expect(overview).toHaveAttribute("data-responsive-presentation", "sheet");
