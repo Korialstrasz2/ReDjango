@@ -60,12 +60,12 @@ function RelationField({ field, value, disabled, multiple, onChange }: { field: 
 }
 
 export function ProposalFieldRenderer({ fields, values, errors, disabled, onChange }: Props) {
-  if (fields.some((field) => field.ui.widget === "unitDefinition")) {
-    return <UnitProposalEditor fields={fields} values={values} errors={errors} disabled={disabled} onChange={onChange} />;
-  }
   const groups = useMemo(() => fields.reduce<Record<string, AIChangeField[]>>((result, field) => {
     (result[field.group || "Campi"] ||= []).push(field); return result;
   }, {}), [fields]);
+  if (fields.some((field) => field.ui.widget === "unitDefinition")) {
+    return <UnitProposalEditor fields={fields} values={values} errors={errors} disabled={disabled} onChange={onChange} />;
+  }
   const errorFor = (name: string) => errors.find((error) => error.field === name || error.field?.endsWith(`.${name}`));
 
   return <div className="master-ai-field-groups">{Object.entries(groups).map(([group, groupFields]) => <fieldset key={group} className="master-ai-field-group">
