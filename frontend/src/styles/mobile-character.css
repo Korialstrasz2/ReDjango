@@ -1,0 +1,1071 @@
+/* Character sheet responsive contract. Desktop remains governed by app.css. */
+@media (max-width: 1199px) {
+  .character-page {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .character-hud,
+  .items-effects-stage,
+  .items-stage-object,
+  .items-workspace,
+  .items-columns,
+  .equipment-column,
+  .container-column,
+  .item-inspector,
+  .overview-panel,
+  .effects-workspace,
+  .effects-workspace-body,
+  .effect-detail-area {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .stat-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-groups > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .advanced-stat-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reagent-values {
+    grid-column: auto;
+  }
+
+  .item-editor-tabs {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .item-editor-tabs > button {
+    flex: 0 0 min(210px, 32vw);
+  }
+}
+
+@media (max-width: 900px) {
+  .effects-workspace-body {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .effects-directory {
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--gold), transparent 70%);
+  }
+
+  .effects-directory-list {
+    display: grid;
+    grid-auto-columns: minmax(180px, 44vw);
+    grid-auto-flow: column;
+    gap: 7px;
+    overflow-x: auto;
+    padding: 10px;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+  }
+
+  .effects-directory-list > button {
+    min-height: 54px;
+    scroll-snap-align: start;
+  }
+
+  .effect-detail-area {
+    padding: 14px;
+  }
+
+  .effect-fields-grid,
+  .effect-operation-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .effect-origin-field,
+  .effect-description-field,
+  .effect-expression-field,
+  .effect-condition-field {
+    grid-column: auto;
+  }
+
+  .effect-operation-number,
+  .effect-operation-remove {
+    justify-self: start;
+  }
+
+  .effect-operation-row > p {
+    grid-column: auto;
+  }
+
+  .effect-icon-picker-grid {
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  }
+
+  .weapon-axis-panels,
+  .weapon-option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .character-page {
+    --character-hud-offset: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+    display: grid;
+    gap: 12px;
+  }
+
+  /* The phone HUD is a compact card rather than a viewport-consuming sticky bar. */
+  .character-hud {
+    position: relative;
+    top: auto;
+    z-index: 1;
+    gap: 12px;
+    margin: 0;
+    padding: 15px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--theme-overlay-surface);
+    box-shadow: 0 10px 28px #0004;
+  }
+
+  .character-identity h1 {
+    overflow: visible;
+    font-size: clamp(1.6rem, 9vw, 2.15rem);
+    line-height: 1.05;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .character-identity p:last-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    font-size: .78rem;
+  }
+
+  .character-identity p span + span::before {
+    content: none;
+  }
+
+  .resource-toolbar,
+  .values-panel-header,
+  .values-panel-tools,
+  .equipment-heading-row,
+  .equipment-heading-tools,
+  .panel-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .resource-toolbar {
+    display: grid;
+    gap: 10px;
+  }
+
+  .quick-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .quick-stat-control {
+    grid-template-columns: minmax(0, 1fr) auto 44px 44px;
+    min-height: 52px;
+    padding: 4px 5px 4px 11px;
+  }
+
+  .quick-stat-control > button {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .quick-stat-control:focus-within > .calculation-tooltip {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .quick-stat-control:focus-visible > .calculation-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .hud-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .hud-actions .button {
+    min-height: 44px;
+    justify-content: center;
+    font-size: .72rem;
+  }
+
+  /* Resource controls are permanently exposed on touch instead of depending on hover. */
+  .resource-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .resource-card {
+    overflow: visible;
+    padding: 0;
+    border-radius: 7px;
+  }
+
+  .resource-track {
+    display: grid;
+    gap: 8px;
+    height: auto;
+    min-height: 0;
+    padding: 9px;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .resource-fill {
+    inset: 0 auto 0 0;
+    opacity: .7;
+  }
+
+  .resource-readout {
+    position: relative;
+    inset: auto;
+    min-height: 34px;
+    padding: 0 5px;
+    opacity: 1 !important;
+  }
+
+  .resource-readout strong {
+    font-size: 1rem;
+  }
+
+  .resource-actions,
+  .resource-card[data-resource="mana"] .resource-actions {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    padding: 0;
+    opacity: 1;
+    pointer-events: auto;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .resource-card[data-resource="mana"] .resource-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .resource-actions button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 5px 3px;
+    border-radius: 5px;
+    font-size: .67rem;
+  }
+
+  .resource-card:focus-within > .calculation-tooltip,
+  .resource-card:hover > .calculation-tooltip {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .resource-track:focus-visible + .calculation-tooltip {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    width: auto;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .action-points-maximum {
+    min-height: 60px;
+    padding: 10px 14px;
+  }
+
+  .interaction-banner {
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top) + 6px);
+    z-index: 45;
+    flex-wrap: wrap;
+    gap: 7px 10px;
+    margin: 0;
+    padding: 12px;
+    border-radius: 7px;
+  }
+
+  .interaction-banner strong,
+  .interaction-banner span {
+    flex: 1 1 100%;
+  }
+
+  .interaction-banner button {
+    min-height: 44px;
+    margin-left: 0;
+    padding: 6px 12px;
+    border: 1px solid currentColor;
+    border-radius: 5px;
+  }
+
+  /* Objects and Effects become sequential phone workspaces. */
+  .items-effects-stage,
+  .items-effects-stage.effects-open {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    min-height: 0;
+    margin: 0;
+  }
+
+  .items-stage-object {
+    grid-row: 2;
+  }
+
+  .effect-rail {
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 8px;
+    min-height: 58px;
+    padding: 7px 8px;
+  }
+
+  .effect-rail-heading {
+    width: auto;
+    margin: 0;
+    padding: 0 9px 0 0;
+    border-right: 1px solid color-mix(in srgb, var(--gold), transparent 70%);
+    border-bottom: 0;
+  }
+
+  .effect-rail-icons {
+    display: flex;
+    min-width: 0;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px;
+    overscroll-behavior-inline: contain;
+  }
+
+  .effect-rail-icons > button,
+  .effect-rail-new {
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .items-effects-stage.effects-open .items-stage-object {
+    display: block;
+    grid-row: 1;
+    min-height: 0;
+  }
+
+  .objects-spine,
+  .items-effects-stage.effects-open .objects-spine {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    border-radius: 6px;
+  }
+
+  .objects-spine span {
+    writing-mode: horizontal-tb;
+    transform: none;
+    letter-spacing: .16em;
+  }
+
+  .effects-workspace {
+    grid-row: 2;
+    min-height: 0;
+    border-radius: 7px;
+  }
+
+  .effects-workspace-header {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .effects-workspace-header > div > p:last-child {
+    font-size: .72rem;
+  }
+
+  .effects-close {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .effects-directory-tools {
+    padding: 12px;
+  }
+
+  .effect-search-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .effects-directory-tools input,
+  .effects-directory-tools select,
+  .effects-directory-tools .button {
+    min-height: 44px;
+    font-size: max(.78rem, 16px);
+  }
+
+  .effects-directory-list {
+    grid-auto-columns: minmax(210px, 76vw);
+  }
+
+  .effect-detail-area {
+    padding: 12px;
+  }
+
+  .effect-detail-card > header,
+  .effect-detail-actions,
+  .effect-editor-header,
+  .effect-editor-actions,
+  .effect-operations-editor > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .effect-detail-actions,
+  .effect-editor-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .effect-detail-actions .button,
+  .effect-editor-actions .button,
+  .effect-preset-open,
+  .effect-operations-editor > header .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .effect-operation-summary > div > article {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .effect-operation-edit {
+    min-height: 44px;
+    white-space: normal;
+  }
+
+  .effect-order-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) repeat(2, minmax(92px, auto));
+  }
+
+  .effect-order-actions button {
+    min-height: 44px;
+  }
+
+  .effect-fields-grid input,
+  .effect-fields-grid textarea,
+  .effect-operation-row input,
+  .effect-operation-row select,
+  .effect-icon-picker-tools input {
+    font-size: max(.78rem, 16px);
+  }
+
+  .effect-operation-remove {
+    width: 44px;
+    height: 44px;
+  }
+
+  .effect-icon-picker-tools {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .effect-icon-picker-grid {
+    grid-template-columns: repeat(5, minmax(44px, 1fr));
+    max-height: 260px;
+  }
+
+  .effect-icon-picker-grid label {
+    min-height: 44px;
+  }
+
+  .items-workspace {
+    height: auto !important;
+    margin: 0 !important;
+    padding: 13px;
+    border-radius: 8px;
+  }
+
+  .items-workspace > .panel-header {
+    gap: 10px;
+  }
+
+  .items-workspace > .panel-header .button-row,
+  .selected-item-actions,
+  .inspector-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .items-workspace > .panel-header .button,
+  .selected-item-actions .button,
+  .inspector-actions .button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .items-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .equipment-column,
+  .container-column,
+  .item-inspector {
+    width: 100%;
+  }
+
+  .equipment-heading-row {
+    gap: 9px;
+  }
+
+  .equipment-heading-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .equipment-view-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .equipment-view-switch button {
+    min-height: 44px;
+  }
+
+  .carried-coins-control {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .carried-coins-control input {
+    min-height: 44px;
+    font-size: max(.8rem, 16px);
+  }
+
+  .coin-save-state {
+    grid-column: 1 / -1;
+  }
+
+  .coin-overflow-popover {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-top: 7px;
+  }
+
+  .coin-overflow-popover button {
+    min-height: 44px;
+  }
+
+  .dual-wield-control {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .dual-wield-control .button {
+    min-height: 44px;
+  }
+
+  /* The figure keeps the portrait, but its slot rails become normal document flow. */
+  .character-figure {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 12px;
+  }
+
+  .character-figure::before {
+    display: none;
+  }
+
+  .character-figure-art,
+  .character-figure[data-placeholder="false"] .character-figure-art {
+    position: relative;
+    inset: auto;
+    height: min(62vw, 280px);
+    min-height: 190px;
+    margin-bottom: 12px;
+  }
+
+  .character-figure-art img {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .figure-rune {
+    display: none;
+  }
+
+  .figure-slot-layer,
+  .character-figure[data-placeholder="false"] .figure-slot-layer {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .figure-slot-rail,
+  .figure-slot-rail-left,
+  .figure-slot-rail-right {
+    display: grid;
+    grid-column: auto;
+    gap: 7px;
+  }
+
+  .figure-slot-group,
+  .figure-slot-group-head,
+  .figure-slot-group-torso,
+  .figure-slot-group-hands,
+  .figure-slot-group-waist,
+  .figure-slot-group-utility {
+    position: static;
+    display: grid;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .character-figure .figure-slot.character-slot,
+  .character-figure .figure-slot:hover:not(.locked),
+  .character-figure .figure-slot:focus-visible,
+  .character-figure .figure-slot.selected,
+  .character-figure .figure-slot.valid,
+  .character-figure .figure-slot.over,
+  .character-figure .figure-slot.selected:has(.slot-inline-actions) {
+    display: flex;
+    flex-basis: auto;
+    width: 100%;
+    min-height: 62px;
+    padding: 8px;
+    opacity: 1;
+  }
+
+  .character-figure .figure-slot .slot-item strong,
+  .character-figure .figure-slot header {
+    overflow: visible;
+    font-size: .62rem;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .character-figure .slot-inline-actions {
+    gap: 5px;
+    margin-top: 7px;
+    padding-top: 7px;
+  }
+
+  .character-figure .slot-inline-actions button {
+    min-height: 44px;
+    padding: 6px 4px;
+    font-size: .58rem;
+  }
+
+  .character-figure figcaption {
+    position: relative;
+    inset: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 10px;
+    padding: 10px;
+  }
+
+  .character-figure figcaption small {
+    overflow: visible;
+    text-align: left;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .equipment-grid,
+  .container-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .character-slot {
+    min-width: 0;
+    min-height: 104px;
+    padding: 9px;
+    touch-action: pan-y;
+  }
+
+  .character-slot:has(.slot-item):not(.locked):not(.system-managed) {
+    touch-action: none;
+  }
+
+  .character-slot header,
+  .slot-item strong,
+  .slot-item small,
+  .slot-item span {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .slot-inline-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .slot-inline-actions button {
+    min-height: 44px;
+    font-size: .61rem;
+  }
+
+  .slot-move-button {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 7px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    opacity: 1;
+  }
+
+  .container-tabs {
+    display: grid;
+    grid-auto-columns: minmax(155px, 72vw);
+    grid-auto-flow: column;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+  }
+
+  .container-tabs > button {
+    min-height: 50px;
+    scroll-snap-align: start;
+  }
+
+  .capacity-note {
+    align-items: flex-start;
+    flex-direction: column;
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .shared-coins-card {
+    min-height: 104px;
+  }
+
+  .shared-coins-card input {
+    min-height: 44px;
+    font-size: max(.8rem, 16px);
+  }
+
+  .item-inspector {
+    position: static;
+    padding: 15px 0 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .item-search-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .item-search-row input,
+  .item-search-row button,
+  .storage-quantity input {
+    min-height: 44px;
+    font-size: max(.78rem, 16px);
+  }
+
+  .storage-quantity {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .autocomplete-results {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-height: 320px;
+    margin-bottom: 10px;
+  }
+
+  .autocomplete-results > button {
+    min-height: 52px;
+  }
+
+  .item-detail img {
+    width: auto;
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+  }
+
+  /* Values remain readable after the inventory workspace. */
+  .overview-effects-grid {
+    margin: 0;
+  }
+
+  .overview-panel {
+    padding: 14px;
+  }
+
+  .values-panel-tools {
+    display: grid;
+    gap: 10px;
+  }
+
+  .weight-summary {
+    width: 100%;
+    min-height: 58px;
+  }
+
+  .weight-tooltip,
+  .calculation-tooltip {
+    max-width: calc(100vw - 32px);
+  }
+
+  .character-values-switch {
+    align-self: stretch;
+  }
+
+  .stat-groups,
+  .advanced-stat-groups {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .stat-groups > div:last-child {
+    grid-column: auto;
+  }
+
+  .stat-list,
+  .stat-list.compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-value {
+    min-height: 58px;
+    padding: 9px;
+  }
+
+  .reagent-capacity,
+  .reagent-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Slot picker becomes a safe-area-aware phone dialog instead of an anchored menu. */
+  .slot-item-picker {
+    position: fixed !important;
+    inset: calc(var(--mobile-safe-top) + 8px) calc(var(--mobile-safe-right) + 8px) calc(var(--mobile-safe-bottom) + 8px) calc(var(--mobile-safe-left) + 8px) !important;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    width: auto;
+    max-width: none;
+    max-height: none;
+    border-radius: 10px;
+  }
+
+  .slot-item-picker-header {
+    min-height: 54px;
+    padding: 8px 10px;
+  }
+
+  .slot-item-picker-header button,
+  .slot-item-picker-empty {
+    min-height: 44px;
+  }
+
+  .slot-item-picker-search {
+    min-height: 48px;
+    margin: 10px;
+    font-size: max(.8rem, 16px);
+  }
+
+  .slot-item-picker-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 10px 10px;
+    overscroll-behavior-inline: contain;
+  }
+
+  .slot-item-picker-filter > button,
+  .slot-item-picker-reset {
+    min-height: 44px;
+    white-space: nowrap;
+  }
+
+  .slot-item-picker-options {
+    position: fixed;
+    z-index: 2;
+    right: 18px;
+    left: 18px;
+    width: auto;
+    max-height: 42dvh;
+    overflow-y: auto;
+  }
+
+  .slot-item-picker-options button,
+  .slot-item-picker-results > button {
+    min-height: 52px;
+  }
+
+  .slot-item-picker-results {
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 10px;
+  }
+
+  /* Wide item editor is already full-screen through Modal; adapt its internals. */
+  .item-editor-modal .modal-body {
+    padding: 0 12px 18px;
+  }
+
+  .item-editor {
+    min-width: 0;
+  }
+
+  .item-editor-tabs {
+    position: sticky;
+    z-index: 3;
+    top: 0;
+    display: grid;
+    grid-auto-columns: minmax(150px, 66vw);
+    grid-auto-flow: column;
+    width: calc(100% + 24px);
+    margin-inline: -12px;
+    padding: 8px 12px;
+    background: var(--theme-overlay-strong-surface);
+    scroll-snap-type: inline proximity;
+  }
+
+  .item-editor-tabs > button {
+    min-height: 54px;
+    scroll-snap-align: start;
+  }
+
+  .item-editor-panel,
+  .item-editor fieldset {
+    min-width: 0;
+  }
+
+  .item-editor .form-grid,
+  .item-editor .form-grid.three,
+  .weapon-axis-panels,
+  .weapon-option-grid,
+  .effect-editor-row,
+  .effect-editor-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .item-editor input,
+  .item-editor select,
+  .item-editor textarea {
+    font-size: max(.78rem, 16px);
+  }
+
+  .weapon-option-grid button,
+  .weapon-suggestion-panel .button,
+  .weapon-cost-guideline .button,
+  .item-editor .button {
+    min-height: 44px;
+  }
+
+  .weapon-suggestion-panel,
+  .weapon-cost-guideline {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .effect-editor-head {
+    display: none;
+  }
+
+  .effect-editor-row {
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+
+  .item-editor-modal .modal-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .item-editor-footer-note {
+    grid-column: 1 / -1;
+  }
+
+  .item-editor-modal .modal-footer .button {
+    min-width: 0;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .quick-stat-grid,
+  .hud-actions,
+  .equipment-grid,
+  .container-grid,
+  .figure-slot-layer,
+  .stat-list,
+  .stat-list.compact,
+  .effect-detail-actions,
+  .effect-editor-actions,
+  .item-editor-modal .modal-footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resource-actions,
+  .resource-card[data-resource="mana"] .resource-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .effect-icon-picker-grid {
+    grid-template-columns: repeat(4, minmax(44px, 1fr));
+  }
+
+  .effect-order-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .item-editor-footer-note {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 520px) {
+  .character-figure-art,
+  .character-figure[data-placeholder="false"] .character-figure-art {
+    height: 150px;
+    min-height: 150px;
+  }
+
+  .slot-item-picker {
+    inset-block: 6px !important;
+  }
+}
