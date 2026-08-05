@@ -58,3 +58,16 @@ test("phone shell exposes secondary destinations and quick tools", async ({ page
   await expect(toolsDialog.getByRole("button", { name: /Dadi/ })).toBeVisible();
   await expect(toolsDialog.getByRole("button", { name: /Audio/ })).toBeVisible();
 });
+
+test("phone management URLs preserve the address and show the intentional limitation", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only management guard");
+  await page.goto("/tools");
+
+  await expect(page).toHaveURL(/\/tools$/);
+  const limitation = page.locator(".mobile-unsupported-management");
+  await expect(limitation).toBeVisible();
+  await expect(limitation.getByRole("heading", { name: "Gestione richiede un tablet o un computer" })).toBeVisible();
+  await expect(limitation.getByRole("button", { name: "Indietro" })).toBeVisible();
+  await expect(limitation.getByRole("link", { name: "Torna alla Home" })).toBeVisible();
+  await expect(page.locator(".workspace-content")).toBeHidden();
+});
