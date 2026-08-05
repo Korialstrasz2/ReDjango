@@ -99,14 +99,17 @@ function UnitManagementMasterAIButton({ revision }: { revision: number }) {
   const host = document.querySelector<HTMLElement>(".unit-management-page .page-header .button-row");
   const active = document.querySelector<HTMLElement>(".unit-management-list button.active");
   const label = active?.querySelector("strong")?.textContent?.trim() || "";
+  const identity = document.querySelector<HTMLElement>(".unit-management-editor .eyebrow")?.textContent || "";
+  const targetId = Number(identity.match(/Unit\s+#(\d+)/i)?.[1] || 0) || undefined;
   if (!host) return null;
-  const prompt = label
+  const prompt = targetId && label
     ? `Rivedi la Unit «${label}». Cerca e leggi il record, confronta almeno cinque Unit meccanicamente simili, ispeziona ogni Skill e oggetto dipendente, poi proponi una modifica completa conforme al contratto Unit e all'audit di generazione.`
     : "Crea una nuova Unit completa. Leggi la configurazione live, confronta almeno cinque Unit meccanicamente simili, ispeziona Skill e oggetti dipendenti, quindi proponi un DTO completo conforme al contratto Unit e all'audit di generazione.";
   return createPortal(
-    <button key={revision} type="button" className="button secondary master-ai-assist-button" onClick={() => navigate(buildMasterAIUrl({
+    <button key={`${revision}-${targetId || "new"}`} type="button" className="button secondary master-ai-assist-button" onClick={() => navigate(buildMasterAIUrl({
       entityType: "unit",
       sourceSurface: "unit-management",
+      targetId,
       recordLabel: label || undefined,
       defaultPrompt: prompt,
     }))}>Master AI Unit</button>,
