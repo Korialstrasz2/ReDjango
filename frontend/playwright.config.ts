@@ -47,24 +47,26 @@ export default defineConfig({
       },
     },
     {
+      // Exercises the 480–767px phone category rather than another narrow-phone width.
       name: "phone-large-portrait",
       testMatch: mobileBaseline,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
-        viewport: { width: 430, height: 932 },
-        deviceScaleFactor: 3,
+        viewport: { width: 540, height: 960 },
+        deviceScaleFactor: 2,
         hasTouch: true,
         isMobile: true,
       },
     },
     {
+      // Stays below the phone/tablet layout boundary even in landscape.
       name: "phone-landscape",
       testMatch: mobileBaseline,
       dependencies: ["setup"],
       use: {
         storageState: authenticatedState,
-        viewport: { width: 844, height: 390 },
+        viewport: { width: 740, height: 360 },
         deviceScaleFactor: 3,
         hasTouch: true,
         isMobile: true,
