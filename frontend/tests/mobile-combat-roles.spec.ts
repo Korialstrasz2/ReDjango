@@ -1,0 +1,178 @@
+import { expect, test, type APIRequestContext, type Page, type TestInfo } from "@playwright/test";
+
+import { measureDocumentOverflow } from "./helpers/layout";
+
+const roleProject = (testInfo: TestInfo) => testInfo.project.name.includes("combat-master") || testInfo.project.name.includes("combat-player");
+const isMasterProject = (testInfo: TestInfo) => testInfo.project.name.includes("combat-master");
+const isPhoneProject = (testInfo: TestInfo) => testInfo.project.name.startsWith("phone-");
+
+type CombatWorkspaceEnvelope = {
+  data: {
+    permissions: {
+      canManageMaps: boolean;
+      canImportCharacters: boolean;
+      canControlCharacters: boolean;
+      canApplyEnemyEffects: boolean;
+    };
+    viewerCharacterId: number | null;
+    characterCatalog: unknown[];
+    templates: unknown[];
+    unitCatalog: unknown[];
+    effectCatalog: unknown[];
+    map: null | {
+      id: number;
+      mapTypeId: number;
+      activeCharacterId: number | null;
+      participants: Array<{ id: number; character: { id: number; name: string }; anchor: { q: number; r: number } }>;
+      snapshots: unknown[];
+      revision?: number;
+    };
+  };
+};
+
+async function workspace(request: APIRequestContext) {
+  const response = await request.get("/api/combat/");
+  expect(response.ok()).toBeTruthy();
+  return (await response.json()) as CombatWorkspaceEnvelope;
+}
+
+async function csrfToken(request: APIRequestContext) {
+  await request.get("/api/auth/session/");
+  return (await request.storageState()).cookies.find((cookie) => cookie.name === "csrftoken")?.value || "";
+}
+
+async function openCombat(page: Page) {
+  await page.goto("/combat");
+  await expect(page.locator(".combat-page")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(".combat-stage-layout")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(".fatal-error")).toHaveCount(0);
+}
+
+async function closeTopModal(page: Page) {
+  const modal = page.locator(".modal-backdrop").last();
+  await expect(modal).toBeVisible();
+  const close = modal.getByRole("button", { name: "Chiudi", exact: true }).first();
+  if (await close.count()) await close.click();
+  else await page.keyboard.press("Escape");
+  await expect(modal).toBeHidden();
+}
+
+test("Combat API exposes the real master/player permission boundary", async ({ request }, testInfo) => {
+  test.skip(!roleProject(testInfo), "Dedicated Combat role projects only");
+  const result = await workspace(request);
+  const data = result.data;
+  const master = isMasterProject(testInfo);
+
+  expect(data.map).toBeTruthy();
+  expect(data.viewerCharacterId).toBeTruthy();
+  expect(data.permissions).toEqual({
+    canManageMaps: master,
+    canImportCharacters: master,
+    canControlCharacters: master,
+    canApplyEnemyEffects: master,
+  });
+
+  if (master) {
+    expect(data.characterCatalog.length).toBeGreaterThanOrEqual(2);
+    expect(data.map?.revision).toBeTruthy();
+    expect(data.map?.participants.length || 0).toBeGreaterThanOrEqual(2);
+  } else {
+    expect(data.characterCatalog).toEqual([]);
+    expect(data.templates).toEqual([]);
+    expect(data.unitCatalog).toEqual([]);
+    expect(data.effectCatalog).toEqual([]);
+    expect(data.map?.snapshots).toEqual([]);
+    expect(data.map).not.toHaveProperty("revision");
+    expect(data.map?.activeCharacterId).toBe(data.viewerCharacterId);
+    expect(data.map?.participants.some((entry) => entry.character.id === data.viewerCharacterId)).toBe(true);
+
+    const token = await csrfToken(request);
+    const denied = await request.post("/api/combat/actions/", {
+      headers: { "X-CSRFToken": token },
+      data: {
+        action: "maps.save",
+        requestId: `combat-player-denied-${Date.now()}`,
+        payload: {
+          name: "Tentativo non autorizzato",
+          mapTypeId: data.map?.mapTypeId,
+          rows: 8,
+          columns: 8,
+        },
+      },
+    });
+    expect(denied.status()).toBe(403);
+    const deniedBody = await denied.json();
+    expect(deniedBody.ok).toBe(false);
+  }
+});
+
+test("Combat UI exposes role-appropriate map, token, and manager controls", async ({ page }, testInfo) => {
+  test.skip(!roleProject(testInfo), "Dedicated Combat role projects only");
+  await openCombat(page);
+  const master = isMasterProject(testInfo);
+
+  if (isPhoneProject(testInfo)) {
+    await expect(page.getByRole("tablist", { name: "Pannelli del combattimento" })).toBeVisible();
+    await expect(page.locator(".combat-map-stage svg")).toHaveAttribute("data-mobile-combat-touch-ready", "true");
+  } else {
+    await expect(page.locator(".combat-mobile-navigation")).toHaveCount(0);
+    await expect(page.locator(".combat-map-stage svg")).toHaveCSS("min-width", "620px");
+  }
+
+  const movableTokens = page.locator(".combat-token.can-move");
+  if (master) expect(await movableTokens.count()).toBeGreaterThanOrEqual(2);
+  else expect(await movableTokens.count()).toBe(1);
+
+  await expect(page.locator(".combat-new-map-trigger")).toHaveCount(master ? 1 : 0);
+  await expect(page.locator(".combat-map-toolbar").getByRole("button", { name: "Personaggi", exact: true })).toHaveCount(master ? 1 : 0);
+
+  await page.locator(".combat-map-manager-trigger").click();
+  const manager = page.locator(".combat-map-manager-modal");
+  await expect(manager).toBeVisible();
+  await expect(manager.getByRole("button", { name: /Calibra e modifica|Modifica mappa attiva/ })).toHaveCount(master ? 1 : 0);
+  await expect(manager.getByRole("button", { name: "Backup e copie", exact: true })).toHaveCount(master ? 1 : 0);
+  if (isPhoneProject(testInfo)) await expect(manager).toHaveAttribute("data-responsive-presentation", "fullscreen");
+  await closeTopModal(page);
+
+  if (master) {
+    await page.locator(".combat-new-map-trigger").click();
+    const editor = page.locator(".combat-map-editor-modal");
+    await expect(editor).toBeVisible();
+    if (isPhoneProject(testInfo)) await expect(editor).toHaveAttribute("data-responsive-presentation", "fullscreen");
+    await closeTopModal(page);
+
+    await page.locator(".combat-map-toolbar").getByRole("button", { name: "Personaggi", exact: true }).click();
+    const characters = page.locator(".combat-character-manager-modal");
+    await expect(characters).toBeVisible();
+    if (isPhoneProject(testInfo)) await expect(characters).toHaveAttribute("data-responsive-presentation", "fullscreen");
+    await closeTopModal(page);
+  }
+
+  const planner = page.locator(".combat-map-toolbar").getByRole("button", { name: /Azioni rapide/ });
+  await planner.click();
+  const plannerModal = page.locator(".combat-quick-actions-modal");
+  await expect(plannerModal).toBeVisible();
+  if (isPhoneProject(testInfo)) await expect(plannerModal).toHaveAttribute("data-responsive-presentation", "fullscreen");
+  await closeTopModal(page);
+
+  expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
+});
+
+test("phone player keeps controlled-character resources touch-visible", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "phone-combat-player", "Phone player project only");
+  await openCombat(page);
+
+  const navigation = page.getByRole("tablist", { name: "Pannelli del combattimento" });
+  await navigation.getByRole("tab", { name: /Scheda/ }).click();
+  const character = page.locator(".combat-selected-character");
+  await expect(character).toBeVisible();
+  const resources = character.locator(".combat-rail-resource-actions");
+  expect(await resources.count()).toBeGreaterThan(0);
+  for (let index = 0; index < await resources.count(); index += 1) {
+    await expect(resources.nth(index)).toBeVisible();
+    const buttons = resources.nth(index).getByRole("button");
+    for (let buttonIndex = 0; buttonIndex < await buttons.count(); buttonIndex += 1) {
+      expect((await buttons.nth(buttonIndex).boundingBox())?.height || 0).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
