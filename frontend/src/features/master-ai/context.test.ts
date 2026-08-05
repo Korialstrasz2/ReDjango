@@ -31,13 +31,27 @@ describe("Master AI contextual launcher contract", () => {
     });
   });
 
+  it("builds a Unit launcher through the Unit management surface", () => {
+    const url = buildMasterAIUrl({
+      entityType: "unit",
+      targetId: 9,
+      recordLabel: "Lupo",
+      sourceSurface: "unit-management",
+    });
+    expect(parseMasterAILaunch(url.slice(url.indexOf("?"))).context).toEqual({
+      entityType: "unit",
+      targetId: 9,
+      sourceSurface: "unit-management",
+    });
+  });
+
   it("rejects target and source in the same launcher", () => {
     expect(() => buildMasterAIUrl({ entityType: "item", targetId: 1, sourceId: 2, sourceSurface: "item-management" })).toThrow();
     expect(parseMasterAILaunch("?entity=item&target=1&source=2&surface=item-management").context).toBeNull();
   });
 
   it("fails closed for unsupported entities and surfaces", () => {
-    expect(parseMasterAILaunch("?entity=unit&target=1&surface=unit-management").context).toBeNull();
+    expect(parseMasterAILaunch("?entity=shop&target=1&surface=shop-management").context).toBeNull();
     expect(parseMasterAILaunch("?entity=theme&target=1&surface=player-management").context).toBeNull();
   });
 

@@ -5,6 +5,8 @@ on:
     paths:
       - "backend/ai/**"
       - "backend/core/**"
+      - "backend/combat/unit_*.py"
+      - "backend/combat/accessory_profiles.py"
       - "frontend/src/features/master-ai/**"
       - "frontend/src/features/management/**"
       - "frontend/tests/master-ai.spec.ts"
@@ -12,7 +14,9 @@ on:
       - "frontend/src/main.tsx"
       - "frontend/src/styles/master-ai*.css"
       - "Builder_docs/openapi-master-ai-proposals.json"
+      - "Builder_docs/UNIT_AUTHORING_GUIDE_FOR_LLM.md"
       - "docs/MASTER_AI_PROPOSALS.md"
+      - "docs/MASTER_AI_UNITS.md"
       - "requirements.txt"
       - "frontend/package*.json"
       - ".github/workflows/master-ai-verification.yml"
@@ -30,7 +34,7 @@ concurrency:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       DJANGO_SETTINGS_MODULE: redjango.settings
       REDJANGO_DEBUG: "0"
@@ -52,6 +56,8 @@ jobs:
         run: python manage.py check
       - name: Master AI and AI regression tests
         run: python manage.py test backend.ai --verbosity 2
+      - name: Unit generation regression tests
+        run: python manage.py test backend.combat.tests.UnitGenerationTests --verbosity 2
       - name: Core domain regression tests
         run: python manage.py test backend.core --verbosity 1
       - name: Cleanup command dry run
