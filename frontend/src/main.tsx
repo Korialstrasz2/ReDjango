@@ -13,6 +13,7 @@ import { TabletRouteHeadingRuntime } from "./features/mobile/TabletRouteHeadingR
 import { TravelMobileRuntime } from "./features/mobile/TravelMobileRuntime";
 import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
+import "./styles/special-resource-lines.css";
 import "./styles/interaction-fixes.css";
 import "./styles/theme-reveal.css";
 import "./styles/master-ai.css";
