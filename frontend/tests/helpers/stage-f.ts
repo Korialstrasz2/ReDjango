@@ -27,8 +27,18 @@ export const isTabletProject = (name: string) => name.startsWith("tablet-");
 export const isCompactProject = (name: string) => isPhoneProject(name) || isTabletProject(name);
 
 export function primaryHeading(page: Page): Locator {
+  const pathname = new URL(page.url()).pathname;
+  const workspaceTitle = pathname.startsWith("/combat")
+    ? "Combattimento"
+    : pathname.startsWith("/travel")
+      ? "Viaggio"
+      : null;
+  if (workspaceTitle) {
+    return page.locator(".tablet-route-heading, [role='banner'] strong")
+      .filter({ hasText: new RegExp(`^${workspaceTitle}$`) })
+      .first();
+  }
   return page.locator([
-    "[role='banner'] > strong:last-of-type",
     "main h1",
     "main [role='heading'][aria-level='1']",
     "main h2",
