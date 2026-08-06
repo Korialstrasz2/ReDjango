@@ -25,7 +25,7 @@ export default defineConfig({
   projects: [
     {
       name: "desktop-visual-setup",
-      testMatch: /auth\.setup\.ts/,
+      testMatch: /desktop-visual\.setup\.ts/,
     },
     {
       name: "desktop-1280",
