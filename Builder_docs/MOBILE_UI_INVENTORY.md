@@ -5,11 +5,11 @@ Stage F audit branch: `agent/mobile-stage-f-completion`
 Baseline commit: `da846aca31d31b15e4128f70b0cf0e6cb3b32283`  
 Updated: 2026-08-06
 
-This is an implementation-time inventory, not a release declaration. A route is “automated checkpoint” when current Chromium tests cover its principal responsive presentation. Physical-device and full transaction evidence remain separate gates.
+This is an implementation-time inventory, not a release declaration. A route is an “automated checkpoint” when current Chromium tests cover its principal responsive presentation. Physical-device and full transaction evidence remain separate gates.
 
 ## Protected global contracts
 
-- `AppContext`, `ThemeSurfacesContext`, TanStack Query, authentication bootstrap, router, media-cache activation, theme/font/density/accessibility application, toast host, and global shortcuts remain outside route-specific mobile presentations.
+- `AppContext`, `ThemeSurfacesContext`, TanStack Query, authentication bootstrap, router, media-cache activation, theme/font/density/accessibility application, the original desktop toast host, and global shortcuts remain outside route-specific mobile presentations.
 - `AudioPlayerProvider` remains above `Shell` and `<Routes>`; phone and desktop route changes must not interrupt playback.
 - `frontend/src/lib/navigation.ts` is the shared source for desktop and phone destination order and permissions.
 - The canonical 1440 × 900 desktop project remains the pre-existing suite; a separate pinned visual harness compares 1280 × 800, 1440 × 900, and 1920 × 1080 evidence.
@@ -61,7 +61,7 @@ Phone contract:
 - full-screen More sheet and explicit management limitation;
 - Quick Tools chooser and one active mobile ToolDrawer;
 - real React Router navigation and browser history;
-- workspace padding that clears app bar, mini-player, and bottom navigation.
+- workspace padding that clears app bar, mini-player, toast stack, and bottom navigation.
 
 Tablet currently retains the desktop sidebar where the width contract allows it. The 768px management matrix is the minimum automated claim.
 
@@ -102,7 +102,7 @@ Phone: full-screen presentation, sticky header, no drag/resize, dynamic viewport
 - AI custom portal/alert surfaces;
 - Combat and Travel local inspectors/panels that are not shared `Modal` instances;
 - media/image pickers and route-specific custom overlays;
-- any remaining native `window.confirm`, `window.alert`, or portal call site discovered by repository search.
+- any remaining native `window.confirm`, `window.alert`, or portal call site discovered by the source audit.
 
 For each call site, the release ledger must record desktop type/size, phone target, tablet target, footer behavior, Escape, backdrop, dirty/destructive protection, keyboard-open behavior, nested picker behavior, and focus restoration.
 
@@ -144,14 +144,14 @@ Related phone surfaces still requiring deliberate release evidence: campaign/wea
 
 ### Hover audit
 
-Every `:hover`, title-only detail, tooltip, hover-open action, and pointer-only control must be mapped to visible text, a button, tap/focus disclosure, or another tested alternative. Current known surfaces include Character calculations/effects, campaign weather details, Context Notes, media card actions, navigation labels, maps/markers/tokens, and management editors. The complete source-level report is still a release blocker.
+Every `:hover`, title-only detail, tooltip, hover-open action, and pointer-only control must be mapped to visible text, a button, tap/focus disclosure, or another tested alternative. `npm run audit:mobile-ui` produces JSON and Markdown candidate lists for review. A finding is not automatically a defect, but every user-facing candidate requires classification.
 
 ## Global behavior inventory
 
 - Audio continuity: provider above router; Stage F mini-player navigation test added.
 - Loading: delayed bootstrap test and viewport containment.
 - Fatal startup: injected failure, readable error, touch-sized retry, successful recovery.
-- Toast: phone placement above fixed navigation is tested. Current host stores one message; multiple-message stacking is an open product requirement.
+- Notifications: `MobileToastStack` mirrors successive phone source messages into a bounded three-message accessible stack above fixed navigation. The original desktop single-toast host and desktop CSS remain unchanged. Consecutive-message stacking and viewport containment are automated.
 - Restart: screen and polling exist; automated plus physical restart/reconnect evidence remains open.
 - Offline/reconnect: controlled startup failure/recovery exists; genuine browser offline, service-worker/cache, and server-restart tests remain open.
 
