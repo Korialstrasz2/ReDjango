@@ -1,11 +1,11 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 import { collectRoutePerformanceSnapshot } from "./helpers/stage-f";
 
 const performanceProjects = new Set(["phone-large-portrait", "desktop-1920"]);
 const routes = ["/", "/skills", "/combat", "/travel"] as const;
 
-async function sampleAnimationFrames(page: Parameters<typeof test>[0] extends never ? never : any, durationMs = 1200) {
+async function sampleAnimationFrames(page: Page, durationMs = 1200) {
   return page.evaluate((duration) => new Promise<{ frames: number; elapsedMs: number; fps: number }>((resolve) => {
     const started = performance.now();
     let frames = 0;
