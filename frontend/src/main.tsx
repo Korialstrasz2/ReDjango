@@ -19,6 +19,7 @@ import "./styles/master-ai-shell.css";
 import "./styles/master-ai-launchers.css";
 import "./styles/master-ai-unit.css";
 import "./styles/mobile.css";
+import "./styles/mobile-global-fixes.css";
 import "./styles/mobile-toast.css";
 import "./styles/mobile-pages.css";
 import "./styles/mobile-lore.css";
