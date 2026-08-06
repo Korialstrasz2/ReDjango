@@ -1,0 +1,36 @@
+/* Phone-only adapter around the protected desktop single-toast host. */
+@media (max-width: 767px) {
+  .toast:not([data-mobile-toast-copy]) {
+    display: none;
+  }
+
+  .mobile-toast-stack {
+    position: fixed;
+    right: max(10px, var(--mobile-safe-right));
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 10px);
+    left: max(10px, var(--mobile-safe-left));
+    z-index: 205;
+    display: grid;
+    gap: 8px;
+    max-height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 28px);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .mobile-toast-stack .toast {
+    position: static;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    min-height: var(--mobile-touch-target);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  html[data-mobile-workspace] .mobile-toast-stack {
+    bottom: calc(10px + var(--mobile-safe-bottom));
+  }
+}
