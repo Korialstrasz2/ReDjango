@@ -52,6 +52,16 @@ jobs:
         run: npm run typecheck
       - name: Production build
         run: npm run build
+      - name: Mobile UI source audit
+        run: npm run audit:mobile-ui
+      - name: Upload mobile UI source audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-ui-source-audit-${{ github.run_attempt }}
+          path: frontend/test-results/mobile-ui-audit
+          if-no-files-found: ignore
+          retention-days: 14
 
   desktop-e2e:
     runs-on: ubuntu-latest
