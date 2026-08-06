@@ -34,12 +34,14 @@ export function primaryHeading(page: Page): Locator {
       ? "Viaggio"
       : null;
   if (workspaceTitle) {
-    if ((page.viewportSize()?.width || 0) >= 1200) {
+    const width = page.viewportSize()?.width || 0;
+    if (width >= 1200) {
       return page.getByRole("link", { name: workspaceTitle, exact: true }).first();
     }
-    return page.locator(".tablet-route-heading:visible, [role='banner'] strong:visible")
-      .filter({ hasText: new RegExp(`^${workspaceTitle}$`) })
-      .first();
+    if (width >= 768) {
+      return page.getByRole("heading", { name: workspaceTitle, exact: true }).first();
+    }
+    return page.getByRole("banner").getByText(workspaceTitle, { exact: true }).first();
   }
   return page.locator([
     "main h1",
