@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useApp } from "../App";
@@ -40,6 +40,7 @@ export function ImagePickerModal({
 }: Props) {
   const { media, mediaCategories, notify } = useApp();
   const queryClient = useQueryClient();
+  const previewReturnRef = useRef<HTMLButtonElement | null>(null);
   const automaticCategory = (
     categorySlug
       ? mediaCategories.find((category) => category.slug === categorySlug)
@@ -84,6 +85,13 @@ export function ImagePickerModal({
     window.addEventListener("keydown", closeMenu, true);
     return () => window.removeEventListener("keydown", closeMenu, true);
   }, [actionAssetId]);
+  const closePreview = () => {
+    const returnTarget = previewReturnRef.current;
+    setPreviewAsset(null);
+    window.requestAnimationFrame(() => {
+      if (returnTarget?.isConnected) returnTarget.focus({ preventScroll: true });
+    });
+  };
   const uploadMutation = useMutation({
     mutationFn: async ({ file, title, selectedCategoryId, selectedGroup }: { file: File; title: string; selectedCategoryId: number; selectedGroup: string }) => {
       const prepared = convertToWebpQuality == null
@@ -174,7 +182,11 @@ export function ImagePickerModal({
               </button>
               {isSelected && <span className="image-picker-selected-badge">Selezionata</span>}
               {menuOpen && <div className="image-picker-context-menu" data-component-type="context-menu" data-theme="media" role="menu" aria-label={`Azioni per ${asset.title}`}>
-                <button className="button secondary" type="button" role="menuitem" onClick={() => { setPreviewAsset(asset); setActionAssetId(null); }}>Apri</button>
+                <button className="button secondary" type="button" role="menuitem" onClick={(event) => {
+                  previewReturnRef.current = event.currentTarget.closest<HTMLElement>("[data-image-picker-asset]")?.querySelector<HTMLButtonElement>(".image-picker-card-trigger") || null;
+                  setPreviewAsset(asset);
+                  setActionAssetId(null);
+                }}>Apri</button>
                 <button className="button primary" type="button" role="menuitem" onClick={() => { setDraftId(asset.id); setActionAssetId(null); }}>Seleziona</button>
               </div>}
             </article>;
@@ -186,11 +198,11 @@ export function ImagePickerModal({
     {previewAsset && <Modal
       surface="image-picker-preview"
       title={`Anteprima ${previewAsset.title}`}
-      onClose={() => setPreviewAsset(null)}
+      onClose={closePreview}
       wide
       closeOnBackdrop
       className="image-picker-preview-modal"
-      footer={<><span className="image-picker-preview-meta">{previewAsset.category || "Senza categoria"} · {previewAsset.group}</span><button className="button secondary" type="button" onClick={() => setPreviewAsset(null)}>Chiudi</button></>}
+      footer={<><span className="image-picker-preview-meta">{previewAsset.category || "Senza categoria"} · {previewAsset.group}</span><button className="button secondary" type="button" onClick={closePreview}>Chiudi</button></>}
     >
       <div className="image-picker-preview-content">
         <img src={previewAsset.url} alt={previewAsset.title} />
