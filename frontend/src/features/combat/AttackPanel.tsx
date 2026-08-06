@@ -303,6 +303,10 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
   };
 
   const manualValuesSet = MANUAL_FIELDS.some((field) => values[field.key] !== 0);
+  const hasPendingAttack = automaticRunning
+    || manualValuesSet
+    || activeCombatButtonIds.length > 0
+    || Boolean(!preview?.applied && (attackRoll || damageBase || damageAdjustment || preview));
 
   const toggleCombatButton = (buttonId: number) => {
     const selected = activeCombatButtonIds.includes(buttonId);
@@ -326,7 +330,7 @@ export function AttackPanel({ map, selection, result, busy, onResolve, onRollD20
     ].filter(Boolean).join(" · ")
     : "";
 
-  return <div className="combat-attack" data-component-type="panel" data-theme="combat">
+  return <div className="combat-attack" data-component-type="panel" data-theme="combat" data-combat-attack-pending={hasPendingAttack ? "true" : undefined}>
 
     <CriticalHitOverlay trigger={criticalTrigger} />
 

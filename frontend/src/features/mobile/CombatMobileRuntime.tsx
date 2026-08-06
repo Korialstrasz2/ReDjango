@@ -68,6 +68,8 @@ export function CombatMobileRuntime() {
       window.setTimeout(() => navRef.current?.querySelector<HTMLButtonElement>("[data-combat-mobile-panel='map']")?.focus(), 0);
       return true;
     }
+    const pendingAttack = document.querySelector(".combat-attack[data-combat-attack-pending='true']");
+    if (pendingAttack && !window.confirm("È in corso una configurazione di attacco. Uscire e perdere le modifiche?")) return true;
     return false;
   };
 

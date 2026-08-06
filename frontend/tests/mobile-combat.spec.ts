@@ -191,6 +191,28 @@ test("phone Combat Back closes child state before leaving the workspace", async 
   await expect(page).toHaveURL(/\/$/);
 });
 
+
+test("phone Combat Back protects an unapplied attack sequence", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only pending attack protection");
+  await ensureCombatMap(page);
+
+  const navigation = page.getByRole("tablist", { name: "Pannelli del combattimento" });
+  const back = page.getByRole("button", { name: "Indietro da Combattimento" });
+  await navigation.getByRole("tab", { name: /Attacco/ }).click();
+  await page.getByRole("spinbutton", { name: "Tiro d20" }).fill("12");
+  await expect(page.locator(".combat-attack")).toHaveAttribute("data-combat-attack-pending", "true");
+
+  await back.click();
+  await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
+
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await back.click();
+  await expect(page).toHaveURL(/\/combat$/);
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await back.click();
+  await expect(page).toHaveURL(/\/$/);
+});
 test("tablet Combat releases forced map width without phone navigation", async ({ page }, testInfo) => {
   test.skip(!isTabletProject(testInfo.project.name), "Tablet Combat containment contract");
   await ensureCombatMap(page);
