@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
+import { getData } from "../../lib/api";
 import { useResponsiveLayout } from "../../lib/responsive";
 import { matchesShortcut, quickToolShortcutTargets, shortcutValue } from "../../lib/shortcuts";
 import type { ShellNavigationItem } from "../../lib/navigation";
-import type { CampaignData, SettingsData } from "../../lib/types";
+import type { BootstrapData, CampaignData, SettingsData } from "../../lib/types";
 import { AITool } from "../ai/AITool";
 import { AudioMiniPlayer } from "../audio/AudioMiniPlayer";
 import { AudioTool } from "../audio/AudioTool";
@@ -58,9 +59,10 @@ export function QuickTools({ characterId, characterName, campaign, settings, nav
   useEffect(() => {
     if (!settings.security.canManageGameData) return;
     const refreshApprovals = () => {
-      if (document.visibilityState === "visible") {
-        void queryClient.invalidateQueries({ queryKey: ["bootstrap"] });
-      }
+      if (document.visibilityState !== "visible") return;
+      void getData<BootstrapData>("/api/bootstrap/")
+        .then((latest) => queryClient.setQueryData(["bootstrap"], latest))
+        .catch(() => undefined);
     };
     const timer = window.setInterval(refreshApprovals, 15_000);
     window.addEventListener("focus", refreshApprovals);
