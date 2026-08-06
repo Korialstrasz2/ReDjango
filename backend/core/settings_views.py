@@ -5,7 +5,6 @@ from .security import get_or_create_giocatore_for_user
 from .settings_selectors import settings_payload
 from .settings_services import (
     redeem_role_code,
-    request_character_assignments,
     save_setting_overrides,
     select_game_role,
     update_player_alias,
@@ -29,12 +28,6 @@ def settings_collection(request):
                 raise ApiError("player.profile_invalid", "Il profilo giocatore non è valido.", "profile")
             giocatore = update_player_alias(giocatore, profile.get("alias"))
             event = {"type": "player.alias_saved", "message": "Alias aggiornato."}
-        elif "assignmentRequest" in payload:
-            assignment = payload.get("assignmentRequest")
-            if not isinstance(assignment, dict):
-                raise ApiError("player.assignment_invalid", "La richiesta di assegnazione non è valida.", "assignmentRequest")
-            request_character_assignments(giocatore, assignment.get("characterIds"), assignment.get("message", ""))
-            event = {"type": "player.assignment_requested", "message": "Richiesta di assegnazione inviata."}
         elif "roleCode" in payload:
             role_code = payload.get("roleCode")
             if not isinstance(role_code, dict):
@@ -52,8 +45,10 @@ def settings_collection(request):
                 role_selection.get("code", ""),
             )
             event = {"type": "player.role_updated", "message": "Livello di accesso aggiornato."}
-        else:
+        elif "settings" in payload:
             save_setting_overrides(user, giocatore, payload.get("settings", {}))
+        else:
+            raise ApiError("settings.invalid_payload", "La richiesta non è valida.", "payload")
         return api_response(
             request,
             settings_payload(user, giocatore),
