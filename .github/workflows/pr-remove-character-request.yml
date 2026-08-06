@@ -1,0 +1,248 @@
+name: Prepare character request removal PR
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.head_ref == 'codex/remove-character-request-settings-clean'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Apply source-only refactor
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def write(path: str, content: str) -> None:
+              Path(path).write_text(content, encoding="utf-8")
+
+          def require_replace(content: str, old: str, new: str, label: str) -> str:
+              count = content.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected one match, found {count}")
+              return content.replace(old, new, 1)
+
+          app_path = "frontend/src/App.tsx"
+          app = Path(app_path).read_text(encoding="utf-8")
+          app = require_replace(
+              app,
+              "Vedi soltanto i personaggi che ti sono stati assegnati. Crea il tuo con «Nuovo PG», chiedine uno dalle Impostazioni → Profilo, oppure fatteli assegnare da un master.",
+              "Vedi soltanto i personaggi che ti sono stati assegnati. Crea il tuo con «Nuovo PG» oppure fatteli assegnare da un master.",
+              "dashboard empty state",
+          )
+          app = require_replace(app, '  const [selectedCharacters, setSelectedCharacters] = useState<Set<number>>(() => new Set());\n', '', "selected character state")
+          app = require_replace(app, '  const [assignmentMessage, setAssignmentMessage] = useState("");\n', '', "assignment message state")
+          app = require_replace(app, '      setSelectedCharacters(new Set());\n', '', "selected character reset")
+          app = require_replace(app, '      setAssignmentMessage("");\n', '', "assignment message reset")
+          app, helper_count = re.subn(
+              r'  const toggleCharacter = .*?\n  const requestableCharacters = .*?\n  const statusLabel = .*?;\n\n',
+              '',
+              app,
+              count=1,
+              flags=re.S,
+          )
+          if helper_count != 1:
+              raise RuntimeError(f"request helpers: expected one match, found {helper_count}")
+          app = require_replace(
+              app,
+              '<header><div><p className="eyebrow">Profilo</p><h2>{settings.security.role === "admin" ? "Admin" : settings.security.role === "master" ? "Master" : "Giocatore"}</h2></div><p>Alias, personaggi richiesti e livello di accesso personale.</p></header>',
+              '<header><div><p className="eyebrow">Profilo</p><h2>{settings.security.role === "admin" ? "Admin" : settings.security.role === "master" ? "Master" : "Giocatore"}</h2></div><p>Alias e livello di accesso personale.</p></header>',
+              "profile summary",
+          )
+          app, form_count = re.subn(
+              r'      <form className="player-character-request".*?      </form>\n',
+              '',
+              app,
+              count=1,
+              flags=re.S,
+          )
+          if form_count != 1:
+              raise RuntimeError(f"request form: expected one match, found {form_count}")
+          write(app_path, app)
+
+          types_path = "frontend/src/lib/types.ts"
+          types = Path(types_path).read_text(encoding="utf-8")
+          types = require_replace(
+              types,
+              '''  player: {\n    alias: string;\n    characters: Array<{\n      id: number;\n      name: string;\n      assigned: boolean;\n      requestStatus: "" | "pending" | "approved" | "rejected";\n    }>;\n  };''',
+              '''  player: {\n    alias: string;\n  };''',
+              "settings player type",
+          )
+          write(types_path, types)
+
+          selectors_path = "backend/core/settings_selectors.py"
+          selectors = Path(selectors_path).read_text(encoding="utf-8")
+          selectors = require_replace(selectors, 'from django.db.models import Q\n\nfrom backend.characters.models import Personaggio\n\n', '', "selector imports")
+          selectors = require_replace(
+              selectors,
+              'from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme',
+              'from .models import Giocatore, SettingDefinition, SettingOverride, Theme',
+              "selector model import",
+          )
+          selectors, data_count = re.subn(
+              r'\n    assigned_ids = \{.*?\n    available_characters = .*?\.order_by\("nome", "id"\)\n',
+              '\n',
+              selectors,
+              count=1,
+              flags=re.S,
+          )
+          if data_count != 1:
+              raise RuntimeError(f"request selector data: expected one match, found {data_count}")
+          selectors, player_count = re.subn(
+              r'        "player": \{\n            "alias": giocatore\.display_name or giocatore\.nome,\n            "characters": \[.*?\n            \],\n        \},',
+              '        "player": {"alias": giocatore.display_name or giocatore.nome},',
+              selectors,
+              count=1,
+              flags=re.S,
+          )
+          if player_count != 1:
+              raise RuntimeError(f"player payload: expected one match, found {player_count}")
+          write(selectors_path, selectors)
+
+          services_path = "backend/core/settings_services.py"
+          services = Path(services_path).read_text(encoding="utf-8")
+          services = require_replace(services, 'from django.db.models import Q\n', '', "service Q import")
+          services, service_count = re.subn(
+              r'\n@transaction\.atomic\ndef request_character_assignments\(.*?(?=\n@transaction\.atomic\ndef approve_character_assignment)',
+              '\n',
+              services,
+              count=1,
+              flags=re.S,
+          )
+          if service_count != 1:
+              raise RuntimeError(f"request service: expected one match, found {service_count}")
+          write(services_path, services)
+
+          views_path = "backend/core/settings_views.py"
+          views = Path(views_path).read_text(encoding="utf-8")
+          views = require_replace(views, '    request_character_assignments,\n', '', "view service import")
+          views, view_count = re.subn(
+              r'        elif "assignmentRequest" in payload:.*?            event = \{"type": "player\.assignment_requested", "message": "Richiesta di assegnazione inviata\."\}\n',
+              '',
+              views,
+              count=1,
+              flags=re.S,
+          )
+          if view_count != 1:
+              raise RuntimeError(f"request view branch: expected one match, found {view_count}")
+          views = require_replace(
+              views,
+              '        else:\n            save_setting_overrides(user, giocatore, payload.get("settings", {}))',
+              '        elif "settings" in payload:\n            save_setting_overrides(user, giocatore, payload.get("settings", {}))\n        else:\n            raise ApiError("settings.invalid_payload", "La richiesta non è valida.", "payload")',
+              "settings fallback",
+          )
+          write(views_path, views)
+
+          tests_path = "backend/core/tests.py"
+          tests = Path(tests_path).read_text(encoding="utf-8")
+          replacement_test = '''    def test_player_can_update_alias_and_character_requests_are_not_available(self):
+              User = get_user_model()
+              user = User.objects.create_user(username="player_profile")
+              self.client.force_login(user)
+
+              alias_response = self.client.post(
+                  "/api/settings/",
+                  data=json.dumps({"action": "player.updateAlias", "payload": {"profile": {"alias": "Luna"}}}),
+                  content_type="application/json",
+              )
+              self.assertEqual(alias_response.status_code, 200)
+              self.assertEqual(alias_response.json()["data"]["player"], {"alias": "Luna"})
+
+              request_response = self.client.post(
+                  "/api/settings/",
+                  data=json.dumps(
+                      {
+                          "action": "player.requestCharacters",
+                          "payload": {
+                              "assignmentRequest": {
+                                  "characterIds": [1],
+                                  "message": "Il mio PG",
+                              }
+                          },
+                      }
+                  ),
+                  content_type="application/json",
+              )
+              self.assertEqual(request_response.status_code, 400)
+              self.assertEqual(request_response.json()["errors"][0]["code"], "settings.invalid_payload")
+              self.assertFalse(CharacterAssignmentRequest.objects.exists())
+
+'''
+          tests, test_count = re.subn(
+              r'    def test_player_can_update_alias_and_request_character_assignment\(self\):.*?(?=    def test_player_can_redeem_django_admin_managed_role_codes)',
+              replacement_test,
+              tests,
+              count=1,
+              flags=re.S,
+          )
+          if test_count != 1:
+              raise RuntimeError(f"request test: expected one match, found {test_count}")
+          write(tests_path, tests)
+
+          practices_path = "best_build_practices.md"
+          practices = Path(practices_path).read_text(encoding="utf-8")
+          practices = require_replace(
+              practices,
+              "- Player identity changes use `Giocatore.display_name`; character access requests use `CharacterAssignmentRequest` and become assignments only after an explicit Django Admin approval.",
+              "- Player identity changes use `Giocatore.display_name`; character assignments are managed directly through Gestione Player.",
+              "architecture guidance",
+          )
+          write(practices_path, practices)
+
+          for temporary in (
+              ".github/workflows/apply-remove-character-request-clean.yml",
+              ".github/remove-character-request-clean-trigger",
+          ):
+              Path(temporary).unlink(missing_ok=True)
+
+          forbidden = {
+              "frontend/src/App.tsx": ("Richiedi personaggi", "player.requestCharacters", "player-character-request"),
+              "backend/core/settings_selectors.py": ("CharacterAssignmentRequest", "available_characters"),
+              "backend/core/settings_services.py": ("def request_character_assignments",),
+              "backend/core/settings_views.py": ("assignmentRequest", "request_character_assignments"),
+          }
+          for path, markers in forbidden.items():
+              content = Path(path).read_text(encoding="utf-8")
+              remaining = [marker for marker in markers if marker in content]
+              if remaining:
+                  raise RuntimeError(f"obsolete markers remain in {path}: {remaining}")
+          PY
+          git diff --check
+          python3 -m compileall -q backend
+      - name: Validate backend
+        shell: bash
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python manage.py makemigrations --check --dry-run
+          python manage.py test backend.core.tests.HierarchicalSettingsTests
+      - name: Validate frontend
+        shell: bash
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      - name: Commit changes to pull request
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "Alep"
+          git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(settings): remove character request flow"
+          git push origin HEAD:${{ github.head_ref }}
