@@ -1,0 +1,19 @@
+.tablet-route-heading-host {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .tablet-route-heading-host {
+    display: block;
+    margin: 0 0 16px;
+  }
+
+  .tablet-route-heading {
+    margin: 0;
+    font: inherit;
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text-primary, currentColor);
+  }
+}
