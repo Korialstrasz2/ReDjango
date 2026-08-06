@@ -53,9 +53,48 @@ jobs:
       - name: Production build
         run: npm run build
 
+  desktop-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend dependencies
+        working-directory: .
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build frontend assets
+        run: npm run build
+      - name: Complete canonical desktop suite
+        run: npx playwright test --project=authenticated
+      - name: Upload desktop Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-playwright-report-${{ github.run_attempt }}
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
   responsive-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: frontend
@@ -99,7 +138,7 @@ jobs:
           tests/mobile-travel.spec.ts
           tests/mobile-combat.spec.ts
           tests/mobile-combat-roles.spec.ts
-      - name: Upload Playwright report
+      - name: Upload responsive Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -107,5 +146,74 @@ jobs:
           path: |
             frontend/playwright-report
             frontend/test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  desktop-visual-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout pinned desktop baseline
+        uses: actions/checkout@v4
+        with:
+          ref: da846aca31d31b15e4128f70b0cf0e6cb3b32283
+          path: baseline
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          path: candidate
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: candidate/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            baseline/frontend/package-lock.json
+            candidate/frontend/package-lock.json
+      - name: Install backend dependencies
+        run: python -m pip install --upgrade pip && pip install -r candidate/requirements.txt
+      - name: Install baseline frontend dependencies
+        working-directory: baseline/frontend
+        run: npm ci
+      - name: Install candidate frontend dependencies
+        working-directory: candidate/frontend
+        run: npm ci
+      - name: Install Chromium
+        working-directory: candidate/frontend
+        run: npx playwright install --with-deps chromium
+      - name: Copy protected visual harness into baseline checkout
+        run: |
+          cp candidate/frontend/playwright.desktop-visual.config.ts baseline/frontend/playwright.desktop-visual.config.ts
+          cp candidate/frontend/tests/desktop-visual-baseline.spec.ts baseline/frontend/tests/desktop-visual-baseline.spec.ts
+          cp candidate/frontend/tests/auth.setup.ts baseline/frontend/tests/auth.setup.ts
+      - name: Build pinned baseline
+        working-directory: baseline/frontend
+        run: npm run build
+      - name: Generate screenshots from pinned main
+        working-directory: baseline/frontend
+        run: npx playwright test --config=playwright.desktop-visual.config.ts --update-snapshots
+      - name: Copy pinned screenshots to candidate
+        run: |
+          rm -rf candidate/frontend/tests/desktop-visual-baseline.spec.ts-snapshots
+          cp -R baseline/frontend/tests/desktop-visual-baseline.spec.ts-snapshots candidate/frontend/tests/
+      - name: Build candidate
+        working-directory: candidate/frontend
+        run: npm run build
+      - name: Compare candidate with pinned desktop baseline
+        working-directory: candidate/frontend
+        run: npx playwright test --config=playwright.desktop-visual.config.ts
+      - name: Upload desktop visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-visual-evidence-${{ github.run_attempt }}
+          path: |
+            baseline/frontend/tests/desktop-visual-baseline.spec.ts-snapshots
+            candidate/frontend/test-results
+            candidate/frontend/playwright-report
           if-no-files-found: ignore
           retention-days: 14
