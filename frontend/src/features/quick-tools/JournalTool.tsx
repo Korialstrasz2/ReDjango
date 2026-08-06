@@ -19,6 +19,9 @@ export function JournalTool({ characterId, campaign, notify }: Props) {
   const [section, setSection] = useState<JournalSection>(characterId ? "appunti" : "condivise");
   const [reviewRequestToken, setReviewRequestToken] = useState(0);
   const pendingCount = pendingSpecialResourceCount(campaign);
+  const resourceRevision = campaign?.specialResources.resources
+    .map((resource) => `${resource.id}:${resource.updatedAt}:${resource.archivedAt || ""}`)
+    .join("|") || "empty";
 
   useEffect(() => {
     if (!characterId && campaign) setSection("condivise");
@@ -53,7 +56,7 @@ export function JournalTool({ characterId, campaign, notify }: Props) {
       {section === "condivise" && campaign
         ? <CampaignSharedNoteEditor key={campaign.id} campaign={campaign} notify={notify} rows={22} />
         : section === "risorse-speciali" && campaign
-          ? <CampaignSpecialResources key={campaign.id} campaign={campaign} notify={notify} reviewRequestToken={reviewRequestToken} />
+          ? <CampaignSpecialResources key={`${campaign.id}:${resourceRevision}`} campaign={campaign} notify={notify} reviewRequestToken={reviewRequestToken} />
           : characterId && <NoteSectionEditor key={section} characterId={characterId} section={section as NoteSection} notify={notify} rows={22} minimal />}
     </section>
   </div>;
