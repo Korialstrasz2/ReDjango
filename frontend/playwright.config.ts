@@ -8,6 +8,7 @@ const combatMasterState = ".playwright/auth-combat-master.json";
 const combatPlayerState = ".playwright/auth-combat-player.json";
 const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character|character|travel|combat)\.spec\.ts/;
 const combatRoleMatrix = /mobile-combat-roles\.spec\.ts/;
+const desktopVisualMatrix = /desktop-visual-(?:baseline\.spec|setup)\.ts/;
 
 export default defineConfig({
   testDir: "./tests",
@@ -22,9 +23,10 @@ export default defineConfig({
       testMatch: /auth\.setup\.ts/,
     },
     {
-      // Canonical desktop project: keep its viewport and test coverage unchanged.
+      // Canonical desktop project: run only the pre-existing desktop suite.
+      // Mobile/role matrices and the pinned visual harness have protected jobs of their own.
       name: "authenticated",
-      testIgnore: /auth\.setup\.ts/,
+      testIgnore: [/auth\.setup\.ts/, mobileMatrix, combatRoleMatrix, desktopVisualMatrix],
       dependencies: ["setup"],
       use: { storageState: authenticatedState },
     },
