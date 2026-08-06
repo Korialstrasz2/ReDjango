@@ -6,8 +6,8 @@ const django = (command: string) => `${python} ../manage.py ${command}`;
 const authenticatedState = ".playwright/auth.json";
 const combatMasterState = ".playwright/auth-combat-master.json";
 const combatPlayerState = ".playwright/auth-combat-player.json";
-const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character|character|travel|combat|quick-tools|integrated)\.spec\.ts/;
-const combatRoleMatrix = /mobile-combat-roles\.spec\.ts/;
+const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character|character|travel|combat|quick-tools|quick-tools-workflows|integrated|stage-f|global-behavior|performance|modal-audit|tablet-management)\.spec\.ts/;
+const roleMatrix = /mobile-(?:combat-roles|stage-f-roles)\.spec\.ts/;
 const desktopVisualMatrix = /desktop-visual-(?:baseline\.spec|setup)\.ts/;
 
 export default defineConfig({
@@ -26,7 +26,7 @@ export default defineConfig({
       // Canonical desktop project: run only the pre-existing desktop suite.
       // Mobile/role matrices and the pinned visual harness have protected jobs of their own.
       name: "authenticated",
-      testIgnore: [/auth\.setup\.ts/, mobileMatrix, combatRoleMatrix, desktopVisualMatrix],
+      testIgnore: [/auth\.setup\.ts/, mobileMatrix, roleMatrix, desktopVisualMatrix],
       dependencies: ["setup"],
       use: { storageState: authenticatedState },
     },
@@ -78,6 +78,19 @@ export default defineConfig({
       },
     },
     {
+      // Release-gate floor: management screens must remain usable from exactly 768 CSS px.
+      name: "tablet-minimum",
+      testMatch: mobileMatrix,
+      dependencies: ["setup"],
+      use: {
+        storageState: authenticatedState,
+        viewport: { width: 768, height: 1024 },
+        deviceScaleFactor: 2,
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
+    {
       name: "tablet-portrait",
       testMatch: mobileMatrix,
       dependencies: ["setup"],
@@ -103,7 +116,7 @@ export default defineConfig({
     },
     {
       name: "phone-combat-master",
-      testMatch: combatRoleMatrix,
+      testMatch: roleMatrix,
       dependencies: ["setup"],
       use: {
         storageState: combatMasterState,
@@ -115,7 +128,7 @@ export default defineConfig({
     },
     {
       name: "phone-combat-player",
-      testMatch: combatRoleMatrix,
+      testMatch: roleMatrix,
       dependencies: ["setup"],
       use: {
         storageState: combatPlayerState,
@@ -127,7 +140,7 @@ export default defineConfig({
     },
     {
       name: "desktop-combat-master",
-      testMatch: combatRoleMatrix,
+      testMatch: roleMatrix,
       dependencies: ["setup"],
       use: {
         storageState: combatMasterState,
@@ -136,7 +149,7 @@ export default defineConfig({
     },
     {
       name: "desktop-combat-player",
-      testMatch: combatRoleMatrix,
+      testMatch: roleMatrix,
       dependencies: ["setup"],
       use: {
         storageState: combatPlayerState,
