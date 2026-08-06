@@ -62,7 +62,8 @@ The mobile implementation is substantial, but the public mobile release is still
 
 - delayed bootstrap verifies loading-screen viewport containment;
 - injected startup failure verifies fatal copy, a touch-sized retry, and successful recovery;
-- injected action failure verifies toast placement above phone navigation;
+- phone notifications are mirrored into a bounded three-message stack above fixed navigation while the original desktop single-toast host remains unchanged;
+- injected consecutive action failures verify simultaneous message visibility, viewport containment, and navigation clearance;
 - route/startup wall-clock, navigation timing, JS/CSS/image transfer, largest resource, resource count, and optional Chromium heap are attached;
 - Combat and Travel animation-frame samples are attached with a catastrophic minimum guard;
 - the limits are safety rails, not final product budgets. Baseline and candidate numbers must be reviewed before release.
@@ -76,7 +77,7 @@ The following prevent a truthful “mobile complete” status:
 3. **Complete drag transaction matrix** — Character valid drop, invalid drop, swap, full inventory, locked slot, cancel, auto-scroll, finger offset, and orientation change; Combat committed token move and invalid/cancel paths; Travel committed marker/route interactions and sheet coexistence. Existing tests cover activation/cancel and core map gestures but not every transaction.
 4. **Complete modal/overlay classification** — every player-opened `Modal`, `ToolDrawer`, portal, inline `role="dialog"`, native confirmation, and custom overlay must have a recorded phone/tablet/desktop target and tests for keyboard-open state, sticky actions, destructive/dirty behavior, nested pickers, Escape, backdrop, and focus restoration. `CampaignSpecialResources` and AI/custom portals remain explicit audit items.
 5. **Complete hover audit** — every visible hover-only action or detail must have a tested tap/focus alternative. Existing Character calculation surfaces, notes, navigation labels, map controls, media actions, campaign weather details, and management controls require a repository-wide evidence report.
-6. **Global message stacking and restart evidence** — the current App toast host stores one message at a time; multiple-message stacking is not implemented. The restart screen exists, but automated and physical reconnect evidence is still required.
+6. **Restart and genuine offline evidence** — the restart screen exists and controlled startup failure/recovery is automated, but real server-restart, browser-offline, cache, and reconnect behavior still require automated expansion and physical-device evidence.
 7. **Performance budget review** — the new measurements must be compared with the pinned desktop baseline and agreed phone budgets. A green catastrophic guard is not release approval.
 8. **Documentation completion** — status, inventory, test instructions, and release ledger are updated in PR #7. The main README should link to the final release evidence when the physical-device record is complete.
 
@@ -99,7 +100,7 @@ Snapshot changes must be reviewed as product changes; snapshots must not be upda
 
 - Draft PR: #7, `agent/mobile-stage-f-completion` → `mobile-optimized`.
 - CI status must be read from the PR. Do not copy an older green run into this section as proof for the new Stage F matrix.
-- Automated artifacts are uploaded from `frontend/playwright-report` and `frontend/test-results`, including overflow, touch-target, accessibility-profile, route, performance, and frame-rate JSON attachments.
+- Automated artifacts are uploaded from `frontend/playwright-report` and `frontend/test-results`, including overflow, touch-target, accessibility-profile, route, performance, frame-rate, and source-audit evidence.
 - Manual evidence belongs in `Builder_docs/MOBILE_RELEASE_EVIDENCE.md` and must include device/browser version, viewport/orientation, role, test date, result, issue/trace reference, and tester.
 
 ## Release rule
