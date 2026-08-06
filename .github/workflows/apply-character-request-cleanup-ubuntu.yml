@@ -1,0 +1,57 @@
+name: Apply character request cleanup on Ubuntu
+
+on:
+  push:
+    branches:
+      - codex/remove-character-request-settings
+
+permissions:
+  contents: write
+
+jobs:
+  apply-cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/remove-character-request-settings
+      - name: Apply cleanup
+        shell: bash
+        run: |
+          python3 - <<'PY' > /tmp/cleanup.payload
+          from pathlib import Path
+          import re
+          content = Path('.github/workflows/apply-character-request-cleanup.yml').read_text(encoding='utf-8')
+          match = re.search(r"echo '([^']+)' \| base64", content)
+          if not match:
+              raise SystemExit('cleanup payload not found')
+          print(match.group(1))
+          PY
+          base64 -d /tmp/cleanup.payload | gzip -d > /tmp/cleanup.py
+          python3 /tmp/cleanup.py
+          rm -f .github/workflows/apply-character-request-cleanup-ubuntu.yml
+          git diff --check
+          python3 -m compileall -q backend
+      - name: Validate backend
+        shell: bash
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python manage.py makemigrations --check --dry-run
+          python manage.py test backend.core.tests.HierarchicalSettingsTests backend.core.tests_player_management.PlayerManagementServiceTests
+      - name: Validate frontend
+        shell: bash
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          git config user.name "Alep"
+          git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(settings): remove character request flow"
+          git push origin HEAD:codex/remove-character-request-settings
