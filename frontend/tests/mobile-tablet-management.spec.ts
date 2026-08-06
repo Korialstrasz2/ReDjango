@@ -55,7 +55,8 @@ test("tablet management keeps keyboard focus visible at the bottom of dense page
     await last.focus();
     await expect(last).toBeFocused();
     const rect = await last.boundingBox();
-    expect(rect?.top || 0).toBeGreaterThanOrEqual(0);
-    expect(rect?.bottom || 0).toBeLessThanOrEqual((page.viewportSize()?.height || 0) + 1);
+    expect(rect).not.toBeNull();
+    expect(rect!.y).toBeGreaterThanOrEqual(0);
+    expect(rect!.y + rect!.height).toBeLessThanOrEqual((page.viewportSize()?.height || 0) + 1);
   }
 });
