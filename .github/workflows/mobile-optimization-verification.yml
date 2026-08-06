@@ -138,6 +138,8 @@ jobs:
           tests/mobile-travel.spec.ts
           tests/mobile-combat.spec.ts
           tests/mobile-combat-roles.spec.ts
+          tests/mobile-quick-tools.spec.ts
+          tests/mobile-integrated.spec.ts
       - name: Upload responsive Playwright report
         if: always()
         uses: actions/upload-artifact@v4
