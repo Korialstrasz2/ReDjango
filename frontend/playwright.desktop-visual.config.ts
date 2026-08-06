@@ -3,7 +3,7 @@ import { defineConfig } from "@playwright/test";
 const runtimePlatform = (globalThis as typeof globalThis & { process?: { platform?: string } }).process?.platform || "";
 const python = runtimePlatform.startsWith("win") ? "..\\venv\\Scripts\\python.exe" : "python";
 const django = (command: string) => `${python} ../manage.py ${command}`;
-const authenticatedState = ".playwright/desktop-visual-auth.json";
+const authenticatedState = ".playwright/auth.json";
 
 export default defineConfig({
   testDir: "./tests",
