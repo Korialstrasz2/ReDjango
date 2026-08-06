@@ -27,7 +27,14 @@ export const isTabletProject = (name: string) => name.startsWith("tablet-");
 export const isCompactProject = (name: string) => isPhoneProject(name) || isTabletProject(name);
 
 export function primaryHeading(page: Page): Locator {
-  return page.locator("main h1, main [role='heading'][aria-level='1'], main h2, [role='main'] h1, [role='main'] h2").first();
+  return page.locator([
+    "main h1",
+    "main [role='heading'][aria-level='1']",
+    "main h2",
+    "[role='main'] h1",
+    "[role='main'] h2",
+    "html[data-mobile-workspace] [role='banner'] strong:last-of-type",
+  ].join(", ")).first();
 }
 
 export async function applyAccessibilityProfile(page: Page, profile: AccessibilityProfile) {
