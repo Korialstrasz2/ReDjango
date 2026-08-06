@@ -69,7 +69,7 @@ test("le competenze restano leggibili insieme e tirano dal server", async ({ pag
   await expect(detail.locator(".competence-track")).toHaveCount(3);
   await expect(detail.locator(".competence-rank-control")).toHaveCount(4);
 
-  const history = page.locator(".competence-history button");
+  const history = page.locator(".competence-history > div > button");
   const priorHistoryCount = await history.count();
   await page.getByRole("button", { name: "Tira d6", exact: true }).click();
   await expect(page.getByText("Ultimo risultato", { exact: true })).toBeVisible();
