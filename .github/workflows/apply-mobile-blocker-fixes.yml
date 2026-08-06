@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: mobile-optimized
-          fetch-depth: 5
+          fetch-depth: 6
       - name: Run reviewed patch payload
         run: |
           python - <<'PY'
@@ -74,12 +74,15 @@ jobs:
           script = script.replace(function_marker, override + function_marker, 1)
           exec(compile(script, workflow, "exec"), {"__name__": "__main__"})
           PY
+      - name: Keep workflow files for app-authorized updates
+        run: |
+          git checkout HEAD -- .github/workflows/mobile-optimization-verification.yml
+          git checkout HEAD -- .github/workflows/apply-mobile-blocker-fixes.yml
       - name: Verify patch shape
         run: |
           git diff --check
-          test ! -e .github/workflows/apply-mobile-blocker-fixes.yml
           git status --short
-      - name: Commit reviewed corrections
+      - name: Commit reviewed code corrections
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
