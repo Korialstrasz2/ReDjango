@@ -39,6 +39,7 @@ test("phone Combat is map-first and preserves mounted panel state", async ({ pag
 
   const navigation = page.getByRole("tablist", { name: "Pannelli del combattimento" });
   await expect(navigation).toBeVisible();
+  await expect(page.getByRole("button", { name: "Indietro da Combattimento" })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
   await expect(page.locator(".combat-map-panel")).toBeVisible();
   await expect(page.locator(".combat-map-stage svg")).toHaveAttribute("data-mobile-combat-touch-ready", "true");
@@ -162,6 +163,32 @@ test("phone Combat attack and hex inspectors use contained state-preserving pane
   const toolBox = await hexTool.boundingBox();
   expect(toolBox?.width || 0).toBeGreaterThanOrEqual(viewport.width - 2);
   await hexTool.getByRole("button", { name: "Chiudi strumenti esagono" }).click();
+});
+
+
+test("phone Combat Back closes child state before leaving the workspace", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only Combat Back contract");
+  await ensureCombatMap(page);
+
+  const back = page.getByRole("button", { name: "Indietro da Combattimento" });
+  const navigation = page.getByRole("tablist", { name: "Pannelli del combattimento" });
+  await navigation.getByRole("tab", { name: /Attivi/ }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "roster");
+  await back.click();
+  await expect(page).toHaveURL(/\/combat$/);
+  await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
+
+  const hexLauncher = page.locator(".combat-hex-tool-launcher");
+  if (await hexLauncher.count()) {
+    await hexLauncher.click();
+    await expect(page.locator(".combat-hex-tool-window")).toBeVisible();
+    await back.click();
+    await expect(page.locator(".combat-hex-tool-window")).toHaveCount(0);
+    await expect(page).toHaveURL(/\/combat$/);
+  }
+
+  await back.click();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test("tablet Combat releases forced map width without phone navigation", async ({ page }, testInfo) => {

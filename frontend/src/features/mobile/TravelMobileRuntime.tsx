@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useResponsiveLayout } from "../../lib/responsive";
+import { MobileWorkspaceBar, navigateBackOrHome } from "./MobileWorkspaceBar";
 
 type Point = { x: number; y: number };
 type MarkerPlacement = { type: string; label: string };
@@ -91,6 +92,7 @@ function visibleControls(): HTMLElement[] {
 
 export function TravelMobileRuntime() {
   const location = useLocation();
+  const navigate = useNavigate();
   const responsive = useResponsiveLayout();
   const enabled = responsive.isPhone && location.pathname.startsWith("/travel");
   const [controlsOpen, setControlsOpen] = useState(false);
@@ -99,6 +101,19 @@ export function TravelMobileRuntime() {
   const [sidebarAvailable, setSidebarAvailable] = useState(false);
   const [hasMarkers, setHasMarkers] = useState(false);
   const controlsTriggerRef = useRef<HTMLButtonElement>(null);
+
+  const closeTravelChild = () => {
+    if (controlsOpen) {
+      setControlsOpen(false);
+      window.setTimeout(() => controlsTriggerRef.current?.focus(), 0);
+      return true;
+    }
+    if (markerPlacement) {
+      setMarkerPlacement(null);
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (enabled) return;
@@ -177,35 +192,31 @@ export function TravelMobileRuntime() {
   }, [enabled]);
 
   useEffect(() => {
-    if (!enabled) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (controlsOpen) {
-          event.preventDefault();
-          setControlsOpen(false);
-          window.setTimeout(() => controlsTriggerRef.current?.focus(), 0);
-        } else if (markerPlacement) {
-          event.preventDefault();
-          setMarkerPlacement(null);
-        }
-        return;
-      }
-      if (!controlsOpen || event.key !== "Tab") return;
-      const controls = visibleControls();
-      if (!controls.length) return;
-      const first = controls[0];
-      const last = controls[controls.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown, true);
-    return () => document.removeEventListener("keydown", onKeyDown, true);
-  }, [controlsOpen, enabled, markerPlacement]);
+  if (!enabled) return;
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      if (event.defaultPrevented || document.querySelector(".modal-backdrop")) return;
+      event.preventDefault();
+      if (closeTravelChild()) return;
+      navigateBackOrHome(navigate);
+      return;
+    }
+    if (!controlsOpen || event.key !== "Tab") return;
+    const controls = visibleControls();
+    if (!controls.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  document.addEventListener("keydown", onKeyDown, true);
+  return () => document.removeEventListener("keydown", onKeyDown, true);
+}, [controlsOpen, enabled, markerPlacement, navigate]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -362,7 +373,13 @@ export function TravelMobileRuntime() {
   };
 
   return <>
-    <div className="travel-mobile-toolbar" role="group" aria-label="Controlli rapidi della mappa">
+  <MobileWorkspaceBar
+    workspace="travel"
+    title="Viaggio"
+    navigate={navigate}
+    onBeforeNavigate={closeTravelChild}
+  />
+  <div className="travel-mobile-toolbar" role="group" aria-label="Controlli rapidi della mappa">
       <button type="button" disabled={!canvasAvailable} aria-label="Riduci zoom mappa" onClick={() => {
         const canvas = document.querySelector<HTMLCanvasElement>(".travel-canvas");
         if (canvas) dispatchWheel(canvas, 1);

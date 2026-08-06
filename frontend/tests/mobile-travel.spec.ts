@@ -17,6 +17,7 @@ test("phone Travel is map-first and opens controls without remounting the worksp
 
   const toolbar = page.locator(".travel-mobile-toolbar");
   await expect(toolbar).toBeVisible();
+  await expect(page.getByRole("button", { name: "Indietro da Viaggio" })).toBeVisible();
   const sidebar = page.locator(".travel-sidebar");
   await expect(sidebar).toBeHidden();
 
@@ -95,6 +96,23 @@ test("phone Travel converts marker palette taps into explicit placement mode", a
   await expect(page.locator(".travel-sidebar")).toBeHidden();
   await placement.getByRole("button", { name: "Annulla" }).click();
   await expect(placement).toHaveCount(0);
+});
+
+
+test("phone Travel Back closes controls and pending placement before leaving", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only Travel Back contract");
+  await openTravel(page);
+
+  const back = page.getByRole("button", { name: "Indietro da Viaggio" });
+  const toolbar = page.locator(".travel-mobile-toolbar");
+  await toolbar.getByRole("button", { name: "Controlli" }).click();
+  await expect(page.locator(".travel-sidebar")).toBeVisible();
+  await back.click();
+  await expect(page.locator(".travel-sidebar")).toBeHidden();
+  await expect(page).toHaveURL(/\/travel$/);
+
+  await back.click();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test("desktop Travel retains the existing sidebar and two-column workspace", async ({ page }, testInfo) => {

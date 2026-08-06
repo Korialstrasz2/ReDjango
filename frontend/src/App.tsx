@@ -38,6 +38,7 @@ import { ThemeSurfacesContext } from "./lib/surfaces";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
 import { FIXED_SHORTCUTS, pageShortcutTargets, quickToolShortcutTargets, SHORTCUT_CATEGORY, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
 import { activateMediaCache, deactivateMediaCache } from "./lib/mediaCache";
+import { useResponsiveLayout } from "./lib/responsive";
 import type { AuthData, BootstrapData, Guide, GuideEntry, GuideVariable, GuideVariableGroup, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
@@ -1023,14 +1024,39 @@ function ServerRestartScreen({ mode }: { mode: string }) {
 
 function Loading() { return <div className="loading-screen"><span className="brand-rune">ED</span><p>Preparazione della postazione…</p></div>; }
 
+function UnsupportedManagementScreen() {
+  const navigate = useNavigate();
+  const goBack = () => {
+    const historyIndex = Number((window.history.state as { idx?: number } | null)?.idx ?? 0);
+    if (historyIndex > 0) navigate(-1);
+    else navigate("/", { replace: true });
+  };
+  return <section className="mobile-unsupported-management" aria-labelledby="mobile-management-title">
+    <div>
+      <span aria-hidden="true">▣</span>
+      <p className="eyebrow">Layout non supportato su telefono</p>
+      <h1 id="mobile-management-title">Gestione richiede un tablet o un computer</h1>
+      <p>Questo indirizzo è stato conservato, ma la postazione di gestione non viene caricata sul telefono.</p>
+      <div>
+        <button type="button" className="button secondary" onClick={goBack}>Indietro</button>
+        <Link className="button primary" to="/">Torna alla Home</Link>
+      </div>
+    </div>
+  </section>;
+}
+
 function GameManagerOnly({ children }: { children: ReactNode }) {
   const { settings } = useApp();
-  return settings.security.canManageGameData ? children : <Navigate to="/" replace />;
+  const { isPhone } = useResponsiveLayout();
+  if (!settings.security.canManageGameData) return <Navigate to="/" replace />;
+  return isPhone ? <UnsupportedManagementScreen /> : children;
 }
 
 function AdminOnly({ children }: { children: ReactNode }) {
   const { settings } = useApp();
-  return settings.security.canManageAdminSettings ? children : <Navigate to="/" replace />;
+  const { isPhone } = useResponsiveLayout();
+  if (!settings.security.canManageAdminSettings) return <Navigate to="/" replace />;
+  return isPhone ? <UnsupportedManagementScreen /> : children;
 }
 
 export function App() {

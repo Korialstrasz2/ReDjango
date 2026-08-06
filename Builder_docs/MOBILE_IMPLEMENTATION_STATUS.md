@@ -282,3 +282,11 @@ The branch workflow `.github/workflows/mobile-optimization-verification.yml` now
 ## Release block
 
 Do not merge to `main` for public mobile release until every player route, modal, hover-only action, required touch drag system, Combat, Travel, navigation path, role variant, orientation, and desktop non-regression check passes the guide's completeness gate.
+
+## Blocking-review corrections
+
+- Restored the original desktop Modal backdrop-close default; stricter inferred dismissal remains phone-scoped.
+- Added a separate complete `authenticated` desktop Playwright job.
+- Added pinned `main` versus candidate screenshot comparison at 1280×800, 1440×900, and 1920×1080, including all player routes, management, settings tabs, quick-tool drawers, seeded content modals, and density states.
+- Moved unsupported phone management handling into permission-preserving route guards so management pages do not mount.
+- Added a shared explicit mobile workspace Back bar for Combat and Travel with modal/child-panel-first handling, router history, direct-entry Home fallback, and hardware Escape parity.

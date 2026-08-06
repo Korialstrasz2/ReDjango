@@ -299,5 +299,7 @@ test("phone management URLs preserve the address and show the intentional limita
   await expect(limitation.getByRole("heading", { name: "Gestione richiede un tablet o un computer" })).toBeVisible();
   await expect(limitation.getByRole("button", { name: "Indietro" })).toBeVisible();
   await expect(limitation.getByRole("link", { name: "Torna alla Home" })).toBeVisible();
-  await expect(page.locator(".workspace-content")).toBeHidden();
+  await expect(page.locator(".workspace-content")).toBeVisible();
+  await expect(page.locator(".management-page")).toHaveCount(0);
+  await expect(page.locator(".management-launcher")).toHaveCount(0);
 });

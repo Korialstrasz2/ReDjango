@@ -140,7 +140,7 @@ export function Modal({
     : "dialog";
   const mobilePresentation = presentation !== "dialog";
   const showHeader = !hideHeader || mobilePresentation;
-  const backdropClosable = closeOnBackdrop ?? !(wide || resizable || hideHeader || dragFromBody);
+  const backdropClosable = closeOnBackdrop ?? (mobilePresentation ? !(wide || resizable || hideHeader || dragFromBody) : true);
 
   useEffect(() => registerModal(instanceId), [instanceId]);
 

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useResponsiveLayout } from "../../lib/responsive";
+import { MobileWorkspaceBar, navigateBackOrHome } from "./MobileWorkspaceBar";
 
 type CombatMobilePanel = "map" | "character" | "roster" | "attack";
 type Point = { x: number; y: number };
@@ -46,6 +47,7 @@ function openParticipantContext(token: Element, point: Point) {
 
 export function CombatMobileRuntime() {
   const location = useLocation();
+  const navigate = useNavigate();
   const responsive = useResponsiveLayout();
   const enabled = responsive.isPhone && location.pathname.startsWith("/combat");
   const [panel, setPanel] = useState<CombatMobilePanel>("map");
@@ -54,6 +56,20 @@ export function CombatMobileRuntime() {
   const [rosterAvailable, setRosterAvailable] = useState(false);
   const [attackAvailable, setAttackAvailable] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+
+  const closeCombatChild = () => {
+    const hexClose = document.querySelector<HTMLButtonElement>(".combat-hex-tool-window [aria-label='Chiudi strumenti esagono']");
+    if (hexClose) {
+      hexClose.click();
+      return true;
+    }
+    if (panel !== "map") {
+      setPanel("map");
+      window.setTimeout(() => navRef.current?.querySelector<HTMLButtonElement>("[data-combat-mobile-panel='map']")?.focus(), 0);
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (enabled) return;
@@ -116,27 +132,19 @@ export function CombatMobileRuntime() {
   }, [enabled]);
 
   useEffect(() => {
-    if (!enabled) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      // Modal owns Escape while present. The Combat runtime only handles its
-      // non-modal panel navigation and the portalled hex workspace.
-      if (document.querySelector(".modal-backdrop")) return;
-      const hexClose = document.querySelector<HTMLButtonElement>(".combat-hex-tool-window [aria-label='Chiudi strumenti esagono']");
-      if (hexClose) {
-        event.preventDefault();
-        hexClose.click();
-        return;
-      }
-      if (panel !== "map") {
-        event.preventDefault();
-        setPanel("map");
-        window.setTimeout(() => navRef.current?.querySelector<HTMLButtonElement>("[data-combat-mobile-panel='map']")?.focus(), 0);
-      }
-    };
-    document.addEventListener("keydown", onKeyDown, true);
-    return () => document.removeEventListener("keydown", onKeyDown, true);
-  }, [enabled, panel]);
+  if (!enabled) return;
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Escape" || event.defaultPrevented) return;
+    // Modal owns Escape while present. The workspace Back contract handles
+    // the non-modal inspector, active panel, and finally route history.
+    if (document.querySelector(".modal-backdrop")) return;
+    event.preventDefault();
+    if (closeCombatChild()) return;
+    navigateBackOrHome(navigate);
+  };
+  document.addEventListener("keydown", onKeyDown, true);
+  return () => document.removeEventListener("keydown", onKeyDown, true);
+}, [enabled, navigate, panel]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -310,7 +318,14 @@ export function CombatMobileRuntime() {
     { id: "attack", label: "Attacco", icon: "⚔", disabled: !attackAvailable },
   ];
 
-  return <nav ref={navRef} className="combat-mobile-navigation" role="tablist" aria-label="Pannelli del combattimento">
+  return <>
+  <MobileWorkspaceBar
+    workspace="combat"
+    title="Combattimento"
+    navigate={navigate}
+    onBeforeNavigate={closeCombatChild}
+  />
+  <nav ref={navRef} className="combat-mobile-navigation" role="tablist" aria-label="Pannelli del combattimento">
     {tabs.map((tab) => <button
       key={tab.id}
       type="button"
@@ -321,5 +336,6 @@ export function CombatMobileRuntime() {
       className={panel === tab.id ? "active" : ""}
       onClick={() => choosePanel(tab.id)}
     ><span aria-hidden="true">{tab.icon}</span><strong>{tab.label}</strong></button>)}
-  </nav>;
+  </nav>
+</>;
 }
