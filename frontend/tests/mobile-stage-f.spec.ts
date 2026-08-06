@@ -7,6 +7,7 @@ import {
   expectNoDocumentOverflow,
   isCompactProject,
   isPhoneProject,
+  primaryHeading,
   type AccessibilityProfile,
 } from "./helpers/stage-f";
 
@@ -35,7 +36,7 @@ async function resolveCharacterRoute(page: Page): Promise<string | null> {
 async function expectRouteShell(page: Page, projectName: string) {
   await expect(page.locator(".fatal-error")).toHaveCount(0);
   await expect(page.locator(".app-shell")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+  await expect(primaryHeading(page)).toBeVisible();
   if (isPhoneProject(projectName)) {
     await expect(page.locator(".mobile-app-bar")).toBeVisible();
     await expect(page.locator(".mobile-bottom-navigation")).toBeVisible();
@@ -92,7 +93,7 @@ test("Stage F exercises every supported font scale and density without compact-l
         density,
         reducedMotion: index % 2 === 0,
       });
-      await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+      await expect(primaryHeading(page)).toBeVisible();
       await expectNoDocumentOverflow(page, testInfo, `a11y-${fontScale}-${density}-${path}`);
       results.push({ fontScale, density, reducedMotion: index % 2 === 0, path });
     }
@@ -112,7 +113,7 @@ test("Stage F records phone touch-target evidence for every player destination",
 
   for (const path of routes) {
     await page.goto(path);
-    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(primaryHeading(page)).toBeVisible();
     const audit = await auditVisibleTouchTargets(page, testInfo, `touch-${path}`);
     undersized.push(...audit.filter((entry) => entry.tooSmall).map((entry) => ({
       path,
