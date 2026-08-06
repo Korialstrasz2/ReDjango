@@ -1,4 +1,4 @@
-import { expect, type Page, type TestInfo } from "@playwright/test";
+import { expect, type Locator, type Page, type TestInfo } from "@playwright/test";
 
 import { measureDocumentOverflow } from "./layout";
 
@@ -25,6 +25,10 @@ export type RoutePerformanceSnapshot = {
 export const isPhoneProject = (name: string) => name.startsWith("phone-");
 export const isTabletProject = (name: string) => name.startsWith("tablet-");
 export const isCompactProject = (name: string) => isPhoneProject(name) || isTabletProject(name);
+
+export function primaryHeading(page: Page): Locator {
+  return page.locator("main h1, main [role='heading'][aria-level='1'], main h2, [role='main'] h1, [role='main'] h2").first();
+}
 
 export async function applyAccessibilityProfile(page: Page, profile: AccessibilityProfile) {
   await page.evaluate(({ fontScale, density, reducedMotion }) => {
@@ -85,17 +89,26 @@ export async function expectFixedChromeDoesNotCoverFocus(page: Page) {
   await last.focus();
   const result = await last.evaluate((element) => {
     const rect = element.getBoundingClientRect();
-    const covering = Array.from(document.querySelectorAll<HTMLElement>("body *"))
-      .filter((candidate) => candidate !== element && !candidate.contains(element))
-      .filter((candidate) => {
-        const style = getComputedStyle(candidate);
-        if (style.position !== "fixed" && style.position !== "sticky") return false;
-        const candidateRect = candidate.getBoundingClientRect();
-        const x = Math.max(rect.left, Math.min(rect.right, rect.left + rect.width / 2));
-        const y = Math.max(rect.top, Math.min(rect.bottom, rect.top + rect.height / 2));
-        return x >= candidateRect.left && x <= candidateRect.right && y >= candidateRect.top && y <= candidateRect.bottom;
-      })
-      .map((candidate) => candidate.className || candidate.tagName);
+    const inset = 2;
+    const points = [
+      [rect.left + rect.width / 2, rect.top + rect.height / 2],
+      [rect.left + inset, rect.top + inset],
+      [rect.right - inset, rect.top + inset],
+      [rect.left + inset, rect.bottom - inset],
+      [rect.right - inset, rect.bottom - inset],
+    ];
+    const covering = Array.from(new Set(points.flatMap(([x, y]) => {
+      const top = document.elementFromPoint(
+        Math.max(0, Math.min(document.documentElement.clientWidth - 1, x)),
+        Math.max(0, Math.min(document.documentElement.clientHeight - 1, y)),
+      ) as HTMLElement | null;
+      if (!top || top === element || element.contains(top) || top.contains(element)) return [];
+      const fixed = top.closest<HTMLElement>("body *");
+      if (!fixed) return [];
+      const style = getComputedStyle(fixed);
+      if (style.pointerEvents === "none") return [];
+      return [typeof fixed.className === "string" && fixed.className ? fixed.className : fixed.tagName];
+    })));
     return { rect: { top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left }, covering };
   });
   expect(result.covering, JSON.stringify(result, null, 2)).toEqual([]);
