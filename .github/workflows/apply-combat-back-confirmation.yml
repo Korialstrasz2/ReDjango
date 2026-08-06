@@ -1,0 +1,85 @@
+name: Apply combat Back confirmation
+
+on:
+  push:
+    branches:
+      - mobile-optimized
+    paths:
+      - ".github/workflows/apply-combat-back-confirmation.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mobile-optimized
+      - name: Patch pending attack protection
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str):
+              target = Path(path)
+              content = target.read_text(encoding="utf-8")
+              if old not in content:
+                  raise SystemExit(f"Expected source not found in {path}")
+              target.write_text(content.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "frontend/src/features/combat/AttackPanel.tsx",
+              "  const manualValuesSet = MANUAL_FIELDS.some((field) => values[field.key] !== 0);\n",
+              "  const manualValuesSet = MANUAL_FIELDS.some((field) => values[field.key] !== 0);\n  const hasPendingAttack = automaticRunning\n    || manualValuesSet\n    || activeCombatButtonIds.length > 0\n    || Boolean(!preview?.applied && (attackRoll || damageBase || damageAdjustment || preview));\n",
+          )
+          replace_once(
+              "frontend/src/features/combat/AttackPanel.tsx",
+              '  return <div className="combat-attack" data-component-type="panel" data-theme="combat">',
+              '  return <div className="combat-attack" data-component-type="panel" data-theme="combat" data-combat-attack-pending={hasPendingAttack ? "true" : undefined}>',
+          )
+          replace_once(
+              "frontend/src/features/mobile/CombatMobileRuntime.tsx",
+              "    if (panel !== \"map\") {\n      setPanel(\"map\");\n      window.setTimeout(() => navRef.current?.querySelector<HTMLButtonElement>(\"[data-combat-mobile-panel='map']\")?.focus(), 0);\n      return true;\n    }\n    return false;\n",
+              "    if (panel !== \"map\") {\n      setPanel(\"map\");\n      window.setTimeout(() => navRef.current?.querySelector<HTMLButtonElement>(\"[data-combat-mobile-panel='map']\")?.focus(), 0);\n      return true;\n    }\n    const pendingAttack = document.querySelector(\".combat-attack[data-combat-attack-pending='true']\");\n    if (pendingAttack && !window.confirm(\"È in corso una configurazione di attacco. Uscire e perdere le modifiche?\")) return true;\n    return false;\n",
+          )
+          test_path = Path("frontend/tests/mobile-combat.spec.ts")
+          tests = test_path.read_text(encoding="utf-8")
+          marker = '\ntest("tablet Combat releases forced map width without phone navigation"'
+          addition = r'''
+
+test("phone Combat Back protects an unapplied attack sequence", async ({ page }, testInfo) => {
+  test.skip(!isPhoneProject(testInfo.project.name), "Phone-only pending attack protection");
+  await ensureCombatMap(page);
+
+  const navigation = page.getByRole("tablist", { name: "Pannelli del combattimento" });
+  const back = page.getByRole("button", { name: "Indietro da Combattimento" });
+  await navigation.getByRole("tab", { name: /Attacco/ }).click();
+  await page.getByRole("spinbutton", { name: "Tiro d20" }).fill("12");
+  await expect(page.locator(".combat-attack")).toHaveAttribute("data-combat-attack-pending", "true");
+
+  await back.click();
+  await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
+
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await back.click();
+  await expect(page).toHaveURL(/\/combat$/);
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await back.click();
+  await expect(page).toHaveURL(/\/$/);
+});
+'''
+          if marker not in tests:
+              raise SystemExit("Combat test insertion marker not found")
+          test_path.write_text(tests.replace(marker, addition + marker, 1), encoding="utf-8")
+          PY
+      - name: Commit correction
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/src/features/combat/AttackPanel.tsx frontend/src/features/mobile/CombatMobileRuntime.tsx frontend/tests/mobile-combat.spec.ts
+          git commit -m "protect pending combat actions on mobile Back"
+          git push origin HEAD:mobile-optimized
