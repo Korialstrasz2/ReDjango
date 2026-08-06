@@ -8,6 +8,7 @@ import { MasterAILauncherRuntime } from "./features/master-ai/launchers";
 import { CombatMobileAttackSync } from "./features/mobile/CombatMobileAttackSync";
 import { CombatMobileNotesBridge } from "./features/mobile/CombatMobileNotesBridge";
 import { CombatMobileRuntime } from "./features/mobile/CombatMobileRuntime";
+import { MobileToastStack } from "./features/mobile/MobileToastStack";
 import { TravelMobileRuntime } from "./features/mobile/TravelMobileRuntime";
 import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
@@ -17,6 +18,7 @@ import "./styles/master-ai-shell.css";
 import "./styles/master-ai-launchers.css";
 import "./styles/master-ai-unit.css";
 import "./styles/mobile.css";
+import "./styles/mobile-toast.css";
 import "./styles/mobile-pages.css";
 import "./styles/mobile-lore.css";
 import "./styles/mobile-reference-pages.css";
@@ -39,7 +41,7 @@ const queryClient = new QueryClient({
 
 // App owns every routed page, including Master AI, so navigation, layout, and shared providers remain consistent.
 function RootApplication() {
-  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><TravelMobileRuntime /><CombatMobileRuntime /><CombatMobileAttackSync /><CombatMobileNotesBridge /><App /></>;
+  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><TravelMobileRuntime /><CombatMobileRuntime /><CombatMobileAttackSync /><CombatMobileNotesBridge /><MobileToastStack /><App /></>;
 }
 
 createRoot(document.getElementById("app")!).render(
