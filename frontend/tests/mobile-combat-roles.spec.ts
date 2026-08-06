@@ -160,6 +160,36 @@ test("Combat UI exposes role-appropriate map, token, and manager controls", asyn
   expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
 });
 
+test("nested Combat modals keep only the top dialog interactive", async ({ page }, testInfo) => {
+  test.skip(!isMasterProject(testInfo), "Master Combat projects only");
+  await openCombat(page);
+
+  await page.locator(".combat-map-toolbar").getByRole("button", { name: "Personaggi", exact: true }).click();
+  const manager = page.getByRole("dialog", { name: "Gestisci personaggi" });
+  await expect(manager).toBeVisible();
+  const importCopy = manager.getByRole("button", { name: "Importa copia", exact: true }).first();
+  await expect(importCopy).toBeVisible();
+  await importCopy.click();
+
+  const confirmation = page.getByRole("dialog", { name: "Importare una copia?" });
+  await expect(confirmation).toBeVisible();
+  await expect(confirmation).toHaveAttribute("data-modal-top", "");
+  await expect(manager).toHaveAttribute("aria-hidden", "true");
+  await expect(confirmation.getByRole("button", { name: "Chiudi", exact: true })).toBeFocused();
+
+  await page.keyboard.press("Shift+Tab");
+  await expect(confirmation.getByRole("button", { name: "Sì, crea una copia", exact: true })).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(confirmation).toBeHidden();
+  await expect(manager).toBeVisible();
+  await expect(manager).toHaveAttribute("data-modal-top", "");
+  await expect(importCopy).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(manager).toBeHidden();
+});
+
 test("phone player keeps controlled-character resources touch-visible", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "phone-combat-player", "Phone player project only");
   await openCombat(page);
