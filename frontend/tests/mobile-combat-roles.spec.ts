@@ -165,7 +165,7 @@ test("nested Combat modals keep only the top dialog interactive", async ({ page 
   await openCombat(page);
 
   await page.locator(".combat-map-toolbar").getByRole("button", { name: "Personaggi", exact: true }).click();
-  const manager = page.getByRole("dialog", { name: "Gestisci personaggi" });
+  const manager = page.locator(".combat-character-manager-modal");
   await expect(manager).toBeVisible();
   const importCopy = manager.getByRole("button", { name: "Importa copia", exact: true }).first();
   await expect(importCopy).toBeVisible();
