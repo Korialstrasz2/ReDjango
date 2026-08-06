@@ -31,8 +31,24 @@ type ModalPresentation = "dialog" | "sheet" | "fullscreen";
 
 const MIN_MODAL_WIDTH = 360;
 const MIN_MODAL_HEIGHT = 240;
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "area[href]",
+  "button:not([disabled])",
+  "input:not([disabled]):not([type='hidden'])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  "iframe",
+  "object",
+  "embed",
+  "[contenteditable='true']",
+  "[tabindex]:not([tabindex='-1'])",
+].join(",");
+
 let mobileBodyLockCount = 0;
 let bodyOverflowBeforeMobileLock = "";
+let modalSequence = 0;
+const modalStack: number[] = [];
 
 function lockBodyScroll(): () => void {
   if (mobileBodyLockCount === 0) {
@@ -43,6 +59,38 @@ function lockBodyScroll(): () => void {
   return () => {
     mobileBodyLockCount = Math.max(0, mobileBodyLockCount - 1);
     if (mobileBodyLockCount === 0) document.body.style.overflow = bodyOverflowBeforeMobileLock;
+  };
+}
+
+function focusableElements(root: HTMLElement): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((element) => {
+    if (element.getAttribute("aria-hidden") === "true") return false;
+    return element.getClientRects().length > 0;
+  });
+}
+
+function isTopModal(id: number): boolean {
+  return modalStack.at(-1) === id;
+}
+
+function syncModalStack() {
+  const topId = modalStack.at(-1);
+  document.querySelectorAll<HTMLElement>("[data-modal-instance]").forEach((modal) => {
+    const id = Number(modal.dataset.modalInstance);
+    const top = id === topId;
+    modal.toggleAttribute("data-modal-top", top);
+    modal.toggleAttribute("aria-hidden", !top);
+    (modal as HTMLElement & { inert: boolean }).inert = !top;
+  });
+}
+
+function registerModal(id: number): () => void {
+  modalStack.push(id);
+  syncModalStack();
+  return () => {
+    const index = modalStack.lastIndexOf(id);
+    if (index >= 0) modalStack.splice(index, 1);
+    syncModalStack();
   };
 }
 
@@ -62,6 +110,9 @@ export function Modal({
 }: Props) {
   const modalRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const instanceIdRef = useRef<number | null>(null);
+  if (instanceIdRef.current === null) instanceIdRef.current = ++modalSequence;
+  const instanceId = instanceIdRef.current;
   const background = useSurfaceBackground(surface);
   const { isPhone } = useResponsiveLayout();
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -89,11 +140,54 @@ export function Modal({
   const mobilePresentation = presentation !== "dialog";
   const showHeader = !hideHeader || mobilePresentation;
 
+  useEffect(() => registerModal(instanceId), [instanceId]);
+
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const frame = window.requestAnimationFrame(() => {
+      const modal = modalRef.current;
+      if (!modal || !isTopModal(instanceId)) return;
+      const requested = modal.querySelector<HTMLElement>("[autofocus], [data-modal-initial-focus]");
+      (requested || closeRef.current || focusableElements(modal)[0] || modal).focus({ preventScroll: true });
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, [instanceId]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (!isTopModal(instanceId) || event.defaultPrevented || event.isComposing) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const modal = modalRef.current;
+      if (!modal) return;
+      const focusable = focusableElements(modal);
+      if (!focusable.length) {
+        event.preventDefault();
+        modal.focus({ preventScroll: true });
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable.at(-1)!;
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !modal.contains(active))) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && (active === last || !modal.contains(active))) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [instanceId, onClose]);
 
   useEffect(() => {
     if (!mobilePresentation) return;
@@ -101,14 +195,7 @@ export function Modal({
     resize.current = null;
     setPosition({ x: 0, y: 0 });
     setSize(null);
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const unlock = lockBodyScroll();
-    const frame = window.requestAnimationFrame(() => closeRef.current?.focus({ preventScroll: true }));
-    return () => {
-      window.cancelAnimationFrame(frame);
-      unlock();
-      previousFocus?.focus({ preventScroll: true });
-    };
+    return lockBodyScroll();
   }, [mobilePresentation]);
 
   const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
@@ -196,7 +283,7 @@ export function Modal({
     <div
       className={`modal-backdrop ${background ? "theme-reveal-surface" : ""}`}
       role="presentation"
-      onMouseDown={(event) => event.target === event.currentTarget && closeOnBackdrop && onClose()}
+      onMouseDown={(event) => event.target === event.currentTarget && closeOnBackdrop && isTopModal(instanceId) && onClose()}
     >
       <section
         ref={modalRef}
@@ -204,10 +291,12 @@ export function Modal({
         data-component-type="modal"
         data-theme="parchment"
         data-surface={surface}
+        data-modal-instance={instanceId}
         data-responsive-presentation={presentation}
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        tabIndex={-1}
         style={style as CSSProperties}
       >
         {background && <div className="rd-modal-atmosphere" aria-hidden="true" />}
