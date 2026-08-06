@@ -34,6 +34,9 @@ export function primaryHeading(page: Page): Locator {
       ? "Viaggio"
       : null;
   if (workspaceTitle) {
+    if ((page.viewportSize()?.width || 0) >= 1200) {
+      return page.getByRole("link", { name: workspaceTitle, exact: true }).first();
+    }
     return page.locator(".tablet-route-heading:visible, [role='banner'] strong:visible")
       .filter({ hasText: new RegExp(`^${workspaceTitle}$`) })
       .first();
