@@ -103,14 +103,14 @@ export function CharacterSlot({
     }}
   >
     {showItemHeading
-      ? <header className="slot-item-heading"><img src={slot.item!.imageUrl} alt="" /><span>{slot.item!.typeValues?.[0] || slot.item!.types[0] || "Oggetto"}</span></header>
+      ? <header className="slot-item-heading"><img src={slot.item!.imageUrl} alt="" /></header>
       : <header><span>{slot.label}</span>{variant !== "figure" && slot.isExtraSlot && <em>qualsiasi</em>}{variant !== "figure" && slot.isMagical && <em>magico</em>}</header>}
     {slot.isLocked
       ? slot.item
         ? <div className="slot-item locked-slot-item"><strong>{slot.item.name}</strong><small>Spazio bloccato</small></div>
         : <div className="slot-empty">Bloccato</div>
       : slot.item
-        ? <div className="slot-item"><strong>{slot.item.name}{slot.stackable && slot.quantity > 1 ? ` × ${slot.quantity}` : ""}</strong>{variant !== "figure" && <>{!showItemHeading && <small>{slot.item.types.join(" · ")}</small>}<span>{slot.weightless ? "peso non conteggiato" : `${slot.item.weight ?? 0} peso`}</span></>}</div>
+        ? <div className="slot-item"><strong>{slot.item.name}{slot.stackable && slot.quantity > 1 ? ` × ${slot.quantity}` : ""}</strong>{variant !== "figure" && <>{!showItemHeading && <small>{slot.item.types.join(" · ")}</small>}{!showItemHeading && <span>{slot.weightless ? "peso non conteggiato" : `${slot.item.weight ?? 0} peso`}</span>}</>}</div>
         : <div className="slot-empty">Vuoto</div>}
     {actionsVisible && !unavailable && <div className="slot-inline-actions" data-component-type="toolbar" data-theme="dark" onPointerDown={(event) => event.stopPropagation()}>
       {onPick && <button
