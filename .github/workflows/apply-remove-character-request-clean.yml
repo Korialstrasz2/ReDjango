@@ -1,0 +1,51 @@
+name: Apply character request removal
+
+on:
+  push:
+    branches:
+      - codex/remove-character-request-settings-clean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: remove-character-request-settings-clean
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/remove-character-request-settings-clean
+      - name: Apply source changes
+        shell: bash
+        run: |
+          echo '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' | base64 -d | gzip -d > /tmp/remove_character_request.py
+          python3 /tmp/remove_character_request.py
+          git diff --check
+          python3 -m compileall -q backend
+      - name: Validate backend
+        shell: bash
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python manage.py makemigrations --check --dry-run
+          python manage.py test backend.core.tests.HierarchicalSettingsTests backend.core.tests_player_management.PlayerManagementServiceTests
+      - name: Validate frontend
+        shell: bash
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      - name: Commit source changes
+        shell: bash
+        run: |
+          git config user.name "Alep"
+          git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(settings): remove character request flow"
+          git push origin HEAD:codex/remove-character-request-settings-clean
