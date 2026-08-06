@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { expectNoDocumentOverflow } from "./helpers/stage-f";
 
 type SettingsEnvelope = {
-  data: { security: { role: "user" | "master" | "admin"; canManageGameData: boolean; canManageAdminSettings: boolean } };
+  data: { security: { canManageGameData: boolean; canManageAdminSettings: boolean } };
 };
 
 const roleProjects = new Set(["phone-combat-master", "phone-combat-player"]);
@@ -13,15 +13,17 @@ test("Stage F preserves player and Master route permissions across the phone she
   const settingsResponse = await request.get("/api/settings/");
   expect(settingsResponse.ok()).toBeTruthy();
   const settings = await settingsResponse.json() as SettingsEnvelope;
-  const expectedRole = testInfo.project.name.endsWith("master") ? "master" : "user";
-  expect(settings.data.security.role).toBe(expectedRole);
+  const isMaster = testInfo.project.name.endsWith("master");
+  const expectedRole = isMaster ? "master" : "user";
+  expect(settings.data.security.canManageGameData).toBe(isMaster);
+  expect(settings.data.security.canManageAdminSettings).toBe(false);
 
   await page.goto("/");
   await expect(page.locator(".mobile-app-bar")).toBeVisible();
   await page.getByRole("button", { name: /Altro/ }).click();
   const more = page.getByRole("dialog", { name: "Navigazione" });
   await expect(more).toBeVisible();
-  if (expectedRole === "master") {
+  if (isMaster) {
     await expect(more.getByText("Gestione da schermo più grande")).toBeVisible();
   } else {
     await expect(more.getByText("Gestione da schermo più grande")).toHaveCount(0);
@@ -29,7 +31,7 @@ test("Stage F preserves player and Master route permissions across the phone she
   await more.getByRole("button", { name: "Chiudi" }).click();
 
   await page.goto("/tools");
-  if (expectedRole === "master") {
+  if (isMaster) {
     await expect(page).toHaveURL(/\/tools$/);
     await expect(page.getByRole("heading", { name: "Gestione richiede un tablet o un computer" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Indietro" })).toBeVisible();
