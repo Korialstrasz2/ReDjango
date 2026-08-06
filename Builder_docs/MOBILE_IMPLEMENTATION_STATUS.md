@@ -11,10 +11,10 @@ The public mobile experience remains incomplete and must not be treated as relea
 | Stage | Status | Notes |
 | --- | --- | --- |
 | A — Baseline and test harness | In progress | Responsive viewport projects, overflow diagnostics, route-specific tests, independent Combat role sessions, and branch CI are running. Canonical screenshot comparison, all overlays, font scales, and the complete integrated route matrix remain pending. |
-| B — Shared responsive primitives | In progress | Responsive hook, modal presentations, phone app/bottom navigation, More and Quick Tools sheets, full-screen ToolDrawer, Context Notes sheet, phone management guard, and high-risk Travel/Combat phone runtimes are implemented. Formal shell extraction and tablet navigation remain pending. |
+| B — Shared responsive primitives | In progress | Responsive hook, modal presentations and stack management, phone app/bottom navigation, More and Quick Tools sheets, full-screen ToolDrawer, Context Notes sheet, phone management guard, and high-risk Travel/Combat phone runtimes are implemented. Formal shell extraction and tablet navigation remain pending. |
 | C — Lower-risk player pages | Verified checkpoint | Login, Dashboard, Lore, Guides, Media, Settings, and Market have phone/tablet layouts and responsive Playwright coverage. |
 | D — Stateful player pages | Verified checkpoint | Skills, Competencies, Creation, New Character, and Character have dedicated responsive layouts and route-specific Playwright coverage. Character includes real phone touch-drag activation coverage. |
-| E — High-risk workspaces/global tools | In progress | Travel is verified. Combat has a verified responsive and role-permission checkpoint covering player/master sessions, map-first phone navigation, touch gestures, inspectors, role-gated controls, tablet containment, and protected desktop assertions. Remaining exhaustive Combat planner/manager/destructive workflows and Quick Tool internals still require dedicated verification. |
+| E — High-risk workspaces/global tools | In progress | Travel is verified. Combat has verified responsive, role-permission, and shared-modal checkpoints covering player/master sessions, map-first phone navigation, touch gestures, inspectors, role-gated controls, nested dialogs, tablet containment, and protected desktop assertions. Remaining exhaustive Combat planner/manager/destructive workflows and Quick Tool internals still require dedicated verification. |
 | F — Integrated full-route pass | Not started | Public activation remains blocked. |
 
 ## Implemented foundations
@@ -56,8 +56,9 @@ Files:
 
 - `frontend/src/components/Modal.tsx`
 - `frontend/src/styles/mobile.css`
+- `frontend/tests/mobile-combat-roles.spec.ts`
 
-Desktop behavior remains the dialog path, including drag, resize, Escape, backdrop, portal, headless, wide, and themed variants.
+Desktop behavior remains the dialog path, including drag, resize, portal, headless, wide, and themed variants.
 
 Phone behavior provides:
 
@@ -66,10 +67,20 @@ Phone behavior provides:
 - wide/resizable/headless/body-draggable modal → full-screen;
 - no mobile drag/resize;
 - body scroll locking with nested-lock accounting;
-- close-button focus and prior-trigger restoration;
 - safe-area padding, `100dvh`, sticky header/footer, and touch-sized controls.
 
-Every remaining modal call site still needs final integrated classification and state-loss review.
+Shared behavior now provides:
+
+- an explicit modal stack with one interactive top dialog;
+- Escape closes only the top dialog;
+- Tab and Shift+Tab remain trapped in the top dialog;
+- initial focus and exact trigger-focus restoration;
+- lower modal layers become `inert` and `aria-hidden` while a child is open;
+- backdrop clicks are accepted only by the top dialog;
+- wide, resizable, headless, and body-draggable workbenches require an explicit close action by default, protecting local drafts;
+- simple dialogs retain backdrop dismissal unless they opt out.
+
+Remaining modal call sites still need final integrated classification, and ad hoc non-`Modal` overlays require separate semantic review.
 
 ### Phone shell navigation
 
@@ -223,7 +234,21 @@ True verified checkpoint:
 - Django migration consistency and system checks: passed;
 - corrected expanded responsive Chromium matrix: passed.
 
-This checkpoint does not yet satisfy the complete release gate for every destructive confirmation, every advanced planner/manager mutation, every font scale, every overlay combination, or canonical screenshot comparison.
+### Shared modal verified checkpoint
+
+Verified on real Combat nested-dialog and wide-workbench paths:
+
+- implementation commit: `7229c668bd39a303df4e76877218e8971b7d6948`;
+- workflow run: `31076300535`;
+- frontend unit tests: passed;
+- TypeScript validation: passed;
+- production build: passed;
+- Django migration consistency and system checks: passed;
+- expanded responsive Chromium matrix: passed;
+- phone and desktop master nested-dialog assertions: passed;
+- top-only Escape, focus trapping, parent inertness, exact focus restoration, and protected wide backdrop behavior: passed.
+
+These checkpoints do not yet satisfy the complete release gate for every destructive confirmation, every advanced planner/manager mutation, every font scale, every overlay combination, or canonical screenshot comparison.
 
 ## Tests and continuous verification
 
@@ -241,8 +266,10 @@ The branch workflow `.github/workflows/mobile-optimization-verification.yml` now
 
 ## Immediate next slice
 
-1. Complete the remaining exhaustive Combat workflow gate:
-   - destructive confirmations and rollback/cancel paths;
+1. Complete the remaining Combat modal and workflow gate:
+   - replace native duplicate-action, clear-queue, and snapshot-restore confirmations with accessible shared dialogs;
+   - normalize image-picker preview and other ad hoc dialog overlays through the shared stack;
+   - test cancellation, focus restoration, and state preservation for those paths;
    - participant removal, control transfer, activation, defeat, recovery, and relocation flows;
    - target selection and attack preparation across player/master permissions;
    - quick-action planner mutations and validation;
