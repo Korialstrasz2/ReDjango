@@ -62,7 +62,7 @@ test("phone Quick Tools close before route navigation and do not leave a hidden 
 
   await page.keyboard.press("Escape");
   await expect(drawer).toHaveCount(0);
-  await page.getByRole("link", { name: /Abilità/ }).click();
+  await page.locator(".mobile-bottom-navigation").getByRole("link", { name: "Abilità", exact: true }).click();
   await expect(page).toHaveURL(/\/skills$/);
   await expect(page.locator(".tool-drawer")).toHaveCount(0);
 });
