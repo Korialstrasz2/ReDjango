@@ -167,6 +167,12 @@ test("nested Combat modals keep only the top dialog interactive", async ({ page 
   await page.locator(".combat-map-toolbar").getByRole("button", { name: "Personaggi", exact: true }).click();
   const manager = page.locator(".combat-character-manager-modal");
   await expect(manager).toBeVisible();
+
+  if (!isPhoneProject(testInfo)) {
+    await page.locator(".modal-backdrop").last().click({ position: { x: 2, y: 2 } });
+    await expect(manager).toBeVisible();
+  }
+
   const importCopy = manager.getByRole("button", { name: "Importa copia", exact: true }).first();
   await expect(importCopy).toBeVisible();
   await importCopy.click();
