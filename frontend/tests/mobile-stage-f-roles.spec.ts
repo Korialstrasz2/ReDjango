@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { expectNoDocumentOverflow } from "./helpers/stage-f";
+import { expectNoDocumentOverflow, primaryHeading } from "./helpers/stage-f";
 
 type SettingsEnvelope = {
   data: { security: { canManageGameData: boolean; canManageAdminSettings: boolean } };
@@ -38,7 +38,7 @@ test("Stage F preserves player and Master route permissions across the phone she
     await expect(page.getByRole("link", { name: "Torna alla Home" })).toBeVisible();
   } else {
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(primaryHeading(page)).toBeVisible();
   }
   await expectNoDocumentOverflow(page, testInfo, `role-${expectedRole}`);
 });
@@ -47,7 +47,7 @@ test("Stage F role sessions retain player routes and Quick Tools without exposin
   test.skip(!roleProjects.has(testInfo.project.name), "Independent player/Master phone sessions only");
   for (const path of ["/skills", "/competencies", "/combat", "/travel"] as const) {
     await page.goto(path);
-    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(primaryHeading(page)).toBeVisible();
     await expect(page.locator(".mobile-bottom-navigation")).toBeVisible();
     await expect(page.locator(".side-nav")).toBeHidden();
     await expectNoDocumentOverflow(page, testInfo, `${testInfo.project.name}-${path}`);
