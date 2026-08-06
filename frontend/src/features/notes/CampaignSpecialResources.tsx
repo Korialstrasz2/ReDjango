@@ -25,6 +25,7 @@ type CampaignActionData = { campaigns: Pick<BootstrapData, "activeCampaignId" | 
 type ProposalSnapshot = { character: string; name: string; text: string };
 
 const EMPTY_LINE: SpecialResourceLineDraft = { character: "", name: "", text: "" };
+const FREE_TEXT_LIMIT = 2_000;
 
 function proposalActionLabel(proposal: CampaignSpecialResourceProposal) {
   if (proposal.action === "archive") return "Archiviazione";
@@ -49,7 +50,7 @@ function proposalSnapshots(
 ): { before: ProposalSnapshot; after: ProposalSnapshot } {
   const current = {
     character: resource?.character || "",
-    name: resource?.name || proposal.resourceName || "",
+    name: resource?.name || "",
     value: resource?.value || "",
     notes: resource?.notes || "",
     highlighted: Boolean(resource?.highlighted),
@@ -59,7 +60,7 @@ function proposalSnapshots(
   return {
     before: {
       character: String(beforeFields.character || ""),
-      name: String(beforeFields.name || proposal.resourceName || ""),
+      name: String(beforeFields.name || ""),
       text: specialResourceText(beforeFields),
     },
     after: {
@@ -80,7 +81,10 @@ export function CampaignSpecialResources({ campaign, notify, reviewRequestToken 
   const { resources, proposals, canManage } = campaign.specialResources;
   const activeResources = useMemo(() => resources.filter((resource) => !resource.archivedAt), [resources]);
   const pending = useMemo(() => proposals.filter((proposal) => proposal.status === "pending"), [proposals]);
-  const pendingResourceIds = useMemo(() => new Set(pending.map((proposal) => proposal.resourceId).filter(Boolean)), [pending]);
+  const pendingResourceIds = useMemo(
+    () => new Set(pending.flatMap((proposal) => proposal.resourceId ? [proposal.resourceId] : [])),
+    [pending],
+  );
 
   useEffect(() => {
     setDrafts((current) => {
@@ -119,33 +123,38 @@ export function CampaignSpecialResources({ campaign, notify, reviewRequestToken 
     }
   };
 
-  const valuesFromLine = (draft: SpecialResourceLineDraft) => ({
+  const valuesFromLine = (draft: SpecialResourceLineDraft, resource?: CampaignSpecialResource) => ({
     character: draft.character,
     name: draft.name,
     value: "",
     notes: draft.text,
-    highlighted: false,
+    highlighted: resource?.highlighted ?? false,
   });
 
-  const saveLine = async (resource: CampaignSpecialResource, draft: SpecialResourceLineDraft) => {
+  const validateLine = (draft: SpecialResourceLineDraft) => {
     if (!draft.name.trim()) {
       notify("Dai un nome alla riga.", "error");
-      return;
+      return false;
     }
-    if (!specialResourceLineChanged(resource, draft)) return;
+    if (draft.text.length > FREE_TEXT_LIMIT) {
+      notify(`Il testo libero può contenere al massimo ${FREE_TEXT_LIMIT} caratteri.`, "error");
+      return false;
+    }
+    return true;
+  };
+
+  const saveLine = async (resource: CampaignSpecialResource, draft: SpecialResourceLineDraft) => {
+    if (!validateLine(draft) || !specialResourceLineChanged(resource, draft)) return;
     await run(
       `save-${resource.id}`,
       "campaign.specialResources.save",
-      { resourceId: resource.id, values: valuesFromLine(draft) },
+      { resourceId: resource.id, values: valuesFromLine(draft, resource) },
       canManage ? "Riga salvata." : "Modifica inviata al Master.",
     );
   };
 
   const createLine = async () => {
-    if (!newLine.name.trim()) {
-      notify("Dai un nome alla riga.", "error");
-      return;
-    }
+    if (!validateLine(newLine)) return;
     const changed = Boolean(newLine.character.trim() || newLine.name.trim() || newLine.text.trim());
     if (!changed) return;
     const ok = await run(
@@ -209,7 +218,7 @@ export function CampaignSpecialResources({ campaign, notify, reviewRequestToken 
           <span className="sr-only">Testo libero</span>
           <textarea
             rows={2}
-            maxLength={2000}
+            maxLength={FREE_TEXT_LIMIT}
             value={draft.text}
             placeholder="Testo libero…"
             onChange={(event) => setDrafts((current) => ({
@@ -221,7 +230,7 @@ export function CampaignSpecialResources({ campaign, notify, reviewRequestToken 
         <button
           type="submit"
           className="button primary small"
-          disabled={!changed || busy !== null || awaitingReview}
+          disabled={!changed || busy !== null || awaitingReview || draft.text.length > FREE_TEXT_LIMIT}
           title={awaitingReview ? "Questa modifica è già in attesa di revisione." : undefined}
         >
           {busy === `save-${resource.id}` ? (canManage ? "Salvataggio…" : "Invio…") : awaitingReview ? "In attesa" : actionLabel}
@@ -261,10 +270,10 @@ export function CampaignSpecialResources({ campaign, notify, reviewRequestToken 
           <label><span className="sr-only">Nome riga</span><input required maxLength={120} value={newLine.name} placeholder="Nome riga" onChange={(event) => setNewLine((current) => ({ ...current, name: event.target.value }))} /></label>
         </div>
         <div className="special-resource-line-content">
-          <label><span className="sr-only">Testo libero</span><textarea rows={2} maxLength={2000} value={newLine.text} placeholder="Testo libero…" onChange={(event) => setNewLine((current) => ({ ...current, text: event.target.value }))} /></label>
+          <label><span className="sr-only">Testo libero</span><textarea rows={2} maxLength={FREE_TEXT_LIMIT} value={newLine.text} placeholder="Testo libero…" onChange={(event) => setNewLine((current) => ({ ...current, text: event.target.value }))} /></label>
           <div className="special-resource-new-actions">
             <button type="button" className="button secondary small" disabled={busy !== null} onClick={() => { setCreating(false); setNewLine(EMPTY_LINE); }}>Annulla</button>
-            <button type="submit" className="button primary small" disabled={!newLine.name.trim() || busy !== null}>
+            <button type="submit" className="button primary small" disabled={!newLine.name.trim() || busy !== null || newLine.text.length > FREE_TEXT_LIMIT}>
               {busy === "save-new" ? (canManage ? "Salvataggio…" : "Invio…") : canManage ? "Salva" : "Invia a Master"}
             </button>
           </div>
