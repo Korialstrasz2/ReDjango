@@ -189,7 +189,7 @@ jobs:
         run: |
           cp candidate/frontend/playwright.desktop-visual.config.ts baseline/frontend/playwright.desktop-visual.config.ts
           cp candidate/frontend/tests/desktop-visual-baseline.spec.ts baseline/frontend/tests/desktop-visual-baseline.spec.ts
-          cp candidate/frontend/tests/auth.setup.ts baseline/frontend/tests/auth.setup.ts
+          cp candidate/frontend/tests/desktop-visual.setup.ts baseline/frontend/tests/desktop-visual.setup.ts
       - name: Build pinned baseline
         working-directory: baseline/frontend
         run: npm run build
