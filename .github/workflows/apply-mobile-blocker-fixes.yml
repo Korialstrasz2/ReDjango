@@ -17,21 +17,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: mobile-optimized
-          fetch-depth: 2
-      - name: Run reviewed patch from parent commit
+          fetch-depth: 3
+      - name: Run reviewed patch payload
         run: |
           python - <<'PY'
-          from pathlib import Path
           import subprocess
 
           workflow = ".github/workflows/apply-mobile-blocker-fixes.yml"
-          source = subprocess.check_output(["git", "show", f"HEAD^:{workflow}"], text=True)
+          payload_commit = "0fe5c7f2e5dafe6966198e89dec4a4babd192eaa"
+          source = subprocess.check_output(["git", "show", f"{payload_commit}:{workflow}"], text=True)
           start = "          python - <<'PY'\n"
           end = "\n          PY\n"
           if start not in source or end not in source:
-              raise SystemExit("Parent patch payload was not found")
+              raise SystemExit("Patch payload was not found")
           body = source.split(start, 1)[1].split(end, 1)[0]
           script = "\n".join(line[10:] if line.startswith("          ") else line for line in body.splitlines())
+          script = script.replace(
+              'if old_management_css not in mobile_css:',
+              'old_management_css = textwrap.dedent(old_management_css)\nnew_management_css = textwrap.dedent(new_management_css)\nif old_management_css not in mobile_css:',
+              1,
+          )
+          script = script.replace(
+              'marker = "  .mobile-bottom-navigation {\\n"',
+              'workspace_css = textwrap.dedent(workspace_css)\nmarker = "  .mobile-bottom-navigation {\\n"',
+              1,
+          )
           exec(compile(script, workflow, "exec"), {"__name__": "__main__"})
           PY
       - name: Verify patch shape
