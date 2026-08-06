@@ -28,6 +28,44 @@ jobs:
           print(match.group(1))
           PY
           base64 -d /tmp/cleanup.payload | gzip -d > /tmp/cleanup.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          selector = Path('backend/core/player_management_selectors.py')
+          content = selector.read_text(encoding='utf-8')
+          content = content.replace(
+              'from .models import CharacterAssignmentRequest, DatiCampagna, Giocatore\n',
+              'from .models import DatiCampagna, Giocatore\n',
+          )
+          content = content.replace(
+              '    characters_by_id: dict[int, Personaggio],\n    pending_by_player: dict[int, list[dict[str, Any]]],\n',
+              '    characters_by_id: dict[int, Personaggio],\n',
+          )
+          content = content.replace(
+              '        "pendingRequests": pending_by_player.get(giocatore.id, []),\n',
+              '',
+          )
+          content = re.sub(
+              r'\n    pending_by_player: dict\[int, list\[dict\[str, Any\]\]\] = \{\}.*?(?=\n    return \{)',
+              '\n',
+              content,
+              flags=re.S,
+          )
+          content = content.replace(
+              '_serialize_player(player, characters_by_id, pending_by_player)',
+              '_serialize_player(player, characters_by_id)',
+          )
+          selector.write_text(content, encoding='utf-8')
+
+          practices = Path('best_build_practices.md')
+          content = practices.read_text(encoding='utf-8-sig')
+          content = content.replace(
+              '- Player identity changes use `Giocatore.display_name`; character access requests use `CharacterAssignmentRequest` and become assignments only after an explicit Django Admin approval.',
+              '- Player identity changes use `Giocatore.display_name`; character access is assigned directly by administrators through Gestione Player.',
+          )
+          practices.write_text(content, encoding='utf-8-sig')
+          PY
           python3 /tmp/cleanup.py
           rm -f .github/workflows/apply-character-request-cleanup-ubuntu.yml
           git diff --check
