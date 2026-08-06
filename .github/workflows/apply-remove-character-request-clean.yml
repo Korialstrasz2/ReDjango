@@ -1,0 +1,52 @@
+name: Apply character request removal
+
+on:
+  push:
+    branches:
+      - codex/remove-character-request-settings-clean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: remove-character-request-settings-clean
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/remove-character-request-settings-clean
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .ci-main
+      - name: Apply source-only refactor
+        run: |
+          python3 .ci-main/.github/scripts/remove_character_request.py
+          rm -rf .ci-main
+          git diff --check
+          python3 -m compileall -q backend
+      - name: Validate backend
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python manage.py makemigrations --check --dry-run
+          python manage.py test backend.core.tests.HierarchicalSettingsTests
+      - name: Validate frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      - name: Commit source changes
+        run: |
+          git config user.name "Alep"
+          git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(settings): remove character request flow"
+          git push origin HEAD:codex/remove-character-request-settings-clean
