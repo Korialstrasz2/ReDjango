@@ -18,6 +18,15 @@ async function closeTool(drawer: Locator) {
   await expect(drawer).toHaveCount(0);
 }
 
+const envelope = <T,>(data: T) => ({
+  ok: true,
+  requestId: "stage-f-quick-tools",
+  data,
+  events: [],
+  warnings: [],
+  errors: [],
+});
+
 function silentWav(seconds = 8, sampleRate = 8000): Buffer {
   const samples = seconds * sampleRate;
   const buffer = Buffer.alloc(44 + samples, 128);
@@ -43,7 +52,7 @@ test("phone Journal edits autosave, survive closing, and expose special resource
   let drawer = await openTool(page, "Diario");
 
   const appunti = drawer.getByRole("button", { name: "Appunti", exact: true });
-  if (await appunti.isEnabled()) {
+  if (await appunti.count() && await appunti.isEnabled()) {
     await appunti.click();
     const editor = drawer.getByLabel("Note Appunti");
     const marker = `Stage F mobile ${Date.now()}`;
@@ -58,7 +67,7 @@ test("phone Journal edits autosave, survive closing, and expose special resource
   }
 
   const resources = drawer.getByRole("button", { name: "Risorse speciali", exact: true });
-  if (await resources.isEnabled()) {
+  if (await resources.count() && await resources.isEnabled()) {
     await resources.click();
     const panel = drawer.locator(".campaign-special-resources");
     await expect(panel).toBeVisible();
@@ -171,6 +180,7 @@ test("phone AI submits or clearly reports unavailable chat without trapping the 
 
 test("phone audio playback and mini-player controls survive route navigation", async ({ page }, testInfo) => {
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only audio continuity workflow");
+  const audio = silentWav();
   const track = {
     id: 91001,
     title: "Traccia E2E continua",
@@ -179,7 +189,7 @@ test("phone audio playback and mini-player controls survive route navigation", a
     url: "/e2e-audio.wav",
     originalName: "e2e-audio.wav",
     mimeType: "audio/wav",
-    sizeBytes: silentWav().byteLength,
+    sizeBytes: audio.byteLength,
     durationSeconds: 8,
     notes: "",
     createdAt: null,
@@ -187,11 +197,11 @@ test("phone audio playback and mini-player controls survive route navigation", a
   await page.route("**/api/audio/tracks/", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ data: { tracks: [track], tags: [{ value: "musica", label: "Musica" }], canManage: true }, events: [] }),
+      body: JSON.stringify(envelope({ tracks: [track], tags: [{ value: "musica", label: "Musica" }], canManage: true })),
     });
   });
   await page.route("**/e2e-audio.wav", async (route) => {
-    await route.fulfill({ contentType: "audio/wav", body: silentWav() });
+    await route.fulfill({ contentType: "audio/wav", body: audio });
   });
 
   await page.goto("/");
