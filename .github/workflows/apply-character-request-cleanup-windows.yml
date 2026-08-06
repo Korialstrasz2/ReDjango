@@ -1,0 +1,54 @@
+name: Apply character request cleanup on Windows
+
+on:
+  push:
+    branches:
+      - codex/remove-character-request-settings
+
+permissions:
+  contents: write
+
+jobs:
+  apply-cleanup:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/remove-character-request-settings
+      - name: Apply cleanup
+        shell: pwsh
+        run: |
+          $workflow = Get-Content '.github/workflows/apply-character-request-cleanup.yml' -Raw
+          $match = [regex]::Match($workflow, "echo '([^']+)' \| base64")
+          if (-not $match.Success) { throw 'Cleanup payload not found.' }
+          $compressed = Join-Path $env:RUNNER_TEMP 'cleanup.py.gz'
+          $script = Join-Path $env:RUNNER_TEMP 'cleanup.py'
+          [IO.File]::WriteAllBytes($compressed, [Convert]::FromBase64String($match.Groups[1].Value))
+          python -c "import gzip,pathlib; pathlib.Path(r'$script').write_bytes(gzip.decompress(pathlib.Path(r'$compressed').read_bytes()))"
+          python $script
+          Remove-Item '.github/workflows/apply-character-request-cleanup-ubuntu.yml' -ErrorAction SilentlyContinue
+          Remove-Item '.github/workflows/apply-character-request-cleanup-windows.yml' -ErrorAction SilentlyContinue
+          git diff --check
+          python -m compileall -q backend
+      - name: Validate backend
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\python -m pip install --upgrade pip
+          .\.venv\Scripts\pip install -r requirements.txt
+          .\.venv\Scripts\python manage.py makemigrations --check --dry-run
+          .\.venv\Scripts\python manage.py test backend.core.tests.HierarchicalSettingsTests backend.core.tests_player_management.PlayerManagementServiceTests
+      - name: Validate frontend
+        shell: pwsh
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Commit cleanup
+        shell: pwsh
+        run: |
+          git config user.name "Alep"
+          git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(settings): remove character request flow"
+          git push origin HEAD:codex/remove-character-request-settings
