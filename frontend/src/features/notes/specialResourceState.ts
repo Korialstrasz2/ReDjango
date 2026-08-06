@@ -29,14 +29,23 @@ export function specialResourceLineDraft(
   };
 }
 
+function normalizedLine(draft: SpecialResourceLineDraft): SpecialResourceLineDraft {
+  return {
+    character: draft.character.trim(),
+    name: draft.name.trim(),
+    text: draft.text.trim(),
+  };
+}
+
 export function specialResourceLineChanged(
   resource: Pick<CampaignSpecialResource, "character" | "name" | "value" | "notes">,
   draft: SpecialResourceLineDraft,
 ): boolean {
-  const current = specialResourceLineDraft(resource);
-  return current.character !== draft.character
-    || current.name !== draft.name
-    || current.text !== draft.text;
+  const current = normalizedLine(specialResourceLineDraft(resource));
+  const proposed = normalizedLine(draft);
+  return current.character !== proposed.character
+    || current.name !== proposed.name
+    || current.text !== proposed.text;
 }
 
 export function pendingSpecialResourceProposals(
