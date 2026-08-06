@@ -64,6 +64,7 @@ describe("special-resource line state", () => {
   it("keeps an untouched row disabled and detects visible edits", () => {
     const draft = specialResourceLineDraft(resource);
     expect(specialResourceLineChanged(resource, draft)).toBe(false);
+    expect(specialResourceLineChanged(resource, { ...draft, text: ` ${draft.text} ` })).toBe(false);
     expect(specialResourceLineChanged(resource, { ...draft, text: `${draft.text}\nUsato una volta.` })).toBe(true);
   });
 
