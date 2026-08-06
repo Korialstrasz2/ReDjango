@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,12 +25,14 @@ jobs:
           ref: main
           path: .ci-main
       - name: Apply source-only refactor
+        shell: bash
         run: |
           python3 .ci-main/.github/scripts/remove_character_request.py
           rm -rf .ci-main
           git diff --check
           python3 -m compileall -q backend
       - name: Validate backend
+        shell: bash
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
@@ -39,11 +41,13 @@ jobs:
           python manage.py makemigrations --check --dry-run
           python manage.py test backend.core.tests.HierarchicalSettingsTests
       - name: Validate frontend
+        shell: bash
         run: |
           cd frontend
           npm ci
           npm run build
       - name: Commit source changes
+        shell: bash
         run: |
           git config user.name "Alep"
           git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
