@@ -101,8 +101,24 @@ jobs:
           retention-days: 14
 
   responsive-e2e:
+    name: responsive-e2e (${{ matrix.project }})
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - desktop-1920
+          - phone-small-portrait
+          - phone-large-portrait
+          - phone-landscape
+          - tablet-minimum
+          - tablet-portrait
+          - tablet-landscape
+          - phone-combat-master
+          - phone-combat-player
+          - desktop-combat-master
+          - desktop-combat-player
     defaults:
       run:
         working-directory: frontend
@@ -134,7 +150,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Build frontend assets
         run: npm run build
-      - name: Responsive viewport and Stage F evidence matrix
+      - name: Responsive viewport and Stage F evidence
         run: >-
           npx playwright test
           tests/mobile-baseline.spec.ts
@@ -155,11 +171,13 @@ jobs:
           tests/mobile-global-behavior.spec.ts
           tests/mobile-tablet-management.spec.ts
           tests/mobile-performance.spec.ts
+          --project=${{ matrix.project }}
+          --workers=1
       - name: Upload responsive and performance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mobile-playwright-report-${{ github.run_attempt }}
+          name: mobile-playwright-${{ matrix.project }}-${{ github.run_attempt }}
           path: |
             frontend/playwright-report
             frontend/test-results
