@@ -22,7 +22,7 @@ type Props = {
   surface?: string;
   /** Presentazione richiesta sui telefoni. Desktop conserva sempre il dialogo esistente. */
   responsiveMode?: ResponsiveMode;
-  /** Mantiene il comportamento storico; i form con stato non salvato possono disabilitarlo esplicitamente. */
+  /** I dialoghi semplici chiudono sullo sfondo; editor, finestre ampie e workbench richiedono un'azione esplicita. */
   closeOnBackdrop?: boolean;
 };
 
@@ -107,7 +107,7 @@ export function Modal({
   dragFromBody = false,
   surface,
   responsiveMode = "auto",
-  closeOnBackdrop = true,
+  closeOnBackdrop,
 }: Props) {
   const modalRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -140,6 +140,7 @@ export function Modal({
     : "dialog";
   const mobilePresentation = presentation !== "dialog";
   const showHeader = !hideHeader || mobilePresentation;
+  const backdropClosable = closeOnBackdrop ?? !(wide || resizable || hideHeader || dragFromBody);
 
   useEffect(() => registerModal(instanceId), [instanceId]);
 
@@ -284,7 +285,7 @@ export function Modal({
     <div
       className={`modal-backdrop ${background ? "theme-reveal-surface" : ""}`}
       role="presentation"
-      onMouseDown={(event) => event.target === event.currentTarget && closeOnBackdrop && isTopModal(instanceId) && onClose()}
+      onMouseDown={(event) => event.target === event.currentTarget && backdropClosable && isTopModal(instanceId) && onClose()}
     >
       <section
         ref={modalRef}
