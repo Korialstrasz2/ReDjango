@@ -11,10 +11,10 @@ export type SpecialResourceLineDraft = {
 };
 
 export function specialResourceText(
-  resource: Pick<CampaignSpecialResource, "value" | "notes">,
+  resource: { value?: string | null; notes?: string | null },
 ): string {
   return [resource.value, resource.notes]
-    .map((value) => value.trim())
+    .map((value) => String(value || "").trim())
     .filter(Boolean)
     .join("\n");
 }
