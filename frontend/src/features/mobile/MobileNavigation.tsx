@@ -1,21 +1,16 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Modal } from "../../components/Modal";
+import { isNavigationActive, type ShellNavigationItem } from "../../lib/navigation";
 
 export type MobileTool = "journal" | "dice" | "theft" | "audio" | "ai" | "names";
-
-type ShellNavigationItem = {
-  href: string;
-  label: string;
-  icon: string;
-  management: boolean;
-};
 
 type Props = {
   characterName: string;
   campaignName: string;
   canManageGameData: boolean;
+  navigation: ShellNavigationItem[];
   activeTool: MobileTool | null;
   onSelectTool: (tool: MobileTool) => void;
 };
@@ -29,65 +24,11 @@ const TOOL_ITEMS: Array<{ id: MobileTool; label: string; icon: string }> = [
   { id: "names", label: "Nomi", icon: "◈" },
 ];
 
-function normalizeHref(anchor: HTMLAnchorElement): string {
-  const raw = anchor.getAttribute("href") || "/";
-  try {
-    return new URL(raw, window.location.origin).pathname;
-  } catch {
-    return raw.startsWith("/") ? raw : "/";
-  }
-}
-
-export function readDesktopShellNavigation(root: ParentNode = document): ShellNavigationItem[] {
-  return Array.from(root.querySelectorAll<HTMLAnchorElement>(".side-nav .nav-list a")).map((anchor) => ({
-    href: normalizeHref(anchor),
-    label: anchor.querySelector<HTMLElement>(".nav-label")?.textContent?.trim()
-      || anchor.textContent?.trim()
-      || "Destinazione",
-    icon: anchor.querySelector<HTMLElement>("[aria-hidden='true']")?.textContent?.trim() || "•",
-    management: Boolean(anchor.closest(".nav-management-section")),
-  }));
-}
-
-export function isMobileNavigationActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
-  if (href === "/characters" || href.startsWith("/character/")) return pathname.startsWith("/character/");
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function sameNavigation(left: ShellNavigationItem[], right: ShellNavigationItem[]): boolean {
-  return left.length === right.length && left.every((item, index) => {
-    const candidate = right[index];
-    return candidate
-      && item.href === candidate.href
-      && item.label === candidate.label
-      && item.icon === candidate.icon
-      && item.management === candidate.management;
-  });
-}
-
-export function MobileNavigation({ characterName, campaignName, canManageGameData, activeTool, onSelectTool }: Props) {
+export function MobileNavigation({ characterName, campaignName, canManageGameData, navigation, activeTool, onSelectTool }: Props) {
   const location = useLocation();
-  const [navigation, setNavigation] = useState<ShellNavigationItem[]>([]);
   const [moreOpen, setMoreOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const managementBlocked = location.pathname === "/tools" || location.pathname.startsWith("/tools/");
-
-  useLayoutEffect(() => {
-    const sync = () => {
-      const next = readDesktopShellNavigation();
-      setNavigation((current) => sameNavigation(current, next) ? current : next);
-    };
-    sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["class", "href"],
-    });
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     setMoreOpen(false);
@@ -103,7 +44,7 @@ export function MobileNavigation({ characterName, campaignName, canManageGameDat
   const primary = [home, character, skills, combat].filter((item): item is ShellNavigationItem => Boolean(item));
   const primaryHrefs = new Set(primary.map((item) => item.href));
   const moreLinks = playerLinks.filter((item) => !primaryHrefs.has(item.href));
-  const current = playerLinks.find((item) => isMobileNavigationActive(location.pathname, item.href));
+  const current = playerLinks.find((item) => isNavigationActive(location.pathname, item.href));
   const managementAvailable = canManageGameData || navigation.some((item) => item.management);
 
 
@@ -127,15 +68,15 @@ export function MobileNavigation({ characterName, campaignName, canManageGameDat
       {primary.map((item) => <Link
         key={item.href}
         to={item.href}
-        className={isMobileNavigationActive(location.pathname, item.href) ? "active" : ""}
-        aria-current={isMobileNavigationActive(location.pathname, item.href) ? "page" : undefined}
+        className={isNavigationActive(location.pathname, item.href) ? "active" : ""}
+        aria-current={isNavigationActive(location.pathname, item.href) ? "page" : undefined}
       >
         <span aria-hidden="true">{item.icon}</span>
         <strong>{item.href === "/" ? "Home" : item.label}</strong>
       </Link>)}
       <button
         type="button"
-        className={moreOpen || moreLinks.some((item) => isMobileNavigationActive(location.pathname, item.href)) ? "active" : ""}
+        className={moreOpen || moreLinks.some((item) => isNavigationActive(location.pathname, item.href)) ? "active" : ""}
         aria-expanded={moreOpen}
         onClick={() => setMoreOpen(true)}
       >
@@ -155,8 +96,8 @@ export function MobileNavigation({ characterName, campaignName, canManageGameDat
           {moreLinks.map((item) => <Link
             key={item.href}
             to={item.href}
-            className={isMobileNavigationActive(location.pathname, item.href) ? "active" : ""}
-            aria-current={isMobileNavigationActive(location.pathname, item.href) ? "page" : undefined}
+            className={isNavigationActive(location.pathname, item.href) ? "active" : ""}
+            aria-current={isNavigationActive(location.pathname, item.href) ? "page" : undefined}
             onClick={() => setMoreOpen(false)}
           >
             <span aria-hidden="true">{item.icon}</span>

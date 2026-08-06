@@ -19,6 +19,15 @@ type ResizeEdge = "top" | "right" | "bottom" | "left";
 const VIEWPORT_TOP = 35;
 const MIN_DRAWER_WIDTH = 360;
 const MIN_DRAWER_HEIGHT = 320;
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled]):not([type='hidden'])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  "[contenteditable='true']",
+  "[tabindex]:not([tabindex='-1'])",
+].join(",");
 let mobileDrawerLockCount = 0;
 let bodyOverflowBeforeDrawerLock = "";
 
@@ -65,10 +74,41 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
   } | null>(null);
 
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.isComposing) return;
+      const drawer = drawerRef.current;
+      if (!drawer) return;
+      if (event.key === "Escape") {
+        // A nested shared/custom dialog owns Escape before the drawer.
+        if (document.querySelector("[data-modal-instance][data-modal-top]")
+          || drawer.querySelector("[role='dialog'][aria-modal='true']")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
+        return;
+      }
+      if (!isPhone || event.key !== "Tab") return;
+      const focusable = Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+        .filter((element) => element.getClientRects().length > 0);
+      if (!focusable.length) {
+        event.preventDefault();
+        drawer.focus({ preventScroll: true });
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable.at(-1)!;
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !drawer.contains(active))) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && (active === last || !drawer.contains(active))) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
+  }, [isPhone, onClose]);
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -183,6 +223,7 @@ export function ToolDrawer({ title, eyebrow, children, onClose, background = "",
     data-theme="parchment"
     data-responsive-presentation={isPhone ? "fullscreen" : "dialog"}
     style={style as CSSProperties}
+    tabIndex={-1}
   >
     <div className="tool-drawer-atmosphere" aria-hidden="true" />
     <header className="tool-drawer-header" onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={stopDrag} onPointerCancel={stopDrag}>

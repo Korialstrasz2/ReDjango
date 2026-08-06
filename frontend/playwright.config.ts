@@ -6,7 +6,7 @@ const django = (command: string) => `${python} ../manage.py ${command}`;
 const authenticatedState = ".playwright/auth.json";
 const combatMasterState = ".playwright/auth-combat-master.json";
 const combatPlayerState = ".playwright/auth-combat-player.json";
-const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character|character|travel|combat)\.spec\.ts/;
+const mobileMatrix = /mobile-(?:baseline|skills|competencies|creation|new-character|character|travel|combat|quick-tools|integrated)\.spec\.ts/;
 const combatRoleMatrix = /mobile-combat-roles\.spec\.ts/;
 const desktopVisualMatrix = /desktop-visual-(?:baseline\.spec|setup)\.ts/;
 

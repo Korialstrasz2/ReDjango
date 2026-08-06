@@ -205,12 +205,15 @@ test("phone Combat Back protects an unapplied attack sequence", async ({ page },
   await back.click();
   await expect(page.locator("html")).toHaveAttribute("data-mobile-combat-panel", "map");
 
-  page.once("dialog", (dialog) => dialog.dismiss());
   await back.click();
+  const confirmation = page.getByRole("dialog", { name: "Uscire dal combattimento?" });
+  await expect(confirmation).toBeVisible();
+  await confirmation.getByRole("button", { name: "Continua a configurare" }).click();
   await expect(page).toHaveURL(/\/combat$/);
 
-  page.once("dialog", (dialog) => dialog.accept());
   await back.click();
+  await expect(confirmation).toBeVisible();
+  await confirmation.getByRole("button", { name: "Esci e scarta" }).click();
   await expect(page).toHaveURL(/\/$/);
 });
 test("tablet Combat releases forced map width without phone navigation", async ({ page }, testInfo) => {

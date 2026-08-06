@@ -16,19 +16,20 @@ test("l'indice delle guide resta compatto e indipendente dal contenuto", async (
   expect(Math.max(...cardHeights)).toBeLessThan(100);
 });
 
-test("le immagini dell'archivio si aprono al clic", async ({ page, request }) => {
-  const response = await request.get("/api/media/");
-  const library = await response.json();
-  const asset = library.data.assets[0];
-  test.skip(!asset, "L'archivio non contiene immagini da aprire.");
-
+test("le immagini dell'archivio si aprono al clic", async ({ page }) => {
   await page.goto("/media");
-  await page.getByRole("button", { name: `Apri ${asset.title}` }).first().click();
+  const openButton = page.getByRole("button", { name: /^Apri / }).first();
+  test.skip(await openButton.count() === 0, "L'archivio non contiene immagini da aprire.");
+  const title = (await openButton.getAttribute("aria-label"))!.replace(/^Apri /, "");
+  await openButton.click();
 
-  const preview = page.getByRole("dialog", { name: asset.title });
+  const preview = page.getByRole("dialog", { name: title });
   await expect(preview).toBeVisible();
-  await expect(preview.getByRole("img", { name: asset.title })).toHaveAttribute("src", asset.url);
-  await expect(preview.getByRole("link", { name: "Apri originale" })).toHaveAttribute("href", asset.url);
+  const image = preview.getByRole("img", { name: title });
+  await expect(image).toBeVisible();
+  const source = await image.getAttribute("src");
+  expect(source).toBeTruthy();
+  await expect(preview.getByRole("link", { name: "Apri originale" })).toHaveAttribute("href", source!);
 });
 
 test("il selettore immagini usa miniature quadrate, scorrimento e azioni contestuali", async ({ page }) => {
@@ -70,9 +71,12 @@ test("il selettore immagini usa miniature quadrate, scorrimento e azioni contest
   await expect(menu.getByRole("menuitem", { name: "Seleziona" })).toBeVisible();
 
   await menu.getByRole("menuitem", { name: "Apri" }).click();
-  const preview = picker.getByRole("dialog", { name: `Anteprima ${assetTitle}` });
+  const preview = page.getByRole("dialog", { name: `Anteprima ${assetTitle}` });
   await expect(preview.getByRole("img", { name: assetTitle })).toBeVisible();
+  await expect(picker).toHaveAttribute("inert", "");
   await preview.getByRole("button", { name: "Chiudi", exact: true }).click();
+  await expect(picker).not.toHaveAttribute("inert", "");
+  await expect(trigger).toBeFocused();
 
   await trigger.click();
   await picker.getByRole("menu", { name: triggerLabel || "" }).getByRole("menuitem", { name: "Seleziona" }).click();

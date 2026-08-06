@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useResponsiveLayout } from "../../lib/responsive";
 import { matchesShortcut, quickToolShortcutTargets, shortcutValue } from "../../lib/shortcuts";
+import type { ShellNavigationItem } from "../../lib/navigation";
 import type { CampaignData, SettingsData } from "../../lib/types";
 import { AITool } from "../ai/AITool";
 import { AudioMiniPlayer } from "../audio/AudioMiniPlayer";
@@ -21,10 +22,11 @@ type Props = {
   characterName: string;
   campaign: CampaignData | null;
   settings: SettingsData;
+  navigation: ShellNavigationItem[];
   notify: (message: string, kind?: "success" | "error" | "info") => void;
 };
 
-export function QuickTools({ characterId, characterName, campaign, settings, notify }: Props) {
+export function QuickTools({ characterId, characterName, campaign, settings, navigation, notify }: Props) {
   const { isPhone } = useResponsiveLayout();
   const [tool, setTool] = useState<Tool>(null);
   const journalShortcut = shortcutValue(settings.ui, "journal");
@@ -53,6 +55,7 @@ export function QuickTools({ characterId, characterName, campaign, settings, not
       characterName={characterName}
       campaignName={campaign?.name || ""}
       canManageGameData={settings.security.canManageGameData}
+      navigation={navigation}
       activeTool={tool}
       onSelectTool={toggleTool}
     />}

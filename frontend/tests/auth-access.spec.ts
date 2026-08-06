@@ -15,11 +15,16 @@ test("un visitatore anonimo vede soltanto il login e può accedere", async ({ co
   await expect(page.getByRole("navigation", { name: "Menu principale" })).toBeVisible();
 });
 
-test("la pagina iniziale mostra l'alias del giocatore e ospita personaggi e uscita", async ({ page }) => {
+test("la pagina iniziale mostra l'alias del giocatore e ospita personaggi e uscita", async ({ page, request }) => {
+  const settingsResponse = await request.get("/api/settings/");
+  expect(settingsResponse.ok()).toBeTruthy();
+  const settings = await settingsResponse.json();
+  const displayName = settings.data.giocatore.displayName;
+
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "local_master" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Personaggi disponibili" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: displayName, exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Personaggi della campagna" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Esci", exact: true })).toBeVisible();
 
   const navigation = page.getByRole("navigation", { name: "Menu principale" });
@@ -31,7 +36,7 @@ test("la pagina iniziale mostra l'alias del giocatore e ospita personaggi e usci
 
   await page.goto("/characters");
   await expect(page).toHaveURL("/");
-  await expect(page.getByRole("heading", { name: "Personaggi disponibili" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Personaggi della campagna" })).toBeVisible();
 });
 
 

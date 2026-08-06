@@ -131,28 +131,11 @@ test("Master AI keeps proposal generation separate from human apply", async ({ p
   await expect(page.locator(".master-ai-chat textarea")).toHaveValue("");
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".master-ai-request-row")).toBeVisible();
-  const layout = await page.evaluate(() => {
-    const viewportWidth = document.documentElement.clientWidth;
-    const overflow = document.documentElement.scrollWidth - viewportWidth;
-    const offenders = Array.from(document.querySelectorAll<HTMLElement>("body *"))
-      .map((element) => {
-        const rect = element.getBoundingClientRect();
-        return {
-          selector: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${element.className && typeof element.className === "string" ? `.${element.className.trim().replace(/\s+/g, ".")}` : ""}`,
-          left: Math.round(rect.left),
-          right: Math.round(rect.right),
-          width: Math.round(rect.width),
-          clientWidth: element.clientWidth,
-          scrollWidth: element.scrollWidth,
-        };
-      })
-      .filter((entry) => entry.right > viewportWidth + 2 || entry.left < -2 || entry.scrollWidth > entry.clientWidth + 2)
-      .sort((left, right) => Math.max(right.right - viewportWidth, right.scrollWidth - right.clientWidth) - Math.max(left.right - viewportWidth, left.scrollWidth - left.clientWidth))
-      .slice(0, 15);
-    return { overflow, viewportWidth, documentWidth: document.documentElement.scrollWidth, offenders };
-  });
-  expect(layout.overflow, JSON.stringify(layout, null, 2)).toBeLessThanOrEqual(2);
+  const unsupported = page.locator(".mobile-unsupported-management");
+  await expect(unsupported).toBeVisible();
+  await expect(page.locator(".master-ai-page, .master-ai-request-row")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/tools\/master-ai/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/tools/themes");

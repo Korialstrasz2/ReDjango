@@ -54,7 +54,7 @@ test("le competenze restano leggibili insieme e tirano dal server", async ({ pag
   await atlas.locator("[data-competence-key='percezione']").click();
   await expect.poll(() => page.locator(".competencies-page").evaluate((element) => getComputedStyle(element).getPropertyValue("--competence-backdrop"))).not.toBe(initialBackdrop);
   const detail = page.locator(".competence-detail");
-  await expect(detail.getByRole("heading", { name: "Percezione", exact: true })).toBeVisible();
+  await expect(detail.locator(".competence-focus-main").getByRole("heading", { name: "Percezione", exact: true })).toBeVisible();
   await expect(detail.locator(".competence-track")).toHaveCount(3);
   await expect(detail.locator(".competence-rank-control")).toHaveCount(4);
   await expect(detail.getByText("Manuale permanente", { exact: true })).toHaveCount(0);

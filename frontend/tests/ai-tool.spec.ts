@@ -12,9 +12,11 @@ test("l'assistente AI è un modale e la configurazione vive in Gestione AI", asy
   await expect(modal).toBeVisible();
   await expect(page).toHaveURL(/\/$/);
 
-  // Senza chiave configurata il modale lo dice e rimanda alla configurazione.
-  await expect(modal.getByText("Nessun provider configurato")).toBeVisible();
-  await modal.getByRole("link", { name: "Apri Gestione AI" }).click();
+  // Il seed E2E può avere già un agente pronto; in entrambi i casi la configurazione resta in Gestione AI.
+  const readyChat = modal.getByRole("tabpanel", { name: "Domande all'assistente" });
+  const notReady = modal.getByRole("heading", { name: "Chat non pronta" });
+  await expect(readyChat.or(notReady)).toBeVisible();
+  await modal.getByRole("link", { name: /Gestione AI/ }).click();
   await expect(page).toHaveURL(/\/tools\/ai$/);
   await expect(page.getByRole("heading", { name: "Gestione AI" })).toBeVisible();
 
@@ -47,9 +49,9 @@ test("l'assistente AI è un modale e la configurazione vive in Gestione AI", asy
 test("la scorciatoia configurata apre l'assistente AI", async ({ page }) => {
   await page.goto("/settings");
   await page.getByRole("tab", { name: "Scorciatoie" }).click();
-  await expect(page.locator('.setting-row:has-text("Assistente AI") select')).toHaveValue("Alt+H");
+  await expect(page.locator('.setting-row:has-text("Assistente AI") output')).toHaveText("Alt + H");
 
-  await page.getByRole("link", { name: "Impostazioni", exact: true }).press("Alt+H");
+  await page.keyboard.press("Alt+H");
   await expect(page.getByRole("dialog", { name: "AI" })).toBeVisible();
   await page.getByRole("button", { name: "Chiudi AI" }).press("Escape");
   await expect(page.getByRole("dialog", { name: "AI" })).toHaveCount(0);

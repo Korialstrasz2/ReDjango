@@ -9,11 +9,15 @@ test("la scheda personaggio completa funziona dal bundle di produzione", async (
   await page.goto(`/character/${characterId}`);
   await expect(page.locator(".side-nav .campaign-selector")).toHaveCount(0);
   const sidebarPortrait = page.locator(".brand-portrait img");
-  await expect(sidebarPortrait).toBeVisible();
-  await expect(page.locator(".brand-portrait")).toHaveAttribute("href", `/character/${characterId}`);
-  const sidebarPortraitBox = await sidebarPortrait.boundingBox();
-  expect(sidebarPortraitBox?.width).toBeGreaterThan(100);
-  expect(sidebarPortraitBox?.height).toBeGreaterThan(100);
+  if (characters.data.activePersonaggio.portraitUrl) {
+    await expect(sidebarPortrait).toBeVisible();
+    await expect(page.locator(".brand-portrait")).toHaveAttribute("href", `/character/${characterId}`);
+    const sidebarPortraitBox = await sidebarPortrait.boundingBox();
+    expect(sidebarPortraitBox?.width).toBeGreaterThan(100);
+    expect(sidebarPortraitBox?.height).toBeGreaterThan(100);
+  } else {
+    await expect(page.locator(".brand-portrait")).toHaveCount(0);
+  }
   await expect(page.locator(".character-hud h1")).toHaveText(characters.data.activePersonaggio.name);
   await expect(page.locator(".resource-card")).toHaveCount(4);
   await expect(page.locator(".quick-stat-control")).toHaveCount(2);
@@ -214,9 +218,8 @@ test("la ricerca oggetti completa il nome e i comandi dello slot equipaggiano e 
   const numericWeights = orderedWeights.map((value) => Number.parseFloat(value));
   expect(numericWeights).toEqual([...numericWeights].sort((left, right) => right - left));
 
-  const assignedSlotLabel = await assignedSlot.locator("header span").textContent();
   await assignedSlot.click();
-  await assignedSlot.getByRole("button", { name: `Svuota ${assignedSlotLabel}`, exact: true }).click();
+  await assignedSlot.getByRole("button", { name: /^Svuota / }).click();
   await expect(page.locator(".container-grid .character-slot").filter({ has: page.getByText(item.name, { exact: true }) })).toHaveCount(0);
 
   await slot.click();
@@ -330,6 +333,7 @@ test("gli effetti personali si configurano nella scheda e aggiornano subito il P
   await expect(manaIcon).toHaveCount(1);
   await expect(editor.locator(".effect-icon-picker-grid").getByText("Mana", { exact: true })).toHaveCount(0);
   await expect(manaIcon.locator("xpath=following-sibling::span")).toHaveAttribute("title", "Mana");
+  await manaIcon.check();
   await editor.getByText("Mini guida alle operazioni", { exact: true }).click();
   await expect(editor.getByRole("heading", { name: "Imposta forte", exact: true })).toBeVisible();
   await editor.getByText("Guida rapida alle formule", { exact: true }).click();

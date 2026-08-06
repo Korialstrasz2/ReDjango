@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { Modal } from "../../components/Modal";
 import { useResponsiveLayout } from "../../lib/responsive";
 import { MobileWorkspaceBar, navigateBackOrHome } from "./MobileWorkspaceBar";
 
@@ -55,6 +56,7 @@ export function CombatMobileRuntime() {
   const [characterAvailable, setCharacterAvailable] = useState(false);
   const [rosterAvailable, setRosterAvailable] = useState(false);
   const [attackAvailable, setAttackAvailable] = useState(false);
+  const [exitConfirmationOpen, setExitConfirmationOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
   const closeCombatChild = () => {
@@ -69,13 +71,17 @@ export function CombatMobileRuntime() {
       return true;
     }
     const pendingAttack = document.querySelector(".combat-attack[data-combat-attack-pending='true']");
-    if (pendingAttack && !window.confirm("È in corso una configurazione di attacco. Uscire e perdere le modifiche?")) return true;
+    if (pendingAttack) {
+      setExitConfirmationOpen(true);
+      return true;
+    }
     return false;
   };
 
   useEffect(() => {
     if (enabled) return;
     setPanel("map");
+    setExitConfirmationOpen(false);
   }, [enabled]);
 
   useEffect(() => {
@@ -305,6 +311,11 @@ export function CombatMobileRuntime() {
 
   if (!enabled || !workspaceAvailable) return null;
 
+  const confirmExit = () => {
+    setExitConfirmationOpen(false);
+    navigateBackOrHome(navigate);
+  };
+
   const choosePanel = (next: CombatMobilePanel) => {
     if (next === "attack") {
       const drawer = document.querySelector(".combat-attack-drawer");
@@ -339,5 +350,18 @@ export function CombatMobileRuntime() {
       onClick={() => choosePanel(tab.id)}
     ><span aria-hidden="true">{tab.icon}</span><strong>{tab.label}</strong></button>)}
   </nav>
+  {exitConfirmationOpen && <Modal
+    surface="combat-exit-confirmation"
+    title="Uscire dal combattimento?"
+    onClose={() => setExitConfirmationOpen(false)}
+    responsiveMode="dialog"
+    closeOnBackdrop={false}
+    footer={<>
+      <button type="button" className="button secondary" onClick={() => setExitConfirmationOpen(false)}>Continua a configurare</button>
+      <button type="button" className="button danger" onClick={confirmExit}>Esci e scarta</button>
+    </>}
+  >
+    <p>È in corso una configurazione di attacco non applicata. Uscendo perderai queste modifiche locali.</p>
+  </Modal>}
 </>;
 }
