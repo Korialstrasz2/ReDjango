@@ -1,5 +1,6 @@
-import type { CSSProperties, MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { createPortal } from "react-dom";
 
 import type { CharacterSlot as Slot, Item } from "../../lib/types";
 
@@ -53,6 +54,12 @@ export function CharacterSlot({
   // Container slots trade their "Spazio N" label for the item's icon and
   // category; equipment slots keep the label that names the body part.
   const showItemHeading = variant !== "figure" && slot.group !== "equipment" && Boolean(slot.item);
+  // Slot text is truncated (name clamp, category/types ellipsis), so a delayed
+  // tooltip at the cursor shows the complete lines on card slots with an item.
+  const showTooltip = variant !== "figure" && Boolean(slot.item);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const hoverTimer = useRef<number | null>(null);
+  useEffect(() => () => { if (hoverTimer.current) window.clearTimeout(hoverTimer.current); }, []);
   const style: CSSProperties = draggable.transform ? { transform: `translate3d(${draggable.transform.x}px, ${draggable.transform.y}px, 0)` } : {};
   return <article
     ref={(node) => { draggable.setNodeRef(node); droppable.setNodeRef(node); }}
@@ -69,8 +76,19 @@ export function CharacterSlot({
       event.preventDefault();
       onPick(slot, menuAnchor(event));
     }}
-    onPointerEnter={() => selected && onActionsEnter()}
-    onPointerLeave={() => selected && onActionsLeave()}
+    onPointerEnter={(event) => {
+      if (selected) onActionsEnter();
+      if (!showTooltip) return;
+      hoverTimer.current = window.setTimeout(() => setTooltipPos({ x: event.clientX, y: event.clientY }), 1000);
+    }}
+    onPointerMove={(event) => {
+      if (showTooltip && tooltipPos) setTooltipPos({ x: event.clientX, y: event.clientY });
+    }}
+    onPointerLeave={() => {
+      if (selected) onActionsLeave();
+      if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
+      setTooltipPos(null);
+    }}
     {...draggable.listeners}
     {...draggable.attributes}
     role="button"
@@ -131,5 +149,18 @@ export function CharacterSlot({
       </>}
     </div>}
     {variant !== "figure" && slot.item && !unavailable && <button className="slot-move-button" type="button" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); onMoveStart(slot); }}>{moveSource ? "Annulla" : "Sposta"}</button>}
+    {showTooltip && tooltipPos && createPortal(<div
+      className="slot-hover-tooltip"
+      role="tooltip"
+      data-component-type="tooltip"
+      data-theme="dark"
+      style={{ left: Math.min(tooltipPos.x, window.innerWidth - 230), top: Math.min(tooltipPos.y, window.innerHeight - 120) }}
+    >
+      <b>{slot.item!.name}{slot.stackable && slot.quantity > 1 ? ` × ${slot.quantity}` : ""}</b>
+      {showItemHeading
+        ? <span>{slot.item!.typeValues?.[0] || slot.item!.types[0] || "Oggetto"}</span>
+        : <span>{slot.item!.types.join(" · ")}</span>}
+      <span>{slot.weightless ? "peso non conteggiato" : `${slot.item!.weight ?? 0} peso`}</span>
+    </div>, document.body)}
   </article>;
 }

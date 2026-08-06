@@ -1461,6 +1461,13 @@ label > input, label > select, label > textarea { display: block; margin-top: 6p
 .character-slot[data-theme="arcane"] { background: radial-gradient(circle at 50% 110%, color-mix(in srgb, var(--resource-potere), transparent 72%), var(--theme-panel-strong-surface) 72%); }
 .character-slot.system-managed { border-color: color-mix(in srgb, var(--gold), var(--line) 35%); background: radial-gradient(circle at 50% 110%, color-mix(in srgb, var(--gold), transparent 80%), var(--theme-panel-strong-surface) 72%); cursor: default; }
 .character-slot.system-managed::after { position: absolute; right: 6px; bottom: 5px; color: var(--gold); content: "automatico"; font-size: .46rem; letter-spacing: .04em; text-transform: uppercase; }
+/* Slot text is truncated on small cards; this delayed tooltip at the cursor shows the complete lines. */
+.slot-hover-tooltip { position: fixed; z-index: 120; display: grid; gap: 3px; max-width: min(280px, 80vw); padding: 9px 11px; border: 1px solid color-mix(in srgb, var(--gold), var(--line) 45%); border-radius: 4px; background: var(--theme-overlay-strong-surface); box-shadow: 0 12px 30px #000b; color: var(--text); pointer-events: none; backdrop-filter: blur(12px); transform: translate(14px, 16px); animation: slot-tooltip-in 130ms ease-out; }
+.slot-hover-tooltip b { color: var(--gold); font: 600 .72rem var(--font-display); letter-spacing: .03em; }
+.slot-hover-tooltip span { font-size: .62rem; }
+.slot-hover-tooltip span:last-child { color: var(--muted); }
+@keyframes slot-tooltip-in { from { opacity: 0; } }
+@media (hover: none) { .slot-hover-tooltip { display: none; } }
 .container-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 8px; }
 .container-tabs button { display: flex; justify-content: space-between; gap: 8px; border: 1px solid var(--line); padding: 9px; background: #0003; color: var(--muted); cursor: pointer; }
 .container-tabs button.active { border-color: var(--accent); color: var(--text); background: color-mix(in srgb, var(--accent), transparent 86%); }
