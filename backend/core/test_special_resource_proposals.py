@@ -25,6 +25,7 @@ class VisibleSpecialResourceProposalsTests(SimpleTestCase):
         self.assertEqual(visible[0]["id"], "old-pending")
         self.assertIn("old-pending", {proposal["id"] for proposal in visible})
         self.assertEqual(len(visible), 50)
+        self.assertEqual(sum(proposal["status"] != "pending" for proposal in visible), 49)
 
     def test_player_only_receives_their_own_requests(self):
         proposals = [
