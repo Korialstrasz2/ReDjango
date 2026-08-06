@@ -1,0 +1,227 @@
+name: Remove character request settings flow
+
+on:
+  push:
+    branches:
+      - codex/remove-character-request-settings
+
+permissions:
+  contents: write
+
+jobs:
+  apply-cleanup:
+    if: github.event.head_commit.message == 'chore: apply character request removal'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/remove-character-request-settings
+      - name: Remove the retired self-service request flow
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path: str, content: str) -> None:
+              Path(path).write_text(content, encoding="utf-8")
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              content = read(path)
+              count = content.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{path}: expected one exact match, found {count}: {old[:80]!r}")
+              write(path, content.replace(old, new, 1))
+
+          def sub_once(path: str, pattern: str, replacement: str, flags: int = 0) -> None:
+              content = read(path)
+              updated, count = re.subn(pattern, replacement, content, count=1, flags=flags)
+              if count != 1:
+                  raise RuntimeError(f"{path}: expected one regex match, found {count}: {pattern[:100]!r}")
+              write(path, updated)
+
+          app = "frontend/src/App.tsx"
+          replace_once(app,
+              '  const [selectedCharacters, setSelectedCharacters] = useState<Set<number>>(() => new Set());\n  const [assignmentMessage, setAssignmentMessage] = useState("");\n',
+              '')
+          replace_once(app,
+              '      setSelectedCharacters(new Set());\n      setAssignmentMessage("");\n',
+              '')
+          sub_once(app,
+              r'  const toggleCharacter = \(characterId: number, checked: boolean\) => setSelectedCharacters\(\(current\) => \{.*?  const statusLabel = .*?;\n\n',
+              '',
+              re.S)
+          replace_once(app,
+              'Alias, personaggi richiesti e livello di accesso personale.',
+              'Alias e livello di accesso personale.')
+          sub_once(app,
+              r'      <form className="player-character-request".*?</form>\n      <section className="player-role-codes">',
+              '      <section className="player-role-codes">',
+              re.S)
+
+          types = "frontend/src/lib/types.ts"
+          sub_once(types,
+              r'  player: \{\n    alias: string;\n    characters: Array<\{\n      id: number;\n      name: string;\n      assigned: boolean;\n      requestStatus: "" \| "pending" \| "approved" \| "rejected";\n    \}>;\n  \};',
+              '  player: { alias: string };')
+
+          selectors = "backend/core/settings_selectors.py"
+          replace_once(selectors,
+              'from django.db.models import Q\n\nfrom backend.characters.models import Personaggio\n\n',
+              '')
+          replace_once(selectors,
+              'from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme\n',
+              'from .models import Giocatore, SettingDefinition, SettingOverride, Theme\n')
+          sub_once(selectors,
+              r'    assigned_ids = \{.*?    available_characters = Personaggio\.objects\.filter\(archived_at__isnull=True\).*?\.order_by\("nome", "id"\)\n\n',
+              '',
+              re.S)
+          sub_once(selectors,
+              r'        "player": \{\n            "alias": giocatore\.display_name or giocatore\.nome,\n            "characters": \[.*?            \],\n        \},',
+              '        "player": {"alias": giocatore.display_name or giocatore.nome},',
+              re.S)
+
+          services = "backend/core/settings_services.py"
+          replace_once(services, 'from django.db.models import Q\n', '')
+          replace_once(services, 'from django.utils import timezone\n', '')
+          replace_once(services,
+              'from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme\n',
+              'from .models import Giocatore, SettingDefinition, SettingOverride, Theme\n')
+          sub_once(services,
+              r'@transaction\.atomic\ndef request_character_assignments\(.*?(?=@transaction\.atomic\ndef redeem_role_code)',
+              '',
+              re.S)
+
+          views = "backend/core/settings_views.py"
+          replace_once(views, '    request_character_assignments,\n', '')
+          sub_once(views,
+              r'        elif "assignmentRequest" in payload:\n.*?            event = \{"type": "player\.assignment_requested", "message": "Richiesta di assegnazione inviata\."\}\n',
+              '        elif "assignmentRequest" in payload:\n'
+              '            raise ApiError(\n'
+              '                "player.assignment_requests_retired",\n'
+              '                "Le richieste di assegnazione personaggi non sono più disponibili.",\n'
+              '                "assignmentRequest",\n'
+              '                410,\n'
+              '            )\n',
+              re.S)
+
+          models = "backend/core/models.py"
+          sub_once(models,
+              r'class CharacterAssignmentRequest\(V2Model\):\n.*?(?=class SettingDefinition\(V2Model\):)',
+              '',
+              re.S)
+
+          admin = "backend/core/admin.py"
+          replace_once(admin, '    CharacterAssignmentRequest,\n', '')
+          replace_once(admin, 'from .settings_services import approve_character_assignment, reject_character_assignment\n', '')
+          sub_once(admin,
+              r'@admin\.action\(description="Approva e assegna i personaggi selezionati"\)\n.*?(?=class V2Admin\(admin\.ModelAdmin\):)',
+              '',
+              re.S)
+
+          management = "backend/core/player_management_services.py"
+          replace_once(management, 'from django.utils import timezone\n', '')
+          replace_once(management,
+              'from .models import CharacterAssignmentRequest, DatiCampagna, Giocatore\n',
+              'from .models import DatiCampagna, Giocatore\n')
+          replace_once(management, '    previous_ids = set(assigned_character_ids(player))\n', '')
+          sub_once(management,
+              r'\n    added_ids = \[character_id for character_id in requested_ids if character_id not in previous_ids\]\n    if added_ids:\n        CharacterAssignmentRequest\.objects\.filter\(.*?        \)\n',
+              '\n',
+              re.S)
+
+          tests = "backend/core/tests.py"
+          replace_once(tests, 'CharacterAssignmentRequest, ', '')
+          replace_once(tests, 'from .settings_services import approve_character_assignment\n', '')
+          replace_once(tests, '        self.assertIn(CharacterAssignmentRequest, admin.site._registry)\n', '')
+          sub_once(tests,
+              r'    def test_player_can_update_alias_and_request_character_assignment\(self\):\n.*?(?=    def test_player_can_redeem_django_admin_managed_role_codes)',
+              '''    def test_player_can_update_alias_after_character_requests_are_retired(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="player_profile")
+        self.client.force_login(user)
+
+        alias_response = self.client.post(
+            "/api/settings/",
+            data=json.dumps({"action": "player.updateAlias", "payload": {"profile": {"alias": "Luna"}}}),
+            content_type="application/json",
+        )
+        self.assertEqual(alias_response.status_code, 200)
+        self.assertEqual(alias_response.json()["data"]["player"], {"alias": "Luna"})
+
+        retired_response = self.client.post(
+            "/api/settings/",
+            data=json.dumps({"action": "player.requestCharacters", "payload": {"assignmentRequest": {"characterIds": [1]}}}),
+            content_type="application/json",
+        )
+        self.assertEqual(retired_response.status_code, 410)
+        self.assertEqual(
+            retired_response.json()["errors"][0]["code"],
+            "player.assignment_requests_retired",
+        )
+
+''',
+              re.S)
+
+          management_tests = "backend/core/tests_player_management.py"
+          replace_once(management_tests,
+              'from backend.core.models import CharacterAssignmentRequest, DatiCampagna, Giocatore\n',
+              'from backend.core.models import DatiCampagna, Giocatore\n')
+          sub_once(management_tests,
+              r'    def test_assigning_a_requested_character_approves_the_pending_request\(self\):\n.*?(?=    def test_an_unknown_character_is_refused_without_touching_the_roster)',
+              '',
+              re.S)
+
+          css = "frontend/src/styles/app.css"
+          content = read(css)
+          content, count = re.subn(r'^\.player-character-request.*\n', '', content, flags=re.M)
+          if count != 7:
+              raise RuntimeError(f"{css}: expected seven retired request rules, removed {count}")
+          write(css, content)
+
+          migration = Path("backend/core/migrations/0056_remove_character_assignment_requests.py")
+          if migration.exists():
+              raise RuntimeError(f"{migration}: already exists")
+          migration.write_text('''from django.db import migrations
+
+
+class Migration(migrations.Migration):
+    dependencies = [
+        ("core", "0055_import_elder_special_resources"),
+    ]
+
+    operations = [
+        migrations.DeleteModel(name="CharacterAssignmentRequest"),
+    ]
+''', encoding="utf-8")
+
+          retired_workflow = Path(".github/workflows/remove-character-request-settings.yml")
+          retired_workflow.unlink()
+
+          forbidden = [
+              "Richiedi personaggi",
+              "La richiesta resta in attesa finché un amministratore Django non la approva.",
+              "player-character-request",
+              "request_character_assignments",
+              "approve_character_assignment",
+              "reject_character_assignment",
+          ]
+          tracked = [
+              path for path in Path(".").rglob("*")
+              if path.is_file() and ".git" not in path.parts and "migrations" not in path.parts
+          ]
+          for needle in forbidden:
+              matches = [str(path) for path in tracked if needle in path.read_text(encoding="utf-8", errors="ignore")]
+              if matches:
+                  raise RuntimeError(f"retired reference {needle!r} remains in {matches}")
+          PY
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          git config user.name "Alep"
+          git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(settings): remove character request flow"
+          git push origin HEAD:codex/remove-character-request-settings
