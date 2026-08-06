@@ -434,7 +434,7 @@ function Dashboard() {
     <div className="selection-layout dashboard-character-selection">
       <section className="panel list-panel"><div className="list-panel-heading"><h2>{settings.security.canManageGameData ? "Personaggi della campagna" : "I miei personaggi"}</h2><Link className="button secondary" to="/new-character">Nuovo PG</Link></div><div className="character-list">
         {personaggi.personaggi.map((entry) => <button key={entry.id} className={entry.id === selected ? "active" : ""} onClick={() => setSelected(entry.id)}><strong>{entry.name}</strong><span>{entry.races.join(" / ") || "Razza sconosciuta"} · livello {entry.level}</span></button>)}
-      </div>{!personaggi.personaggi.length && <div className="management-empty-state"><strong>Nessun personaggio assegnato</strong><p>Vedi soltanto i personaggi che ti sono stati assegnati. Crea il tuo con «Nuovo PG», chiedine uno dalle Impostazioni → Profilo, oppure fatteli assegnare da un master.</p></div>}</section>
+      </div>{!personaggi.personaggi.length && <div className="management-empty-state"><strong>Nessun personaggio assegnato</strong><p>Vedi soltanto i personaggi che ti sono stati assegnati. Crea il tuo con «Nuovo PG» oppure fatteli assegnare da un master.</p></div>}</section>
       <section className="panel character-preview">{character ? <><p className="eyebrow">{character.type}</p><h2>{character.name}</h2><p>{character.races.join(" / ")} · livello {character.level}</p><p className="long-copy">{character.details}</p><div className="stat-chip-row">{character.primaryTotals.map((stat) => <span key={stat.key}><small>{stat.label}</small><strong>{stat.value}</strong></span>)}</div><div className="button-row"><button className="button primary" disabled={selectMutation.isPending} onClick={() => selectMutation.mutate(character.id)}>Imposta e apri</button><Link className="button secondary" to={`/character/${character.id}`}>Apri senza cambiare</Link></div></> : <p>Nessun personaggio disponibile.</p>}</section>
     </div>
   </div>;
@@ -757,8 +757,6 @@ function PlayerSettingsPanel() {
   const { settings, notify } = useApp();
   const queryClient = useQueryClient();
   const [alias, setAlias] = useState(settings.player.alias);
-  const [selectedCharacters, setSelectedCharacters] = useState<Set<number>>(() => new Set());
-  const [assignmentMessage, setAssignmentMessage] = useState("");
   const [masterCode, setMasterCode] = useState("");
   const [adminCode, setAdminCode] = useState("");
   const [selectedRole, setSelectedRole] = useState(settings.security.role);
@@ -768,8 +766,6 @@ function PlayerSettingsPanel() {
     mutationFn: ({ action, payload }: { action: string; payload: Record<string, unknown> }) => legacyAction<SettingsData>("/api/settings/", action, payload),
     onSuccess: async (result) => {
       queryClient.setQueryData(["settings"], result.data);
-      setSelectedCharacters(new Set());
-      setAssignmentMessage("");
       setMasterCode("");
       setAdminCode("");
       // Permission-bearing payloads must not survive an active-role change.
@@ -778,30 +774,13 @@ function PlayerSettingsPanel() {
     },
     onError: (error: Error) => notify(error.message, "error"),
   });
-  const toggleCharacter = (characterId: number, checked: boolean) => setSelectedCharacters((current) => {
-    const next = new Set(current);
-    if (checked) next.add(characterId); else next.delete(characterId);
-    return next;
-  });
-  const requestableCharacters = settings.player.characters.filter((character) => !character.assigned);
-  const statusLabel = (status: string) => status === "pending" ? "Richiesta in attesa" : status === "approved" ? "Assegnato" : status === "rejected" ? "Richiesta rifiutata · puoi riprovare" : "Disponibile su richiesta";
-
   return <section className="panel player-settings-panel" data-component-type="panel" data-theme="gold">
-    <header><div><p className="eyebrow">Profilo</p><h2>{settings.security.role === "admin" ? "Admin" : settings.security.role === "master" ? "Master" : "Giocatore"}</h2></div><p>Alias, personaggi richiesti e livello di accesso personale.</p></header>
+    <header><div><p className="eyebrow">Profilo</p><h2>{settings.security.role === "admin" ? "Admin" : settings.security.role === "master" ? "Master" : "Giocatore"}</h2></div><p>Alias e livello di accesso personale.</p></header>
     <div className="player-settings-grid">
       <form onSubmit={(event) => { event.preventDefault(); mutation.mutate({ action: "player.updateAlias", payload: { profile: { alias } } }); }}>
         <h3>Alias</h3><p>È il nome mostrato nell'interfaccia agli altri partecipanti.</p>
         <label>Alias giocatore<input value={alias} maxLength={120} onChange={(event) => setAlias(event.target.value)} /></label>
         <button className="button primary" disabled={mutation.isPending || !alias.trim()}>Salva alias</button>
-      </form>
-      <form className="player-character-request" onSubmit={(event) => { event.preventDefault(); mutation.mutate({ action: "player.requestCharacters", payload: { assignmentRequest: { characterIds: [...selectedCharacters], message: assignmentMessage } } }); }}>
-        <h3>Richiedi personaggi</h3><p>La richiesta resta in attesa finché un amministratore Django non la approva.</p>
-        <div>{requestableCharacters.length ? requestableCharacters.map((character) => {
-          const pending = character.requestStatus === "pending";
-          return <label key={character.id} data-status={character.requestStatus || "available"}><input type="checkbox" checked={selectedCharacters.has(character.id)} disabled={pending || mutation.isPending} onChange={(event) => toggleCharacter(character.id, event.target.checked)} /><span><strong>{character.name}</strong><small>{statusLabel(character.requestStatus)}</small></span></label>;
-        }) : <p className="muted-copy">Tutti i personaggi disponibili sono già assegnati.</p>}</div>
-        <label>Messaggio facoltativo<textarea rows={2} maxLength={1000} value={assignmentMessage} onChange={(event) => setAssignmentMessage(event.target.value)} /></label>
-        <button className="button primary" disabled={mutation.isPending || !selectedCharacters.size}>Invia richiesta</button>
       </form>
       <section className="player-role-codes"><h3>Livello di accesso</h3><p>Il ruolo di gioco è separato dai permessi dell'Amministrazione Django.</p><form onSubmit={(event) => { event.preventDefault(); mutation.mutate({ action: "player.selectRole", payload: { roleSelection: { targetRole: selectedRole, code: selectedRole === "master" ? masterCode : selectedRole === "admin" ? adminCode : "" } } }); }}><label>Ruolo<select value={selectedRole} onChange={(event) => setSelectedRole(event.target.value as typeof selectedRole)}><option value="user">Giocatore</option><option value="master">Master</option><option value="admin">Admin</option></select></label>{!settings.security.canUseDjangoAdmin && selectedRole === "master" && selectedRole !== settings.security.role && <label>Codice Master<input type="password" autoComplete="off" value={masterCode} onChange={(event) => setMasterCode(event.target.value)} /></label>}{!settings.security.canUseDjangoAdmin && selectedRole === "admin" && selectedRole !== settings.security.role && <label>Codice Admin<input type="password" autoComplete="off" value={adminCode} onChange={(event) => setAdminCode(event.target.value)} /></label>}<button className="button secondary" disabled={mutation.isPending || (!settings.security.canUseDjangoAdmin && selectedRole === "master" && selectedRole !== settings.security.role && !masterCode.trim()) || (!settings.security.canUseDjangoAdmin && selectedRole === "admin" && selectedRole !== settings.security.role && !adminCode.trim())}>{selectedRole === settings.security.role ? "Ruolo attivo" : "Applica ruolo"}</button></form>{settings.security.canUseDjangoAdmin ? <small>Sei un amministratore Django: puoi passare liberamente tra tutti i ruoli di gioco senza perdere l'accesso a Django Admin.</small> : <small>Master e Admin richiedono il rispettivo codice configurato dall'amministratore Django. I codici non sono visibili qui.</small>}</section>
     </div>

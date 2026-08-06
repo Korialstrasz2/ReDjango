@@ -2,7 +2,6 @@ import re
 import secrets
 
 from django.db import transaction
-from django.db.models import Q
 from django.utils import timezone
 
 from .access import (
@@ -193,56 +192,6 @@ def update_player_alias(giocatore: Giocatore, alias: object) -> Giocatore:
     giocatore.display_name = normalized
     giocatore.save(update_fields=["display_name", "updated_at"])
     return giocatore
-
-
-@transaction.atomic
-def request_character_assignments(giocatore: Giocatore, character_ids: object, message: object = "") -> int:
-    from backend.characters.models import Personaggio
-
-    if not isinstance(character_ids, list) or not character_ids:
-        raise ApiError("player.characters_required", "Seleziona almeno un personaggio.", "characterIds")
-    try:
-        requested_ids = list(dict.fromkeys(int(value) for value in character_ids))
-    except (TypeError, ValueError) as exc:
-        raise ApiError("player.characters_invalid", "La selezione dei personaggi non è valida.", "characterIds") from exc
-    if len(requested_ids) > 50:
-        raise ApiError("player.characters_too_many", "Puoi richiedere al massimo 50 personaggi alla volta.", "characterIds")
-
-    assigned_ids = {
-        int(value)
-        for value in (giocatore.character_ids if isinstance(giocatore.character_ids, list) else [])
-        if str(value).isdigit()
-    }
-    characters = list(
-        Personaggio.objects.filter(id__in=requested_ids, archived_at__isnull=True)
-        .filter(
-            Q(metadata__seed_kind__isnull=True)
-            | ~Q(metadata__seed_kind="empty_personaggio_template")
-        )
-    )
-    if len(characters) != len(requested_ids):
-        raise ApiError("player.character_not_found", "Uno dei personaggi selezionati non è disponibile.", "characterIds", 404)
-
-    normalized_message = str(message or "").strip()[:1000]
-    created = 0
-    for character in characters:
-        if character.id in assigned_ids:
-            continue
-        assignment, was_created = CharacterAssignmentRequest.objects.update_or_create(
-            giocatore=giocatore,
-            personaggio=character,
-            defaults={
-                "status": CharacterAssignmentRequest.STATUS_PENDING,
-                "message": normalized_message,
-                "admin_note": "",
-                "reviewed_at": None,
-                "archived_at": None,
-            },
-        )
-        created += int(was_created or assignment.status == CharacterAssignmentRequest.STATUS_PENDING)
-    if not created:
-        raise ApiError("player.characters_already_assigned", "I personaggi selezionati sono già assegnati.", "characterIds")
-    return created
 
 
 @transaction.atomic

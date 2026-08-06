@@ -186,12 +186,6 @@ export type SettingsData = {
   giocatore: { id: number; name: string; displayName: string };
   player: {
     alias: string;
-    characters: Array<{
-      id: number;
-      name: string;
-      assigned: boolean;
-      requestStatus: "" | "pending" | "approved" | "rejected";
-    }>;
   };
   security: SecurityData;
   runtime: AccessRuntimeData;

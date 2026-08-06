@@ -1,9 +1,5 @@
-from django.db.models import Q
-
-from backend.characters.models import Personaggio
-
 from .backup_defaults import BACKUP_SETTING_KEYS
-from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme
+from .models import Giocatore, SettingDefinition, SettingOverride, Theme
 from .security import effective_role, has_minimum_role, security_payload
 
 
@@ -182,41 +178,13 @@ def settings_payload(user, giocatore: Giocatore) -> dict:
         if selected_theme is not None:
             ui_values["appearance.theme"] = selected_theme.slug
 
-    assigned_ids = {
-        int(value)
-        for value in (giocatore.character_ids if isinstance(giocatore.character_ids, list) else [])
-        if str(value).isdigit()
-    }
-    requests = {
-        assignment.personaggio_id: assignment
-        for assignment in CharacterAssignmentRequest.objects.filter(
-            giocatore=giocatore,
-            archived_at__isnull=True,
-        ).select_related("personaggio")
-    }
-    available_characters = Personaggio.objects.filter(archived_at__isnull=True).filter(
-        Q(metadata__seed_kind__isnull=True)
-        | ~Q(metadata__seed_kind="empty_personaggio_template")
-    ).order_by("nome", "id")
-
     return {
         "giocatore": {
             "id": giocatore.id,
             "name": giocatore.nome,
             "displayName": giocatore.display_name or giocatore.nome,
         },
-        "player": {
-            "alias": giocatore.display_name or giocatore.nome,
-            "characters": [
-                {
-                    "id": character.id,
-                    "name": character.nome,
-                    "assigned": character.id in assigned_ids,
-                    "requestStatus": requests[character.id].status if character.id in requests else "",
-                }
-                for character in available_characters
-            ],
-        },
+        "player": {"alias": giocatore.display_name or giocatore.nome},
         "security": capabilities,
         "runtime": runtime_access_payload(),
         "settings": visible_settings,
