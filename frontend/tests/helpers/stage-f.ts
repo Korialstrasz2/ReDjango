@@ -28,12 +28,12 @@ export const isCompactProject = (name: string) => isPhoneProject(name) || isTabl
 
 export function primaryHeading(page: Page): Locator {
   return page.locator([
+    "[role='banner'] > strong:last-of-type",
     "main h1",
     "main [role='heading'][aria-level='1']",
     "main h2",
     "[role='main'] h1",
     "[role='main'] h2",
-    "html[data-mobile-workspace] [role='banner'] strong:last-of-type",
   ].join(", ")).first();
 }
 
