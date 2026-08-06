@@ -20,15 +20,10 @@ jobs:
         with:
           ref: codex/remove-character-request-settings-clean
           fetch-depth: 0
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          path: .ci-main
       - name: Apply source-only refactor
         shell: bash
         run: |
-          python3 .ci-main/.github/scripts/remove_character_request.py
-          rm -rf .ci-main
+          python3 .github/scripts/remove_character_request.py
           git diff --check
           python3 -m compileall -q backend
       - name: Validate backend
