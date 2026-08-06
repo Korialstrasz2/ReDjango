@@ -1,0 +1,41 @@
+name: Mobile follow-up patch
+
+on:
+  push:
+    branches:
+      - mobile-optimized
+    paths:
+      - ".github/workflows/mobile-followup-patch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mobile-optimized
+      - name: Apply audited Combat modal call-site fix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("frontend/src/features/combat/CombatPage.tsx")
+          text = path.read_text()
+          old = '<Modal surface="combat-manage-characters" title="Gestisci personaggi" onClose={onClose} wide className="combat-character-manager-modal"'
+          new = '<Modal surface="combat-manage-characters" title="Gestisci personaggi" onClose={onClose} closeOnBackdrop={false} wide className="combat-character-manager-modal"'
+          if old not in text:
+              raise SystemExit("Combat character manager modal call site not found")
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git diff --check
+      - name: Commit patch
+        run: |
+          git config user.name "OpenAI"
+          git config user.email "openai@users.noreply.github.com"
+          git add frontend/src/features/combat/CombatPage.tsx
+          git commit -m "Protect Combat character editor backdrop"
+          git push origin HEAD:mobile-optimized
