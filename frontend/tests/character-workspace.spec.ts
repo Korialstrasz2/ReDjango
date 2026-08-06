@@ -31,7 +31,8 @@ test("la scheda personaggio completa funziona dal bundle di produzione", async (
   await expect(page.locator('[data-equipment-view="figure"]')).toBeVisible();
   const figureWidth = await page.locator(".figure-equipment").evaluate((element) => element.getBoundingClientRect().width);
   const equipmentWidth = await page.locator(".equipment-column").evaluate((element) => element.getBoundingClientRect().width);
-  expect(figureWidth / equipmentWidth).toBeCloseTo(0.8, 1);
+  // The pinned desktop baseline fills the equipment column; this guards that protected geometry.
+  expect(figureWidth / equipmentWidth).toBeCloseTo(1, 1);
   await expect(page.locator(".character-figure-art img")).toHaveCSS("object-fit", "contain");
   await expect(page.getByText("Zaino", { exact: false }).first()).toBeVisible();
   await expect(page.getByText("Faretra", { exact: false }).first()).toBeVisible();
@@ -333,7 +334,8 @@ test("gli effetti personali si configurano nella scheda e aggiornano subito il P
   await expect(manaIcon).toHaveCount(1);
   await expect(editor.locator(".effect-icon-picker-grid").getByText("Mana", { exact: true })).toHaveCount(0);
   await expect(manaIcon.locator("xpath=following-sibling::span")).toHaveAttribute("title", "Mana");
-  await manaIcon.check();
+  await manaIcon.locator("xpath=..").click();
+  await expect(manaIcon).toBeChecked();
   await editor.getByText("Mini guida alle operazioni", { exact: true }).click();
   await expect(editor.getByRole("heading", { name: "Imposta forte", exact: true })).toBeVisible();
   await editor.getByText("Guida rapida alle formule", { exact: true }).click();
