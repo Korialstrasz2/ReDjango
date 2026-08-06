@@ -79,7 +79,8 @@ function syncModalStack() {
     const id = Number(modal.dataset.modalInstance);
     const top = id === topId;
     modal.toggleAttribute("data-modal-top", top);
-    modal.toggleAttribute("aria-hidden", !top);
+    if (top) modal.removeAttribute("aria-hidden");
+    else modal.setAttribute("aria-hidden", "true");
     (modal as HTMLElement & { inert: boolean }).inert = !top;
   });
 }
