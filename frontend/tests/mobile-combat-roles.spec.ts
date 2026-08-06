@@ -41,6 +41,16 @@ async function csrfToken(request: APIRequestContext) {
   return (await request.storageState()).cookies.find((cookie) => cookie.name === "csrftoken")?.value || "";
 }
 
+async function postCombatAction(request: APIRequestContext, action: string, payload: Record<string, unknown>) {
+  const token = await csrfToken(request);
+  const response = await request.post("/api/combat/actions/", {
+    headers: { "X-CSRFToken": token },
+    data: { action, requestId: `combat-modal-${action}-${Date.now()}-${Math.random()}`, payload },
+  });
+  expect(response.ok()).toBeTruthy();
+  return response;
+}
+
 async function openCombat(page: Page) {
   await page.goto("/combat");
   await expect(page.locator(".combat-page")).toBeVisible({ timeout: 20_000 });
@@ -194,6 +204,85 @@ test("nested Combat modals keep only the top dialog interactive", async ({ page 
 
   await page.keyboard.press("Escape");
   await expect(manager).toBeHidden();
+});
+
+test("desktop master confirmations preserve planner and backup state", async ({ page, request }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-combat-master", "Desktop master confirmation workflow only");
+  const initial = await workspace(request);
+  const map = initial.data.map;
+  expect(map).toBeTruthy();
+  const characterId = map?.activeCharacterId || map?.participants[0]?.character.id || 0;
+  const snapshotLabel = `Conferma modale ${Date.now()}`;
+
+  await postCombatAction(request, "maps.createSnapshot", { mapId: map?.id, label: snapshotLabel });
+  await postCombatAction(request, "combat.planAction", {
+    mapId: map?.id,
+    characterId,
+    actionType: "movement",
+    name: "Movimento",
+    description: "Azione preparata dal test modale",
+    costs: { pf: 0, mana: 0, energia: 0, potere: 0, pa: 0, stanchezza: 0 },
+    path: [],
+  });
+
+  await openCombat(page);
+  await page.locator(".combat-map-toolbar").getByRole("button", { name: /Azioni rapide/ }).click();
+  const planner = page.locator(".combat-quick-actions-modal");
+  await expect(planner).toBeVisible();
+  const pending = planner.locator(".planned-action-list article:not(.committed)");
+  const initialCount = await pending.count();
+  expect(initialCount).toBeGreaterThanOrEqual(1);
+
+  await planner.getByRole("button", { name: "Aggiungi Movimento", exact: true }).click();
+  let duplicate = page.getByRole("dialog", { name: "Aggiungere un duplicato?" });
+  await expect(duplicate).toBeVisible();
+  await expect(planner).toHaveAttribute("aria-hidden", "true");
+  await duplicate.getByRole("button", { name: "Annulla", exact: true }).click();
+  await expect(duplicate).toBeHidden();
+  await expect(pending).toHaveCount(initialCount);
+
+  await planner.getByRole("button", { name: "Aggiungi Movimento", exact: true }).click();
+  duplicate = page.getByRole("dialog", { name: "Aggiungere un duplicato?" });
+  await duplicate.getByRole("button", { name: "Aggiungi comunque", exact: true }).click();
+  await expect(pending).toHaveCount(initialCount + 1, { timeout: 20_000 });
+
+  await planner.getByRole("button", { name: "Svuota", exact: true }).click();
+  let clear = page.getByRole("dialog", { name: "Svuotare la coda?" });
+  await expect(clear).toBeVisible();
+  await clear.getByRole("button", { name: "Annulla", exact: true }).click();
+  await expect(pending).toHaveCount(initialCount + 1);
+
+  await planner.getByRole("button", { name: "Svuota", exact: true }).click();
+  clear = page.getByRole("dialog", { name: "Svuotare la coda?" });
+  await clear.getByRole("button", { name: "Rimuovi azioni", exact: true }).click();
+  await expect(pending).toHaveCount(0, { timeout: 20_000 });
+  await planner.getByRole("button", { name: "Chiudi", exact: true }).last().click();
+
+  await page.locator(".combat-map-manager-trigger").click();
+  const manager = page.locator(".combat-map-manager-modal");
+  await manager.getByRole("button", { name: "Backup e copie", exact: true }).click();
+  const versions = page.getByRole("dialog", { name: "Backup e copie della mappa" });
+  await expect(versions).toBeVisible();
+  const snapshot = versions.locator(".combat-snapshot-list article").filter({ hasText: snapshotLabel });
+  await expect(snapshot).toBeVisible();
+
+  await snapshot.getByRole("button", { name: "Ripristina", exact: true }).click();
+  let restore = page.getByRole("dialog", { name: "Ripristinare il backup?" });
+  await expect(restore).toBeVisible();
+  await restore.getByRole("button", { name: "Annulla", exact: true }).click();
+  await expect(restore).toBeHidden();
+  await expect(snapshot).toBeVisible();
+
+  await snapshot.getByRole("button", { name: "Ripristina", exact: true }).click();
+  restore = page.getByRole("dialog", { name: "Ripristinare il backup?" });
+  const restoreResponse = page.waitForResponse((response) => {
+    if (!response.url().includes("/api/combat/actions/")) return false;
+    try { return response.request().postDataJSON()?.action === "maps.restoreSnapshot"; }
+    catch { return false; }
+  });
+  await restore.getByRole("button", { name: "Ripristina backup", exact: true }).click();
+  expect((await restoreResponse).ok()).toBeTruthy();
+  await expect(restore).toBeHidden();
 });
 
 test("phone player keeps controlled-character resources touch-visible", async ({ page }, testInfo) => {

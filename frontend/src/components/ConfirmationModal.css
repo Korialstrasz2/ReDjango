@@ -1,0 +1,49 @@
+.confirmation-modal {
+  width: min(520px, calc(100vw - 32px));
+}
+
+.confirmation-modal-copy {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.confirmation-modal-copy p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.confirmation-modal-glyph {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-strong);
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.confirmation-modal.destructive .confirmation-modal-glyph {
+  background: color-mix(in srgb, var(--danger, #b94a48) 16%, transparent);
+  color: var(--danger, #d96b68);
+}
+
+.confirmation-danger {
+  border-color: color-mix(in srgb, var(--danger, #b94a48) 65%, var(--line));
+}
+
+@media (max-width: 767px) {
+  .confirmation-modal-copy {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .confirmation-modal-glyph {
+    width: 40px;
+    height: 40px;
+  }
+}

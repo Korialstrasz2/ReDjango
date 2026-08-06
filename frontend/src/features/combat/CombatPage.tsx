@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { useApp } from "../../App";
+import { ConfirmationModal } from "../../components/ConfirmationModal";
 import { ImagePickerModal } from "../../components/ImagePickerModal";
 import { Modal } from "../../components/Modal";
 import { apiRequest, command, getData, requestId, uploadCombatMapImage } from "../../lib/api";
@@ -968,13 +969,31 @@ function MapVersionsModal({ map, busy, onClose, onCreate, onRestore, onDuplicate
 }) {
   const [label, setLabel] = useState("");
   const [duplicateName, setDuplicateName] = useState(`${map.name} (copia)`);
-  return <Modal surface="combat-map-backups" title="Backup e copie della mappa" onClose={onClose} wide footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
-    <div className="combat-version-layout" data-component-type="panel" data-theme="combat">
-      <section><h3>Crea backup</h3><p>Salva griglia, nebbia, personaggi, sagome e modificatori.</p><label>Etichetta<input value={label} onChange={(event) => setLabel(event.target.value)} placeholder={`Revisione ${map.revision}`} /></label><button className="button primary" disabled={busy} onClick={() => { onCreate(label || `Revisione ${map.revision}`); setLabel(""); }}>Crea backup</button></section>
-      <section><h3>Duplica mappa</h3><p>La copia è indipendente e parte dalla revisione 1.</p><label>Nome<input value={duplicateName} onChange={(event) => setDuplicateName(event.target.value)} /></label><button className="button primary" disabled={busy || !duplicateName.trim()} onClick={() => onDuplicate(duplicateName.trim())}>Duplica</button></section>
-      <section className="combat-snapshot-list"><h3>Versioni disponibili</h3>{map.snapshots.length ? map.snapshots.map((snapshot) => <article key={snapshot.id}><div><strong>{snapshot.label}</strong><small>rev. {snapshot.revision} · {new Date(snapshot.createdAt).toLocaleString("it")} · {snapshot.createdBy}</small></div><button className="button secondary small" disabled={busy} onClick={() => { if (confirm(`Ripristinare "${snapshot.label}"? Verrà creato un backup automatico dello stato attuale.`)) onRestore(snapshot.id); }}>Ripristina</button></article>) : <p>Nessun backup disponibile.</p>}</section>
-    </div>
-  </Modal>;
+  const [restoreSnapshot, setRestoreSnapshot] = useState<CombatMap["snapshots"][number] | null>(null);
+  const confirmRestore = () => {
+    if (!restoreSnapshot) return;
+    const snapshotId = restoreSnapshot.id;
+    setRestoreSnapshot(null);
+    onRestore(snapshotId);
+  };
+  return <>
+    <Modal surface="combat-map-backups" title="Backup e copie della mappa" onClose={onClose} wide footer={<button className="button secondary" onClick={onClose}>Chiudi</button>}>
+      <div className="combat-version-layout" data-component-type="panel" data-theme="combat">
+        <section><h3>Crea backup</h3><p>Salva griglia, nebbia, personaggi, sagome e modificatori.</p><label>Etichetta<input value={label} onChange={(event) => setLabel(event.target.value)} placeholder={`Revisione ${map.revision}`} /></label><button className="button primary" disabled={busy} onClick={() => { onCreate(label || `Revisione ${map.revision}`); setLabel(""); }}>Crea backup</button></section>
+        <section><h3>Duplica mappa</h3><p>La copia è indipendente e parte dalla revisione 1.</p><label>Nome<input value={duplicateName} onChange={(event) => setDuplicateName(event.target.value)} /></label><button className="button primary" disabled={busy || !duplicateName.trim()} onClick={() => onDuplicate(duplicateName.trim())}>Duplica</button></section>
+        <section className="combat-snapshot-list"><h3>Versioni disponibili</h3>{map.snapshots.length ? map.snapshots.map((snapshot) => <article key={snapshot.id}><div><strong>{snapshot.label}</strong><small>rev. {snapshot.revision} · {new Date(snapshot.createdAt).toLocaleString("it")} · {snapshot.createdBy}</small></div><button className="button secondary small" disabled={busy} onClick={() => setRestoreSnapshot(snapshot)}>Ripristina</button></article>) : <p>Nessun backup disponibile.</p>}</section>
+      </div>
+    </Modal>
+    {restoreSnapshot && <ConfirmationModal
+      title="Ripristinare il backup?"
+      message={<p><strong>{restoreSnapshot.label}</strong> sostituirà lo stato corrente della mappa. Prima del ripristino verrà creato automaticamente un backup dello stato attuale.</p>}
+      confirmLabel="Ripristina backup"
+      busy={busy}
+      destructive
+      onCancel={() => setRestoreSnapshot(null)}
+      onConfirm={confirmRestore}
+    />}
+  </>;
 }
 
 function CharacterContextModal({ participant, busy, canManage, onClose, onSelect, onDetails, onTakeControl }: {
@@ -1024,6 +1043,10 @@ function MapManagerModal({ workspace, busy, onClose, onSelect, onEdit, onVersion
   </Modal>;
 }
 
+type QuickActionConfirmation =
+  | { kind: "duplicate"; name: string; payload: Record<string, unknown> }
+  | { kind: "clear"; count: number; actionIds: number[] };
+
 function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDelete, onClearQueue, onSaveActionSettings }: {
   map: CombatMap; paths: PathResult | null; busy: boolean;
   notify: (message: string, kind?: "success" | "error" | "info") => void;
@@ -1047,6 +1070,7 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
   const [powerUsed, setPowerUsed] = useState(0);
   const [freePower, setFreePower] = useState(0);
   const [tagsExpanded, setTagsExpanded] = useState(false);
+  const [confirmation, setConfirmation] = useState<QuickActionConfirmation | null>(null);
   const selectedOption = options.find((entry) => entry.key === selectedKey);
   const activeFilters = savedFilters ?? DEFAULT_ACTION_TAG_FILTERS;
   // `costs` tiene i costi fissi dell'azione. Per un incantesimo il Mana fisso della
@@ -1086,26 +1110,39 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
   };
   const actions = map.plannedActions.filter((entry) => entry.characterId === characterId);
   const pendingActions = actions.filter((entry) => !entry.committedAt);
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const alreadyQueued = pendingActions.some((entry) => entry.actionType === actionType
-      && entry.name.trim().toLocaleLowerCase("it") === name.trim().toLocaleLowerCase("it"));
-    if (alreadyQueued && !confirm(`“${name}” è già in coda e non è ancora stata pagata. Aggiungerla una seconda volta?`)) return;
+  const plannedActionPayload = () => {
     const effectNote = selectedKey === "movement" ? "" : `Effetto ${spellIntensity}${selectedOption?.spell?.effectUnit ? ` ${selectedOption.spell.effectUnit}` : ""} · Mana richiesto ${requiredMana}`;
     const powerNote = actionType === "cast" ? `Potere usato ${powerUsed} · Potere gratis ${freePower}` : "";
-    onCreate({ characterId, actionType, name, description: [description, effectNote, powerNote].filter(Boolean).join(" · "), costs: resolvedCosts, sourceSkillId, path: actionType === "movement" ? paths?.fastest.path || [] : [] });
+    return { characterId, actionType, name, description: [description, effectNote, powerNote].filter(Boolean).join(" · "), costs: resolvedCosts, sourceSkillId, path: actionType === "movement" ? paths?.fastest.path || [] : [] };
+  };
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const payload = plannedActionPayload();
+    const alreadyQueued = pendingActions.some((entry) => entry.actionType === actionType
+      && entry.name.trim().toLocaleLowerCase("it") === name.trim().toLocaleLowerCase("it"));
+    if (alreadyQueued) {
+      setConfirmation({ kind: "duplicate", name, payload });
+      return;
+    }
+    onCreate(payload);
   };
   const clearQueue = () => {
     if (!pendingActions.length) return;
-    if (!confirm(`Svuotare la coda? ${pendingActions.length} azioni non pagate verranno rimosse. Le azioni già pagate restano nello storico.`)) return;
-    onClearQueue(pendingActions.map((entry) => entry.id));
+    setConfirmation({ kind: "clear", count: pendingActions.length, actionIds: pendingActions.map((entry) => entry.id) });
+  };
+  const confirmPendingAction = () => {
+    if (!confirmation) return;
+    if (confirmation.kind === "duplicate") onCreate(confirmation.payload);
+    else onClearQueue(confirmation.actionIds);
+    setConfirmation(null);
   };
   const projectedResources = character?.resources.filter((resource) => resource.key in resolvedCosts).map((resource) => ({ ...resource, after: Math.max(0, resource.current - (resolvedCosts[resource.key] || 0)) })) || [];
   const movementOption = { key: "movement", name: "Movimento", description: paths?.fastest.actionPoints != null ? `${paths.fastest.distance ?? 0} esagoni · ${paths.fastest.actionPoints} PA suggeriti` : "Scegli liberamente i PA usati.", kind: "movement" as const };
   // Il Movimento non è un'azione etichettabile: resta sempre in cima all'elenco.
   const visibleOptions = options.filter((option) => actionMatchesTagFilters(actionTagsFor(storedTags, option.key), activeFilters));
   const availableOptions = [movementOption, ...visibleOptions];
-  return <div className="combat-quick-actions">
+  return <>
+    <div className="combat-quick-actions">
     <aside className="combat-quick-catalog">
       <header
         className="combat-quick-catalog-heading"
@@ -1167,7 +1204,19 @@ function QuickActionsPanel({ map, paths, busy, notify, onCreate, onCommit, onDel
       <div><strong>{action.name}</strong><small>{Object.entries(action.costs).filter(([, value]) => value).map(([key, value]) => `${value} ${key.toUpperCase()}`).join(" · ") || "Nessun costo"}{action.path.length ? ` · ${action.path.length - 1} esagoni` : ""}</small>{action.description && <p>{action.description}</p>}</div>
       {action.committedAt ? <span className="paid">Pagata</span> : <div><button disabled={busy} onClick={() => onCommit(action.id)}>Paga</button><button disabled={busy} onClick={() => onDelete(action.id)}>×</button></div>}
     </article>)}</div>{!actions.length && <p className="combat-quick-empty">La coda è vuota. Scegli Movimento o una delle azioni sbloccate.</p>}<p className="planner-note">Solo “Paga” scala le risorse. La coda non impone un ordine di turno.</p></section></aside>
-  </div>;
+    </div>
+    {confirmation && <ConfirmationModal
+      title={confirmation.kind === "duplicate" ? "Aggiungere un duplicato?" : "Svuotare la coda?"}
+      message={confirmation.kind === "duplicate"
+        ? <p><strong>{confirmation.name}</strong> è già presente nella coda e non è ancora stata pagata. Vuoi aggiungerla una seconda volta?</p>
+        : <p>{confirmation.count} azioni non pagate verranno rimosse. Le azioni già pagate resteranno nello storico.</p>}
+      confirmLabel={confirmation.kind === "duplicate" ? "Aggiungi comunque" : "Rimuovi azioni"}
+      busy={busy}
+      destructive={confirmation.kind === "clear"}
+      onCancel={() => setConfirmation(null)}
+      onConfirm={confirmPendingAction}
+    />}
+  </>;
 }
 
 export function CombatPage() {
