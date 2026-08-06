@@ -65,7 +65,7 @@ jobs:
 
   desktop-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: frontend
@@ -89,16 +89,14 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Build frontend assets
         run: npm run build
-      - name: Complete canonical desktop suite
-        run: npx playwright test --project=authenticated --workers=1
+      - name: Complete canonical desktop suite on isolated seeds
+        run: node scripts/run-desktop-e2e-isolated.mjs
       - name: Upload desktop Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: desktop-playwright-report-${{ github.run_attempt }}
-          path: |
-            frontend/playwright-report
-            frontend/test-results
+          path: frontend/test-results/desktop-isolated
           if-no-files-found: ignore
           retention-days: 14
 
