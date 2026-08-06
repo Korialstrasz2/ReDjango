@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: mobile-optimized
-          fetch-depth: 3
+          fetch-depth: 4
       - name: Run reviewed patch payload
         run: |
           python - <<'PY'
@@ -32,16 +32,27 @@ jobs:
               raise SystemExit("Patch payload was not found")
           body = source.split(start, 1)[1].split(end, 1)[0]
           script = "\n".join(line[10:] if line.startswith("          ") else line for line in body.splitlines())
-          script = script.replace(
-              'if old_management_css not in mobile_css:',
-              'old_management_css = textwrap.dedent(old_management_css)\nnew_management_css = textwrap.dedent(new_management_css)\nif old_management_css not in mobile_css:',
-              1,
-          )
-          script = script.replace(
-              'marker = "  .mobile-bottom-navigation {\\n"',
-              'workspace_css = textwrap.dedent(workspace_css)\nmarker = "  .mobile-bottom-navigation {\\n"',
-              1,
-          )
+          brittle = '''if old_management_css not in mobile_css:
+              raise SystemExit("Management CSS source block not found")
+          mobile_css = mobile_css.replace(old_management_css, new_management_css, 1)'''
+          robust = '''hidden_selector = '  html[data-mobile-management-blocked="true"] .workspace-content {'
+          hidden_start = mobile_css.find(hidden_selector)
+          if hidden_start >= 0:
+              hidden_end = mobile_css.index("\\n  }", hidden_start) + len("\\n  }")
+              while hidden_end < len(mobile_css) and mobile_css[hidden_end] == "\\n":
+                  hidden_end += 1
+              mobile_css = mobile_css[:hidden_start] + mobile_css[hidden_end:]
+          management_selector = "  .mobile-unsupported-management {"
+          management_start = mobile_css.find(management_selector)
+          if management_start < 0:
+              raise SystemExit("Management CSS selector not found")
+          management_end = mobile_css.index("\\n  }", management_start) + len("\\n  }")
+          while management_end < len(mobile_css) and mobile_css[management_end] == "\\n":
+              management_end += 1
+          mobile_css = mobile_css[:management_start] + new_management_css + mobile_css[management_end:]'''
+          if brittle not in script:
+              raise SystemExit("Brittle management patch block was not found")
+          script = script.replace(brittle, robust, 1)
           exec(compile(script, workflow, "exec"), {"__name__": "__main__"})
           PY
       - name: Verify patch shape
