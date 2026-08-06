@@ -1,0 +1,136 @@
+from pathlib import Path
+import re
+
+
+def write(path: str, content: str) -> None:
+    Path(path).write_text(content, encoding="utf-8")
+
+
+def require_replace(content: str, old: str, new: str, label: str) -> str:
+    count = content.count(old)
+    if count != 1:
+        raise RuntimeError(f"{label}: expected one match, found {count}")
+    return content.replace(old, new, 1)
+
+
+app_path = "frontend/src/App.tsx"
+app = Path(app_path).read_text(encoding="utf-8")
+app = require_replace(
+    app,
+    "Vedi soltanto i personaggi che ti sono stati assegnati. Crea il tuo con «Nuovo PG», chiedine uno dalle Impostazioni → Profilo, oppure fatteli assegnare da un master.",
+    "Vedi soltanto i personaggi che ti sono stati assegnati. Crea il tuo con «Nuovo PG» oppure fatteli assegnare da un master.",
+    "dashboard empty state",
+)
+app = require_replace(app, '  const [selectedCharacters, setSelectedCharacters] = useState<Set<number>>(() => new Set());\n', '', "selected character state")
+app = require_replace(app, '  const [assignmentMessage, setAssignmentMessage] = useState("");\n', '', "assignment message state")
+app = require_replace(app, '      setSelectedCharacters(new Set());\n', '', "selected character reset")
+app = require_replace(app, '      setAssignmentMessage("");\n', '', "assignment message reset")
+app, helper_count = re.subn(
+    r'  const toggleCharacter = .*?\n  const requestableCharacters = .*?\n  const statusLabel = .*?;\n\n',
+    '',
+    app,
+    count=1,
+    flags=re.S,
+)
+if helper_count != 1:
+    raise RuntimeError(f"request helpers: expected one match, found {helper_count}")
+app = require_replace(
+    app,
+    '<header><div><p className="eyebrow">Profilo</p><h2>{settings.security.role === "admin" ? "Admin" : settings.security.role === "master" ? "Master" : "Giocatore"}</h2></div><p>Alias, personaggi richiesti e livello di accesso personale.</p></header>',
+    '<header><div><p className="eyebrow">Profilo</p><h2>{settings.security.role === "admin" ? "Admin" : settings.security.role === "master" ? "Master" : "Giocatore"}</h2></div><p>Alias e livello di accesso personale.</p></header>',
+    "profile summary",
+)
+app, form_count = re.subn(
+    r'      <form className="player-character-request".*?      </form>\n',
+    '',
+    app,
+    count=1,
+    flags=re.S,
+)
+if form_count != 1:
+    raise RuntimeError(f"request form: expected one match, found {form_count}")
+write(app_path, app)
+
+types_path = "frontend/src/lib/types.ts"
+types = Path(types_path).read_text(encoding="utf-8")
+types = require_replace(
+    types,
+    '''  player: {\n    alias: string;\n    characters: Array<{\n      id: number;\n      name: string;\n      assigned: boolean;\n      requestStatus: "" | "pending" | "approved" | "rejected";\n    }>;\n  };''',
+    '''  player: {\n    alias: string;\n  };''',
+    "settings player type",
+)
+write(types_path, types)
+
+tests_path = "backend/core/tests.py"
+tests = Path(tests_path).read_text(encoding="utf-8")
+replacement_test = '''    def test_player_can_update_alias_and_character_requests_are_not_available(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="player_profile")
+        self.client.force_login(user)
+
+        alias_response = self.client.post(
+            "/api/settings/",
+            data=json.dumps({"action": "player.updateAlias", "payload": {"profile": {"alias": "Luna"}}}),
+            content_type="application/json",
+        )
+        self.assertEqual(alias_response.status_code, 200)
+        self.assertEqual(alias_response.json()["data"]["player"], {"alias": "Luna"})
+
+        request_response = self.client.post(
+            "/api/settings/",
+            data=json.dumps(
+                {
+                    "action": "player.requestCharacters",
+                    "payload": {
+                        "assignmentRequest": {
+                            "characterIds": [1],
+                            "message": "Il mio PG",
+                        }
+                    },
+                }
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(request_response.status_code, 400)
+        self.assertEqual(request_response.json()["errors"][0]["code"], "settings.invalid_payload")
+        self.assertFalse(CharacterAssignmentRequest.objects.exists())
+
+'''
+tests, test_count = re.subn(
+    r'    def test_player_can_update_alias_and_request_character_assignment\(self\):.*?(?=    def test_player_can_redeem_django_admin_managed_role_codes)',
+    replacement_test,
+    tests,
+    count=1,
+    flags=re.S,
+)
+if test_count != 1:
+    raise RuntimeError(f"request test: expected one match, found {test_count}")
+write(tests_path, tests)
+
+practices_path = "best_build_practices.md"
+practices = Path(practices_path).read_text(encoding="utf-8")
+practices = require_replace(
+    practices,
+    "- Player identity changes use `Giocatore.display_name`; character access requests use `CharacterAssignmentRequest` and become assignments only after an explicit Django Admin approval.",
+    "- Player identity changes use `Giocatore.display_name`; character assignments are managed directly through Gestione Player.",
+    "architecture guidance",
+)
+write(practices_path, practices)
+
+for temporary in (
+    ".github/workflows/apply-remove-character-request-clean.yml",
+    ".github/remove-character-request-clean-trigger",
+    ".github/scripts/remove_character_request.py",
+):
+    Path(temporary).unlink(missing_ok=True)
+
+for path, markers in {
+    "frontend/src/App.tsx": ("Richiedi personaggi", "player.requestCharacters", "player-character-request"),
+    "backend/core/settings_selectors.py": ("CharacterAssignmentRequest", "available_characters"),
+    "backend/core/settings_services.py": ("def request_character_assignments",),
+    "backend/core/settings_views.py": ("assignmentRequest", "request_character_assignments"),
+}.items():
+    content = Path(path).read_text(encoding="utf-8")
+    remaining = [marker for marker in markers if marker in content]
+    if remaining:
+        raise RuntimeError(f"obsolete markers remain in {path}: {remaining}")
