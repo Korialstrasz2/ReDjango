@@ -26,8 +26,9 @@ This ledger is the release gate. A checked item requires a traceable automated a
 | Tablet management floor | `mobile-tablet-management.spec.ts` | Pending PR #7 | Every `/tools*` route at 768px and larger tablets. |
 | Quick Tool workflows | `mobile-quick-tools-workflows.spec.ts` | Pending PR #7 | Journal, Dice, Theft, Names, AI, Audio/mini-player. |
 | Modal behavior | `mobile-modal-audit.spec.ts`, route suites | Pending PR #7 | Shared stack plus phone Audio destructive conversion. Not yet every call site. |
-| Loading/fatal/retry/toast | `mobile-global-behavior.spec.ts` | Pending PR #7 | Controlled network states. Multiple toast stacking remains open. |
+| Loading/fatal/retry/toast | `mobile-global-behavior.spec.ts` | Pending PR #7 | Controlled network states plus two-message phone stacking and fixed-navigation clearance. |
 | Performance evidence | `mobile-performance.spec.ts` | Pending PR #7 | Attachments require review; guards are not approved budgets. |
+| Source-level UI audit | `npm run audit:mobile-ui` | Pending PR #7 | Enumerates modal, portal, hover, pointer, touch-action, fixed/sticky, and overflow candidates. |
 
 ## Required artifact review
 
@@ -38,6 +39,7 @@ For every PR candidate, record links or artifact names:
 | Desktop Playwright report |  |  | ☐ |  |
 | Mobile Playwright report |  |  | ☐ |  |
 | Desktop visual evidence |  |  | ☐ |  |
+| Mobile UI source audit |  |  | ☐ | Every user-facing candidate must be classified. |
 | Route/overflow JSON |  |  | ☐ |  |
 | Touch-target JSON |  |  | ☐ |  |
 | Accessibility-profile JSON |  |  | ☐ |  |
@@ -77,7 +79,7 @@ Each row requires device model, OS/browser version, test date, tester, role, ori
 | Large OS/browser text | no clipped primary actions at all supported scales | ☐ |  |
 | Reduced motion | no required information depends on animation | ☐ |  |
 | Touch + hardware keyboard | focus/shortcuts/Escape remain predictable | ☐ |  |
-| Multiple notifications | messages stack within viewport and clear predictably | ☐ | Current single-message toast host is a blocker. |
+| Multiple notifications | messages stack within viewport and clear predictably | ☐ | Automated phone stack is pending CI; physical assistive-technology review remains required. |
 
 ## Modal and overlay classification gate
 
