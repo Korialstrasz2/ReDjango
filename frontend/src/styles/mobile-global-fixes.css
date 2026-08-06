@@ -1,0 +1,54 @@
+@media (max-width: 767px) {
+  .fatal-error .button,
+  .fatal-error button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .modal-backdrop .grid-2,
+  .tool-drawer .grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .modal-backdrop .grid-column,
+  .tool-drawer .grid-column,
+  .special-resource-editor .grid-column {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .special-resource-editor {
+    position: fixed;
+    inset: 0;
+    z-index: 420;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .special-resource-editor > form {
+    width: 100%;
+    min-height: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .special-resource-editor > form > header,
+  .special-resource-editor > form > footer {
+    position: sticky;
+    z-index: 1;
+  }
+
+  .special-resource-editor > form > header {
+    top: 0;
+  }
+
+  .special-resource-editor > form > footer {
+    bottom: 0;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}

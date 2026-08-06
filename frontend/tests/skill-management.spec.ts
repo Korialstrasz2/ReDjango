@@ -5,7 +5,11 @@ test("Gestione Skill rende catalogo, struttura e revisione Elder controllabili",
 
   await expect(page.getByRole("heading", { name: "Gestione Skill", exact: true })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Panoramica", exact: true })).toHaveAttribute("aria-selected", "true");
-  await expect(page.locator(".skill-management-metrics article")).toHaveCount(6);
+  const metrics = page.locator(".skill-management-metrics article");
+  await expect(metrics).toHaveCount(5);
+  for (const label of ["Skill attive", "Incantesimi", "Famiglie", "Gruppi", "Archiviate"]) {
+    await expect(metrics.filter({ hasText: label })).toHaveCount(1);
+  }
   await expect(page.getByRole("heading", { name: "Tutto il catalogo a colpo d'occhio", exact: true })).toBeVisible();
 
   await page.getByRole("tab", { name: "Catalogo completo", exact: true }).click();

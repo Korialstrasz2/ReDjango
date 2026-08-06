@@ -38,6 +38,8 @@ import { ThemeSurfacesContext } from "./lib/surfaces";
 import { apiRequest, command, deleteMedia, getData, getMediaDetail, legacyAction, moveMedia, setMediaLimitedVisibility, uploadMedia } from "./lib/api";
 import { FIXED_SHORTCUTS, pageShortcutTargets, quickToolShortcutTargets, SHORTCUT_CATEGORY, shortcutConflictKeys, shortcutFromKeyboardEvent, shortcutProfile, shortcutSettingValue, shortcutValue, type PageShortcutTarget } from "./lib/shortcuts";
 import { activateMediaCache, deactivateMediaCache } from "./lib/mediaCache";
+import { managementNavigation, playerNavigation } from "./lib/navigation";
+import { useResponsiveLayout } from "./lib/responsive";
 import type { AuthData, BootstrapData, Guide, GuideEntry, GuideVariable, GuideVariableGroup, ImageCategory, MediaAsset, MediaDetailData, MediaLibraryData, NoteSection, PersonaggiData, SettingData, SettingsData, ThemeData } from "./lib/types";
 
 type AppContextValue = {
@@ -226,38 +228,8 @@ function Shell({ children }: { children: ReactNode }) {
   const isMasterAIWorkspace = location.pathname === "/tools/master-ai" || location.pathname.startsWith("/tools/master-ai/");
   const background = settings.theme?.backgrounds?.[screen] || "";
   const characterPath = personaggi.giocatore.activePersonaggioId ? `/character/${personaggi.giocatore.activePersonaggioId}` : "/characters";
-  const links: Array<[string, string, string, PageShortcutTarget?]> = [
-    ["/", "Menu", "⌂", "dashboard"],
-    [characterPath, "PG", "⚔", "character"],
-    ["/skills", "Abilità", "✦", "skills"],
-    ["/competencies", "Competenze", "✧", "competencies"],
-    ["/creation", "Creazione", "⚗", "creation"],
-    ["/combat", "Combattimento", "✦", "combat"],
-    ["/travel", "Viaggio", "⌖", "travel"],
-    ["/market", "Mercato", "¤", "market"],
-    ["/lore", "Lore", "◈", "lore"],
-    ["/media", "Immagini", "▧", "media"],
-    ["/guides", "Guide", "☷", "guides"],
-    ["/settings", "Impostazioni", "⚙", "settings"]
-  ];
-  const managementLinks: Array<[string, string, string, PageShortcutTarget?]> = [
-    ["/tools", "Strumenti", "◆", "tools"],
-    ["/tools/characters", "Gestione Personaggi", "♙"],
-    ["/tools/items", "Gestione Oggetti", "◇"],
-    ["/tools/skills", "Gestione Skill", "✦"],
-    ["/tools/units", "Gestione Unit", "⚔"],
-    ["/tools/shops", "Gestione Negozi", "¤"],
-    ["/tools/ai", "Gestione AI", "✳"],
-    ...(settings.security.canManageAdminSettings
-      ? [
-        ["/tools/players", "Gestione Player", "☺"] as [string, string, string, PageShortcutTarget?],
-        ["/tools/backups", "Gestione Backup", "▣"] as [string, string, string, PageShortcutTarget?],
-        ["/tools/dice", "Gestisci Dadi", "◆"] as [string, string, string, PageShortcutTarget?],
-        ["/tools/themes", "Gestione Temi", "◐"] as [string, string, string, PageShortcutTarget?],
-        ["/tools/variables", "Gestione Variabili", "ƒ"] as [string, string, string, PageShortcutTarget?],
-      ]
-      : []),
-  ];
+  const links = playerNavigation(characterPath);
+  const managementLinks = managementNavigation(settings.security.canManageAdminSettings);
   const routeCharacterId = Number(location.pathname.match(/^\/character\/(\d+)/)?.[1] || 0) || null;
   const activeCharacter = personaggi.personaggi.find((entry) => entry.id === personaggi.giocatore.activePersonaggioId);
   const activeCharacterFirstName = activeCharacter?.name.trim().split(/\s+/)[0];
@@ -326,7 +298,7 @@ function Shell({ children }: { children: ReactNode }) {
           </Link>
         </div>
         <NavScroll label="Menu principale">
-          {links.map(([href, label, icon, shortcutTarget]) => {
+          {links.map(({ href, label, icon, shortcutTarget }) => {
             const shortcut = shortcutTarget ? shortcutValue(settings.ui, shortcutTarget) : "";
             return <Link key={label} to={href} aria-keyshortcuts={shortcut || undefined} title={shortcut ? `${label} (${shortcut.replace("+", " + ")})` : label} className={location.pathname === href || (href !== "/" && location.pathname.startsWith(href)) ? "active" : ""}>
               <span aria-hidden="true">{icon}</span>
@@ -335,7 +307,7 @@ function Shell({ children }: { children: ReactNode }) {
           })}
           {settings.security.canManageGameData && <div className="nav-management-section">
             <small>Gestione</small>
-            {managementLinks.map(([href, label, icon, shortcutTarget]) => {
+            {managementLinks.map(({ href, label, icon, shortcutTarget }) => {
               const shortcut = shortcutTarget ? shortcutValue(settings.ui, shortcutTarget) : "";
               return <Link key={href} to={href} aria-keyshortcuts={shortcut || undefined} title={shortcut ? `${label} (${shortcut.replace("+", " + ")})` : label} className={location.pathname === href ? "active" : ""}>
                 <span aria-hidden="true">{icon}</span>
@@ -355,7 +327,7 @@ function Shell({ children }: { children: ReactNode }) {
           <a className="admin-link" href={bootstrap.security.adminUrl} style={{ "--label-len": "Amministrazione Django".length } as CSSProperties}>Amministrazione Django</a>
         </div>}
       </aside>
-      <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} notify={notify} />
+      <QuickTools characterId={quickCharacterId} characterName={quickCharacter?.name || ""} campaign={activeCampaign} settings={settings} navigation={[...links, ...(settings.security.canManageGameData ? managementLinks : [])]} notify={notify} />
       <main key={`${location.key}:${background}`} className={`workspace ${isMasterAIWorkspace ? "master-ai-workspace" : ""} ${background ? "theme-reveal-surface" : ""}`} data-screen={screen} style={{ "--screen-background": background ? `url(${background})` : "none" } as CSSProperties}>
         <div className="workspace-background" aria-hidden="true" />
         <div className="workspace-content">{children}</div>
@@ -1023,14 +995,39 @@ function ServerRestartScreen({ mode }: { mode: string }) {
 
 function Loading() { return <div className="loading-screen"><span className="brand-rune">ED</span><p>Preparazione della postazione…</p></div>; }
 
+function UnsupportedManagementScreen() {
+  const navigate = useNavigate();
+  const goBack = () => {
+    const historyIndex = Number((window.history.state as { idx?: number } | null)?.idx ?? 0);
+    if (historyIndex > 0) navigate(-1);
+    else navigate("/", { replace: true });
+  };
+  return <section className="mobile-unsupported-management" aria-labelledby="mobile-management-title">
+    <div>
+      <span aria-hidden="true">▣</span>
+      <p className="eyebrow">Layout non supportato su telefono</p>
+      <h1 id="mobile-management-title">Gestione richiede un tablet o un computer</h1>
+      <p>Questo indirizzo è stato conservato, ma la postazione di gestione non viene caricata sul telefono.</p>
+      <div>
+        <button type="button" className="button secondary" onClick={goBack}>Indietro</button>
+        <Link className="button primary" to="/">Torna alla Home</Link>
+      </div>
+    </div>
+  </section>;
+}
+
 function GameManagerOnly({ children }: { children: ReactNode }) {
   const { settings } = useApp();
-  return settings.security.canManageGameData ? children : <Navigate to="/" replace />;
+  const { isPhone } = useResponsiveLayout();
+  if (!settings.security.canManageGameData) return <Navigate to="/" replace />;
+  return isPhone ? <UnsupportedManagementScreen /> : children;
 }
 
 function AdminOnly({ children }: { children: ReactNode }) {
   const { settings } = useApp();
-  return settings.security.canManageAdminSettings ? children : <Navigate to="/" replace />;
+  const { isPhone } = useResponsiveLayout();
+  if (!settings.security.canManageAdminSettings) return <Navigate to="/" replace />;
+  return isPhone ? <UnsupportedManagementScreen /> : children;
 }
 
 export function App() {

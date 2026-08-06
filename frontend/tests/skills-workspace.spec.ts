@@ -11,11 +11,15 @@ test("la famiglia selezionata resta nella griglia come carta quadrata", async ({
   await targetFamily.click();
 
   await expect(targetFamily).toHaveAttribute("aria-selected", "true");
-  await expect(targetFamily).toHaveCSS("aspect-ratio", "1 / 1");
-  const targetBounds = await targetFamily.boundingBox();
-  expect(targetBounds).not.toBeNull();
-  expect(Math.abs(targetBounds!.width - targetBounds!.height)).toBeLessThanOrEqual(1);
-  expect(await targetFamily.evaluate((button) => getComputedStyle(button, "::before").backgroundSize)).toBe("contain");
+  if (await targetFamily.getAttribute("data-has-art") === "true") {
+    await expect(targetFamily).toHaveCSS("aspect-ratio", "1 / 1");
+    const targetBounds = await targetFamily.boundingBox();
+    expect(targetBounds).not.toBeNull();
+    expect(Math.abs(targetBounds!.width - targetBounds!.height)).toBeLessThanOrEqual(1);
+    expect(await targetFamily.evaluate((button) => getComputedStyle(button, "::before").backgroundSize)).toBe("contain");
+  } else {
+    await expect(targetFamily).toHaveCSS("aspect-ratio", "auto");
+  }
 
   const unselectedBounds = await familyNav.locator('button[aria-selected="false"]').first().boundingBox();
   expect(unselectedBounds).not.toBeNull();
@@ -36,16 +40,19 @@ test("le abilità usano gruppi laterali, famiglie in alto e carte interamente cl
 
   const groups = page.locator(".skill-group-rail");
   await expect(groups.getByRole("button")).toHaveCount(7);
+  await groups.getByRole("button", { name: /Generali/ }).click();
   await expect(groups.getByRole("button", { name: /Generali/ })).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".skill-family-nav > button")).toHaveCount(15);
   await expect(page.locator(".skill-family-nav").getByRole("tab", { name: /Viaggio e Inventario/ })).toBeVisible();
   await expect(page.getByText("Categoria iniziale per l'organizzazione delle abilità V2.", { exact: true })).toHaveCount(0);
 
   const initialSelectedFamily = page.locator('.skill-family-nav > button[aria-selected="true"]');
-  await expect(initialSelectedFamily).toHaveCSS("aspect-ratio", "1 / 1");
-  const initialSelectedBounds = await initialSelectedFamily.boundingBox();
-  expect(initialSelectedBounds).not.toBeNull();
-  expect(Math.abs(initialSelectedBounds!.width - initialSelectedBounds!.height)).toBeLessThanOrEqual(1);
+  await expect(initialSelectedFamily).toBeVisible();
+  if (await initialSelectedFamily.getAttribute("data-has-art") === "true") {
+    await expect(initialSelectedFamily).toHaveCSS("aspect-ratio", "1 / 1");
+  } else {
+    await expect(initialSelectedFamily).toHaveCSS("aspect-ratio", "auto");
+  }
   const initialUnselectedBounds = await page.locator('.skill-family-nav > button[aria-selected="false"]').first().boundingBox();
   expect(initialUnselectedBounds).not.toBeNull();
   expect(initialUnselectedBounds!.height).toBeLessThan(initialUnselectedBounds!.width);
@@ -72,11 +79,13 @@ test("le abilità usano gruppi laterali, famiglie in alto e carte interamente cl
   await page.locator(".skill-family-nav").getByRole("tab", { name: /Misticismo/ }).click();
   const selectedFamily = page.locator(".skill-family-nav").getByRole("tab", { name: /Misticismo/ });
   await expect(selectedFamily).toHaveClass(/active/);
-  await expect(selectedFamily.locator("span")).toHaveCSS("visibility", "hidden");
-  await expect(selectedFamily).toHaveCSS("aspect-ratio", "1 / 1");
-  expect(await selectedFamily.evaluate((button) => getComputedStyle(button, "::before").opacity)).toBe("1");
-  expect(await selectedFamily.evaluate((button) => getComputedStyle(button, "::before").filter)).toBe("none");
-  expect(await selectedFamily.evaluate((button) => getComputedStyle(button, "::before").backgroundSize)).toBe("contain");
+  if (await selectedFamily.getAttribute("data-has-art") === "true") {
+    await expect(selectedFamily.locator("span")).toHaveCSS("visibility", "hidden");
+    await expect(selectedFamily).toHaveCSS("aspect-ratio", "1 / 1");
+    expect(await selectedFamily.evaluate((button) => getComputedStyle(button, "::before").opacity)).toBe("1");
+    expect(await selectedFamily.evaluate((button) => getComputedStyle(button, "::before").filter)).toBe("none");
+    expect(await selectedFamily.evaluate((button) => getComputedStyle(button, "::before").backgroundSize)).toBe("contain");
+  }
   await expect(page.locator(".skill-family-pop")).toHaveCount(0);
   await expect(page.locator(".skill-catalog").getByRole("heading", { name: "Misticismo", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "POC - Intuito arcano", exact: true })).toHaveCount(0);

@@ -108,12 +108,12 @@ test("la colonna sonora si carica, si filtra e continua a suonare cambiando pagi
 test("la scorciatoia configurata apre il lettore audio", async ({ page }) => {
   await page.goto("/settings");
   await page.getByRole("tab", { name: "Scorciatoie" }).click();
-  await expect(page.locator('.setting-row:has-text("Audio rapido") select')).toHaveValue("Alt+U");
+  await expect(page.locator('.setting-row:has-text("Audio rapido") output')).toHaveText("Alt + U");
 
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
   await expect(page.locator('.setting-row:has-text("Volume della colonna sonora") input')).toHaveValue("60");
 
-  await page.getByRole("link", { name: "Impostazioni", exact: true }).press("Alt+U");
+  await page.keyboard.press("Alt+U");
   await expect(page.getByRole("dialog", { name: "Audio" })).toBeVisible();
   await page.getByRole("button", { name: "Chiudi Audio" }).press("Escape");
   await expect(page.getByRole("dialog", { name: "Audio" })).toHaveCount(0);

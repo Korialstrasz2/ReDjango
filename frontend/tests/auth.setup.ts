@@ -1,11 +1,16 @@
-import { expect, test as setup } from "@playwright/test";
+import { expect, test as setup, type APIRequestContext } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
 
-const AUTH_STATE_PATH = ".playwright/auth.json";
+const PASSWORD = "ReDjango-Combat-E2E-2026!";
+const ACCOUNTS = [
+  { username: "local_master", password: "ReDjango-E2E-only-2026!", state: ".playwright/auth.json" },
+  { username: "combat_e2e_master", password: PASSWORD, state: ".playwright/auth-combat-master.json" },
+  { username: "combat_e2e_player", password: PASSWORD, state: ".playwright/auth-combat-player.json" },
+] as const;
 
 
-setup("authenticate against the isolated E2E database", async ({ request }) => {
+async function authenticate(request: APIRequestContext, username: string, password: string, state: string) {
   mkdirSync(".playwright", { recursive: true });
   await request.get("/api/auth/session/");
   const csrfToken = (await request.storageState()).cookies.find(
@@ -15,12 +20,16 @@ setup("authenticate against the isolated E2E database", async ({ request }) => {
 
   const response = await request.post("/api/auth/login/", {
     headers: { "X-CSRFToken": csrfToken || "" },
-    data: {
-      username: "local_master",
-      password: "ReDjango-E2E-only-2026!",
-    },
+    data: { username, password },
   });
   expect(response.ok()).toBeTruthy();
   expect((await response.json()).data.authenticated).toBe(true);
-  await request.storageState({ path: AUTH_STATE_PATH });
-});
+  await request.storageState({ path: state });
+}
+
+
+for (const account of ACCOUNTS) {
+  setup(`authenticate ${account.username} against the isolated E2E database`, async ({ request }) => {
+    await authenticate(request, account.username, account.password, account.state);
+  });
+}

@@ -1,0 +1,365 @@
+/* Stateful Competencies route. Desktop remains authoritative above 1200px. */
+@media (max-width: 1199px) {
+  .competencies-page,
+  .competence-workbench,
+  .competence-index,
+  .competence-index > div,
+  .competence-card,
+  .competence-detail,
+  .competence-focus-main,
+  .competence-tracks,
+  .competence-track,
+  .competence-understage,
+  .competence-roll-workspace,
+  .competence-dice-stage,
+  .competence-techniques,
+  .competence-mastery-road,
+  .competence-history {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .competence-card-copy,
+  .competence-card-bars,
+  .competence-track > footer,
+  .competence-history > div > button > span {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .competence-workbench {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  /* The complete index remains available without forcing twenty cards above the detail. */
+  .competence-index {
+    position: static;
+    overflow: hidden;
+  }
+
+  .competence-index > div {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px, min(76vw, 330px));
+    grid-template-columns: none;
+    grid-template-rows: repeat(2, minmax(58px, auto));
+    gap: 7px;
+    padding: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .competence-card {
+    min-height: 58px;
+    scroll-snap-align: start;
+  }
+
+  .competence-detail {
+    scroll-margin-top: calc(var(--mobile-top-bar-height) + var(--mobile-safe-top) + 10px);
+  }
+
+  .competence-focus-main > header {
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+  }
+
+  .competence-track,
+  .competence-track.readonly {
+    grid-template-columns: minmax(90px, .42fr) minmax(0, 1fr);
+  }
+
+  .competence-track > footer {
+    grid-column: 1 / -1;
+  }
+
+  .competence-roll-workspace {
+    min-height: 520px;
+  }
+
+  .competence-mastery-road ol {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, min(65vw, 300px));
+    grid-template-columns: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .competence-mastery-road li {
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 767px) {
+  .competencies-page {
+    gap: 10px;
+  }
+
+  .competence-index {
+    margin-inline: -1px;
+    border-radius: 10px;
+  }
+
+  .competence-index > div {
+    grid-auto-columns: minmax(265px, calc(100vw - 48px - var(--mobile-safe-left) - var(--mobile-safe-right)));
+    grid-template-rows: repeat(2, minmax(60px, auto));
+  }
+
+  .competence-card {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    min-height: 60px;
+    padding: 6px 9px;
+    touch-action: manipulation;
+  }
+
+  .competence-card-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .competence-card-icon img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .competence-card-copy strong,
+  .competence-card-copy small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .competence-card-copy strong {
+    white-space: nowrap;
+  }
+
+  .competence-card-bars {
+    grid-column: 2 / -1;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .competence-focus-main {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .competence-focus-main > header {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .competence-focus-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .competence-focus-icon img {
+    width: 49px;
+    height: 49px;
+  }
+
+  .competence-focus-main > header h2 {
+    font-size: clamp(1.55rem, 8vw, 2.2rem);
+    overflow-wrap: anywhere;
+  }
+
+  .competence-modifier {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    min-width: 0;
+    min-height: 48px;
+    text-align: left;
+  }
+
+  .competence-summary-tabs,
+  .competence-history-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .competence-summary-tabs button,
+  .competence-history-tabs button {
+    min-width: 0;
+    min-height: 46px;
+  }
+
+  .competence-tracks {
+    gap: 10px;
+  }
+
+  .competence-track,
+  .competence-track.readonly {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px;
+  }
+
+  .competence-track > footer {
+    grid-column: auto;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .competence-rank-control {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    touch-action: manipulation;
+  }
+
+  .competence-track > footer > span {
+    min-width: 0;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .competence-summary-guidelines {
+    padding: 14px;
+  }
+
+  .competence-thresholds ol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .competence-roll-workspace {
+    min-height: 480px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .competence-dice-stage {
+    min-height: 270px;
+  }
+
+  .competence-dice-stage > header {
+    top: 6px;
+  }
+
+  .competence-dice-stage > header h2 {
+    font-size: clamp(1.35rem, 7vw, 1.75rem);
+  }
+
+  .competence-roll-result {
+    max-width: calc(100% - 20px);
+  }
+
+  .competence-techniques {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(150px, 58vw);
+    grid-template-columns: none;
+    gap: 7px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+
+  .competence-techniques button {
+    min-height: 54px;
+    scroll-snap-align: start;
+  }
+
+  .competence-roll-button,
+  .competence-reroll-button {
+    width: 100%;
+    min-height: 50px;
+    justify-content: center;
+  }
+
+  .competence-mastery-road {
+    border-radius: 12px;
+  }
+
+  .competence-mastery-road ol {
+    grid-auto-columns: minmax(230px, 76vw);
+    padding: 10px;
+  }
+
+  .competence-mastery-road li {
+    min-height: 112px;
+  }
+
+  .competence-history {
+    border-radius: 12px;
+  }
+
+  .competence-history > header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .competence-history > div > button {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 58px;
+    padding: 10px 12px;
+  }
+
+  .competence-history > div > button time {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 420px) {
+  .competence-index > div {
+    grid-auto-columns: calc(100vw - 40px - var(--mobile-safe-left) - var(--mobile-safe-right));
+    grid-template-rows: minmax(64px, auto);
+  }
+
+  .competence-card-bars {
+    display: none;
+  }
+
+  .competence-card {
+    grid-template-rows: auto;
+  }
+
+  .competence-card-icon {
+    grid-row: auto;
+  }
+
+  .competence-techniques {
+    grid-auto-columns: minmax(145px, 76vw);
+  }
+}
+
+@media (max-width: 767px) and (max-height: 520px) {
+  .competence-index > div {
+    grid-template-rows: minmax(58px, auto);
+  }
+
+  .competence-roll-workspace {
+    min-height: 330px;
+  }
+
+  .competence-dice-stage {
+    min-height: 170px;
+  }
+
+  .competence-rune-ring {
+    display: none;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .competence-card:hover,
+  .competence-rank-control:hover:not(:disabled) {
+    transform: none;
+  }
+}

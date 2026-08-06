@@ -1,0 +1,555 @@
+/* Mobile-only responsive foundations. Desktop declarations remain in app.css. */
+@media (max-width: 767px) {
+  :root {
+    --mobile-safe-top: env(safe-area-inset-top, 0px);
+    --mobile-safe-right: env(safe-area-inset-right, 0px);
+    --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-safe-left: env(safe-area-inset-left, 0px);
+    --mobile-touch-target: 44px;
+    --mobile-app-bar-height: 58px;
+    --mobile-bottom-nav-height: 66px;
+  }
+
+  .auth-screen,
+  .loading-screen,
+  .restart-screen,
+  .fatal-error {
+    min-height: 100dvh;
+  }
+
+  /* The desktop shell stays intact in app.css. Phones hide that presentation and
+     use the mobile chrome rendered from the same navigation links. */
+  .app-shell {
+    display: block;
+    min-height: 100dvh;
+  }
+
+  .side-nav,
+  .quick-tools-bar {
+    display: none !important;
+  }
+
+  .workspace {
+    grid-column: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .workspace-background,
+  .workspace::after {
+    inset: 0;
+  }
+
+  .workspace-content {
+    min-height: 100dvh;
+    padding-top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom));
+  }
+
+  .page {
+    padding: 18px max(14px, var(--mobile-safe-right)) 30px max(14px, var(--mobile-safe-left));
+  }
+
+  .mobile-app-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: var(--mobile-touch-target) minmax(0, 1fr) var(--mobile-touch-target);
+    align-items: center;
+    gap: 10px;
+    min-height: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+    padding: calc(7px + var(--mobile-safe-top)) calc(10px + var(--mobile-safe-right)) 7px calc(10px + var(--mobile-safe-left));
+    border-bottom: 1px solid var(--line);
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 8px 24px #0005;
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-app-brand,
+  .mobile-app-tools {
+    display: grid;
+    place-items: center;
+    width: var(--mobile-touch-target);
+    min-width: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 40%);
+    border-radius: 50%;
+    background: var(--theme-overlay-surface);
+    color: var(--gold);
+    font: 700 .82rem var(--font-display);
+    text-decoration: none;
+  }
+
+  .mobile-app-tools {
+    cursor: pointer;
+    font-size: 1.05rem;
+  }
+
+  .mobile-app-context {
+    min-width: 0;
+  }
+
+  .mobile-app-context small,
+  .mobile-app-context strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-app-context small {
+    color: var(--muted);
+    font-size: .62rem;
+  }
+
+  .mobile-app-context strong {
+    margin-top: 2px;
+    font-family: var(--font-display);
+    font-size: .95rem;
+  }
+
+  html[data-mobile-workspace] .mobile-app-bar {
+  display: none;
+}
+
+.mobile-workspace-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 87;
+  display: grid;
+  grid-template-columns: minmax(104px, auto) minmax(0, 1fr) var(--mobile-touch-target);
+  align-items: center;
+  gap: 10px;
+  min-height: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+  padding: calc(7px + var(--mobile-safe-top)) calc(10px + var(--mobile-safe-right)) 7px calc(10px + var(--mobile-safe-left));
+  border-bottom: 1px solid var(--line);
+  background: var(--theme-overlay-strong-surface);
+  box-shadow: 0 8px 24px #0005;
+  backdrop-filter: blur(14px);
+}
+
+.mobile-workspace-back {
+  display: inline-flex;
+  min-width: 104px;
+  min-height: var(--mobile-touch-target);
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--gold), transparent 40%);
+  border-radius: 9px;
+  background: var(--theme-overlay-surface);
+  color: var(--gold);
+  cursor: pointer;
+  font: inherit;
+}
+
+.mobile-workspace-back > span {
+  font-size: 1.1rem;
+}
+
+.mobile-workspace-back > strong {
+  overflow: hidden;
+  font-size: .74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-workspace-title {
+  min-width: 0;
+  text-align: center;
+}
+
+.mobile-workspace-title small,
+.mobile-workspace-title strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-workspace-title small {
+  color: var(--muted);
+  font-size: .58rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.mobile-workspace-title strong {
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: .94rem;
+}
+
+.mobile-workspace-actions {
+  display: grid;
+  width: var(--mobile-touch-target);
+  min-width: var(--mobile-touch-target);
+  min-height: var(--mobile-touch-target);
+  place-items: center;
+}
+
+  .mobile-bottom-navigation {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    min-height: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom));
+    padding: 5px var(--mobile-safe-right) calc(5px + var(--mobile-safe-bottom)) var(--mobile-safe-left);
+    border-top: 1px solid var(--line);
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 -8px 24px #0005;
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-bottom-navigation a,
+  .mobile-bottom-navigation button {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 2px;
+    min-width: 0;
+    min-height: var(--mobile-touch-target);
+    padding: 4px 2px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .mobile-bottom-navigation a.active,
+  .mobile-bottom-navigation button.active {
+    background: color-mix(in srgb, var(--accent), transparent 82%);
+    color: var(--accent-strong);
+  }
+
+  .mobile-bottom-navigation span {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .mobile-bottom-navigation strong {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: .57rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-unsupported-management {
+  display: grid;
+  min-height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-safe-top) - var(--mobile-bottom-nav-height) - var(--mobile-safe-bottom));
+  place-items: center;
+  overflow: auto;
+  padding: 24px max(18px, var(--mobile-safe-right)) 24px max(18px, var(--mobile-safe-left));
+}
+  .mobile-unsupported-management > div {
+    width: min(520px, 100%);
+    padding: 24px;
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 48%);
+    border-radius: 12px;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 22px 60px #0007;
+    text-align: center;
+  }
+
+  .mobile-unsupported-management > div > span {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 15px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 1.35rem;
+  }
+
+  .mobile-unsupported-management h1 {
+    margin: 5px 0 12px;
+    font-size: clamp(1.55rem, 7vw, 2.2rem);
+  }
+
+  .mobile-unsupported-management p:not(.eyebrow) {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .mobile-unsupported-management > div > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 20px;
+  }
+
+  .mobile-unsupported-management .button {
+    min-height: var(--mobile-touch-target);
+  }
+
+  .mobile-navigation-sheet {
+    display: grid;
+    gap: 18px;
+  }
+
+  .mobile-navigation-sheet > header {
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-navigation-sheet > header p,
+  .mobile-navigation-sheet > header h3 {
+    margin: 0;
+  }
+
+  .mobile-navigation-sheet > header h3 {
+    margin-top: 4px;
+    font-size: 1.15rem;
+  }
+
+  .mobile-navigation-sheet nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .mobile-navigation-sheet nav a {
+    display: grid;
+    grid-template-columns: var(--mobile-touch-target) minmax(0, 1fr);
+    align-items: center;
+    min-height: 54px;
+    padding: 5px 12px 5px 5px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--theme-panel-surface);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .mobile-navigation-sheet nav a.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent), transparent 86%);
+  }
+
+  .mobile-navigation-sheet nav a span {
+    display: grid;
+    place-items: center;
+    width: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+    color: var(--gold);
+    font-size: 1.05rem;
+  }
+
+  .mobile-navigation-sheet nav a strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-management-notice {
+    padding: 14px 16px;
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 50%);
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--gold), transparent 92%);
+  }
+
+  .mobile-management-notice p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .mobile-quick-tools-sheet > p {
+    margin: 0 0 14px;
+    color: var(--muted);
+  }
+
+  .mobile-quick-tools-sheet > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .mobile-quick-tools-sheet button {
+    display: grid;
+    grid-template-columns: var(--mobile-touch-target) minmax(0, 1fr);
+    align-items: center;
+    min-height: 54px;
+    padding: 5px 12px 5px 5px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--theme-panel-surface);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .mobile-quick-tools-sheet button.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent), transparent 86%);
+  }
+
+  .mobile-quick-tools-sheet button span {
+    display: grid;
+    place-items: center;
+    width: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+    color: var(--gold);
+    font-size: 1.1rem;
+  }
+
+  .modal-backdrop {
+    inset: 0 !important;
+    left: 0 !important;
+    align-items: end;
+    justify-items: stretch;
+    padding: 0;
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"],
+  .rd-modal[data-responsive-presentation="fullscreen"] {
+    min-width: 0;
+    width: 100% !important;
+    max-width: none;
+    transform: none !important;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] {
+    max-height: min(92dvh, 100dvh);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] {
+    height: 100dvh !important;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .modal-header,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    min-height: var(--mobile-touch-target);
+    cursor: default;
+    user-select: text;
+    background: var(--theme-overlay-strong-surface);
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-header {
+    padding-top: calc(14px + var(--mobile-safe-top));
+    padding-right: calc(18px + var(--mobile-safe-right));
+    padding-left: calc(18px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .modal-body,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-body {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-body {
+    padding-right: calc(19px + var(--mobile-safe-right));
+    padding-left: calc(19px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .modal-footer,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    flex-wrap: wrap;
+    padding-bottom: calc(14px + var(--mobile-safe-bottom));
+    background: var(--theme-overlay-strong-surface);
+  }
+
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-footer {
+    padding-right: calc(18px + var(--mobile-safe-right));
+    padding-left: calc(18px + var(--mobile-safe-left));
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .icon-button,
+  .rd-modal[data-responsive-presentation="fullscreen"] .icon-button,
+  .rd-modal[data-responsive-presentation="sheet"] .modal-footer button,
+  .rd-modal[data-responsive-presentation="fullscreen"] .modal-footer button {
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+  }
+
+  .rd-modal[data-responsive-presentation="sheet"] .rd-modal-resize-handle,
+  .rd-modal[data-responsive-presentation="fullscreen"] .rd-modal-resize-handle {
+    display: none !important;
+  }
+
+  .tool-drawer[data-responsive-presentation="fullscreen"] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 120;
+    width: 100% !important;
+    height: 100dvh !important;
+    max-width: none;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    transform: none;
+  }
+
+  .tool-drawer[data-responsive-presentation="fullscreen"] .tool-drawer-header {
+    min-height: calc(70px + var(--mobile-safe-top));
+    padding: calc(12px + var(--mobile-safe-top)) calc(14px + var(--mobile-safe-right)) 12px calc(14px + var(--mobile-safe-left));
+    cursor: default;
+    touch-action: auto;
+    user-select: text;
+  }
+
+  .tool-drawer[data-responsive-presentation="fullscreen"] .tool-drawer-header .icon-button {
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+  }
+
+  .tool-drawer[data-responsive-presentation="fullscreen"] .tool-drawer-body {
+    min-width: 0;
+    min-height: 0;
+    padding-right: calc(16px + var(--mobile-safe-right));
+    padding-bottom: calc(16px + var(--mobile-safe-bottom));
+    padding-left: calc(16px + var(--mobile-safe-left));
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tool-drawer[data-responsive-presentation="fullscreen"] .tool-drawer-resize-handle {
+    display: none !important;
+  }
+
+  html[data-font-scale="large"] .tool-drawer[data-responsive-presentation="fullscreen"] {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .mobile-navigation-sheet nav,
+  .mobile-quick-tools-sheet > div {
+    grid-template-columns: 1fr;
+  }
+}

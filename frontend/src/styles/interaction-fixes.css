@@ -1,0 +1,10 @@
+/*
+ * The effect icon radio is visually represented by its sibling symbol. Let
+ * pointer input reach the enclosing label/input rather than being intercepted
+ * by the decorative image. This changes hit testing only; desktop geometry and
+ * presentation remain unchanged.
+ */
+.effect-icon-picker-symbol,
+.effect-icon-picker-symbol * {
+  pointer-events: none;
+}

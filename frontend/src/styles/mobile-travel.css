@@ -1,0 +1,350 @@
+/* Travel phone/tablet adaptation. All desktop declarations remain authoritative. */
+@media (max-width: 1199px) {
+  .travel-layout {
+    min-height: 0;
+  }
+
+  .travel-sidebar,
+  .travel-canvas-panel {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .travel-page {
+    gap: 12px;
+    max-width: 100%;
+    padding-right: max(10px, var(--mobile-safe-right));
+    padding-left: max(10px, var(--mobile-safe-left));
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 76px);
+  }
+
+  .travel-page > .page-header {
+    align-items: flex-start;
+    min-height: 58px;
+    margin-bottom: 0;
+  }
+
+  .travel-page > .page-header h1 {
+    font-size: clamp(1.55rem, 8vw, 2rem);
+  }
+
+  .travel-page > .page-header p:last-child {
+    max-width: 42ch;
+    font-size: .76rem;
+  }
+
+  .travel-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .travel-canvas-panel {
+    order: -1;
+    min-height: clamp(430px, 68dvh, 720px);
+    height: clamp(430px, 68dvh, 720px);
+    border-radius: 8px;
+  }
+
+  .travel-canvas {
+    cursor: grab;
+  }
+
+  .travel-canvas:active {
+    cursor: grabbing;
+  }
+
+  .travel-guide {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    max-width: none;
+    border-radius: 7px;
+  }
+
+  .travel-guide > button {
+    min-height: var(--mobile-touch-target);
+    padding: 10px 12px;
+    font-size: .82rem;
+  }
+
+  .travel-guide > div {
+    max-height: min(34dvh, 250px);
+    overflow-y: auto;
+    padding: 0 12px 12px;
+    font-size: .76rem;
+    overscroll-behavior: contain;
+  }
+
+  /* Phone Travel is map-first. The original sidebar remains mounted, preserving
+     React state, and becomes a full-height controls surface only when requested. */
+  .travel-sidebar {
+    display: none;
+    max-height: none;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  html[data-mobile-travel-controls-open="true"] .travel-sidebar {
+    position: fixed;
+    z-index: 93;
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top) + 56px);
+    right: 0;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom));
+    left: 0;
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: none;
+    padding-bottom: calc(18px + var(--mobile-safe-bottom));
+  }
+
+  .travel-sidebar > section,
+  .travel-sidebar > details,
+  .travel-sidebar > footer {
+    gap: 11px;
+    padding: 15px 14px;
+  }
+
+  .travel-sidebar details > summary {
+    min-height: var(--mobile-touch-target);
+    align-content: center;
+    padding-block: 10px;
+    cursor: pointer;
+  }
+
+  .travel-sidebar label,
+  .travel-sidebar select,
+  .travel-sidebar input:not([type="checkbox"]):not([type="range"]),
+  .travel-sidebar .button,
+  .travel-quality button,
+  .travel-area-radius button,
+  .travel-hex-finetune button {
+    min-height: var(--mobile-touch-target);
+  }
+
+  .travel-sidebar select,
+  .travel-sidebar input:not([type="checkbox"]):not([type="range"]) {
+    width: 100%;
+    font-size: max(1rem, 16px);
+  }
+
+  .travel-quality {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .travel-quality button {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+
+  .travel-grid-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .travel-grid-form label,
+  .travel-grid-form output {
+    min-width: 0;
+  }
+
+  .travel-marker-palette {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .travel-marker-choice {
+    min-width: 0;
+  }
+
+  .travel-marker-choice > button {
+    width: var(--mobile-touch-target);
+    min-width: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+  }
+
+  .travel-marker-choice select {
+    min-width: 0;
+  }
+
+  .travel-active-markers {
+    gap: 9px;
+  }
+
+  .travel-active-markers > button {
+    grid-template-columns: var(--mobile-touch-target) minmax(0, 1fr);
+    min-height: 58px;
+    padding: 7px 10px 7px 7px;
+  }
+
+  .travel-active-markers > button > span:first-child {
+    width: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+  }
+
+  .travel-sidebar .button-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .travel-sidebar .button-row > * {
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .travel-sidebar footer small {
+    line-height: 1.5;
+  }
+
+  .travel-empty {
+    min-height: 100%;
+    padding: 24px;
+  }
+
+  .travel-mobile-toolbar {
+    position: fixed;
+    z-index: 86;
+    right: calc(10px + var(--mobile-safe-right));
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 10px);
+    left: calc(10px + var(--mobile-safe-left));
+    display: grid;
+    grid-template-columns: var(--mobile-touch-target) var(--mobile-touch-target) var(--mobile-touch-target) minmax(0, 1fr);
+    gap: 7px;
+    padding: 7px;
+    border: 1px solid color-mix(in srgb, var(--gold), transparent 42%);
+    border-radius: 12px;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 12px 32px #0008;
+    backdrop-filter: blur(14px);
+  }
+
+  .travel-mobile-toolbar button,
+  .travel-mobile-placement button,
+  .travel-mobile-controls-bar button {
+    min-height: var(--mobile-touch-target);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--theme-overlay-surface);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .travel-mobile-toolbar button:last-child {
+    padding-inline: 12px;
+    border-color: color-mix(in srgb, var(--gold), transparent 36%);
+    color: var(--gold);
+    font-weight: 800;
+  }
+
+  .travel-mobile-toolbar button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+
+  .travel-mobile-placement {
+    position: fixed;
+    z-index: 88;
+    right: calc(10px + var(--mobile-safe-right));
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 74px);
+    left: calc(10px + var(--mobile-safe-left));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 9px 9px 13px;
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 10px 28px #0008;
+    font-size: .76rem;
+  }
+
+  .travel-mobile-placement button {
+    padding-inline: 12px;
+  }
+
+  .travel-mobile-controls-bar {
+    position: fixed;
+    z-index: 94;
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top));
+    right: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: minmax(92px, auto) minmax(0, 1fr) var(--mobile-touch-target);
+    align-items: center;
+    gap: 10px;
+    min-height: 56px;
+    padding: 6px calc(10px + var(--mobile-safe-right)) 6px calc(10px + var(--mobile-safe-left));
+    border-bottom: 1px solid var(--line);
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 8px 24px #0006;
+  }
+
+  .travel-mobile-controls-bar button {
+    padding-inline: 12px;
+  }
+
+  .travel-mobile-controls-bar strong {
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .travel-mobile-controls-bar > span {
+    display: grid;
+    place-items: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+  }
+
+  html[data-mobile-travel-controls-open="true"] .travel-mobile-toolbar,
+  html[data-mobile-travel-controls-open="true"] .travel-mobile-placement {
+    display: none;
+  }
+
+  .modal-surface[data-surface="travel-marker"] input {
+    min-height: 48px;
+    font-size: max(1rem, 16px);
+  }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+  .travel-page {
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 68px);
+  }
+
+  .travel-page > .page-header {
+    display: none;
+  }
+
+  .travel-canvas-panel {
+    min-height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 20px);
+    height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-bottom-nav-height) - var(--mobile-safe-top) - var(--mobile-safe-bottom) - 20px);
+  }
+
+  .travel-guide.open {
+    max-height: 58%;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 767px) and (pointer: coarse) {
+  .travel-canvas {
+    touch-action: none;
+  }
+
+  .travel-active-markers > button:hover {
+    border-color: var(--line);
+    background: var(--theme-overlay-surface);
+  }
+
+  .travel-active-markers > button.active {
+    border-color: var(--gold);
+    background: color-mix(in srgb, var(--gold), transparent 86%);
+  }
+}

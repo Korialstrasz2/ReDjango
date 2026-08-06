@@ -243,7 +243,7 @@ test("i drawer restano nel viewport desktop a 1280px", async ({ page }) => {
 test("le scorciatoie configurate aprono pagine, Diario e Dadi", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("link", { name: "Sala principale", exact: true }).press("Alt+G");
+  await page.keyboard.press("Alt+G");
   await expect(page).toHaveURL(/\/guides$/);
   await expect(page.getByRole("heading", { name: "Guide", exact: true })).toBeVisible();
 
@@ -254,19 +254,17 @@ test("le scorciatoie configurate aprono pagine, Diario e Dadi", async ({ page })
   await page.getByRole("link", { name: "Combattimento", exact: true }).press("Alt+I");
   await expect(page).toHaveURL(/\/settings$/);
   await page.getByRole("tab", { name: "Scorciatoie" }).click();
-  await expect(page.locator('.setting-row:has-text("Diario rapido") select')).toHaveValue("Alt+J");
-  await expect(page.locator('.setting-row:has-text("Combattimento") select')).toHaveValue("Alt+B");
-  const skillsShortcut = page.locator('.setting-row:has-text("Abilità") select');
-  const loreShortcut = page.locator('.setting-row:has-text("Lore") select');
-  await expect(skillsShortcut).toHaveValue("Alt+A");
-  await expect(page.locator('.setting-row:has-text("Competenze") select')).toHaveValue("Alt+N");
-  await expect(page.locator('.setting-row:has-text("Creazione") select')).toHaveValue("Alt+K");
-  await expect(page.locator('.setting-row:has-text("Viaggio") select')).toHaveValue("Alt+V");
-  await expect(page.locator('.setting-row:has-text("Mercato") select')).toHaveValue("Alt+Q");
-  await expect(loreShortcut).toHaveValue("Alt+L");
-  await expect(page.locator('.setting-row:has-text("Strumenti") select')).toHaveValue("Alt+T");
+  for (const [label, value] of [
+    ["Diario rapido", "Alt + J"], ["Combattimento", "Alt + B"], ["Abilità", "Alt + A"],
+    ["Competenze", "Alt + N"], ["Creazione", "Alt + K"], ["Viaggio", "Alt + V"],
+    ["Mercato", "Alt + Q"], ["Lore", "Alt + L"], ["Strumenti", "Alt + T"],
+  ]) {
+    await expect(page.locator(`.setting-row:has-text("${label}") output`)).toHaveText(value);
+  }
 
   await page.locator('.setting-row:has-text("Profilo scorciatoie") select').selectOption("custom");
+  const loreShortcut = page.locator('.setting-row:has-text("Lore") select');
+  await expect(loreShortcut).toHaveValue("Alt+L");
   await loreShortcut.selectOption("Alt+A");
   await expect(page.locator(".setting-row-conflict")).toHaveCount(2);
   await expect(page.getByRole("button", { name: "Salva impostazioni" })).toBeDisabled();

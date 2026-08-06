@@ -1,7 +1,10 @@
 import { type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { useResponsiveLayout } from "../lib/responsive";
 import { useSurfaceBackground } from "../lib/surfaces";
+
+export type ResponsiveMode = "auto" | "dialog" | "sheet" | "fullscreen";
 
 type Props = {
   title: string;
@@ -17,16 +20,102 @@ type Props = {
   dragFromBody?: boolean;
   /** Superficie del tema da cui prendere lo sfondo: vedi backend/core/theme_surfaces.py. */
   surface?: string;
+  /** Presentazione richiesta sui telefoni. Desktop conserva sempre il dialogo esistente. */
+  responsiveMode?: ResponsiveMode;
+  /** I dialoghi semplici chiudono sullo sfondo; editor, finestre ampie e workbench richiedono un'azione esplicita. */
+  closeOnBackdrop?: boolean;
 };
 
 type ResizeEdge = "top" | "right" | "bottom" | "left";
+type ModalPresentation = "dialog" | "sheet" | "fullscreen";
 
 const MIN_MODAL_WIDTH = 360;
 const MIN_MODAL_HEIGHT = 240;
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "area[href]",
+  "button:not([disabled])",
+  "input:not([disabled]):not([type='hidden'])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  "iframe",
+  "object",
+  "embed",
+  "[contenteditable='true']",
+  "[tabindex]:not([tabindex='-1'])",
+].join(",");
 
-export function Modal({ title, children, footer, onClose, wide = false, className = "", resizable = false, hideHeader = false, dragFromBody = false, surface }: Props) {
+let mobileBodyLockCount = 0;
+let bodyOverflowBeforeMobileLock = "";
+let modalSequence = 0;
+const modalStack: number[] = [];
+
+function lockBodyScroll(): () => void {
+  if (mobileBodyLockCount === 0) {
+    bodyOverflowBeforeMobileLock = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  mobileBodyLockCount += 1;
+  return () => {
+    mobileBodyLockCount = Math.max(0, mobileBodyLockCount - 1);
+    if (mobileBodyLockCount === 0) document.body.style.overflow = bodyOverflowBeforeMobileLock;
+  };
+}
+
+function focusableElements(root: HTMLElement): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((element) => {
+    if (element.getAttribute("aria-hidden") === "true") return false;
+    return element.getClientRects().length > 0;
+  });
+}
+
+function isTopModal(id: number): boolean {
+  return modalStack.at(-1) === id;
+}
+
+function syncModalStack() {
+  const topId = modalStack.at(-1);
+  document.querySelectorAll<HTMLElement>("[data-modal-instance]").forEach((modal) => {
+    const id = Number(modal.dataset.modalInstance);
+    const top = id === topId;
+    modal.toggleAttribute("data-modal-top", top);
+    if (top) modal.removeAttribute("aria-hidden");
+    else modal.setAttribute("aria-hidden", "true");
+    (modal as HTMLElement & { inert: boolean }).inert = !top;
+  });
+}
+
+function registerModal(id: number): () => void {
+  modalStack.push(id);
+  syncModalStack();
+  return () => {
+    const index = modalStack.lastIndexOf(id);
+    if (index >= 0) modalStack.splice(index, 1);
+    syncModalStack();
+  };
+}
+
+export function Modal({
+  title,
+  children,
+  footer,
+  onClose,
+  wide = false,
+  className = "",
+  resizable = false,
+  hideHeader = false,
+  dragFromBody = false,
+  surface,
+  responsiveMode = "auto",
+  closeOnBackdrop,
+}: Props) {
   const modalRef = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const instanceIdRef = useRef<number | null>(null);
+  if (instanceIdRef.current === null) instanceIdRef.current = ++modalSequence;
+  const instanceId = instanceIdRef.current;
   const background = useSurfaceBackground(surface);
+  const { isPhone } = useResponsiveLayout();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const drag = useRef<{ x: number; y: number; startX: number; startY: number } | null>(null);
@@ -44,14 +133,75 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
     positionY: number;
   } | null>(null);
 
+  const presentation: ModalPresentation = isPhone && responsiveMode !== "dialog"
+    ? responsiveMode === "auto"
+      ? (wide || resizable || hideHeader || dragFromBody ? "fullscreen" : "sheet")
+      : responsiveMode
+    : "dialog";
+  const mobilePresentation = presentation !== "dialog";
+  const showHeader = !hideHeader || mobilePresentation;
+  const backdropClosable = closeOnBackdrop ?? (mobilePresentation ? !(wide || resizable || hideHeader || dragFromBody) : true);
+
+  useEffect(() => registerModal(instanceId), [instanceId]);
+
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const frame = window.requestAnimationFrame(() => {
+      const modal = modalRef.current;
+      if (!modal || !isTopModal(instanceId)) return;
+      const requested = modal.querySelector<HTMLElement>("[autofocus], [data-modal-initial-focus]");
+      (requested || closeRef.current || focusableElements(modal)[0] || modal).focus({ preventScroll: true });
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, [instanceId]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (!isTopModal(instanceId) || event.defaultPrevented || event.isComposing) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const modal = modalRef.current;
+      if (!modal) return;
+      const focusable = focusableElements(modal);
+      if (!focusable.length) {
+        event.preventDefault();
+        modal.focus({ preventScroll: true });
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable.at(-1)!;
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !modal.contains(active))) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && (active === last || !modal.contains(active))) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [instanceId, onClose]);
+
+  useEffect(() => {
+    if (!mobilePresentation) return;
+    drag.current = null;
+    resize.current = null;
+    setPosition({ x: 0, y: 0 });
+    setSize(null);
+    return lockBodyScroll();
+  }, [mobilePresentation]);
 
   const startDrag = (event: ReactPointerEvent<HTMLElement>) => {
-    if (event.button !== 0) return;
+    if (presentation !== "dialog" || event.button !== 0) return;
     if ((event.target as HTMLElement).closest("button, a, input, select, textarea, summary, label, [contenteditable], [role='button']")) return;
     // Un pointerdown sulla barra di scorrimento non deve trascinare la finestra.
     if (event.target === event.currentTarget) {
@@ -64,7 +214,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
     event.currentTarget.setPointerCapture(event.pointerId);
   };
   const moveDrag = (event: ReactPointerEvent<HTMLElement>) => {
-    if (!drag.current) return;
+    if (!drag.current || presentation !== "dialog") return;
     setPosition({
       x: drag.current.x + event.clientX - drag.current.startX,
       y: drag.current.y + event.clientY - drag.current.startY
@@ -73,6 +223,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   const stopDrag = () => { drag.current = null; };
 
   const startResize = (edge: ResizeEdge, event: ReactPointerEvent<HTMLElement>) => {
+    if (presentation !== "dialog") return;
     const modal = modalRef.current;
     if (!modal) return;
     const rect = modal.getBoundingClientRect();
@@ -95,7 +246,7 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   };
   const moveResize = (event: ReactPointerEvent<HTMLElement>) => {
     const current = resize.current;
-    if (!current) return;
+    if (!current || presentation !== "dialog") return;
     let width = current.width;
     let height = current.height;
     let x = current.positionX;
@@ -125,32 +276,42 @@ export function Modal({ title, children, footer, onClose, wide = false, classNam
   const stopResize = () => { resize.current = null; };
 
   const dragHandlers = { onPointerDown: startDrag, onPointerMove: moveDrag, onPointerUp: stopDrag, onPointerCancel: stopDrag };
+  const style = presentation === "dialog"
+    ? { "--modal-background": background ? `url(${background})` : "none", transform: `translate(${position.x}px, ${position.y}px)`, width: size?.width, height: size?.height }
+    : { "--modal-background": background ? `url(${background})` : "none" };
   // Il portale su body tiene la finestra sopra la barra laterale e la barra superiore,
   // che altrimenti coprirebbero il contesto di impilamento dell'area di lavoro.
   return createPortal(
-    <div className={`modal-backdrop ${background ? "theme-reveal-surface" : ""}`} role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+    <div
+      className={`modal-backdrop ${background ? "theme-reveal-surface" : ""}`}
+      role="presentation"
+      onMouseDown={(event) => event.target === event.currentTarget && backdropClosable && isTopModal(instanceId) && onClose()}
+    >
       <section
         ref={modalRef}
-        className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${hideHeader ? "rd-modal-headless" : ""} ${background ? "rd-modal-dressed" : ""} ${className}`.trim()}
+        className={`rd-modal ${wide ? "rd-modal-wide" : ""} ${resizable ? "rd-modal-resizable" : ""} ${hideHeader && !mobilePresentation ? "rd-modal-headless" : ""} ${background ? "rd-modal-dressed" : ""} ${className}`.trim()}
         data-component-type="modal"
         data-theme="parchment"
         data-surface={surface}
+        data-modal-instance={instanceId}
+        data-responsive-presentation={presentation}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        style={{ "--modal-background": background ? `url(${background})` : "none", transform: `translate(${position.x}px, ${position.y}px)`, width: size?.width, height: size?.height } as CSSProperties}
+        tabIndex={-1}
+        style={style as CSSProperties}
       >
         {background && <div className="rd-modal-atmosphere" aria-hidden="true" />}
-        {!hideHeader && <header className="modal-header" {...dragHandlers}>
+        {showHeader && <header className="modal-header" {...dragHandlers}>
           <h2>{title}</h2>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Chiudi">×</button>
+          <button ref={closeRef} className="icon-button" type="button" onClick={onClose} aria-label="Chiudi">×</button>
         </header>}
         <div className="modal-body" {...(dragFromBody ? dragHandlers : {})}>{children}</div>
-        {footer && <footer className="modal-footer" {...(hideHeader ? dragHandlers : {})}>
-          {hideHeader && <span className="modal-drag-grip" aria-hidden="true" title="Trascina per spostare la finestra">⠿</span>}
+        {footer && <footer className="modal-footer" {...(hideHeader && !mobilePresentation ? dragHandlers : {})}>
+          {hideHeader && !mobilePresentation && <span className="modal-drag-grip" aria-hidden="true" title="Trascina per spostare la finestra">⠿</span>}
           {footer}
         </footer>}
-        {resizable && (["top", "right", "bottom", "left"] as const).map((edge) => <span
+        {resizable && presentation === "dialog" && (["top", "right", "bottom", "left"] as const).map((edge) => <span
           key={edge}
           className={`rd-modal-resize-handle ${edge}`}
           data-resize-edge={edge}

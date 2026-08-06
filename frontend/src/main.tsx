@@ -5,13 +5,36 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 import { MasterAILauncherRuntime } from "./features/master-ai/launchers";
+import { CombatMobileAttackSync } from "./features/mobile/CombatMobileAttackSync";
+import { CombatMobileNotesBridge } from "./features/mobile/CombatMobileNotesBridge";
+import { CombatMobileRuntime } from "./features/mobile/CombatMobileRuntime";
+import { MobileToastStack } from "./features/mobile/MobileToastStack";
+import { TabletRouteHeadingRuntime } from "./features/mobile/TabletRouteHeadingRuntime";
+import { TravelMobileRuntime } from "./features/mobile/TravelMobileRuntime";
 import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
+import "./styles/interaction-fixes.css";
 import "./styles/theme-reveal.css";
 import "./styles/master-ai.css";
 import "./styles/master-ai-shell.css";
 import "./styles/master-ai-launchers.css";
 import "./styles/master-ai-unit.css";
+import "./styles/mobile.css";
+import "./styles/mobile-global-fixes.css";
+import "./styles/mobile-toast.css";
+import "./styles/mobile-pages.css";
+import "./styles/mobile-lore.css";
+import "./styles/mobile-reference-pages.css";
+import "./styles/mobile-skills.css";
+import "./styles/mobile-competencies.css";
+import "./styles/mobile-creation.css";
+import "./styles/mobile-new-character.css";
+import "./styles/mobile-character.css";
+import "./styles/mobile-character-fixes.css";
+import "./styles/mobile-travel.css";
+import "./styles/mobile-combat.css";
+import "./styles/mobile-combat-fixes.css";
+import "./styles/tablet-route-headings.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +45,7 @@ const queryClient = new QueryClient({
 
 // App owns every routed page, including Master AI, so navigation, layout, and shared providers remain consistent.
 function RootApplication() {
-  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><App /></>;
+  return <><ThemeRevealRuntime /><MasterAILauncherRuntime /><TravelMobileRuntime /><CombatMobileRuntime /><CombatMobileAttackSync /><CombatMobileNotesBridge /><MobileToastStack /><TabletRouteHeadingRuntime /><App /></>;
 }
 
 createRoot(document.getElementById("app")!).render(

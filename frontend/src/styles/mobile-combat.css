@@ -1,0 +1,607 @@
+/* Combat responsive workspace. Desktop declarations remain authoritative at >= 1200px. */
+@media (max-width: 1199px) {
+  .combat-page {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .combat-stage-layout {
+    position: relative;
+    min-width: 0;
+  }
+
+  .combat-map-stage svg {
+    min-width: 0;
+  }
+
+  /* Tablet keeps the workstation layout, but an open attack console overlays the
+     map instead of forcing the entire stage beyond the viewport. */
+  .combat-stage-layout > .combat-attack-drawer.open {
+    position: absolute;
+    z-index: 12;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(430px, 62vw);
+    max-width: calc(100% - 12px);
+    flex-basis: auto;
+    box-shadow: -18px 0 44px #0009;
+  }
+}
+
+@media (max-width: 767px) {
+  .combat-page {
+    width: 100%;
+    height: calc(100dvh - var(--mobile-app-bar-height) - var(--mobile-safe-top) - var(--mobile-bottom-nav-height) - var(--mobile-safe-bottom));
+    min-height: 0;
+    gap: 8px;
+    overflow: hidden;
+    padding: 8px max(8px, var(--mobile-safe-right)) 74px max(8px, var(--mobile-safe-left));
+  }
+
+  .combat-page > .hero-panel,
+  .combat-page > .panel {
+    overflow-y: auto;
+  }
+
+  .combat-active-strip {
+    display: grid;
+    min-width: 0;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    border-radius: 9px;
+  }
+
+  .combat-active-strip-heading {
+    display: grid;
+    height: auto;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    overflow: visible;
+    padding: 7px;
+  }
+
+  .combat-active-strip-summary {
+    min-width: 0;
+    padding-inline: 4px;
+  }
+
+  .combat-active-strip-summary small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .combat-active-strip-heading .combat-map-toolbar {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 1px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .combat-active-strip-heading .combat-map-toolbar .button,
+  .combat-active-strip-heading .combat-map-manager-trigger {
+    min-width: max-content;
+    min-height: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 6px 11px;
+    font-size: .68rem;
+  }
+
+  .combat-active-strip-heading .combat-map-manager-trigger {
+    min-width: 190px;
+    grid-template-columns: 22px minmax(88px, 1fr) auto;
+  }
+
+  .combat-active-strip-heading .combat-map-manager-trigger small {
+    font-size: .48rem;
+  }
+
+  .combat-active-strip-heading .combat-map-manager-trigger strong {
+    max-width: 106px;
+    font-size: .66rem;
+  }
+
+  .combat-active-strip-heading .combat-map-manager-trigger > b {
+    font-size: .52rem;
+  }
+
+  .combat-active-roster {
+    display: none;
+  }
+
+  .combat-stage-layout {
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .combat-map-panel {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 9px;
+  }
+
+  .combat-map-status {
+    min-height: 42px;
+    flex-wrap: wrap;
+    gap: 4px 9px;
+    padding: 7px 9px;
+    font-size: .64rem;
+  }
+
+  .combat-map-status > span {
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .combat-map-status div {
+    flex-wrap: wrap;
+  }
+
+  .combat-map-surface,
+  .combat-map-stage,
+  .combat-map-stage svg {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .combat-map-stage svg {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+
+  .combat-map-runtime-toolbar {
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    display: grid;
+    grid-template-columns: var(--mobile-touch-target) minmax(48px, auto) var(--mobile-touch-target) minmax(74px, auto);
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .combat-map-runtime-toolbar button {
+    min-height: var(--mobile-touch-target);
+    padding: 7px 9px;
+    font-size: .68rem;
+  }
+
+  .combat-map-runtime-toolbar output {
+    min-width: 0;
+    font-size: .68rem;
+  }
+
+  .combat-hex-tool-launcher {
+    min-width: 104px;
+    min-height: var(--mobile-touch-target);
+  }
+
+  /* Default phone presentation is map-first. The runtime only changes this data
+     attribute; every Combat component stays mounted and keeps its local state. */
+  .combat-selected-character,
+  .combat-attack-drawer {
+    display: none;
+  }
+
+  html[data-mobile-combat-panel="map"] .combat-map-panel {
+    display: flex;
+  }
+
+  html[data-mobile-combat-panel="map"] .combat-selected-character,
+  html[data-mobile-combat-panel="map"] .combat-attack-drawer {
+    display: none;
+  }
+
+  html[data-mobile-combat-panel="character"] .combat-active-strip,
+  html[data-mobile-combat-panel="attack"] .combat-active-strip {
+    display: none;
+  }
+
+  html[data-mobile-combat-panel="character"] .combat-map-panel,
+  html[data-mobile-combat-panel="character"] .combat-attack-drawer,
+  html[data-mobile-combat-panel="attack"] .combat-map-panel,
+  html[data-mobile-combat-panel="attack"] .combat-selected-character {
+    display: none;
+  }
+
+  html[data-mobile-combat-panel="character"] .combat-selected-character {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-height: 100%;
+    flex-basis: auto;
+    overflow-y: auto;
+    padding: 12px;
+    border-radius: 9px;
+    overscroll-behavior: contain;
+  }
+
+  .combat-selected-character > header {
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .combat-selected-character > header > div:last-child {
+    text-align: left;
+  }
+
+  .combat-selected-character > header strong {
+    font-size: 1.05rem;
+  }
+
+  .combat-selected-portrait {
+    width: 96px;
+    height: 96px;
+  }
+
+  .combat-selected-resources {
+    gap: 10px;
+  }
+
+  .combat-selected-character .combat-rail-resource {
+    display: grid;
+    gap: 7px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #0002;
+  }
+
+  .combat-selected-character .combat-rail-resource-heading {
+    font-size: .78rem;
+  }
+
+  .combat-selected-character .combat-rail-resource-actions {
+    display: grid;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    visibility: visible;
+    overflow: visible;
+    margin-top: 0;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .combat-selected-character .combat-resource-adjustment {
+    height: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .combat-selected-character .combat-rail-resource-actions button,
+  .combat-selected-character .combat-rail-resource-actions input {
+    height: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+    font-size: max(.82rem, 16px);
+  }
+
+  .combat-selected-weapon {
+    gap: 9px;
+    padding: 11px;
+  }
+
+  .combat-selected-weapon-heading strong {
+    font-size: .82rem;
+  }
+
+  .combat-weapon-power-popover {
+    position: static;
+    display: grid;
+    width: 100%;
+    gap: 5px;
+    padding: 9px;
+    box-shadow: none;
+  }
+
+  .combat-selected-character .button,
+  .combat-selected-character button {
+    min-height: var(--mobile-touch-target);
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-stage-layout {
+    display: none;
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-active-strip {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-active-roster {
+    display: grid;
+    min-height: 0;
+    flex: 1 1 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 9px;
+    overflow-y: auto;
+    padding: 10px;
+    overscroll-behavior: contain;
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-active-roster > div {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    min-height: 82px;
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-active-roster > div > button:first-child {
+    min-height: 80px;
+    grid-template-columns: 58px minmax(0, 1fr);
+    padding: 8px;
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-active-roster img,
+  html[data-mobile-combat-panel="roster"] .combat-active-avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  html[data-mobile-combat-panel="roster"] .combat-active-roster > div:hover {
+    transform: none;
+    border-color: var(--line);
+  }
+
+  html[data-mobile-combat-panel="attack"] .combat-attack-drawer.open {
+    position: static;
+    z-index: auto;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    min-width: 0;
+    flex-basis: auto;
+    border-radius: 9px;
+    box-shadow: none;
+  }
+
+  html[data-mobile-combat-panel="attack"] .combat-attack-drawer-toggle {
+    min-height: var(--mobile-touch-target);
+    flex: 0 0 var(--mobile-touch-target);
+    padding-inline: 12px;
+  }
+
+  html[data-mobile-combat-panel="attack"] .combat-attack-drawer-body {
+    padding: 12px;
+    overscroll-behavior: contain;
+  }
+
+  html[data-mobile-combat-panel="attack"] .combat-attack button,
+  html[data-mobile-combat-panel="attack"] .combat-attack input,
+  html[data-mobile-combat-panel="attack"] .combat-attack select {
+    min-height: var(--mobile-touch-target);
+  }
+
+  html[data-mobile-combat-panel="attack"] .combat-attack input,
+  html[data-mobile-combat-panel="attack"] .combat-attack select {
+    font-size: max(1rem, 16px);
+  }
+
+  .combat-mobile-navigation {
+    position: fixed;
+    z-index: 86;
+    right: 0;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom));
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-height: 62px;
+    padding: 5px calc(6px + var(--mobile-safe-right)) 5px calc(6px + var(--mobile-safe-left));
+    border-top: 1px solid color-mix(in srgb, var(--gold), transparent 46%);
+    background: var(--theme-overlay-strong-surface);
+    box-shadow: 0 -8px 24px #0007;
+    backdrop-filter: blur(14px);
+  }
+
+  .combat-mobile-navigation button {
+    display: grid;
+    min-width: 0;
+    min-height: 52px;
+    place-items: center;
+    align-content: center;
+    gap: 3px;
+    padding: 4px 2px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .combat-mobile-navigation button.active {
+    background: color-mix(in srgb, var(--gold), transparent 84%);
+    color: var(--gold);
+  }
+
+  .combat-mobile-navigation button:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+  }
+
+  .combat-mobile-navigation span {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .combat-mobile-navigation strong {
+    overflow: hidden;
+    max-width: 100%;
+    font-size: .61rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The desktop floating hex window remains mounted, but on a phone it becomes a
+     stable full-height inspector. Inline drag coordinates cannot escape this box. */
+  .combat-hex-tool-window {
+    position: fixed !important;
+    z-index: 96 !important;
+    top: calc(var(--mobile-app-bar-height) + var(--mobile-safe-top)) !important;
+    right: 0 !important;
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 62px) !important;
+    left: 0 !important;
+    display: flex;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .combat-hex-tool-titlebar {
+    min-height: 52px;
+    flex: 0 0 52px;
+    padding: 7px 10px;
+  }
+
+  .combat-hex-tool-titlebar > span:first-child {
+    display: none;
+  }
+
+  .combat-hex-tool-titlebar button {
+    width: var(--mobile-touch-target);
+    min-width: var(--mobile-touch-target);
+    height: var(--mobile-touch-target);
+  }
+
+  .combat-hex-tool-body {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    overscroll-behavior: contain;
+  }
+
+  .combat-hex-tool-body .combat-hex-inspector {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combat-hex-tool-body button,
+  .combat-hex-tool-body input,
+  .combat-hex-tool-body select {
+    min-height: var(--mobile-touch-target);
+  }
+
+  .combat-hex-tool-body input,
+  .combat-hex-tool-body select {
+    font-size: max(1rem, 16px);
+  }
+
+  .combat-quick-actions-modal .combat-quick-actions,
+  .combat-map-manager,
+  .combat-map-editor-layout,
+  .combat-import-layout,
+  .combat-version-layout {
+    min-width: 0;
+  }
+
+  .combat-map-manager > footer > div:last-child,
+  .combat-map-manager > header,
+  .combat-map-manager > footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .combat-map-manager > footer > div:last-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combat-map-manager .button,
+  .combat-map-editor-modal .button,
+  .combat-quick-actions-modal .button {
+    min-height: var(--mobile-touch-target);
+  }
+}
+
+@media (max-width: 479px) {
+  html[data-mobile-combat-panel="roster"] .combat-active-roster {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .combat-active-strip-summary small {
+    display: none;
+  }
+
+  .combat-selected-character > header {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .combat-selected-portrait {
+    width: 78px;
+    height: 78px;
+  }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+  .combat-page {
+    padding-top: 5px;
+    padding-bottom: 68px;
+  }
+
+  .combat-active-strip-summary {
+    display: none;
+  }
+
+  .combat-active-strip-heading {
+    gap: 0;
+    padding: 4px 6px;
+  }
+
+  .combat-active-strip-heading .combat-map-toolbar .button,
+  .combat-active-strip-heading .combat-map-manager-trigger {
+    min-height: 40px;
+    height: 40px;
+  }
+
+  .combat-mobile-navigation {
+    min-height: 56px;
+  }
+
+  .combat-mobile-navigation button {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 767px) and (pointer: coarse) {
+  .combat-hex:hover .hex-line {
+    fill: transparent;
+    stroke: #f2e7c166;
+    stroke-width: 1;
+  }
+
+  .combat-hex.selected .hex-line,
+  .combat-hex.pending-selection .hex-line {
+    stroke-width: 3;
+  }
+
+  .combat-selected-character .combat-rail-remove {
+    display: grid;
+  }
+}

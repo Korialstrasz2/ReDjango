@@ -1,8 +1,10 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { Modal } from "../../components/Modal";
 import { deleteAudioTrack, getData, updateAudioTrack, uploadAudioTrack } from "../../lib/api";
 import { filterAudioTracks, formatDuration, formatFileSize, UNTAGGED_FILTER } from "../../lib/audio";
+import { useResponsiveLayout } from "../../lib/responsive";
 import type { AudioLibraryData, AudioTag, AudioTrack } from "../../lib/types";
 import { AudioPlayerControls } from "./AudioPlayerControls";
 import { useAudioPlayer } from "./AudioPlayerProvider";
@@ -40,6 +42,7 @@ function TagPicker({ tags, selected, onToggle, idPrefix }: { tags: AudioTag[]; s
 export function AudioTool({ notify }: Props) {
   const queryClient = useQueryClient();
   const player = useAudioPlayer();
+  const { isPhone } = useResponsiveLayout();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const library = useQuery({ queryKey: ["audioLibrary"], queryFn: () => getData<AudioLibraryData>("/api/audio/tracks/") });
   const [query, setQuery] = useState("");
@@ -48,6 +51,7 @@ export function AudioTool({ notify }: Props) {
   const [uploadTags, setUploadTags] = useState<string[]>(["musica"]);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [editing, setEditing] = useState<AudioTrack | null>(null);
+  const [deleteCandidate, setDeleteCandidate] = useState<AudioTrack | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editTags, setEditTags] = useState<string[]>([]);
 
@@ -93,6 +97,7 @@ export function AudioTool({ notify }: Props) {
       player.forget(track.id);
       applyLibrary(result.data);
       setEditing(null);
+      setDeleteCandidate(null);
       notify(result.events[0]?.message || "Traccia eliminata.");
     },
     onError: (error: Error) => notify(error.message, "error"),
@@ -105,6 +110,13 @@ export function AudioTool({ notify }: Props) {
     setEditing(track);
     setEditTitle(track.title);
     setEditTags(track.tags);
+  };
+  const requestDelete = (track: AudioTrack) => {
+    if (isPhone) {
+      setDeleteCandidate(track);
+      return;
+    }
+    if (window.confirm(`Eliminare definitivamente ${track.title}?`)) remove.mutate(track);
   };
 
   const submitUpload = (event: FormEvent) => {
@@ -184,8 +196,24 @@ export function AudioTool({ notify }: Props) {
       <div className="audio-upload-tags"><span>Tag</span><TagPicker tags={tags} selected={editTags} onToggle={toggleEditTag} idPrefix="edit" /></div>
       <div className="button-row">
         <button type="button" className="button primary" disabled={save.isPending} onClick={() => save.mutate(editing)}>Salva</button>
-        <button type="button" className="button danger" disabled={remove.isPending} onClick={() => { if (window.confirm(`Eliminare definitivamente ${editing.title}?`)) remove.mutate(editing); }}>Elimina</button>
+        <button type="button" className="button danger" disabled={remove.isPending} onClick={() => requestDelete(editing)}>Elimina</button>
       </div>
     </section>}
+
+    {deleteCandidate && isPhone && <Modal
+      title="Elimina traccia"
+      responsiveMode="dialog"
+      closeOnBackdrop={false}
+      onClose={() => !remove.isPending && setDeleteCandidate(null)}
+      footer={<>
+        <button type="button" className="button secondary" data-modal-initial-focus disabled={remove.isPending} onClick={() => setDeleteCandidate(null)}>Annulla</button>
+        <button type="button" className="button danger" disabled={remove.isPending} onClick={() => remove.mutate(deleteCandidate)}>
+          {remove.isPending ? "Eliminazione…" : "Elimina definitivamente"}
+        </button>
+      </>}
+    >
+      <p>Eliminare definitivamente <strong>{deleteCandidate.title}</strong>?</p>
+      <p className="muted-copy">Questa operazione non può essere annullata.</p>
+    </Modal>}
   </div>;
 }

@@ -56,11 +56,11 @@ test("la barra attivi prepara l'attacco e Percorso calcola dalla mappa", async (
   await page.keyboard.press("Escape");
 
   await source.dragTo(selected.locator(":scope > header"));
-  const attackPanel = page.locator(".combat-attack-panel");
+  const attackPanel = page.locator(".combat-attack-drawer.open");
   await expect(attackPanel).toBeVisible();
   const attackerId = await source.getAttribute("data-combat-character-id");
-  await expect(attackPanel.getByLabel("Attaccante")).toHaveValue(attackerId || "");
-  await expect(attackPanel.getByLabel("Difensore")).toHaveValue(selectedId || "");
+  await expect(attackPanel.getByLabel("Attaccante", { exact: true })).toHaveValue(attackerId || "");
+  await expect(attackPanel.getByLabel("Difensore", { exact: true })).toHaveValue(selectedId || "");
 
   await page.getByRole("button", { name: "Percorso", exact: true }).click();
   await expect(page.getByRole("button", { name: "Scegli destinazione…", exact: true })).toBeVisible();

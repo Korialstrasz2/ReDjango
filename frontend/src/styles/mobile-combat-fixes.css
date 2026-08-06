@@ -1,0 +1,68 @@
+/* Cross-feature phone integration for Combat. */
+@media (max-width: 767px) {
+  /* Context Notes stay available through the fifth local navigation action. The
+     original floating trigger remains mounted for its existing sheet state but
+     no longer overlaps map controls. */
+  html[data-mobile-combat-panel] .mobile-context-note-trigger {
+    display: none !important;
+  }
+
+  .combat-mobile-navigation {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .combat-mobile-notes-button {
+    position: fixed;
+    z-index: 87;
+    right: calc(var(--mobile-safe-right) + 6px);
+    bottom: calc(var(--mobile-bottom-nav-height) + var(--mobile-safe-bottom) + 5px);
+    display: grid;
+    width: calc((100% - var(--mobile-safe-left) - var(--mobile-safe-right) - 12px) / 5);
+    min-width: 0;
+    min-height: 52px;
+    place-items: center;
+    align-content: center;
+    gap: 3px;
+    padding: 4px 2px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .combat-mobile-notes-button:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+  }
+
+  .combat-mobile-notes-button span {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .combat-mobile-notes-button strong {
+    overflow: hidden;
+    max-width: 100%;
+    font-size: .61rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .combat-map-empty {
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+  /* The stacked toolbar reduced the tactical surface to a narrow strip. In map
+     mode the same toolbar remains available under Attivi, while the map receives
+     the full local workspace height required for pan, pinch, and token drag. */
+  html[data-mobile-combat-panel="map"] .combat-active-strip {
+    display: none;
+  }
+
+  .combat-mobile-notes-button {
+    min-height: 46px;
+  }
+}
