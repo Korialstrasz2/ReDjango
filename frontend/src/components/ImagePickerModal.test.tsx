@@ -108,7 +108,7 @@ describe("ImagePickerModal preview stack", () => {
   });
 
   it("uses the shared modal stack and restores the persistent card trigger", async () => {
-    const picker = document.querySelector<HTMLElement>('[role="dialog"][aria-label="Scegli un\'immagine"]');
+    const picker = document.querySelector<HTMLElement>("[role='dialog'][aria-label=\"Scegli un'immagine\"]");
     const cardTrigger = document.querySelector<HTMLButtonElement>('[aria-label="Azioni per Immagine test"]');
     expect(picker).not.toBeNull();
     expect(cardTrigger).not.toBeNull();
