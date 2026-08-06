@@ -531,11 +531,10 @@ class HierarchicalSettingsTests(TestCase):
         visible_keys = {setting["key"] for setting in response.json()["data"]["settings"]}
         self.assertTrue(keys.isdisjoint(visible_keys))
 
-    def test_player_can_update_alias_and_request_character_assignment(self):
+    def test_player_can_update_alias_and_character_requests_are_not_available(self):
         User = get_user_model()
         user = User.objects.create_user(username="player_profile")
         self.client.force_login(user)
-        character = Personaggio.objects.create(nome="Neria", nome_interno="test-neria")
 
         alias_response = self.client.post(
             "/api/settings/",
@@ -543,22 +542,26 @@ class HierarchicalSettingsTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(alias_response.status_code, 200)
-        self.assertEqual(alias_response.json()["data"]["player"]["alias"], "Luna")
+        self.assertEqual(alias_response.json()["data"]["player"], {"alias": "Luna"})
 
         request_response = self.client.post(
             "/api/settings/",
-            data=json.dumps({"action": "player.requestCharacters", "payload": {"assignmentRequest": {"characterIds": [character.id], "message": "Il mio PG"}}}),
+            data=json.dumps(
+                {
+                    "action": "player.requestCharacters",
+                    "payload": {
+                        "assignmentRequest": {
+                            "characterIds": [1],
+                            "message": "Il mio PG",
+                        }
+                    },
+                }
+            ),
             content_type="application/json",
         )
-        self.assertEqual(request_response.status_code, 200)
-        assignment = CharacterAssignmentRequest.objects.get(personaggio=character)
-        self.assertEqual(assignment.status, CharacterAssignmentRequest.STATUS_PENDING)
-        self.assertEqual(assignment.message, "Il mio PG")
-
-        approve_character_assignment(assignment)
-        assignment.giocatore.refresh_from_db()
-        self.assertIn(character.id, assignment.giocatore.character_ids)
-        self.assertEqual(assignment.giocatore.active_character_id, character.id)
+        self.assertEqual(request_response.status_code, 400)
+        self.assertEqual(request_response.json()["errors"][0]["code"], "settings.invalid_payload")
+        self.assertFalse(CharacterAssignmentRequest.objects.exists())
 
     def test_player_can_redeem_django_admin_managed_role_codes(self):
         SettingDefinition.objects.filter(key="security.game_master_access_code").update(value="MASTER-42")

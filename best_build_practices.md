@@ -35,7 +35,7 @@ Rules for every future feature:
 - Put configurable behavior in `SettingDefinition` and personal values in `SettingOverride` instead of inventing new JSON keys or browser-only storage.
 - Give every new setting a stable dotted key, category, value type, default, minimum role, and explicit user/master customization flags.
 - Global baselines and setting definitions remain editable in Django Admin. Reseeding must never overwrite an administrator's current `value`.
-- Player identity changes use `Giocatore.display_name`; character access requests use `CharacterAssignmentRequest` and become assignments only after an explicit Django Admin approval.
+- Player identity changes use `Giocatore.display_name`; character assignments are managed directly through Gestione Player.
 - Role-promotion codes are global admin-managed setting definitions. Never serialize their values to the SPA, store them as personal overrides, or accept them through the ordinary settings-save path.
 - Frontend code may apply only known, validated UI settings. Do not treat arbitrary stored CSS or JavaScript as configuration.
 - Add permission tests for user, master, and admin whenever a feature has privileged behavior.
