@@ -76,8 +76,9 @@ test("phone fatal startup error exposes a touch-sized retry and reconnects clean
   await expect(page.locator(".fatal-error")).toHaveCount(0);
 });
 
-test("phone error toast stays above fixed navigation and inside the viewport", async ({ page }, testInfo) => {
+test("phone messages stack above fixed navigation and remain inside the viewport", async ({ page }, testInfo) => {
   test.skip(!isPhoneProject(testInfo.project.name), "Phone-only toast placement contract");
+  let failures = 0;
   await page.route("**/api/v1/actions", async (route) => {
     const request = route.request();
     const payload = request.postDataJSON() as { action?: string } | null;
@@ -85,10 +86,13 @@ test("phone error toast stays above fixed navigation and inside the viewport", a
       await route.continue();
       return;
     }
+    failures += 1;
     await route.fulfill({
       status: 422,
       contentType: "application/json",
-      body: JSON.stringify(failedEnvelope("Tiro di prova non disponibile.")),
+      body: JSON.stringify(failedEnvelope(failures === 1
+        ? "Primo tiro di prova non disponibile."
+        : "Secondo tiro di prova non disponibile.")),
     });
   });
 
@@ -100,25 +104,29 @@ test("phone error toast stays above fixed navigation and inside the viewport", a
   const die = drawer.locator("button[aria-label^='Tira d']").first();
   await expect(die).toBeVisible();
   await die.click();
+  const stack = page.locator(".mobile-toast-stack");
+  await expect(stack.getByText("Primo tiro di prova non disponibile.")).toBeVisible();
+  await die.click();
+  await expect(stack.getByText("Secondo tiro di prova non disponibile.")).toBeVisible();
+  await expect(stack.locator("[data-mobile-toast-copy]" )).toHaveCount(2);
 
-  const toast = page.locator(".toast.error");
-  await expect(toast).toContainText("Tiro di prova non disponibile.");
-  const geometry = await toast.evaluate((element) => {
-    const rect = element.getBoundingClientRect();
-    const navigation = document.querySelector<HTMLElement>(".mobile-bottom-navigation")?.getBoundingClientRect();
-    return {
-      top: rect.top,
-      right: rect.right,
-      bottom: rect.bottom,
-      left: rect.left,
-      viewportWidth: document.documentElement.clientWidth,
-      viewportHeight: document.documentElement.clientHeight,
-      navigationTop: navigation?.top ?? document.documentElement.clientHeight,
-    };
-  });
-  expect(geometry.left).toBeGreaterThanOrEqual(0);
-  expect(geometry.right).toBeLessThanOrEqual(geometry.viewportWidth + 1);
-  expect(geometry.top).toBeGreaterThanOrEqual(0);
-  expect(geometry.bottom).toBeLessThanOrEqual(geometry.navigationTop + 1);
+  const toasts = stack.locator("[data-mobile-toast-copy]");
+  const navigationBox = await page.locator(".mobile-bottom-navigation").boundingBox();
+  for (let index = 0; index < await toasts.count(); index += 1) {
+    const geometry = await toasts.nth(index).evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        left: rect.left,
+        viewportWidth: document.documentElement.clientWidth,
+      };
+    });
+    expect(geometry.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.right).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+    expect(geometry.top).toBeGreaterThanOrEqual(0);
+    expect(geometry.bottom).toBeLessThanOrEqual((navigationBox?.y || Number.POSITIVE_INFINITY) + 1);
+  }
   await expectNoDocumentOverflow(page, testInfo, "toast-placement");
 });
