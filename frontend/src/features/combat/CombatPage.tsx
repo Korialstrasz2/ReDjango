@@ -783,7 +783,7 @@ function CharacterManagerModal({ workspace, busy, onClose, onActivate, onDuplica
   const locked = busy || working;
 
   return <>
-    <Modal surface="combat-manage-characters" title="Gestisci personaggi" onClose={onClose} wide className="combat-character-manager-modal" footer={<><span className="wizard-progress">I personaggi attivi restano associati a questa mappa.</span><button className="button secondary" onClick={onClose}>Chiudi</button></>}>
+    <Modal surface="combat-manage-characters" title="Gestisci personaggi" onClose={onClose} closeOnBackdrop={false} wide className="combat-character-manager-modal" footer={<><span className="wizard-progress">I personaggi attivi restano associati a questa mappa.</span><button className="button secondary" onClick={onClose}>Chiudi</button></>}>
       <div className="combat-character-manager">
         <section className="combat-manager-active">
           <header><div><p className="eyebrow">Sulla mappa</p><h3>Personaggi attivi</h3></div><strong>{map.participants.length}</strong></header>
