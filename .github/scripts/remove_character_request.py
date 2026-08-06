@@ -61,69 +61,6 @@ types = require_replace(
 )
 write(types_path, types)
 
-selectors_path = "backend/core/settings_selectors.py"
-selectors = Path(selectors_path).read_text(encoding="utf-8")
-selectors = require_replace(selectors, 'from django.db.models import Q\n\nfrom backend.characters.models import Personaggio\n\n', '', "selector imports")
-selectors = require_replace(
-    selectors,
-    'from .models import CharacterAssignmentRequest, Giocatore, SettingDefinition, SettingOverride, Theme',
-    'from .models import Giocatore, SettingDefinition, SettingOverride, Theme',
-    "selector model import",
-)
-selectors, data_count = re.subn(
-    r'\n    assigned_ids = \{.*?\n    available_characters = .*?\.order_by\("nome", "id"\)\n',
-    '\n',
-    selectors,
-    count=1,
-    flags=re.S,
-)
-if data_count != 1:
-    raise RuntimeError(f"request selector data: expected one match, found {data_count}")
-selectors, player_count = re.subn(
-    r'        "player": \{\n            "alias": giocatore\.display_name or giocatore\.nome,\n            "characters": \[.*?\n            \],\n        \},',
-    '        "player": {"alias": giocatore.display_name or giocatore.nome},',
-    selectors,
-    count=1,
-    flags=re.S,
-)
-if player_count != 1:
-    raise RuntimeError(f"player payload: expected one match, found {player_count}")
-write(selectors_path, selectors)
-
-services_path = "backend/core/settings_services.py"
-services = Path(services_path).read_text(encoding="utf-8")
-services = require_replace(services, 'from django.db.models import Q\n', '', "service Q import")
-services, service_count = re.subn(
-    r'\n@transaction\.atomic\ndef request_character_assignments\(.*?(?=\n@transaction\.atomic\ndef approve_character_assignment)',
-    '\n',
-    services,
-    count=1,
-    flags=re.S,
-)
-if service_count != 1:
-    raise RuntimeError(f"request service: expected one match, found {service_count}")
-write(services_path, services)
-
-views_path = "backend/core/settings_views.py"
-views = Path(views_path).read_text(encoding="utf-8")
-views = require_replace(views, '    request_character_assignments,\n', '', "view service import")
-views, view_count = re.subn(
-    r'        elif "assignmentRequest" in payload:.*?            event = \{"type": "player\.assignment_requested", "message": "Richiesta di assegnazione inviata\."\}\n',
-    '',
-    views,
-    count=1,
-    flags=re.S,
-)
-if view_count != 1:
-    raise RuntimeError(f"request view branch: expected one match, found {view_count}")
-views = require_replace(
-    views,
-    '        else:\n            save_setting_overrides(user, giocatore, payload.get("settings", {}))',
-    '        elif "settings" in payload:\n            save_setting_overrides(user, giocatore, payload.get("settings", {}))\n        else:\n            raise ApiError("settings.invalid_payload", "La richiesta non è valida.", "payload")',
-    "settings fallback",
-)
-write(views_path, views)
-
 tests_path = "backend/core/tests.py"
 tests = Path(tests_path).read_text(encoding="utf-8")
 replacement_test = '''    def test_player_can_update_alias_and_character_requests_are_not_available(self):
