@@ -1,292 +1,107 @@
 # ReDjango Mobile Implementation Status
 
-Branch: `mobile-optimized`  
-Base: `main` at `da846aca31d31b15e4128f70b0cf0e6cb3b32283`  
-Started: 2026-08-05
+Implementation branch: `mobile-optimized`  
+Stage F completion work: `agent/mobile-stage-f-completion` / draft PR #7  
+Desktop baseline: `main` at `da846aca31d31b15e4128f70b0cf0e6cb3b32283`  
+Updated: 2026-08-06
 
-The public mobile experience remains incomplete and must not be treated as released. Work is isolated on one long-lived implementation branch, and the existing desktop experience remains a protected contract.
+The mobile implementation is substantial, but the public mobile release is still blocked. Automated coverage has been expanded; physical-device, complete modal/hover classification, and several full transaction matrices still require recorded evidence. Desktop remains a protected contract.
 
 ## Stage status
 
-| Stage | Status | Notes |
+| Stage | Status | Evidence and remaining work |
 | --- | --- | --- |
-| A — Baseline and test harness | In progress | Responsive viewport projects, overflow diagnostics, route-specific tests, independent Combat role sessions, and branch CI are running. Canonical screenshot comparison, all overlays, font scales, and the complete integrated route matrix remain pending. |
-| B — Shared responsive primitives | In progress | Responsive hook, modal presentations and stack management, phone app/bottom navigation, More and Quick Tools sheets, full-screen ToolDrawer, Context Notes sheet, phone management guard, and high-risk Travel/Combat phone runtimes are implemented. Formal shell extraction and tablet navigation remain pending. |
-| C — Lower-risk player pages | Verified checkpoint | Login, Dashboard, Lore, Guides, Media, Settings, and Market have phone/tablet layouts and responsive Playwright coverage. |
-| D — Stateful player pages | Verified checkpoint | Skills, Competencies, Creation, New Character, and Character have dedicated responsive layouts and route-specific Playwright coverage. Character includes real phone touch-drag activation coverage. |
-| E — High-risk workspaces/global tools | In progress | Travel is verified. Combat has verified responsive, role-permission, and shared-modal checkpoints covering player/master sessions, map-first phone navigation, touch gestures, inspectors, role-gated controls, nested dialogs, tablet containment, and protected desktop assertions. Remaining exhaustive Combat planner/manager/destructive workflows and Quick Tool internals still require dedicated verification. |
-| F — Integrated full-route pass | Not started | Public activation remains blocked. |
-
-## Implemented foundations
-
-### Responsive layout contract
-
-File: `frontend/src/lib/responsive.ts`
-
-- phone-narrow ≤ 479, phone ≤ 767, tablet ≤ 1199, desktop ≥ 1200;
-- width is derived with `matchMedia`, not user-agent detection;
-- pointer, hover, orientation, and reduced-motion capabilities are tracked separately;
-- `useSyncExternalStore` provides a stable React subscription;
-- pure boundary tests cover category transitions.
-
-### Playwright viewport and role matrix
-
-Files:
-
-- `frontend/playwright.config.ts`
-- `frontend/tests/auth.setup.ts`
-- `backend/core/management/commands/ensure_combat_e2e_roles.py`
-
-Coverage now includes:
-
-- canonical `authenticated` desktop at 1440 × 900;
-- 1920 × 1080 desktop;
-- two phone portrait sizes;
-- phone landscape;
-- tablet portrait and landscape;
-- isolated phone and desktop Combat projects for a real master session;
-- isolated phone and desktop Combat projects for a real player session;
-- API-level permission assertions and UI-level role assertions.
-
-The Combat role fixture is additive, idempotent, test-only, uses existing seeded characters and map types, and does not change production authorization.
-
-### Responsive modal foundation
-
-Files:
-
-- `frontend/src/components/Modal.tsx`
-- `frontend/src/styles/mobile.css`
-- `frontend/tests/mobile-combat-roles.spec.ts`
-
-Desktop behavior remains the dialog path, including drag, resize, portal, headless, wide, and themed variants.
-
-Phone behavior provides:
-
-- `responsiveMode="auto | dialog | sheet | fullscreen"`;
-- ordinary modal → sheet;
-- wide/resizable/headless/body-draggable modal → full-screen;
-- no mobile drag/resize;
-- body scroll locking with nested-lock accounting;
-- safe-area padding, `100dvh`, sticky header/footer, and touch-sized controls.
-
-Shared behavior now provides:
-
-- an explicit modal stack with one interactive top dialog;
-- Escape closes only the top dialog;
-- Tab and Shift+Tab remain trapped in the top dialog;
-- initial focus and exact trigger-focus restoration;
-- lower modal layers become `inert` and `aria-hidden` while a child is open;
-- backdrop clicks are accepted only by the top dialog;
-- wide, resizable, headless, and body-draggable workbenches require an explicit close action by default, protecting local drafts;
-- simple dialogs retain backdrop dismissal unless they opt out.
-
-Remaining modal call sites still need final integrated classification, and ad hoc non-`Modal` overlays require separate semantic review.
-
-### Phone shell navigation
-
-Files:
-
-- `frontend/src/features/mobile/MobileNavigation.tsx`
-- `frontend/src/features/quick-tools/QuickTools.tsx`
-- `frontend/src/styles/mobile.css`
-
-Implemented:
-
-- safe-area-aware fixed app bar;
-- persistent Home, Character, Skills, Combat, and More bottom navigation;
-- route indication and React Router history;
-- full-screen More and Quick Tools sheets;
-- workspace offsets around fixed chrome;
-- explicit phone management limitation.
-
-The phone link set is still derived from rendered desktop sidebar links. Formal shared navigation-data extraction remains pending.
-
-### Quick Tools and contextual notes
-
-Implemented:
-
-- full-screen phone ToolDrawer presentation for Journal, Dice, AI, Audio, Theft, and Names;
-- drag/resize disabled on phones while desktop behavior remains intact;
-- body scroll lock, focus restoration, Escape, safe areas, and dynamic viewport height;
-- visible phone Context Notes trigger using the existing autosave editor;
-- Combat integrates that existing trigger into its local five-action phone navigation, avoiding map-control overlap without duplicating note state.
-
-The internal workflows of each Quick Tool are not yet mobile-complete.
-
-## Verified route checkpoints
-
-### Lower-risk routes
-
-Files include:
-
-- `frontend/src/styles/mobile-pages.css`
-- `frontend/src/styles/mobile-lore.css`
-- `frontend/src/styles/mobile-reference-pages.css`
-- `frontend/tests/mobile-baseline.spec.ts`
-
-Verified routes:
-
-- Login and Dashboard;
-- Lore;
-- Guides;
-- Media;
-- Settings;
-- Market.
-
-### Stateful routes
-
-Files include:
-
-- `frontend/src/styles/mobile-skills.css`
-- `frontend/src/styles/mobile-competencies.css`
-- `frontend/src/styles/mobile-creation.css`
-- `frontend/src/styles/mobile-new-character.css`
-- `frontend/src/styles/mobile-character.css`
-- `frontend/src/styles/mobile-character-fixes.css`
-- `frontend/tests/mobile-skills.spec.ts`
-- `frontend/tests/mobile-competencies.spec.ts`
-- `frontend/tests/mobile-creation.spec.ts`
-- `frontend/tests/mobile-new-character.spec.ts`
-- `frontend/tests/mobile-character.spec.ts`
-
-Verified behavior includes:
-
-- Skills group/family navigation, XP/search/catalog/detail/editor layouts, and touch-safe ordering controls;
-- Competencies index, rank controls, techniques, roll workspace, mastery, and history;
-- Alchemy, Forge, and Enchant workbenches with contained dense matrices and non-destructive state checks;
-- New Character validation, four-step navigation, responsive option lists, sticky actions, and draft preservation;
-- Character identity, resources, quick stats, inventory, equipment, containers, coin controls, effects, values, slot picker, and item/overview modal presentations;
-- phone Character resource controls exposed without hover;
-- figure equipment slots converted from absolute desktop rails into readable phone flow;
-- tap selection and picker controls retained alongside drag-and-drop;
-- real phone touch-event activation of the existing item drag system;
-- desktop Character assertions for sticky HUD, multi-column inventory, and vertical effect rail.
-
-### Travel verified checkpoint
-
-Files:
-
-- `frontend/src/features/mobile/TravelMobileRuntime.tsx`
-- `frontend/src/styles/mobile-travel.css`
-- `frontend/tests/mobile-travel.spec.ts`
-- `frontend/playwright.config.ts`
-- `frontend/src/main.tsx`
-
-Verified without changing the desktop Travel controller or declarations:
-
-- map-first phone workspace with a state-preserving full-height controls surface;
-- one-finger touch pan, tap selection, double-tap marker editing, and two-finger pinch arbitration;
-- explicit zoom and marker-centering controls;
-- marker palette taps converted into an explicit map-placement mode while the existing drop/save path remains authoritative;
-- safe-area and dynamic-viewport handling in portrait and landscape;
-- loading, empty, permission-derived, guide, quality, grid, effect, marker, and active-marker states remain in the shared Travel tree;
-- phone focus trapping, Escape/Back behavior, inert map state, and body-scroll locking while controls are open;
-- real CDP touch sequences and protected desktop two-column assertions.
-
-### Combat verified responsive and role checkpoint
-
-Files:
-
-- `frontend/src/features/mobile/CombatMobileRuntime.tsx`
-- `frontend/src/features/mobile/CombatMobileAttackSync.tsx`
-- `frontend/src/features/mobile/CombatMobileNotesBridge.tsx`
-- `frontend/src/styles/mobile-combat.css`
-- `frontend/src/styles/mobile-combat-fixes.css`
-- `frontend/tests/mobile-combat.spec.ts`
-- `frontend/tests/mobile-combat-roles.spec.ts`
-- `backend/core/management/commands/ensure_combat_e2e_roles.py`
-- `frontend/tests/auth.setup.ts`
-- `frontend/playwright.config.ts`
-- `frontend/src/main.tsx`
-
-The existing `CombatPage.tsx`, `CombatMapCanvas.tsx`, command payloads, mutations, backend authorization, and desktop declarations remain unchanged. The phone runtimes and later-loaded responsive styles provide:
-
-- map-first phone presentation with mounted, state-preserving Map, Character, Active Roster, Attack, and Context Notes access;
-- tablet release of forced map minimum widths and a contained overlay for the attack console;
-- one-finger map pan and token drag left on the existing pointer controller;
-- two-finger pinch arbitration through the existing zoom path, including cancellation of a pending one-finger drag;
-- gesture listeners bound to the entire map stage and rebound when the active SVG map changes;
-- long-press token context support plus the existing roster-card tap recovery path;
-- touch-visible character resource controls, weapon details, roster cards, and attack controls;
-- a full-height phone hex inspector that overrides desktop drag coordinates without altering the desktop window;
-- attack drawer open/close synchronization, mounted draft preservation, unavailable-panel fallback, and modal-authoritative Escape handling;
-- landscape map space protected by moving the duplicated toolbar workflow to the Active Roster panel;
-- Context Notes integrated into the local navigation rather than floating above tactical controls;
-- empty-map messaging prevented from intercepting map gestures;
-- real CDP pinch/token-drag checks, phone panel and inspector checks, tablet containment checks, and desktop workstation assertions;
-- independent player/master API permission checks and UI checks;
-- player denial of map management verified with a real HTTP 403;
-- player-controlled-token and master-all-token movement boundaries;
-- role-gated map manager, new-map, character manager, and backup/version controls;
-- phone full-screen presentation checks for map editor, character manager, map manager, and quick-action planner.
-
-### Corrected verification record
-
-The workflow originally stopped its explicit Playwright command at `mobile-character.spec.ts`; therefore earlier green runs did not execute the new Travel or Combat suites. The workflow was corrected to run Travel, general Combat, and Combat role suites explicitly. Earlier Travel/Combat run references are not treated as verification evidence.
-
-True verified checkpoint:
-
-- implementation commit: `3ef7012efacb97ef8a21d1695b25060f1a2f4e3f`;
-- workflow run: `31050899615`;
-- frontend unit tests: passed;
-- TypeScript validation: passed;
-- production build: passed;
-- Django migration consistency and system checks: passed;
-- corrected expanded responsive Chromium matrix: passed.
-
-### Shared modal verified checkpoint
-
-Verified on real Combat nested-dialog and wide-workbench paths:
-
-- implementation commit: `7229c668bd39a303df4e76877218e8971b7d6948`;
-- workflow run: `31076300535`;
-- frontend unit tests: passed;
-- TypeScript validation: passed;
-- production build: passed;
-- Django migration consistency and system checks: passed;
-- expanded responsive Chromium matrix: passed;
-- phone and desktop master nested-dialog assertions: passed;
-- top-only Escape, focus trapping, parent inertness, exact focus restoration, and protected wide backdrop behavior: passed.
-
-These checkpoints do not yet satisfy the complete release gate for every destructive confirmation, every advanced planner/manager mutation, every font scale, every overlay combination, or canonical screenshot comparison.
-
-## Tests and continuous verification
-
-The branch workflow `.github/workflows/mobile-optimization-verification.yml` now runs:
-
-- frontend unit tests;
-- TypeScript validation;
-- production build;
-- Django migration consistency;
-- Django system checks;
-- lower-risk and stateful responsive suites;
-- Travel responsive suite;
-- general Combat responsive suite;
-- independent player/master Combat role suite.
-
-## Immediate next slice
-
-1. Complete the remaining Combat modal and workflow gate:
-   - replace native duplicate-action, clear-queue, and snapshot-restore confirmations with accessible shared dialogs;
-   - normalize image-picker preview and other ad hoc dialog overlays through the shared stack;
-   - test cancellation, focus restoration, and state preservation for those paths;
-   - participant removal, control transfer, activation, defeat, recovery, and relocation flows;
-   - target selection and attack preparation across player/master permissions;
-   - quick-action planner mutations and validation;
-   - map import, version, snapshot, duplicate, editor, background, and deletion workflows;
-   - portrait/landscape, larger font scales, overlay stacking, and state preservation;
-   - protected canonical desktop screenshots for the same workflows.
-2. Audit every Quick Tool internal workflow after Combat reaches the complete gate.
-3. Run the integrated Stage F pass across roles, orientations, font scales, overlays, touch drag systems, and canonical desktop screenshots.
-
-## Release block
-
-Do not merge to `main` for public mobile release until every player route, modal, hover-only action, required touch drag system, Combat, Travel, navigation path, role variant, orientation, and desktop non-regression check passes the guide's completeness gate.
-
-## Blocking-review corrections
-
-- Restored the original desktop Modal backdrop-close default; stricter inferred dismissal remains phone-scoped.
-- Added a separate complete `authenticated` desktop Playwright job.
-- Added pinned `main` versus candidate screenshot comparison at 1280×800, 1440×900, and 1920×1080, including all player routes, management, settings tabs, quick-tool drawers, seeded content modals, and density states.
-- Moved unsupported phone management handling into permission-preserving route guards so management pages do not mount.
-- Added a shared explicit mobile workspace Back bar for Combat and Travel with modal/child-panel-first handling, router history, direct-entry Home fallback, and hardware Escape parity.
+| A — Baseline and test harness | Implemented | Canonical desktop suite, pinned desktop visual comparison, phone/tablet projects, overflow helpers, role sessions, and branch CI exist. Stage F adds a 768px tablet floor and performance/touch evidence attachments. |
+| B — Shared responsive primitives | Implemented checkpoint | Responsive hook, shared navigation data, phone app/bottom navigation, More/Quick Tools sheets, responsive Modal stack, phone ToolDrawer, Context Notes sheet, mobile Combat/Travel workspace runtimes, and phone management guards are present. Desktop markup and presentation remain authoritative. |
+| C — Lower-risk player pages | Automated checkpoint | Login, Dashboard, Lore, Guides, Media, Settings, and Market have responsive route tests. Physical browser/device variants remain release evidence, not implementation claims. |
+| D — Stateful player pages | Automated checkpoint | Skills, Competencies, Creation, New Character, and Character have dedicated responsive suites. Character touch drag activation/cancellation is covered; the complete valid/invalid/swap/auto-scroll matrix remains open. |
+| E — High-risk workspaces and tools | Automated checkpoint | Travel and Combat use dedicated phone workspaces and have real touch gesture tests. Quick Tools have full-screen phone drawers and now receive substantive Journal, Dice, Theft, Names, AI, Audio, special-resource, and mini-player workflow tests. Manual Combat/Travel sign-off remains mandatory. |
+| F — Integrated full-route pass | In progress | PR #7 adds route, role, orientation-project, accessibility-setting, modal, global-state, tablet-management, Quick Tool workflow, memory/transfer, and map frame-rate evidence. It is not complete until all release blockers below are closed. |
+
+## Current responsive architecture
+
+- `frontend/src/lib/navigation.ts` is the shared source for player and management destinations. Phone and desktop ordering are synchronized from the same data; the old “DOM-derived navigation” note is obsolete.
+- `AudioPlayerProvider` remains above `Shell` and `<Routes>`, preserving playback during route changes.
+- `frontend/src/components/Modal.tsx` preserves the desktop dialog, drag, resize, wide, headless, and portal behavior. Phone presentations use dialog, sheet, or full-screen modes with modal stacking, focus trapping/restoration, body locking, safe areas, and sticky regions.
+- `GameManagerOnly` and `AdminOnly` prevent phone management components from mounting and retain the requested `/tools*` URL while showing Back and Home actions.
+- Combat and Travel retain shared controllers/business rules and add phone-specific workspace runtimes rather than rendering duplicate page trees.
+- The canonical `authenticated` project and pinned desktop visual-regression workflow remain isolated from the responsive matrix.
+
+## Stage F work in draft PR #7
+
+### Integrated route and accessibility evidence
+
+- every player route loads in compact projects and protected 1920 desktop coverage;
+- primary heading, shell/navigation, console errors, document overflow, and fixed-chrome focus covering are checked;
+- browser navigation remains covered by `mobile-integrated.spec.ts`;
+- all supported font scales (`75`, `85`, `100`, `125`, `150`, `175`) cross all densities (`spacious`, `comfortable`, `compact`, `condensed`);
+- visible touch targets are inventoried per route and attached as JSON evidence;
+- a true 768 × 1024 tablet project verifies every management route at the supported width floor;
+- independent player and Master phone sessions verify route permissions, the management notice, and the direct management limitation.
+
+### Quick Tool workflows
+
+`frontend/tests/mobile-quick-tools-workflows.spec.ts` now exercises more than drawer containment:
+
+- Journal section editing, autosave completion, close/reopen persistence, and the special-resource editor;
+- Dice roll execution, local result/history, group history, and session clearing;
+- Theft tab changes, circumstances, diversion/manual modifiers, recalculation, and reset;
+- Names catalog selection, generation, reroll, and tap-visible culture choices;
+- AI submission when a configured chat is present, or the explicit unavailable state when it is not;
+- Audio playback, mini-player reachability, route continuity, touch-sized transport controls, navigation clearance, and stop.
+
+### Modal and overlay work
+
+- confirmed defect fixed: phone Audio deletion no longer uses a native browser prompt;
+- phone Audio deletion uses the shared compact destructive dialog with explicit close, blocked backdrop dismissal, Escape, focus restoration, and irreversible-action copy;
+- desktop Audio deletion retains the original `window.confirm` path, avoiding a desktop interaction change;
+- nested Journal special-resource editor containment is exercised;
+- the complete repository-wide call-site classification is still open and tracked below.
+
+### Global states and performance evidence
+
+- delayed bootstrap verifies loading-screen viewport containment;
+- injected startup failure verifies fatal copy, a touch-sized retry, and successful recovery;
+- injected action failure verifies toast placement above phone navigation;
+- route/startup wall-clock, navigation timing, JS/CSS/image transfer, largest resource, resource count, and optional Chromium heap are attached;
+- Combat and Travel animation-frame samples are attached with a catastrophic minimum guard;
+- the limits are safety rails, not final product budgets. Baseline and candidate numbers must be reviewed before release.
+
+## Release blockers
+
+The following prevent a truthful “mobile complete” status:
+
+1. **Physical-device evidence** — iOS Safari narrow/large phone, Android Chrome mid-range phone, Android tablet, iPad Safari portrait/landscape, desktop Chrome/Firefox/WebKit, address-bar collapse, virtual keyboard, password manager, file picker, refresh in nested routes, slow network, real offline/reconnect, large OS text, reduced motion, and touch plus hardware keyboard.
+2. **Manual Combat and Travel sign-off** — full participant, attack, token movement, map state, marker, route/journey, guide, empty/loading, and role flows on physical touch hardware.
+3. **Complete drag transaction matrix** — Character valid drop, invalid drop, swap, full inventory, locked slot, cancel, auto-scroll, finger offset, and orientation change; Combat committed token move and invalid/cancel paths; Travel committed marker/route interactions and sheet coexistence. Existing tests cover activation/cancel and core map gestures but not every transaction.
+4. **Complete modal/overlay classification** — every player-opened `Modal`, `ToolDrawer`, portal, inline `role="dialog"`, native confirmation, and custom overlay must have a recorded phone/tablet/desktop target and tests for keyboard-open state, sticky actions, destructive/dirty behavior, nested pickers, Escape, backdrop, and focus restoration. `CampaignSpecialResources` and AI/custom portals remain explicit audit items.
+5. **Complete hover audit** — every visible hover-only action or detail must have a tested tap/focus alternative. Existing Character calculation surfaces, notes, navigation labels, map controls, media actions, campaign weather details, and management controls require a repository-wide evidence report.
+6. **Global message stacking and restart evidence** — the current App toast host stores one message at a time; multiple-message stacking is not implemented. The restart screen exists, but automated and physical reconnect evidence is still required.
+7. **Performance budget review** — the new measurements must be compared with the pinned desktop baseline and agreed phone budgets. A green catastrophic guard is not release approval.
+8. **Documentation completion** — status, inventory, test instructions, and release ledger are updated in PR #7. The main README should link to the final release evidence when the physical-device record is complete.
+
+## Desktop preservation gate
+
+No responsive work may be merged if any of these fail:
+
+- canonical pre-existing desktop tests;
+- pinned visual comparisons at protected desktop viewports;
+- sidebar order/presentation;
+- modal default size, positioning, drag, and resize;
+- ToolDrawer drag/resize;
+- hover and keyboard behaviors;
+- density, font, theme, route, permission, and audio continuity contracts;
+- agreed startup, route, memory, and rendering budgets.
+
+Snapshot changes must be reviewed as product changes; snapshots must not be updated merely to make CI pass.
+
+## Verification record
+
+- Draft PR: #7, `agent/mobile-stage-f-completion` → `mobile-optimized`.
+- CI status must be read from the PR. Do not copy an older green run into this section as proof for the new Stage F matrix.
+- Automated artifacts are uploaded from `frontend/playwright-report` and `frontend/test-results`, including overflow, touch-target, accessibility-profile, route, performance, and frame-rate JSON attachments.
+- Manual evidence belongs in `Builder_docs/MOBILE_RELEASE_EVIDENCE.md` and must include device/browser version, viewport/orientation, role, test date, result, issue/trace reference, and tester.
+
+## Release rule
+
+Do not enable or describe the public mobile release as complete until every blocker is closed and both desktop and mobile gates pass. “Mostly responsive” is not a release state.
