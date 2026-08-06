@@ -106,9 +106,11 @@ test("phone messages stack above fixed navigation and remain inside the viewport
   await die.click();
   const stack = page.locator(".mobile-toast-stack");
   await expect(stack.getByText("Primo tiro di prova non disponibile.")).toBeVisible();
+  await expect(die).toBeEnabled();
   await die.click();
+  await expect.poll(() => failures).toBe(2);
   await expect(stack.getByText("Secondo tiro di prova non disponibile.")).toBeVisible();
-  await expect(stack.locator("[data-mobile-toast-copy]" )).toHaveCount(2);
+  await expect(stack.locator("[data-mobile-toast-copy]")).toHaveCount(2);
 
   const toasts = stack.locator("[data-mobile-toast-copy]");
   const navigationBox = await page.locator(".mobile-bottom-navigation").boundingBox();
