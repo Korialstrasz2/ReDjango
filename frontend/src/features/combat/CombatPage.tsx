@@ -393,9 +393,9 @@ function CombatantRail({ map, busy, canManage, controlledCharacterId, onSelect, 
   </aside>;
 }
 
-function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDragChange, onRemove, onContext, onPairSelect, toolbar }: {
+function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, hoveredCharacterId, onDragChange, onRemove, onContext, onPairSelect, toolbar }: {
   map: CombatMap; busy: boolean; canManage: boolean;
-  draggedCharacterId: number | null; onDragChange: (id: number | null) => void;
+  draggedCharacterId: number | null; hoveredCharacterId: number | null; onDragChange: (id: number | null) => void;
   onRemove: (id: number) => void; onContext?: (participant: MapParticipant) => void;
   onPairSelect: (attackerId: number, defenderId: number) => void;
   toolbar: ReactNode;
@@ -416,7 +416,7 @@ function ActiveCombatantStrip({ map, busy, canManage, draggedCharacterId, onDrag
       const isDropTarget = dropTargetId === entry.character.id && draggedCharacterId !== entry.character.id;
       return <div
         key={entry.id}
-        className={`${draggedCharacterId === entry.character.id ? "dragging" : ""} ${isDropTarget ? "drop-target" : ""}`}
+        className={`${hoveredCharacterId === entry.character.id ? "highlighted" : ""} ${draggedCharacterId === entry.character.id ? "dragging" : ""} ${isDropTarget ? "drop-target" : ""}`}
         onContextMenu={(event) => { if (!onContext) return; event.preventDefault(); onContext(entry); }}
         onDragEnter={(event) => { event.preventDefault(); setDropTargetId(entry.character.id); }}
         onDragOver={(event) => { event.preventDefault(); event.dataTransfer.dropEffect = "link"; }}
@@ -1239,6 +1239,7 @@ export function CombatPage() {
   const [attackResult, setAttackResult] = useState<AttackResult | null>(null);
   const [attackSelection, setAttackSelection] = useState<AttackSelection | null>(null);
   const [draggedCharacterId, setDraggedCharacterId] = useState<number | null>(null);
+  const [hoveredCharacterId, setHoveredCharacterId] = useState<number | null>(null);
   const [hexOpen, setHexOpen] = useState(false);
   const [hexTab, setHexTab] = useState<"colors" | "types">("colors");
   const [plannerOpen, setPlannerOpen] = useState(false);
@@ -1461,7 +1462,7 @@ export function CombatPage() {
   </div>;
   return <div className="page combat-page">
     {!map ? <section className="hero-panel"><div><p className="eyebrow">Nessuna mappa</p><h2>Crea il primo tavolo tattico</h2><p>L'editor salva immagine, orientamento, griglia e trasformazioni in un vero oggetto amministrabile.</p></div>{workspace.permissions.canManageMaps && <button className="button primary" onClick={() => setMapEditorMode("create")}>Apri il creator</button>}</section> : <>
-      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={setContextParticipant} onPairSelect={selectAttackPair} toolbar={mapToolbar} />
+      <ActiveCombatantStrip map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onRemove={(participantId) => act("combat.deactivateParticipant", { participantId })} onContext={setContextParticipant} onPairSelect={selectAttackPair} toolbar={mapToolbar} hoveredCharacterId={hoveredCharacterId} />
       <div className="combat-stage-layout">
         <SelectedCharacterSidebar map={map} busy={mutation.isPending} canManage={workspace.permissions.canControlCharacters} controlledCharacterId={workspace.viewerCharacterId} draggedCharacterId={draggedCharacterId} onDragChange={setDraggedCharacterId} onContext={workspace.permissions.canControlCharacters ? setContextParticipant : undefined} onPairSelect={selectAttackPair} onUpdateResource={(characterId, resource, current) => resource === "pa" ? setLocalActionPointValue(characterId, current) : act("combat.updateResource", { characterId, resource, current })} onSwitchPrimary={(characterId) => act("equipment.switchPrimaryWeapon", { characterId })} onRemoveQuiverItem={(characterId, slot) => act("combat.removeQuiverItem", { characterId, slot })} />
         <section className="combat-map-panel">
@@ -1470,7 +1471,7 @@ export function CombatPage() {
             <DraggableHexTool open={hexOpen} selectionCount={selectedHexes.length} onToggle={() => setHexOpen((current) => { const next = !current; if (next) { setPlannerOpen(false); setAttackOpen(false); if (selectedHex && !selectedHexes.length) setSelectedHexes([selectedHex]); } return next; })}>
               <HexInspector workspace={workspace} selectedCells={selectedHexes} canManage={workspace.permissions.canManageMaps} tab={hexTab} terrainBadges={terrainBadges} onTabChange={setHexTab} onSelectionChange={handleHexSelection} onApply={(payload) => act("maps.paintHexes", payload)} onFog={(payload) => act("maps.updateFog", payload)} />
             </DraggableHexTool>
-            <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen} terrainBadges={hexOpen && hexTab === "types" && workspace.permissions.canManageMaps ? terrainBadges : null} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} />
+            <CombatMapCanvas map={map} selected={selectedHex} selectedCells={selectedHexes} selectionEnabled={hexOpen} terrainBadges={hexOpen && hexTab === "types" && workspace.permissions.canManageMaps ? terrainBadges : null} paths={paths} pathStart={pathStart} controlledCharacterId={workspace.viewerCharacterId} canControlAll={workspace.permissions.canControlCharacters} hoveredCharacterId={hoveredCharacterId} onHexClick={handleHex} onSelectionChange={handleHexSelection} onMoveParticipant={(participantId, cell) => act("combat.moveParticipant", { participantId, ...cell })} onContextParticipant={setContextParticipant} onParticipantHover={setHoveredCharacterId} />
           </div>
         </section>
         <aside className={`combat-attack-drawer ${attackOpen ? "open" : ""}`} data-component-type="drawer" data-theme="combat">

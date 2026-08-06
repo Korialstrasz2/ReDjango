@@ -14,10 +14,13 @@ type Props = {
   pathStart: Axial | null;
   controlledCharacterId: number | null;
   canControlAll: boolean;
+  /** Personaggio sotto il cursore: serve a evidenziare la sua tessera nel pannello superiore. */
+  hoveredCharacterId: number | null;
   onHexClick: (cell: Axial) => void;
   onSelectionChange: (cells: Axial[]) => void;
   onMoveParticipant: (participantId: number, cell: Axial) => void;
   onContextParticipant: (participant: MapParticipant) => void;
+  onParticipantHover: (characterId: number | null) => void;
 };
 
 type PanDrag = { startX: number; startY: number; originX: number; originY: number };
@@ -26,8 +29,8 @@ type SelectionDrag = { mode: "add" | "remove"; cells: Map<string, Axial>; visite
 const clamp = (value: number, minimum: number, maximum: number) => Math.min(maximum, Math.max(minimum, value));
 
 export function CombatMapCanvas({
-  map, selected, selectedCells, selectionEnabled, terrainBadges, paths, pathStart, controlledCharacterId, canControlAll,
-  onHexClick, onSelectionChange, onMoveParticipant, onContextParticipant,
+  map, selected, selectedCells, selectionEnabled, terrainBadges, paths, pathStart, controlledCharacterId, canControlAll, hoveredCharacterId,
+  onHexClick, onSelectionChange, onMoveParticipant, onContextParticipant, onParticipantHover,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const panDrag = useRef<PanDrag | null>(null);
@@ -235,8 +238,10 @@ export function CombatMapCanvas({
             const canMove = canControlAll || participant.character.id === controlledCharacterId;
             return <g
               key={participant.id}
-              className={`combat-token ${participant.character.id === map.activeCharacterId ? "active" : ""} ${canMove ? "can-move" : "locked"} ${dragging?.id === participant.id ? "drag-origin" : ""}`}
+              className={`combat-token ${participant.character.id === map.activeCharacterId ? "active" : ""} ${canMove ? "can-move" : "locked"} ${dragging?.id === participant.id ? "drag-origin" : ""} ${hoveredCharacterId === participant.character.id ? "hovered" : ""}`}
               transform={`translate(${anchor.x} ${anchor.y})`}
+              onPointerEnter={() => onParticipantHover(participant.character.id)}
+              onPointerLeave={() => onParticipantHover(null)}
               onPointerDown={(event) => {
                 if (!canMove || event.button !== 0) return;
                 event.stopPropagation();

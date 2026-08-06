@@ -4160,6 +4160,9 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-token-drag-preview circle { vector-effect: non-scaling-stroke; }
 .combat-token-drag-preview image { filter: saturate(1.08) brightness(1.08); }
 .combat-token.active circle { stroke: #ffe996; stroke-width: 4; }
+.combat-token.hovered circle { stroke: #ffe9a0; stroke-width: 4; }
+.combat-token.hovered image { filter: drop-shadow(0 0 6px rgba(255, 215, 0, .65)); }
+.combat-token.hovered text { fill: #fff2c0; }
 .combat-token text { fill: #fff5dc; font: 700 12px var(--font-display); pointer-events: none; }
 .combat-map-empty { position: absolute; inset: 50% auto auto 50%; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); color: var(--muted); pointer-events: none; }
 .combat-map-empty strong { color: var(--text); }
@@ -4445,6 +4448,7 @@ html[data-reduced-motion="true"] *::after { scroll-behavior: auto !important; tr
 .combat-active-roster > div { position: relative; min-width: 154px; border: 1px solid var(--line); border-radius: 8px; background: #0002; transition: border-color .15s, background .15s, transform .15s; }
 .combat-active-roster > div:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--gold) 42%, var(--line)); }
 .combat-active-roster > div.active { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, transparent); box-shadow: inset 0 -2px var(--gold); }
+.combat-active-roster > div.highlighted { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 14%, transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 45%, transparent), inset 0 0 0 1px var(--gold); }
 .combat-active-roster > div.dragging, .combat-selected-character > header.dragging { opacity: .38; }
 .combat-active-roster > div.drop-target, .combat-selected-character > header.drop-target { border-color: #78c8ee; background: color-mix(in srgb, #78c8ee 15%, transparent); box-shadow: inset 0 0 0 2px #78c8ee99; }
 .combat-active-roster.empty { display: grid; place-items: center; min-height: 84px; }
