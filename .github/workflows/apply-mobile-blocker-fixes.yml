@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: mobile-optimized
-          fetch-depth: 4
+          fetch-depth: 5
       - name: Run reviewed patch payload
         run: |
           python - <<'PY'
@@ -32,6 +32,7 @@ jobs:
               raise SystemExit("Patch payload was not found")
           body = source.split(start, 1)[1].split(end, 1)[0]
           script = "\n".join(line[10:] if line.startswith("          ") else line for line in body.splitlines())
+
           brittle = '''if old_management_css not in mobile_css:
               raise SystemExit("Management CSS source block not found")
           mobile_css = mobile_css.replace(old_management_css, new_management_css, 1)'''
@@ -53,6 +54,24 @@ jobs:
           if brittle not in script:
               raise SystemExit("Brittle management patch block was not found")
           script = script.replace(brittle, robust, 1)
+
+          function_marker = "# 1. Preserve the original desktop backdrop-close default."
+          override = '''_payload_replace_once = replace_once
+          def replace_once(path: str, old: str, new: str) -> None:
+              if path == "frontend/src/features/mobile/CombatMobileRuntime.tsx" and "return <nav ref={navRef}" in old:
+                  content = read(path)
+                  pattern = r'  return <nav ref=\\{navRef\\} className="combat-mobile-navigation" role="tablist" aria-label="Pannelli del combattimento">.*?\\n  </nav>;'
+                  updated, count = re.subn(pattern, new.strip("\\n"), content, count=1, flags=re.S)
+                  if count != 1:
+                      raise SystemExit(f"Expected Combat workspace return, found {count}")
+                  write(path, updated)
+                  return
+              _payload_replace_once(path, old, new)
+
+          '''
+          if function_marker not in script:
+              raise SystemExit("Payload insertion marker was not found")
+          script = script.replace(function_marker, override + function_marker, 1)
           exec(compile(script, workflow, "exec"), {"__name__": "__main__"})
           PY
       - name: Verify patch shape
