@@ -1,0 +1,1 @@
+Remove the player-facing character request form from Settings → Profile and update the dashboard empty-state copy. Delete the abandoned codemod script. Existing backend records and administrative review paths remain intact.
