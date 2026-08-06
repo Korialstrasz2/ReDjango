@@ -1,0 +1,62 @@
+name: Mobile desktop isolation audit
+
+on:
+  push:
+    branches:
+      - mobile-optimized
+    paths:
+      - ".github/workflows/mobile-desktop-isolation-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-specs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mobile-optimized
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: pip install -r requirements.txt
+      - working-directory: frontend
+        run: npm ci
+      - working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - working-directory: frontend
+        run: npm run build
+      - name: Run previously failing specs against fresh state
+        working-directory: frontend
+        run: |
+          set +e
+          failures=0
+          for spec in \
+            tests/ai-tool.spec.ts \
+            tests/audio-tool.spec.ts \
+            tests/auth-access.spec.ts \
+            tests/character-workspace.spec.ts \
+            tests/combat-interactions.spec.ts \
+            tests/competencies-workspace.spec.ts \
+            tests/guides-media.spec.ts \
+            tests/lore-timeline.spec.ts \
+            tests/master-ai.spec.ts \
+            tests/quick-tools.spec.ts \
+            tests/skill-management.spec.ts \
+            tests/skills-workspace.spec.ts
+          do
+            echo "::group::$spec"
+            npx playwright test "$spec" --project=authenticated --workers=1
+            status=$?
+            echo "ISOLATED_RESULT $spec $status"
+            echo "::endgroup::"
+            if [ $status -ne 0 ]; then failures=$((failures + 1)); fi
+          done
+          exit $failures
