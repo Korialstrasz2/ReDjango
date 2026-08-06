@@ -9,6 +9,7 @@ import { AudioMiniPlayer } from "../audio/AudioMiniPlayer";
 import { AudioTool } from "../audio/AudioTool";
 import { CampaignStatus } from "../campaign/CampaignStatus";
 import { MobileNavigation, type MobileTool } from "../mobile/MobileNavigation";
+import { pendingSpecialResourceCount } from "../notes/specialResourceState";
 import { DiceTool } from "./DiceTool";
 import { JournalTool } from "./JournalTool";
 import { NameTool } from "./NameTool";
@@ -35,6 +36,8 @@ export function QuickTools({ characterId, characterName, campaign, settings, nav
   const audioShortcut = shortcutValue(settings.ui, "audio");
   const aiShortcut = shortcutValue(settings.ui, "ai");
   const namesShortcut = shortcutValue(settings.ui, "names");
+  const pendingJournalCount = pendingSpecialResourceCount(campaign);
+  const journalClassName = [tool === "journal" ? "active" : "", pendingJournalCount > 0 ? "pending-review-glow" : ""].filter(Boolean).join(" ");
   const toggleTool = (target: MobileTool) => setTool((current) => current === target ? null : target);
 
   useEffect(() => {
@@ -64,8 +67,9 @@ export function QuickTools({ characterId, characterName, campaign, settings, nav
       <AudioMiniPlayer onOpen={() => setTool("audio")} />
       <div className="quick-tools-actions">
         <span>Strumenti rapidi</span>
-        <button type="button" className={tool === "journal" ? "active" : ""} onClick={() => toggleTool("journal")} aria-expanded={tool === "journal"} aria-keyshortcuts={journalShortcut || undefined} title={journalShortcut ? `Diario (${journalShortcut.replace("+", " + ")})` : "Diario"}>
+        <button type="button" className={journalClassName} onClick={() => toggleTool("journal")} aria-expanded={tool === "journal"} aria-keyshortcuts={journalShortcut || undefined} title={pendingJournalCount > 0 ? `Diario · ${pendingJournalCount} richieste Risorse speciali in attesa` : journalShortcut ? `Diario (${journalShortcut.replace("+", " + ")})` : "Diario"}>
           <span aria-hidden="true">⌑</span><strong>Diario</strong>
+          {pendingJournalCount > 0 && <em className="quick-tool-pending-count" aria-label={`${pendingJournalCount} richieste in attesa`}>{pendingJournalCount}</em>}
         </button>
         <button type="button" className={tool === "dice" ? "active" : ""} onClick={() => toggleTool("dice")} aria-expanded={tool === "dice"} aria-keyshortcuts={diceShortcut || undefined} title={diceShortcut ? `Dadi (${diceShortcut.replace("+", " + ")})` : "Dadi"}>
           <span aria-hidden="true">◆</span><strong>Dadi</strong>
