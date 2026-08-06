@@ -1,7 +1,7 @@
 name: Prepare character request removal PR
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [main]
     types: [opened, synchronize, reopened]
 
@@ -10,12 +10,13 @@ permissions:
 
 jobs:
   prepare:
-    if: github.head_ref == 'codex/remove-character-request-settings-clean'
+    if: github.event.pull_request.head.ref == 'codex/remove-character-request-settings-clean'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - uses: actions/checkout@v4
         with:
@@ -49,4 +50,4 @@ jobs:
           git config user.email "65488656+Korialstrasz2@users.noreply.github.com"
           git add -A
           git commit -m "refactor(settings): remove character request flow"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
