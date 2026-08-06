@@ -1,0 +1,34 @@
+name: Mobile apply follow-up
+
+on:
+  push:
+    branches:
+      - mobile-optimized
+    paths:
+      - ".github/workflows/mobile-apply-followup.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mobile-optimized
+      - name: Apply audited follow-up
+        run: |
+          base64 -d .mobile-followup.patch | gzip -d > /tmp/mobile-followup.patch
+          git apply --check /tmp/mobile-followup.patch
+          git apply /tmp/mobile-followup.patch
+          rm .mobile-followup.patch
+          git diff --check
+      - name: Commit follow-up
+        run: |
+          git config user.name "OpenAI"
+          git config user.email "openai@users.noreply.github.com"
+          git add -A
+          git commit -m "Complete mobile guide verification coverage"
+          git push origin HEAD:mobile-optimized
