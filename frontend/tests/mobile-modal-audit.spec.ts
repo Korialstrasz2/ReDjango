@@ -72,7 +72,7 @@ test("phone audio deletion uses a blocking responsive dialog with focus restorat
   await confirmation.getByRole("button", { name: "Elimina definitivamente" }).click();
   await expect(confirmation).toHaveCount(0);
   await expect(drawer.getByText("La colonna sonora è ancora vuota.")).toBeVisible();
-  await expect(page.locator(".toast.success")).toContainText("Traccia eliminata.");
+  await expect(page.locator(".mobile-toast-stack .toast.success")).toContainText("Traccia eliminata.");
   await expectNoDocumentOverflow(page, testInfo, "audio-delete-modal");
 });
 
