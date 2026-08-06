@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useResponsiveLayout } from "../../lib/responsive";
 import { matchesShortcut, quickToolShortcutTargets, shortcutValue } from "../../lib/shortcuts";
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export function QuickTools({ characterId, characterName, campaign, settings, navigation, notify }: Props) {
+  const queryClient = useQueryClient();
   const { isPhone } = useResponsiveLayout();
   const [tool, setTool] = useState<Tool>(null);
   const journalShortcut = shortcutValue(settings.ui, "journal");
@@ -52,6 +54,21 @@ export function QuickTools({ characterId, characterName, campaign, settings, nav
     window.addEventListener("keydown", onKeyDown, true);
     return () => window.removeEventListener("keydown", onKeyDown, true);
   }, [settings.ui]);
+
+  useEffect(() => {
+    if (!settings.security.canManageGameData) return;
+    const refreshApprovals = () => {
+      if (document.visibilityState === "visible") {
+        void queryClient.invalidateQueries({ queryKey: ["bootstrap"] });
+      }
+    };
+    const timer = window.setInterval(refreshApprovals, 15_000);
+    window.addEventListener("focus", refreshApprovals);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshApprovals);
+    };
+  }, [queryClient, settings.security.canManageGameData]);
 
   return <>
     {isPhone && <MobileNavigation
