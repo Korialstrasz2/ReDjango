@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { collectRoutePerformanceSnapshot } from "./helpers/stage-f";
+import { collectRoutePerformanceSnapshot, primaryHeading } from "./helpers/stage-f";
 
 const performanceProjects = new Set(["phone-large-portrait", "desktop-1920"]);
 const routes = ["/", "/skills", "/combat", "/travel"] as const;
@@ -29,7 +29,7 @@ test("records startup, transfer, route, image, CSS, and memory budgets", async (
   for (const path of routes) {
     const started = Date.now();
     await page.goto(path);
-    await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
+    await primaryHeading(page).waitFor({ state: "visible" });
     const wallClockMs = Date.now() - started;
     evidence.push({ ...(await collectRoutePerformanceSnapshot(page, path)), wallClockMs });
   }
@@ -58,7 +58,7 @@ test("records Combat and Travel animation-frame budgets on phone", async ({ page
 
   for (const path of ["/combat", "/travel"] as const) {
     await page.goto(path);
-    await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
+    await primaryHeading(page).waitFor({ state: "visible" });
     evidence[path] = await sampleAnimationFrames(page);
     expect(evidence[path].fps, `${path} fell below the minimum interactive frame budget`).toBeGreaterThanOrEqual(15);
   }
