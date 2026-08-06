@@ -12,6 +12,7 @@ import { MobileToastStack } from "./features/mobile/MobileToastStack";
 import { TravelMobileRuntime } from "./features/mobile/TravelMobileRuntime";
 import { ThemeRevealRuntime } from "./features/theme/ThemeRevealRuntime";
 import "./styles/app.css";
+import "./styles/interaction-fixes.css";
 import "./styles/theme-reveal.css";
 import "./styles/master-ai.css";
 import "./styles/master-ai-shell.css";
