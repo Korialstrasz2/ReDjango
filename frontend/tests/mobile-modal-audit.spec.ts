@@ -61,7 +61,9 @@ test("phone audio deletion uses a blocking responsive dialog with focus restorat
   await expect(confirmation).toContainText("Questa operazione non può essere annullata.");
 
   const backdrop = confirmation.locator("xpath=..");
-  await backdrop.dispatchEvent("mousedown");
+  const backdropBox = await backdrop.boundingBox();
+  expect(backdropBox).not.toBeNull();
+  await backdrop.click({ position: { x: 4, y: Math.max(4, backdropBox!.height / 2) } });
   await expect(confirmation).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(confirmation).toHaveCount(0);
