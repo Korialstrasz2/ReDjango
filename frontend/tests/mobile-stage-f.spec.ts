@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 import {
   applyAccessibilityProfile,
@@ -25,14 +25,14 @@ const fixedPlayerRoutes = [
   "/settings",
 ] as const;
 
-async function resolveCharacterRoute(page: Parameters<typeof test>[0] extends never ? never : any): Promise<string | null> {
+async function resolveCharacterRoute(page: Page): Promise<string | null> {
   await page.goto("/");
   const characterLink = page.locator("a[href^='/character/']").first();
   if (!(await characterLink.count())) return null;
   return characterLink.getAttribute("href");
 }
 
-async function expectRouteShell(page: any, projectName: string) {
+async function expectRouteShell(page: Page, projectName: string) {
   await expect(page.locator(".fatal-error")).toHaveCount(0);
   await expect(page.locator(".app-shell")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
