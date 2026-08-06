@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { command } from "../../lib/api";
@@ -8,54 +8,97 @@ import type {
   CampaignSpecialResource,
   CampaignSpecialResourceProposal,
 } from "../../lib/types";
+import {
+  specialResourceLineChanged,
+  specialResourceLineDraft,
+  specialResourceText,
+  type SpecialResourceLineDraft,
+} from "./specialResourceState";
 
 type Props = {
   campaign: CampaignData;
   notify: (message: string, kind?: "success" | "error" | "info") => void;
+  reviewRequestToken?: number;
 };
 
-type Draft = Pick<CampaignSpecialResource, "character" | "name" | "value" | "notes" | "highlighted">;
 type CampaignActionData = { campaigns: Pick<BootstrapData, "activeCampaignId" | "campaigns"> };
+type ProposalSnapshot = { character: string; name: string; text: string };
 
-const EMPTY_DRAFT: Draft = { character: "", name: "", value: "", notes: "", highlighted: false };
+const EMPTY_LINE: SpecialResourceLineDraft = { character: "", name: "", text: "" };
 
 function proposalActionLabel(proposal: CampaignSpecialResourceProposal) {
   if (proposal.action === "archive") return "Archiviazione";
   if (proposal.action === "restore") return "Ripristino";
-  return proposal.resourceId ? "Modifica" : "Nuova risorsa";
+  return proposal.resourceId ? "Modifica" : "Nuova riga";
 }
 
 function dateLabel(value: string | null) {
   if (!value) return "";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? "" : new Intl.DateTimeFormat("it-IT", {
-    day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(date);
 }
 
-export function CampaignSpecialResources({ campaign, notify }: Props) {
-  const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [characterFilter, setCharacterFilter] = useState("");
-  const [showArchived, setShowArchived] = useState(false);
-  const [editingId, setEditingId] = useState<string | null | undefined>(undefined);
-  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
-  const [busy, setBusy] = useState<string | null>(null);
-  const { resources, proposals, canManage } = campaign.specialResources;
-  const pending = proposals.filter((proposal) => proposal.status === "pending");
-  const isFiltered = Boolean(search.trim() || characterFilter);
-  const characterOptions = useMemo(() => Array.from(new Set(resources.map((resource) => resource.character).filter(Boolean))).sort((a, b) => a.localeCompare(b, "it")), [resources]);
+function proposalSnapshots(
+  proposal: CampaignSpecialResourceProposal,
+  resource?: CampaignSpecialResource,
+): { before: ProposalSnapshot; after: ProposalSnapshot } {
+  const current = {
+    character: resource?.character || "",
+    name: resource?.name || proposal.resourceName || "",
+    value: resource?.value || "",
+    notes: resource?.notes || "",
+    highlighted: Boolean(resource?.highlighted),
+  };
+  const beforeFields = { ...current, ...proposal.before };
+  const afterFields = { ...beforeFields, ...proposal.values };
+  return {
+    before: {
+      character: String(beforeFields.character || ""),
+      name: String(beforeFields.name || proposal.resourceName || ""),
+      text: specialResourceText(beforeFields),
+    },
+    after: {
+      character: String(afterFields.character || ""),
+      name: String(afterFields.name || proposal.resourceName || ""),
+      text: specialResourceText(afterFields),
+    },
+  };
+}
 
-  const visibleResources = useMemo(() => {
-    const needle = search.trim().toLocaleLowerCase("it");
-    return resources.filter((resource) => {
-      if (Boolean(resource.archivedAt) !== showArchived) return false;
-      if (characterFilter && resource.character !== characterFilter) return false;
-      if (!needle) return true;
-      return [resource.character, resource.name, resource.value, resource.notes]
-        .some((value) => value.toLocaleLowerCase("it").includes(needle));
+export function CampaignSpecialResources({ campaign, notify, reviewRequestToken = 0 }: Props) {
+  const queryClient = useQueryClient();
+  const [drafts, setDrafts] = useState<Record<string, SpecialResourceLineDraft>>({});
+  const [creating, setCreating] = useState(false);
+  const [newLine, setNewLine] = useState<SpecialResourceLineDraft>(EMPTY_LINE);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const { resources, proposals, canManage } = campaign.specialResources;
+  const activeResources = useMemo(() => resources.filter((resource) => !resource.archivedAt), [resources]);
+  const pending = useMemo(() => proposals.filter((proposal) => proposal.status === "pending"), [proposals]);
+  const pendingResourceIds = useMemo(() => new Set(pending.map((proposal) => proposal.resourceId).filter(Boolean)), [pending]);
+
+  useEffect(() => {
+    setDrafts((current) => {
+      const next: Record<string, SpecialResourceLineDraft> = {};
+      activeResources.forEach((resource) => {
+        next[resource.id] = current[resource.id] || specialResourceLineDraft(resource);
+      });
+      return next;
     });
-  }, [characterFilter, resources, search, showArchived]);
+  }, [activeResources]);
+
+  useEffect(() => {
+    if (canManage && pending.length > 0 && reviewRequestToken > 0) setReviewOpen(true);
+  }, [canManage, pending.length, reviewRequestToken]);
+
+  useEffect(() => {
+    if (pending.length === 0) setReviewOpen(false);
+  }, [pending.length]);
 
   const updateCache = (payload: CampaignActionData["campaigns"]) => {
     queryClient.setQueryData<BootstrapData>(["bootstrap"], (current) => current ? { ...current, ...payload } : current);
@@ -76,46 +119,45 @@ export function CampaignSpecialResources({ campaign, notify }: Props) {
     }
   };
 
-  const openEditor = (resource?: CampaignSpecialResource) => {
-    setEditingId(resource?.id ?? null);
-    setDraft(resource ? {
-      character: resource.character,
-      name: resource.name,
-      value: resource.value,
-      notes: resource.notes,
-      highlighted: resource.highlighted,
-    } : EMPTY_DRAFT);
-  };
+  const valuesFromLine = (draft: SpecialResourceLineDraft) => ({
+    character: draft.character,
+    name: draft.name,
+    value: "",
+    notes: draft.text,
+    highlighted: false,
+  });
 
-  const save = async () => {
+  const saveLine = async (resource: CampaignSpecialResource, draft: SpecialResourceLineDraft) => {
     if (!draft.name.trim()) {
-      notify("Dai un nome alla risorsa speciale.", "error");
+      notify("Dai un nome alla riga.", "error");
       return;
     }
-    const ok = await run(
-      `save-${editingId || "new"}`,
+    if (!specialResourceLineChanged(resource, draft)) return;
+    await run(
+      `save-${resource.id}`,
       "campaign.specialResources.save",
-      { resourceId: editingId, values: draft },
-      canManage ? "Risorsa salvata." : "Proposta inviata al Master.",
+      { resourceId: resource.id, values: valuesFromLine(draft) },
+      canManage ? "Riga salvata." : "Modifica inviata al Master.",
     );
-    if (ok) setEditingId(undefined);
   };
 
-  const archive = (resource: CampaignSpecialResource, archived: boolean) => run(
-    `archive-${resource.id}`,
-    "campaign.specialResources.archive",
-    { resourceId: resource.id, archived },
-    canManage ? (archived ? "Risorsa archiviata." : "Risorsa ripristinata.") : "Proposta inviata al Master.",
-  );
-
-  const move = async (resource: CampaignSpecialResource, direction: -1 | 1) => {
-    const active = resources.filter((entry) => !entry.archivedAt);
-    const index = active.findIndex((entry) => entry.id === resource.id);
-    const target = index + direction;
-    if (index < 0 || target < 0 || target >= active.length) return;
-    const ids = active.map((entry) => entry.id);
-    [ids[index], ids[target]] = [ids[target], ids[index]];
-    await run(`move-${resource.id}`, "campaign.specialResources.reorder", { resourceIds: ids }, "Ordine aggiornato.");
+  const createLine = async () => {
+    if (!newLine.name.trim()) {
+      notify("Dai un nome alla riga.", "error");
+      return;
+    }
+    const changed = Boolean(newLine.character.trim() || newLine.name.trim() || newLine.text.trim());
+    if (!changed) return;
+    const ok = await run(
+      "save-new",
+      "campaign.specialResources.save",
+      { resourceId: null, values: valuesFromLine(newLine) },
+      canManage ? "Riga aggiunta." : "Nuova riga inviata al Master.",
+    );
+    if (ok) {
+      setCreating(false);
+      setNewLine(EMPTY_LINE);
+    }
   };
 
   const review = (proposal: CampaignSpecialResourceProposal, approve: boolean) => run(
@@ -125,84 +167,142 @@ export function CampaignSpecialResources({ campaign, notify }: Props) {
     approve ? "Proposta approvata." : "Proposta rifiutata.",
   );
 
-  return <section className="campaign-special-resources" data-component-type="collection" data-theme="parchment">
-    <header className="special-resource-toolbar">
-      <div>
-        <p>{canManage ? "Modifiche immediate · proposte dei giocatori in revisione" : "Le modifiche vengono inviate al Master per approvazione"}</p>
-        <strong>{resources.filter((resource) => !resource.archivedAt).length} risorse attive</strong>
+  const renderLine = (resource: CampaignSpecialResource) => {
+    const draft = drafts[resource.id] || specialResourceLineDraft(resource);
+    const changed = specialResourceLineChanged(resource, draft);
+    const awaitingReview = !canManage && pendingResourceIds.has(resource.id);
+    const actionLabel = canManage ? "Salva" : "Invia a Master";
+    return <form className="special-resource-line" key={resource.id} onSubmit={(event) => {
+      event.preventDefault();
+      void saveLine(resource, draft);
+    }}>
+      <div className="special-resource-line-title">
+        <label>
+          <span className="sr-only">Personaggio</span>
+          <input
+            maxLength={100}
+            value={draft.character}
+            placeholder="Personaggio o gruppo"
+            onChange={(event) => setDrafts((current) => ({
+              ...current,
+              [resource.id]: { ...draft, character: event.target.value },
+            }))}
+          />
+        </label>
+        <span aria-hidden="true">·</span>
+        <label>
+          <span className="sr-only">Nome riga</span>
+          <input
+            required
+            maxLength={120}
+            value={draft.name}
+            placeholder="Nome riga"
+            onChange={(event) => setDrafts((current) => ({
+              ...current,
+              [resource.id]: { ...draft, name: event.target.value },
+            }))}
+          />
+        </label>
       </div>
-      <button type="button" className="button primary small" onClick={() => openEditor()}>Nuova risorsa</button>
+      <div className="special-resource-line-content">
+        <label>
+          <span className="sr-only">Testo libero</span>
+          <textarea
+            rows={2}
+            maxLength={2000}
+            value={draft.text}
+            placeholder="Testo libero…"
+            onChange={(event) => setDrafts((current) => ({
+              ...current,
+              [resource.id]: { ...draft, text: event.target.value },
+            }))}
+          />
+        </label>
+        <button
+          type="submit"
+          className="button primary small"
+          disabled={!changed || busy !== null || awaitingReview}
+          title={awaitingReview ? "Questa modifica è già in attesa di revisione." : undefined}
+        >
+          {busy === `save-${resource.id}` ? (canManage ? "Salvataggio…" : "Invio…") : awaitingReview ? "In attesa" : actionLabel}
+        </button>
+      </div>
+    </form>;
+  };
+
+  return <section className="campaign-special-resources special-resource-lines" data-component-type="collection" data-theme="parchment">
+    <header className="special-resource-toolbar special-resource-line-toolbar">
+      <div>
+        <p>{canManage ? "Modifica diretta delle righe di campagna" : "Le modifiche vengono inviate al Master per approvazione"}</p>
+        <strong>{activeResources.length} {activeResources.length === 1 ? "riga" : "righe"}</strong>
+      </div>
+      <div className="special-resource-toolbar-actions">
+        {canManage && pending.length > 0 && <button type="button" className="button secondary small pending-review-glow" onClick={() => setReviewOpen(true)}>
+          Richieste <span>{pending.length}</span>
+        </button>}
+        <button type="button" className="button primary small" onClick={() => setCreating(true)}>Aggiungi riga</button>
+      </div>
     </header>
 
-    {canManage && pending.length > 0 && <section className="special-resource-proposals" aria-label="Proposte in attesa">
-      <header><strong>Proposte in attesa</strong><span>{pending.length}</span></header>
-      <div>
-        {pending.map((proposal) => <article key={proposal.id}>
-          <div>
-            <small>{proposalActionLabel(proposal)} · {proposal.proposedBy.name} · {dateLabel(proposal.createdAt)}</small>
-            <strong>{proposal.resourceName}</strong>
-            {proposal.action === "save" && <dl>
-              {Object.entries(proposal.values).map(([field, value]) => {
-                const before = proposal.before?.[field as keyof typeof proposal.before];
-                const display = (entry: unknown) => typeof entry === "boolean" ? (entry ? "Sì" : "No") : String(entry || "—");
-                return <div key={field}><dt>{field === "character" ? "Personaggio" : field === "name" ? "Risorsa" : field === "value" ? "Stato" : field === "notes" ? "Dettagli" : "In evidenza"}</dt><dd>{before !== undefined && <s>{display(before)}</s>}<b>{display(value)}</b></dd></div>;
-              })}
-            </dl>}
-          </div>
-          <footer>
-            <button type="button" className="button primary small" disabled={busy !== null} onClick={() => review(proposal, true)}>Approva</button>
-            <button type="button" className="button secondary small" disabled={busy !== null} onClick={() => review(proposal, false)}>Rifiuta</button>
-          </footer>
-        </article>)}
-      </div>
-    </section>}
-
     {!canManage && pending.length > 0 && <div className="special-resource-player-pending" role="status">
-      <strong>{pending.length} {pending.length === 1 ? "proposta in attesa" : "proposte in attesa"}</strong>
-      <span>Il Master le vedrà qui e potrà approvarle o rifiutarle.</span>
+      <strong>{pending.length} {pending.length === 1 ? "richiesta in attesa" : "richieste in attesa"}</strong>
+      <span>Le righe restano modificabili dopo che il Master avrà accettato o rifiutato la richiesta.</span>
     </div>}
 
-    <div className="special-resource-filters">
-      <label><span>Cerca</span><input type="search" value={search} placeholder="Risorsa, stato o dettaglio…" onChange={(event) => setSearch(event.target.value)} /></label>
-      <label><span>Personaggio</span><select value={characterFilter} onChange={(event) => setCharacterFilter(event.target.value)}><option value="">Tutti</option>{characterOptions.map((name) => <option key={name}>{name}</option>)}</select></label>
-      {canManage && <label className="special-resource-archive-toggle"><input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} /><span>Mostra archiviate</span></label>}
-    </div>
-
-    <div className="special-resource-grid">
-      {visibleResources.map((resource, index) => <article key={resource.id} className={resource.highlighted ? "highlighted" : ""} data-state={resource.archivedAt ? "archived" : "active"}>
-        <header>
-          <span>{resource.character || "Gruppo"}</span>
-          {resource.highlighted && <i title="Risorsa in evidenza">In evidenza</i>}
-        </header>
-        <h3>{resource.name}</h3>
-        <div className="special-resource-value">{resource.value || "Stato non indicato"}</div>
-        {resource.notes && <p>{resource.notes}</p>}
-        <small>Aggiornata da {resource.updatedBy?.name || "Sistema"}{dateLabel(resource.updatedAt) ? ` · ${dateLabel(resource.updatedAt)}` : ""}</small>
-        <footer>
-          {!resource.archivedAt && <button type="button" onClick={() => openEditor(resource)}>{canManage ? "Modifica" : "Proponi modifica"}</button>}
-          {canManage && !resource.archivedAt && <>
-            <button type="button" title={isFiltered ? "Rimuovi i filtri per riordinare" : undefined} aria-label={`Sposta ${resource.name} su`} disabled={isFiltered || index === 0 || busy !== null} onClick={() => move(resource, -1)}>↑</button>
-            <button type="button" title={isFiltered ? "Rimuovi i filtri per riordinare" : undefined} aria-label={`Sposta ${resource.name} giù`} disabled={isFiltered || index === visibleResources.length - 1 || busy !== null} onClick={() => move(resource, 1)}>↓</button>
-          </>}
-          <button type="button" disabled={busy !== null} onClick={() => archive(resource, !resource.archivedAt)}>{resource.archivedAt ? "Ripristina" : canManage ? "Archivia" : "Proponi archiviazione"}</button>
-        </footer>
-      </article>)}
-      {!visibleResources.length && <div className="special-resource-empty"><strong>Nessuna risorsa trovata</strong><p>{showArchived ? "Non ci sono risorse archiviate con questi filtri." : "Crea la prima scheda o modifica i filtri."}</p></div>}
-    </div>
-
-    {editingId !== undefined && <div className="special-resource-editor" role="dialog" aria-modal="true" aria-label={editingId ? "Modifica risorsa speciale" : "Nuova risorsa speciale"}>
-      <form onSubmit={(event) => { event.preventDefault(); void save(); }}>
-        <header><div><p className="eyebrow">{canManage ? "Gestione Master" : "Proposta al Master"}</p><h3>{editingId ? "Modifica risorsa" : "Nuova risorsa"}</h3></div><button type="button" aria-label="Chiudi" onClick={() => setEditingId(undefined)}>×</button></header>
-        <div className="special-resource-form-grid">
-          <label><span>Personaggio o gruppo</span><input maxLength={100} list="special-resource-characters" value={draft.character} placeholder="Es. Rhyss oppure Gruppo" onChange={(event) => setDraft((current) => ({ ...current, character: event.target.value }))} /></label>
-          <datalist id="special-resource-characters">{characterOptions.map((name) => <option key={name} value={name} />)}</datalist>
-          <label><span>Nome della risorsa</span><input required maxLength={120} value={draft.name} placeholder="Es. Dono di Sanguine" onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} /></label>
-          <label className="wide"><span>Stato corrente</span><input maxLength={200} value={draft.value} placeholder="Es. 2 disponibili, oppure 6 umane · 3 animali" onChange={(event) => setDraft((current) => ({ ...current, value: event.target.value }))} /><small>Lo stato resta grande e immediatamente leggibile sulla scheda.</small></label>
-          <label className="wide"><span>Regola, scadenza o promemoria</span><textarea maxLength={2000} rows={5} value={draft.notes} placeholder="Quando si rinnova? Come si consuma? Cosa bisogna ricordare?" onChange={(event) => setDraft((current) => ({ ...current, notes: event.target.value }))} /></label>
-          <label className="special-resource-highlight"><input type="checkbox" checked={draft.highlighted} onChange={(event) => setDraft((current) => ({ ...current, highlighted: event.target.checked }))} /><span>Metti in evidenza</span></label>
+    <div className="special-resource-line-list">
+      {activeResources.map(renderLine)}
+      {creating && <form className="special-resource-line special-resource-line-new" onSubmit={(event) => {
+        event.preventDefault();
+        void createLine();
+      }}>
+        <div className="special-resource-line-title">
+          <label><span className="sr-only">Personaggio</span><input autoFocus maxLength={100} value={newLine.character} placeholder="Personaggio o gruppo" onChange={(event) => setNewLine((current) => ({ ...current, character: event.target.value }))} /></label>
+          <span aria-hidden="true">·</span>
+          <label><span className="sr-only">Nome riga</span><input required maxLength={120} value={newLine.name} placeholder="Nome riga" onChange={(event) => setNewLine((current) => ({ ...current, name: event.target.value }))} /></label>
         </div>
-        <footer><button type="button" className="button secondary" onClick={() => setEditingId(undefined)}>Annulla</button><button type="submit" className="button primary" disabled={busy !== null}>{busy ? "Invio…" : canManage ? "Salva" : "Invia proposta"}</button></footer>
-      </form>
+        <div className="special-resource-line-content">
+          <label><span className="sr-only">Testo libero</span><textarea rows={2} maxLength={2000} value={newLine.text} placeholder="Testo libero…" onChange={(event) => setNewLine((current) => ({ ...current, text: event.target.value }))} /></label>
+          <div className="special-resource-new-actions">
+            <button type="button" className="button secondary small" disabled={busy !== null} onClick={() => { setCreating(false); setNewLine(EMPTY_LINE); }}>Annulla</button>
+            <button type="submit" className="button primary small" disabled={!newLine.name.trim() || busy !== null}>
+              {busy === "save-new" ? (canManage ? "Salvataggio…" : "Invio…") : canManage ? "Salva" : "Invia a Master"}
+            </button>
+          </div>
+        </div>
+      </form>}
+      {!activeResources.length && !creating && <div className="special-resource-empty">
+        <strong>Nessuna riga disponibile</strong>
+        <p>Aggiungi la prima risorsa speciale della campagna.</p>
+      </div>}
+    </div>
+
+    {canManage && reviewOpen && pending.length > 0 && <div className="special-resource-review-dialog" role="dialog" aria-modal="true" aria-label="Richieste Risorse speciali">
+      <section>
+        <header>
+          <div><p className="eyebrow">Risorse speciali</p><h3>Richieste da revisionare</h3><small>{pending.length} {pending.length === 1 ? "richiesta in attesa" : "richieste in attesa"}</small></div>
+          <button type="button" aria-label="Chiudi richieste" onClick={() => setReviewOpen(false)}>×</button>
+        </header>
+        <div className="special-resource-review-list">
+          {pending.map((proposal) => {
+            const resource = resources.find((entry) => entry.id === proposal.resourceId);
+            const snapshots = proposalSnapshots(proposal, resource);
+            return <article key={proposal.id}>
+              <header>
+                <div><small>{proposalActionLabel(proposal)} · {proposal.proposedBy.name} · {dateLabel(proposal.createdAt)}</small><strong>{snapshots.after.character || "Gruppo"} · {snapshots.after.name}</strong></div>
+                <span>{proposal.action === "archive" ? "Archivia" : proposal.action === "restore" ? "Ripristina" : "Modifica"}</span>
+              </header>
+              {proposal.action === "save" ? <div className="special-resource-review-comparison">
+                <section><h4>Valore precedente</h4><strong>{snapshots.before.character || "Gruppo"} · {snapshots.before.name || "—"}</strong><p>{snapshots.before.text || "—"}</p></section>
+                <section><h4>Nuovo valore proposto</h4><strong>{snapshots.after.character || "Gruppo"} · {snapshots.after.name || "—"}</strong><p>{snapshots.after.text || "—"}</p></section>
+              </div> : <p className="special-resource-review-status">La richiesta propone di <strong>{proposal.action === "archive" ? "archiviare" : "ripristinare"}</strong> questa riga.</p>}
+              <footer>
+                <button type="button" className="button primary small" disabled={busy !== null} onClick={() => void review(proposal, true)}>{busy === `review-${proposal.id}` ? "Elaborazione…" : "Accetta"}</button>
+                <button type="button" className="button secondary small" disabled={busy !== null} onClick={() => void review(proposal, false)}>Rifiuta</button>
+              </footer>
+            </article>;
+          })}
+        </div>
+      </section>
     </div>}
   </section>;
 }
