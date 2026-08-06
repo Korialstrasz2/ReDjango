@@ -34,7 +34,7 @@ export function primaryHeading(page: Page): Locator {
       ? "Viaggio"
       : null;
   if (workspaceTitle) {
-    return page.locator(".tablet-route-heading, [role='banner'] strong")
+    return page.locator(".tablet-route-heading:visible, [role='banner'] strong:visible")
       .filter({ hasText: new RegExp(`^${workspaceTitle}$`) })
       .first();
   }
