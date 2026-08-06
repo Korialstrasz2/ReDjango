@@ -90,7 +90,7 @@ jobs:
       - name: Build frontend assets
         run: npm run build
       - name: Complete canonical desktop suite
-        run: npx playwright test --project=authenticated
+        run: npx playwright test --project=authenticated --workers=1
       - name: Upload desktop Playwright report
         if: always()
         uses: actions/upload-artifact@v4
