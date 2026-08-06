@@ -74,7 +74,7 @@ export function MobileToastStack() {
   }, [isPhone]);
 
   if (!isPhone || !toasts.length) return null;
-  return <section className="mobile-toast-stack" aria-label="Notifiche" aria-live="polite" aria-atomic="false">
+  return <section className="mobile-toast-stack" aria-label="Notifiche">
     {toasts.map((toast) => <div
       key={toast.id}
       className={`toast ${toast.kind}`}
