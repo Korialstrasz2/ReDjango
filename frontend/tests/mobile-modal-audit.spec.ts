@@ -83,7 +83,7 @@ test("phone nested Journal resource editor remains contained and closes before i
   await page.getByRole("dialog", { name: "Strumenti rapidi" }).getByRole("button", { name: "Diario", exact: true }).click();
   const journal = page.getByRole("dialog", { name: "Diario", exact: true });
   const resources = journal.getByRole("button", { name: "Risorse speciali", exact: true });
-  test.skip(!(await resources.isEnabled()), "No campaign fixture available");
+  test.skip(!(await resources.count()) || !(await resources.isEnabled()), "No campaign fixture available");
   await resources.click();
   await journal.getByRole("button", { name: "Nuova risorsa" }).click();
 
@@ -91,9 +91,9 @@ test("phone nested Journal resource editor remains contained and closes before i
   await expect(editor).toBeVisible();
   const rect = await editor.boundingBox();
   const viewport = page.viewportSize()!;
-  expect(rect?.left || 0).toBeGreaterThanOrEqual(0);
-  expect(rect?.right || 0).toBeLessThanOrEqual(viewport.width + 1);
-  expect(rect?.bottom || 0).toBeLessThanOrEqual(viewport.height + 1);
+  expect(rect?.x || 0).toBeGreaterThanOrEqual(0);
+  expect((rect?.x || 0) + (rect?.width || 0)).toBeLessThanOrEqual(viewport.width + 1);
+  expect((rect?.y || 0) + (rect?.height || 0)).toBeLessThanOrEqual(viewport.height + 1);
   await editor.getByLabel("Nome della risorsa").fill("Bozza Stage F non salvata");
   await editor.getByRole("button", { name: "Chiudi" }).click();
   await expect(editor).toHaveCount(0);
