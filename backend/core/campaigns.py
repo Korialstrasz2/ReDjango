@@ -83,18 +83,38 @@ def _actor_snapshot(giocatore: Giocatore) -> dict[str, Any]:
     }
 
 
+def _visible_special_resource_proposals(
+    proposals: list[dict[str, Any]],
+    giocatore_id: int,
+    can_manage: bool,
+) -> list[dict[str, Any]]:
+    """Keep every unresolved request visible, followed by a bounded audit tail."""
+    visible = proposals if can_manage else [
+        row for row in proposals if row.get("proposedBy", {}).get("id") == giocatore_id
+    ]
+    ordered = sorted(
+        visible,
+        key=lambda row: str(row.get("createdAt") or ""),
+        reverse=True,
+    )
+    pending = [row for row in ordered if row.get("status") == "pending"]
+    reviewed = [row for row in ordered if row.get("status") != "pending"]
+    return pending + reviewed[:max(0, 50 - len(pending))]
+
+
 def special_resources_payload(campaign: DatiCampagna, giocatore: Giocatore) -> dict[str, Any]:
     store = _special_resource_store(campaign)
     can_manage = has_minimum_role(effective_role(giocatore.user, giocatore), Giocatore.ROLE_MASTER)
-    proposals = store["proposals"] if can_manage else [
-        row for row in store["proposals"] if row.get("proposedBy", {}).get("id") == giocatore.id
-    ]
     return {
         "resources": sorted(
             store["resources"],
             key=lambda row: (bool(row.get("archivedAt")), int(row.get("order") or 0), str(row.get("name") or "")),
         ),
-        "proposals": sorted(proposals, key=lambda row: str(row.get("createdAt") or ""), reverse=True)[:50],
+        "proposals": _visible_special_resource_proposals(
+            store["proposals"],
+            giocatore.id,
+            can_manage,
+        ),
         "canManage": can_manage,
     }
 
