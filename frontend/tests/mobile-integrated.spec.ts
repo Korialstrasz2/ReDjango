@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { measureDocumentOverflow } from "./helpers/layout";
+import { primaryHeading } from "./helpers/stage-f";
 
 const isPhoneProject = (name: string) => name.startsWith("phone-");
 
@@ -25,7 +26,7 @@ test("phone More navigation reaches every secondary player route and preserves b
     await menu.getByRole("link", { name: label, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`${path.replace("/", "\\/")}$`));
     await expect(menu).toHaveCount(0);
-    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(primaryHeading(page)).toBeVisible();
     expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
 
     await page.goBack();
@@ -42,7 +43,7 @@ test("phone primary destinations and New Character have predictable Back behavio
   for (const name of [/PG/, /Abilità/, /Combattimento/]) {
     const link = primary.getByRole("link", { name });
     await link.click();
-    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(primaryHeading(page)).toBeVisible();
     expect((await measureDocumentOverflow(page)).document).toBeLessThanOrEqual(1);
     await page.goBack();
     await expect(page).toHaveURL(/\/$/);
@@ -50,7 +51,7 @@ test("phone primary destinations and New Character have predictable Back behavio
 
   await page.getByRole("link", { name: "Nuovo PG" }).click();
   await expect(page).toHaveURL(/\/new-character$/);
-  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+  await expect(primaryHeading(page)).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
 });
