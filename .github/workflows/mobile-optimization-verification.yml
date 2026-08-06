@@ -94,7 +94,7 @@ jobs:
 
   responsive-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: frontend
@@ -126,7 +126,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Build frontend assets
         run: npm run build
-      - name: Responsive viewport matrix
+      - name: Responsive viewport and Stage F evidence matrix
         run: >-
           npx playwright test
           tests/mobile-baseline.spec.ts
@@ -139,8 +139,15 @@ jobs:
           tests/mobile-combat.spec.ts
           tests/mobile-combat-roles.spec.ts
           tests/mobile-quick-tools.spec.ts
+          tests/mobile-quick-tools-workflows.spec.ts
           tests/mobile-integrated.spec.ts
-      - name: Upload responsive Playwright report
+          tests/mobile-stage-f.spec.ts
+          tests/mobile-stage-f-roles.spec.ts
+          tests/mobile-modal-audit.spec.ts
+          tests/mobile-global-behavior.spec.ts
+          tests/mobile-tablet-management.spec.ts
+          tests/mobile-performance.spec.ts
+      - name: Upload responsive and performance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
